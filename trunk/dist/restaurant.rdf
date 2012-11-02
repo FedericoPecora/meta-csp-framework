@@ -1,0 +1,443 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://www.owl-ontologies.com/restaurant.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.owl-ontologies.com/restaurant.owl" > 
+  <rdf:Description rdf:about="#Order_3">
+    <rdf:type rdf:resource="#Order"/>
+    <hasActivity rdf:resource="#ServeDish_3"/>
+    <hasActivity rdf:resource="#PostOrder_3"/>
+    <hasActivity rdf:resource="#ServeCondiment_3"/>
+    <hasDuration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10</hasDuration>
+    <hasMainDish rdf:resource="#FrenchFries_2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#MainDish">
+    <rdfs:subClassOf rdf:resource="#Food"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToCounter">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:nodeID="A0"/>
+    <rdfs:subClassOf rdf:resource="#Activities"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Ketchup">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Sauces"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeCondiment_2">
+    <rdf:type rdf:resource="#ServeCondiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeDish_1">
+    <rdf:type rdf:resource="#ServeDish"/>
+    <hasMainDish rdf:resource="#FrenchFries_1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Cheese">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Condiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#FrenchFries_1">
+    <has_sides rdf:resource="#Ketchup_1"/>
+    <contains_1_2_1_2 rdf:resource="#Ketchup_1"/>
+    <rdf:type rdf:resource="#FrenchFries"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Ketchup_2">
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasSupply>
+    <rdf:type rdf:resource="#Ketchup"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <owl:someValuesFrom rdf:resource="#Activities"/>
+    <owl:onProperty rdf:resource="#hasActivity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#SalladDressing">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Sauces"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeDish">
+    <rdfs:subClassOf rdf:nodeID="A2"/>
+    <rdfs:subClassOf rdf:resource="#Activities"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Sallad_26">
+    <rdf:type rdf:resource="#Sallad"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:first rdf:resource="#BarbecueSauce"/>
+    <rdf:rest rdf:nodeID="A4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Gouda">
+    <rdfs:subClassOf rdf:resource="#Cheese"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Vinegar">
+    <rdfs:subClassOf rdf:resource="#Condiment"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pepper">
+    <rdfs:subClassOf rdf:resource="#Condiment"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Activities">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToTable_3">
+    <rdf:type rdf:resource="#GoToTable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pepper_8">
+    <rdf:type rdf:resource="#Pepper"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PostOrder_2">
+    <rdf:type rdf:resource="#PostOrder"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeDish_2">
+    <rdf:type rdf:resource="#ServeDish"/>
+    <hasMainDish rdf:resource="#Pasta_1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#meets">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pasta">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:nodeID="A5"/>
+    <rdfs:subClassOf rdf:resource="#MainDish"/>
+    <rdfs:subClassOf rdf:nodeID="A6"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#BarbecueSauce">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Sauces"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rdf:rest rdf:nodeID="A8"/>
+    <rdf:first rdf:resource="#Gouda"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#hasDuration">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">10</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#contains_1_2_1_2">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">constains_1_2_1_2 = constains [1, 2][1, 2] = contains [sl, su][el, eu]</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PickupDish_3">
+    <rdf:type rdf:resource="#PickupDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:someValuesFrom rdf:resource="#Vinegar"/>
+    <owl:onProperty rdf:resource="#has_sides"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PepperMill">
+    <rdfs:subClassOf rdf:resource="#Container"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToTable_2">
+    <rdf:type rdf:resource="#GoToTable"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="#meets"/>
+    <owl:someValuesFrom rdf:resource="#ServeDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#hasActivity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Activities"/>
+    <rdfs:domain rdf:resource="#Order"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PickupDish_2">
+    <rdf:type rdf:resource="#PickupDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Bowl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Container"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeCondiment_1">
+    <rdf:type rdf:resource="#ServeCondiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#startedBy_5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeCondiment">
+    <rdfs:subClassOf rdf:nodeID="A11"/>
+    <rdfs:subClassOf rdf:resource="#Activities"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Sauces">
+    <rdfs:subClassOf rdf:resource="#Condiment"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <owl:oneOf rdf:nodeID="A13"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DataRange"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ParmesanCheese">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Cheese"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ParmesanCheese_1">
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasSupply>
+    <rdf:type rdf:resource="#ParmesanCheese"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="#startedBy_5"/>
+    <owl:someValuesFrom rdf:resource="#ParmesanCheese"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToCounter_2">
+    <rdf:type rdf:resource="#GoToCounter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pizza_25">
+    <rdf:type rdf:resource="#Pizza"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="#SalladDressing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PickupDish_1">
+    <rdf:type rdf:resource="#PickupDish"/>
+    <meets rdf:resource="#GoToTable_1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pepper_10">
+    <rdf:type rdf:resource="#Pepper"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pepper_7">
+    <rdf:type rdf:resource="#Pepper"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToCounter_3">
+    <rdf:type rdf:resource="#GoToCounter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Condiment">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Food"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToCounter_1">
+    <meets rdf:resource="#PickupDish_1"/>
+    <rdf:type rdf:resource="#GoToCounter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToTable">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:nodeID="A10"/>
+    <rdfs:subClassOf rdf:resource="#Activities"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <owl:onProperty rdf:resource="#meets"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:someValuesFrom rdf:resource="#GoToTable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#GoToTable_1">
+    <rdf:type rdf:resource="#GoToTable"/>
+    <meets rdf:resource="#ServeDish_2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pepper_9">
+    <rdf:type rdf:resource="#Pepper"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#has_sides">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#MainDish"/>
+    <rdfs:range rdf:resource="#Condiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Kitchenware">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:disjointWith rdf:resource="#Food"/>
+    <owl:disjointWith rdf:resource="#Order"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <owl:onProperty rdf:resource="#hasDuration"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeCondiment_3">
+    <rdf:type rdf:resource="#ServeCondiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <owl:onProperty rdf:resource="#has_sides"/>
+    <owl:someValuesFrom rdf:resource="#SalladDressing"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#hasMainDish">
+    <rdfs:domain rdf:resource="#ServeDish"/>
+    <rdfs:range rdf:resource="#MainDish"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <owl:someValuesFrom rdf:resource="#Ketchup"/>
+    <owl:onProperty rdf:resource="#contains_1_2_1_2"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Ketchup_1">
+    <rdf:type rdf:resource="#Ketchup"/>
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasSupply>
+  </rdf:Description>
+  <rdf:Description rdf:about="#FrenchFries_2">
+    <has_sides rdf:resource="#Ketchup_2"/>
+    <rdf:type rdf:resource="#FrenchFries"/>
+    <contains_1_2_1_2 rdf:resource="#Ketchup_2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rdf:rest rdf:nodeID="A3"/>
+    <rdf:first rdf:resource="#ParmesanCheese"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="#meets"/>
+    <owl:someValuesFrom rdf:resource="#PickupDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#SalladDressing_1">
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasSupply>
+    <rdf:type rdf:resource="#SalladDressing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#FrenchFries">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:nodeID="A18"/>
+    <rdfs:subClassOf rdf:resource="#MainDish"/>
+    <rdfs:subClassOf rdf:nodeID="A19"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:someValuesFrom rdf:resource="#Condiment"/>
+    <owl:onProperty rdf:resource="#hasCondiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Order">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:disjointWith rdf:resource="#Food"/>
+    <owl:disjointWith rdf:resource="#Kitchenware"/>
+    <rdfs:subClassOf rdf:nodeID="A16"/>
+    <rdfs:subClassOf rdf:nodeID="A1"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:subClassOf rdf:nodeID="A20"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Container">
+    <rdfs:subClassOf rdf:resource="#Kitchenware"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:nodeID="A14"/>
+    <rdf:first rdf:resource="#Ketchup"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PostOrder_1">
+    <rdf:type rdf:resource="#PostOrder"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#hasCondiment">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Condiment"/>
+    <rdfs:domain rdf:resource="#ServeCondiment"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <owl:onProperty rdf:resource="#has_sides"/>
+    <owl:someValuesFrom rdf:resource="#ParmesanCheese"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pasta_1">
+    <has_sides rdf:resource="#ParmesanCheese_1"/>
+    <rdf:type rdf:resource="#Pasta"/>
+    <startedBy_5 rdf:resource="#ParmesanCheese_1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Order_2">
+    <hasActivity rdf:resource="#PostOrder_2"/>
+    <hasActivity rdf:resource="#PickupDish_1"/>
+    <hasActivity rdf:resource="#ServeDish_2"/>
+    <hasActivity rdf:resource="#ServeCondiment_2"/>
+    <hasActivity rdf:resource="#GoToTable_1"/>
+    <hasActivity rdf:resource="#GoToCounter_1"/>
+    <hasMainDish rdf:resource="#Pasta_1"/>
+    <hasDuration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10</hasDuration>
+    <rdf:type rdf:resource="#Order"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#BarbecueSauce_19">
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasSupply>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Gouda_1">
+    <rdf:type rdf:resource="#Gouda"/>
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasSupply>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int">6</rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</rdf:first>
+    <rdf:rest rdf:nodeID="A21"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <owl:someValuesFrom rdf:resource="#MainDish"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="#hasMainDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#BarbecueSauce_1">
+    <rdf:type rdf:resource="#BarbecueSauce"/>
+    <hasSupply rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasSupply>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PostOrder_3">
+    <rdf:type rdf:resource="#PostOrder"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Food">
+    <owl:disjointWith rdf:resource="#Kitchenware"/>
+    <owl:disjointWith rdf:resource="#Order"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <owl:unionOf rdf:nodeID="A7"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <owl:onProperty rdf:resource="#has_sides"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:someValuesFrom rdf:resource="#Ketchup"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:someValuesFrom rdf:resource="#MainDish"/>
+    <owl:onProperty rdf:resource="#hasMainDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#hasSupply">
+    <rdfs:domain rdf:nodeID="A22"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Sallad">
+    <rdfs:subClassOf rdf:nodeID="A17"/>
+    <rdfs:subClassOf rdf:nodeID="A9"/>
+    <rdfs:subClassOf rdf:resource="#MainDish"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PostOrder">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Activities"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Vinegar_12">
+    <rdf:type rdf:resource="#Vinegar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#ServeDish_3">
+    <hasMainDish rdf:resource="#FrenchFries_2"/>
+    <rdf:type rdf:resource="#ServeDish"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#PickupDish">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="#Activities"/>
+    <rdfs:subClassOf rdf:nodeID="A15"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Pizza">
+    <rdfs:subClassOf rdf:resource="#MainDish"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#Order_1">
+    <rdf:type rdf:resource="#Order"/>
+    <hasActivity rdf:resource="#ServeDish_1"/>
+    <hasActivity rdf:resource="#ServeCondiment_1"/>
+    <hasActivity rdf:resource="#PostOrder_1"/>
+    <hasMainDish rdf:resource="#FrenchFries_1"/>
+    <hasDuration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10</hasDuration>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.4, Build 579)  http://protege.stanford.edu -->
