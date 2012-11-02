@@ -1,0 +1,35 @@
+create sensor A aa ab
+create sensor B ba bb
+create sensor C ca cb
+create sensor D da db
+create monitored ruletest R1 R2 R3 R4 R5 R6 R7
+create requirement A aa EQUALS During 
+create requirement B ba EQUALS Contains 
+create rule ruletest R1 0 1
+create requirement B ba EQUALS StartedBy 
+create requirement C cb EQUALS OverlappedBy 
+create rule ruletest R2 2 3
+create requirement C cb EQUALS During 
+create requirement D da EQUALS FinishedBy 
+create rule ruletest R3 4 5
+create sensor _ruletest R1 R2 R3 R4 R5 R6 R7 
+create requirement ruletest R1 EQUALS OverlappedBy
+create sensor _ruletest R1 R2 R3 R4 R5 R6 R7 
+create requirement ruletest R2 EQUALS After
+create rule ruletest R4 6 7
+create requirement _ruletest R2 EQUALS Contains 
+create rule ruletest R5 8
+create requirement _ruletest R4 EQUALS StartedBy 
+create requirement _ruletest R3 EQUALS OverlappedBy 
+create rule ruletest R6 9 10
+create requirement _ruletest R5 EQUALS After 
+create rule ruletest R7 11
+create event A 1 0.3 0.4
+create event B 1 0.3 0.6
+create event C 1 0.2 0.4
+create event D 1 0.5 0.2
+create event A 3 0.5 0.6
+create event B 5 0.7 0.4
+create event D 5 0.7 0.3
+create event C 7 0.3 0.6
+create event A 10 0.2 0.8

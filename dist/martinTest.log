@@ -1,0 +1,24 @@
+##################################
+# SENSORS + MONITORED COMPONENTS #
+##################################
+create sensor containerSensor Empty HasFood
+create monitored containerDirty Clean Dirty
+
+#########
+# RULES #
+#########
+#             |------| Dirty
+#             |------| Equals Empty
+#  |-------|           After HasFood
+create requirement containerSensor Empty EQUALS Equals 
+create requirement containerSensor HasFood EQUALS After
+create rule containerDirty Dirty 0 1
+
+##########
+# EVENTS #
+##########
+#container has food at time 3
+create event containerSensor 3 0.0 1.0
+
+#container is empty at time 10
+create event containerSensor 10 1.0 0.0

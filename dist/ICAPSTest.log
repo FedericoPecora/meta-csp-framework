@@ -1,0 +1,15 @@
+create sensor Location kitchen couch diningTable bed
+create sensor Stove on off
+create monitored Human Cooking Eating
+create requirement Location kitchen EQUALS During 
+create requirement Stove on EQUALS Contains 
+create rule Human Cooking 0 1
+create sensor _Human Cooking Eating 
+create requirement Human Cooking EQUALS After
+create requirement Location diningTable EQUALS During 
+create rule Human Eating 2 3
+create event Location 1 1.0 0.0 0.0 0.0
+create event Stove 3 0.3 0.7
+create event Stove 5 1.0 0.0
+create event Location 12 0.0 0.0 1.0 0.0
+create event Stove 15 0.1 0.9

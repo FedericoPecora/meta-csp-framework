@@ -1,0 +1,107 @@
+<project name="MetaCSPFramework" default="all">
+
+  <!-- Define paths -->
+  <property name="main.class" value="examples.multi.TestTimelinePlotting"/>
+  <property name="src" value="src/main/java"/>
+  <property name="lib" value="lib"/>
+  <property name="build" value="build"/>
+  <property name="dist" value="dist"/>
+  <property name="doc" value="doc"/>
+  <property name="install-jre" value="${java.home}/lib/ext"/>
+  <property name="targ" value="${ant.project.name}"/>
+  <property environment="env"/>
+
+  <!-- Where is the classpath? (usually lib) -->
+  <path id="project.classpath">
+    <fileset dir="${lib}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- Make Manifest classpath so .jar will be executed OK -->
+  <manifestclasspath property="jar.classpath" jarfile="${dist}/${targ}.jar">
+    <classpath refid="project.classpath" />
+  </manifestclasspath>
+
+  <!-- Clear the distribution directory -->
+  <target name="init">
+    <delete dir="${dist}/*"/>
+    <!-- <mkdir dir="${dist}" /> -->
+  </target>
+
+  <!-- Compile everything -->
+  <target name="compile" depends="init">
+    <mkdir dir="${build}" />
+    <javac srcdir="${src}" destdir="${build}" debug="true" includeantruntime="false">
+      <classpath refid="project.classpath"/>
+      <!--<compilerarg value="-Xlint:unchecked"/>-->
+    </javac>
+  </target>
+  
+  <!-- Make a JAR out of the result of compilation -->
+  <target name="jar" depends="compile">
+    <manifest file="MANIFEST.MF">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Main-Class" value="${main.class}"/>
+      <attribute name="Class-Path" value="${jar.classpath}"/>
+    </manifest>
+    
+    <jar destfile="${dist}/${targ}.jar"
+         basedir="${build}"
+         manifest="MANIFEST.MF"
+         />
+    <copy todir="${dist}">
+      <fileset dir="${lib}"/>
+    </copy>
+  </target>
+
+  <!-- Clean everything up -->
+  <target name="clean">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${build}"/>
+      <fileset file="MANIFEST.MF"/>
+      <fileset dir="${dist}" includes="**/*.jar"/>
+    </delete>
+  </target>
+
+  <!-- Make javadoc -->
+  <target name="doc">
+    <javadoc sourcepath="${src}" destdir="${doc}" classpathref="project.classpath" excludepackagenames="temporary"/>
+  </target>
+
+  <!-- Compile and make a JAR -->
+  <target name="all" depends="compile,jar">
+    <delete>
+      <fileset file="MANIFEST.MF"/>
+    </delete>  
+  </target>
+
+  <!-- Test if target is built -->
+  <target name="test-jar">
+    <available file="${dist}/${targ}.jar" property="file.exists" value="true" />
+    <fail unless="file.exists">
+      Please compile with 'ant all' before installing
+    </fail>
+    <!-- <available file="/usr/local/lib/libpeiskernel.so" property="file1.exists" value="true" />
+    <fail unless="file1.exists">
+      Please install peiskernel before installing PeisJava
+    </fail> -->
+  </target>
+
+  <!-- Install on system  -->
+  <target name="install" depends="test-jar">
+    <copy todir="${install-jre}">
+      <fileset dir="${dist}"/>
+    </copy>
+  </target>
+  
+</project>
+
+
+
+<!--
+  <pathconvert property="mf.classpath" pathsep=" ">
+    <path refid="project.classpath" />
+    <flattenmapper />
+  </pathconvert>
+-->
