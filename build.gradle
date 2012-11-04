@@ -17,10 +17,10 @@ version = '0.0.0-SNAPSHOT'
 group = 'meta_csp_framework'
 
 repositories {
-  mavenLocal()
-  maven {
-    url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
-  }
+  //mavenLocal()
+  //maven {
+  //  url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
+  //}
 
   flatDir {
     name 'localRepository'
