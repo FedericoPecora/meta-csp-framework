@@ -1,4 +1,4 @@
-package examples.multi;
+package examples;
 
 import symbols.SymbolicValueConstraint;
 import symbols.SymbolicVariableNetwork;
