@@ -13,7 +13,7 @@ Provide an overview of your package.
 
 <!--
 Provide links to specific auto-generated API documentation within your
-package that is of particular interest to a reader. Doxygen will
+package that are of particular interest to a reader. Doxygen will
 document pretty much every part of your code, so do your best here to
 point the reader to the actual API.
 
