@@ -21,21 +21,10 @@ repositories {
   //maven {
   //  url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
   //}
-
-  flatDir {
-    name 'localRepository'
-    dirs 'lib'
-  }
 }
 
 dependencies {
   compile fileTree(dir: 'lib', include: '**/*.jar')
-    
-  // from flatDir (lib/)
-  //compile 'jaret:jaretutil:0.32'
-  //compile 'orbital:orbital-core:1.3.0'
-  //compile 'orbital:orbital-ext:1.3.0'
-  //compile 'jaret:timebars:1.44'
 }
 
 defaultTasks 'install'
