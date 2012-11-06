@@ -4,7 +4,7 @@
     meta_csp_framework
 
   </description>
-  <author>ROS package maintained by Martin Günther</author>
+  <author>ROS package maintained by Federico Pecora</author>
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/meta_csp_framework</url>
