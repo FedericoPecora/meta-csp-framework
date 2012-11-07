@@ -8,10 +8,8 @@ import framework.BinaryConstraint;
 import framework.Constraint;
 
 /**
- * This class provides the fundamental building block for {@link TemporalAssertion}s.  All such assertions (i.e.,
- * {@link SimpleDistanceConstraint}s and {@link TemporalDistanceConstraint}s) are represented as {@link SimpleDistanceConstraint}s
- * in the {@link APSPSolver} temporal reasoner. This class should only be used to create low-level
- * temporal constraints between {@link TimePoint}s for direct insertion into an {@link APSPSolver}. 
+ * This class provides the fundamental building block for building STPs, namely the simple distance constraint type
+ * used by the {@link APSPSolver} STP solve. 
  * @version 1.0
  */
 public class SimpleDistanceConstraint extends BinaryConstraint {
@@ -119,7 +117,7 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	/**
 	 * Add an [lb,ub] interval between the two {@link TimePoint}s of this constraint.
 	 * @param i The interval to add.
-	 * @return True if the interval was added, throws error if {@link #MAX_EDGES} was reached. 
+	 * @return <code>true</code> if the interval was added, <code>false</code> if it is malformed.
 	 */
 	public boolean addInterval(Bounds i) {
 		if(i.max < this.minimum || i.min > this.maximum) {

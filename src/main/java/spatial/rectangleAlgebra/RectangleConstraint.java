@@ -289,7 +289,7 @@ public class RectangleConstraint extends BinaryConstraint {
 	
 	/**
 	 * Get the dimension of a RA relation (A, B) which is dim(A) + dim(B) such that A, B are basic Allen relation
-	 * @param Get an array of 2D Allen relation.
+	 * @param types an array of 2D Allen relations.
 	 * @return The dimension of RA relation.
 	 */
 	public static int getDimension(TwoDimensionsAllenConstraint... types){
@@ -306,8 +306,8 @@ public class RectangleConstraint extends BinaryConstraint {
 	
 	/**
 	 * Get convex closure of RA relation which is I(R) = I(R1) * I(R2)  
-	 * @param Get an array of basic RA relation (Type).
-	 * @return Convex closure of the RA relation
+	 * @param types an array of basic RA relations.
+	 * @return Convex closure of the RA relation.
 	 */
 	public static TwoDimensionsAllenConstraint[] getRAConvexClosure(TwoDimensionsAllenConstraint... types){
 		
@@ -330,8 +330,8 @@ public class RectangleConstraint extends BinaryConstraint {
 	
 	/**
 	 * Define whether the RA relation is convex or not, R is a convex relation if dim(I(R)\R) < dim(R) [Balbiani et al, 99]  
-	 * @param Get an array of basic 2DAllen relation (Type).
-	 * @return true if the relation is convex
+	 * @param types an array of basic 2DAllen relation.
+	 * @return true iff the relation is convex.
 	 */
 	public static boolean isConvexRelation(TwoDimensionsAllenConstraint... types){
 		
@@ -357,8 +357,8 @@ public class RectangleConstraint extends BinaryConstraint {
 	
 	/**
 	 * Define the topological closure of RA relation which is U{C(A, B) : (A, B) is member of R, R is member of power set of basic RA relation, and C(A, B) = C(A) * C(B)}  
-	 * @param Get an array of RA relation(Type).
-	 * @return topological closure of RA
+	 * @param types an array of RA relations.
+	 * @return topological closure of RA.
 	 */
 	public static TwoDimensionsAllenConstraint[] getRATopologicalClosure(TwoDimensionsAllenConstraint... types){		
 		Vector<QualitativeAllenIntervalConstraint.Type> xDims = new Vector<QualitativeAllenIntervalConstraint.Type>(); 
@@ -385,8 +385,8 @@ public class RectangleConstraint extends BinaryConstraint {
 	
 	/**
 	 * Define whether the RA relation is weakly preconvex or not, R is a weakly preconvex relation if C(R) is a convex relation [Balbiani et al, 99]  
-	 * @param Get an array of basic 2D Allen relation (Type).
-	 * @return true if the relation is weakly preconvex.
+	 * @param types an array of basic 2D Allen relations.
+	 * @return true iff the relation is weakly preconvex.
 	 */
 	public static boolean isWeakPreconvexRelation(TwoDimensionsAllenConstraint... types){
 		if(isConvexRelation(getRATopologicalClosure(types)))

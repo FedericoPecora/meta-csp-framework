@@ -170,7 +170,13 @@ public class AllenIntervalNetworkUtilities {
 	}
 	
 	/**
-	 * @see AllenIntervalNetworkSolver#createReducedCopy(AllenIntervalNetworkSolver, AllenInterval[], int)
+	 * Creates a "reduced copy" of an {@link AllenIntervalNetworkSolver}. The reduced copy contains a subset 
+	 * of intervals from the original and their temporal properties are equivalent. The reduced copy does not
+	 * contain the constraints from the original however, these are replaced with lower-level {@link SimpleDistanceConstraint}s. 
+	 * @param oldSolver the solver that should be copied. 
+	 * @param intervals The intervals of interest in the old solver, each {@link AllenInterval} reference in this array will
+	 * be replaced with a corresponding reference to its copy in the new {@link AllenIntervalNetworkSolver}. 
+	 * @return the copied {@link AllenIntervalNetworkSolver}.
 	 */
 	public static AllenIntervalNetworkSolver createReducedCopy(AllenIntervalNetworkSolver oldSolver, AllenInterval[] intervals) {
 		return createReducedCopy(oldSolver, intervals, 0);
@@ -178,7 +184,7 @@ public class AllenIntervalNetworkUtilities {
 	
 	/**
 	 * Creates a "reduced copy" of an {@link AllenIntervalNetworkSolver}. The reduced copy contains a subset 
-	 * of intervals from the original and their temporal properties are equivalent. The reduce copy does not
+	 * of intervals from the original and their temporal properties are equivalent. The reduced copy does not
 	 * contain the constraints from the original however, these are replaced with lower-level {@link SimpleDistanceConstraint}s. 
 	 * @param oldSolver the solver that should be copied. 
 	 * @param intervalsInOut The intervals of interest in the old solver, each {@link AllenInterval} reference in this array will

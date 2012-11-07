@@ -47,21 +47,13 @@ public class Rule {
 	 */
 	
 	/**
-	 * @return the component
+	 * @return The component that this {@link Rule} refers to.
 	 */
 	public MonitoredComponent getComponent() {
 		return component;
 	}
 	
 	public double[] getPossibilities() { return possibilities; }
-
-	/**
-	 * @param component the component to set
-	 
-	public void setComponent(MonitoredComponent component) {
-		this.component = component;
-	}
-	*/
 
 	/*
 	public String toString() {

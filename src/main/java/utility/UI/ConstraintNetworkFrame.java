@@ -80,16 +80,14 @@ public class ConstraintNetworkFrame extends JFrame {
 
     //public static final int EDGE_LENGTH = 100;
     
-    /**
-	private class STNTransformer implements Transformer<Variable,Point2D> {
-		@Override
-		public Point2D transform(Variable arg0) {
-			Point ret = new Point((int) ((Long)arg0.getDomain().chooseValue("ET")*20), layer);
-			layer+=100;
-			return ret;
-		}
-	}
-    /**/
+//	private class STNTransformer implements Transformer<Variable,Point2D> {
+//		@Override
+//		public Point2D transform(Variable arg0) {
+//			Point ret = new Point((int) ((Long)arg0.getDomain().chooseValue("ET")*20), layer);
+//			layer+=100;
+//			return ret;
+//		}
+//	}
 
     
     public ConstraintNetworkFrame(ObservableGraph<Variable,Constraint> graph, String title, final Callback cb) {

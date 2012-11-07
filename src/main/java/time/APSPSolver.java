@@ -78,7 +78,6 @@ public class APSPSolver extends ConstraintSolver {
 	 * Create a new APSPSolver with given temporal horizon.
 	 * @param origin The start time of the horizon.
 	 * @param horizon The end time of the horizon. 
-	 * @param maxTPS The maximum number of time points allowed by this solver.
 	 */
 	public APSPSolver(long origin,long horizon) {
 		this(origin, horizon, DEFAULT_MAX_TPS);

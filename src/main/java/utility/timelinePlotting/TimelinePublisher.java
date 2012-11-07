@@ -51,7 +51,6 @@ public final class TimelinePublisher
 
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
-	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
 	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
 	 */
 	public TimelinePublisher(ActivityNetworkSolver ans, String ... components) {

@@ -12,7 +12,7 @@ import meta.symbolsAndTime.SymbolicTimeline;
 
 
 /**
- * Utility class for visualizing {@link SymbolicTimeline}s that are published by a {@link TimelinePlotter}.
+ * Utility class for visualizing {@link SymbolicTimeline}s that are published by a {@link TimelinePublisher}.
  * @author Federico Pecora
  *
  */

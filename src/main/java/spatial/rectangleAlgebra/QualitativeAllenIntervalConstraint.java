@@ -441,8 +441,8 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint{
 	}
 	
 	/**
-	 * Get the dimension of a Allen relation which is the maximum of basic Allen relation
-	 * @param Get an array of basic allen relation.
+	 * Get the dimension of an Allen relation which is the maximum of basic Allen relations.
+	 * @param types an array of basic Allen relations.
 	 * @return The dimension of relation.
 	 */
 	public static int getDimension(QualitativeAllenIntervalConstraint.Type... types){
@@ -516,9 +516,9 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint{
 	
 	/**
 	 * Get convex closure of Allen Interval based on canonical representation of interval atomic relation[Ligozat, 1996]
-	 * and based on the "Geometrical Interpretation of Maximal Tractable Interval Subalgebras"[F. Launay,D. Mitra, 06]  
-	 * @param Get an array of basic Allen relation (Type).
-	 * @return Convex closure of the Allen relation
+	 * and based on the "Geometrical Interpretation of Maximal Tractable Interval Subalgebras" [F. Launay,D. Mitra, 06]  
+	 * @param types an array of basic Allen relations.
+	 * @return Convex closure of the Allen relations.
 	 */
 	public static QualitativeAllenIntervalConstraint.Type[] getAllenConvexClosure(QualitativeAllenIntervalConstraint.Type... types){
 		
@@ -545,9 +545,9 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint{
 	}
 	
 	/**
-	 * Define whether an Allen relation is preconvex or not, R is a preconvex(weakly preconvex) relation if dim(I(R)\R) < dim(R)  
-	 * @param Get an array of basic allen relation (Type).
-	 * @return true if the relation is preconvex(weakly preconvex).
+	 * Define whether an Allen relation (disjunction of basic Allen relations) is pre-convex or not, R is a preconvex(weakly preconvex) relation if dim(I(R)\R) < dim(R)  
+	 * @param types an array of basic Allen relations representing the disjunction we want to test.
+	 * @return true iff the relation is preconvex (weakly preconvex).
 	 */
 	public boolean isPreconvex(QualitativeAllenIntervalConstraint.Type... types){
 		
