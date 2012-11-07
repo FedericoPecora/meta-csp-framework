@@ -7,10 +7,8 @@ import framework.Variable;
 
 /**
  * This class provides the building block of the {@link APSPSolver} temporal reasoner, namely time points.
- * It differs from the {@link TimeInstant} class as this class is used exclusively by the {@link APSPSolver} reasoner.
- * Indeed, the creation of a {@link TimeInstant} object through the {@link STPTemporalModule} results in the creation of
- * an instance of {@link TimePoint}.  This class should only be used to create low-level, time point based temporal reasoners
- * such as {@link APSPSolver}. 
+ * Note that as all variables, {@link TimePoint}s should be created with a solver factory method
+ * (in this case, {@link APSPSolver}). 
  * @version 1.0
  */
 public final class TimePoint extends Variable {
@@ -39,6 +37,7 @@ public final class TimePoint extends Variable {
 	 * representing the temporal network.
 	 * @param id  The identifier of this time point.
 	 * @param MAX_TPS  The maximum number of time points supported by the {@link APSPSolver}.
+	 * @param sol the {@link APSPSolver} managing this {@link TimePoint}.
 	 */
 	public TimePoint(int id, int MAX_TPS, APSPSolver sol) {
 		//must invoke 2-arg superconstructor, lest compilation error
@@ -54,6 +53,7 @@ public final class TimePoint extends Variable {
 	 * @param id  The identifier of this time point.
 	 * @param lb The lower bound of this time point.
 	 * @param ub The upper bound of this time point.
+	 * @param sol the {@link APSPSolver} managing this {@link TimePoint}.
 	 */
 	public TimePoint(int id, long lb, long ub, APSPSolver sol) {
 		//must invoke 2-arg superconstructor, lest compilation error		
