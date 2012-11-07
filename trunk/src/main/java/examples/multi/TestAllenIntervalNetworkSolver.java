@@ -38,7 +38,7 @@ public class TestAllenIntervalNetworkSolver {
 		con3.setTo(intervals[0]);
 		
 		Constraint[] cons = new Constraint[]{con1,con2,con3};
-		System.out.println(solver.addConstraintsDebug(cons));
+		System.out.println(solver.addConstraintsDebug(cons) == null);
 
 
 	}

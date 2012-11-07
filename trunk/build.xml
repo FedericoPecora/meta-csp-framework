@@ -1,9 +1,5 @@
 <project name="MetaCSPFramework" default="all">
 
-<!-- upload release to Google Code repo -->
-  <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" classpath="not-committed/ant-googlecode-0.0.3.jar" name="gcupload"/>
-
-
   <!-- Define paths -->
   <property name="main.class" value="examples.multi.TestTimelinePlotting"/>
   <property name="src" value="src/main/java"/>
@@ -109,18 +105,6 @@
     </tar>
   </target>
 
-  <!-- Publish download to Google Code -->
-  <target name="upload">
-    <xmlproperty file="not-committed/gcuploadprops.xml" />
-    <gcupload
-	username="${gccredentials.gcusername}"
-	password="${gccredentials.gcpassword}"
-	projectname="meta-csp-framework" 
-	filename="${dist}/meta-csp-framework-source.tar.gz" 
-	targetfilename="meta-csp-framework-source-${gccredentials.version}.tar.gz"
-	summary="Version ${gccredentials.version} of Meta CSP Framework"
-	labels="Featured, Type-Package, OpSys-All" />
-  </target>
 </project>
 
 

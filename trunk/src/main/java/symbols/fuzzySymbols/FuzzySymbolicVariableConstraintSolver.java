@@ -171,7 +171,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		}
 	}
 	
-	private void acProppagation(Constraint[] svcArray) {
+	private void acPropagation(Constraint[] svcArray) {
 		HashMap<Integer, HashMap<String, Double>> var = new HashMap<Integer, HashMap<String, Double>>();
 		for(int i = 0; i < this.getVariables().length; i++){
 			HashMap<String, Double> m = new HashMap<String, Double>();
@@ -269,7 +269,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 //	}
 	
 	
-	private boolean isfinded(String[] s, String st)
+	private boolean isFound(String[] s, String st)
 	{
 		String[] t = s;
 		java.util.Arrays.sort(t);
@@ -285,7 +285,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		
 		
 		for( String st: ((FuzzySymbolicDomain)((FuzzySymbolicVariable)c.getScope()[0]).getDomain()).getSymbols() ){
-			if (isfinded(((FuzzySymbolicDomain)((FuzzySymbolicVariable)c.getScope()[1]).getDomain()).getSymbols(), st))
+			if (isFound(((FuzzySymbolicDomain)((FuzzySymbolicVariable)c.getScope()[1]).getDomain()).getSymbols(), st))
 			{
 				double minTmp = Math.min(((FuzzySymbolicVariable)c.getScope()[0]).getSymbolsAndPossibilities().get(st), ((FuzzySymbolicVariable)c.getScope()[1]).getSymbolsAndPossibilities().get(st));
 				((FuzzySymbolicVariable)c.getScope()[0]).getSymbolsAndPossibilities().put(st, minTmp);//To update the value
@@ -296,10 +296,10 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		}
 		//to update value preferences which are not consistent!
 		for( String st: ((FuzzySymbolicDomain)((FuzzySymbolicVariable)c.getScope()[0]).getDomain()).getSymbols() )
-			if (!isfinded(intersection.toArray(new String[intersection.size()]), st))
+			if (!isFound(intersection.toArray(new String[intersection.size()]), st))
 				((FuzzySymbolicVariable)c.getScope()[0]).getSymbolsAndPossibilities().put(st, 0.0);//To update the value
 		for( String st: ((FuzzySymbolicDomain)((FuzzySymbolicVariable)c.getScope()[1]).getDomain()).getSymbols() )
-			if (!isfinded(intersection.toArray(new String[intersection.size()]), st))
+			if (!isFound(intersection.toArray(new String[intersection.size()]), st))
 				((FuzzySymbolicVariable)c.getScope()[1]).getSymbolsAndPossibilities().put(st, 0.0);//To update the value
 		
 		return Collections.max(psd);
@@ -334,7 +334,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		
 	private void propagateFuzzyValues(Constraint[] svcArray) {
 //		int[] orderVar = new int[this.getVariables().length];//counter for generating different state of value for different  variable
-		acProppagation(svcArray);
+		acPropagation(svcArray);
 		valueOrdering();//greedy algorithm
 		
 
@@ -440,7 +440,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		int j = 0;
 		for(int i = 0; i <  this.getVariables().length; i++){			
 			HashMap<String, Double> tempMap = new HashMap<String, Double>();
-			tempMap = SortHashmap(((FuzzySymbolicVariable)this.getVariables()[i]).getSymbolsAndPossibilities());
+			tempMap = sortHashmap(((FuzzySymbolicVariable)this.getVariables()[i]).getSymbolsAndPossibilities());
 			j = 0;
 			Integer[] dtod = new Integer[((FuzzySymbolicDomain)((FuzzySymbolicVariable)this.getVariables()[i]).getDomain()).getSymbols().length];
 			for(String s: tempMap.keySet()){
@@ -462,7 +462,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 	}
 	
 	
-	private LinkedHashMap<String, Double> SortHashmap(HashMap<String, Double> psHashMap) {
+	private LinkedHashMap<String, Double> sortHashmap(HashMap<String, Double> psHashMap) {
 		HashMap<String, Double> passedMap = new HashMap<String, Double>();
 //		passedMap = (HashMap<String, Double>) psHashMap.clone();
 		Comparator<String> comparator = Collections.reverseOrder();
@@ -552,11 +552,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 	public boolean propagate() {
 		resetDomains();
 		Constraint[] cons = this.getConstraints();
-		if (cons != null && cons.length != 0) {
-			System.out.println("HERE");
-			this.propagateFuzzyValues(this.getConstraints());
-		}
-		//System.out.println("Symbolic possibility: " + getPosibilityDegree());
+		this.propagateFuzzyValues(cons);
 		return true;
 	}
 

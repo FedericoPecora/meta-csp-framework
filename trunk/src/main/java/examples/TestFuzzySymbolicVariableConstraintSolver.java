@@ -18,7 +18,7 @@ public class TestFuzzySymbolicVariableConstraintSolver {
 		FuzzySymbolicVariable var1 = (FuzzySymbolicVariable)vars[1];
 		var1.setDomain(new String[] {"A", "B", "C"}, new double[] {0.5,0.1,0.2});
 
-		FuzzySymbolicVariable var2 = (FuzzySymbolicVariable )vars[2];
+		FuzzySymbolicVariable var2 = (FuzzySymbolicVariable)vars[2];
 		var2.setDomain(new String[] {"A", "B", "C"}, new double[] {0.9,0.3,0.1});
 
 		SymbolicVariableNetwork.draw(solver.getConstraintNetwork());
@@ -38,7 +38,7 @@ public class TestFuzzySymbolicVariableConstraintSolver {
 		while (true) {
 			for (SymbolicValueConstraint con : cons) {
 				solver.addConstraint(con);
-				System.out.println("Poss: " + solver.getUpperBound());
+				System.out.println("Value Possibility: " + solver.getUpperBound());
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -48,7 +48,7 @@ public class TestFuzzySymbolicVariableConstraintSolver {
 			}
 			for (SymbolicValueConstraint con : cons) {
 				solver.removeConstraint(con);
-				System.out.println("Poss: " + solver.getUpperBound());
+				System.out.println("Value Possibility: " + solver.getUpperBound());
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {

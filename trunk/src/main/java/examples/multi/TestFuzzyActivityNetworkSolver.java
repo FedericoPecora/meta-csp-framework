@@ -35,22 +35,15 @@ public class TestFuzzyActivityNetworkSolver {
 		
 		Constraint[] cons = new Constraint[]{con1,con2};
 		solver.addConstraints(cons);
-		
-		System.out.println("T POSS:" + ((FuzzyAllenIntervalNetworkSolver)solver.getConstraintSolvers()[0]).getPosibilityDegree());
-		System.out.println("V POSS:" + ((FuzzySymbolicVariableConstraintSolver)solver.getConstraintSolvers()[1]).getPosibilityDegree());
-		
+				
 		System.out.println(solver.getDescription());
 		System.out.println(act1.getDescription());
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		
-		
+		System.out.println("---------------------------------");
+		System.out.println("Temporal Possibility:" + solver.getTemporalConsistency());
+		System.out.println("Value Possibility:" + solver.getValueConsistency());
+		System.out.println("---------------------------------");
+
 		boolean add = false;
 		
 		while (true) {
@@ -61,8 +54,17 @@ public class TestFuzzyActivityNetworkSolver {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if (add) solver.addConstraint(cons[i]);
-				else solver.removeConstraint(cons[i]);
+				if (add) {
+					solver.addConstraint(cons[i]);
+					System.out.println("Added " + cons[i].getClass().getSimpleName() + " type");
+				}
+				else {
+					solver.removeConstraint(cons[i]);
+					System.out.println("Removed " + cons[i].getClass().getSimpleName() + " type");
+				}
+				System.out.println("Temporal Possibility:" + solver.getTemporalConsistency());
+				System.out.println("Value Possibility:" + solver.getValueConsistency());
+				System.out.println("---------------------------------");
 			}
 			add = !add;
 		}

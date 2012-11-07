@@ -86,10 +86,7 @@ public class TestDistanceConstraintSolver {
 		groundSolver.addConstraint(johnLeaves);
 		groundSolver.addConstraint(fredArrives);
 		groundSolver.addConstraint(johnArrives);
-		
-		
-		groundGroundSolver.draw();
-		
+				
 		for (Constraint c : groundSolver.getConstraints()) {
 			if (c instanceof MultiConstraint) {
 				System.out.println(c + " (prop = " + ((MultiConstraint) c).propagateImmediately() + ")");

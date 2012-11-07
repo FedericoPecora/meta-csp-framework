@@ -20,10 +20,8 @@ public class TestTimelinePlotting {
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,1000);
 		Activity act1 = (Activity)solver.createVariable("One Component");
 		act1.setSymbolicDomain("A", "B", "C");
-//		act1.setSymbolicDomain("A");
 		Activity act2 = (Activity)solver.createVariable("Another Component");
 		act2.setSymbolicDomain("B", "C");
-//		act2.setSymbolicDomain("A");
 		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);
 		con1.setFrom(act1);
