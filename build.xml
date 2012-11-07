@@ -6,7 +6,8 @@
   <property name="lib" value="lib"/>
   <property name="build" value="build"/>
   <property name="dist" value="dist"/>
-  <property name="doc" value="doc"/>
+  <property name="doc-dir" value="doc"/>
+  <property name="doc-dir-google" value="/home/fpa/svnroot.google/meta-csp-doc"/>
   <property name="install-jre" value="${java.home}/lib/ext"/>
   <property name="targ" value="${ant.project.name}"/>
   <property environment="env"/>
@@ -63,10 +64,14 @@
       <fileset dir="${dist}" includes="**/*.jar"/>
     </delete>
   </target>
-
+  
   <!-- Make javadoc -->
+  <target name="publish-doc">
+    <javadoc sourcepath="${src}" destdir="${doc-dir-google}" classpathref="project.classpath" excludepackagenames="temporary"/>
+  </target>
+
   <target name="doc">
-    <javadoc sourcepath="${src}" destdir="${doc}" classpathref="project.classpath" excludepackagenames="temporary"/>
+    <javadoc sourcepath="${src}" destdir="${doc-dir}" classpathref="project.classpath" excludepackagenames="temporary"/>
   </target>
 
   <!-- Compile and make a JAR -->
