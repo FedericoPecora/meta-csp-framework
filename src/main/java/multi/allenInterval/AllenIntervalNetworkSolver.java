@@ -57,6 +57,11 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		return stpSolver.getDistanceBounds(stpSolver.getSource(), tpTo);
 	}
 	
+	public final double getRigidityNumber(){
+		final APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
+		return stpSolver.getRMSRigidity();
+	}
+	
 	/********************/
 
 	@Override

@@ -68,6 +68,10 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Time Point Counter
 	private int tpCounter = 0;
+	
+	
+	//rigidity matrix
+	private double[][] rigidity;
 
 	@Override
 	protected ConstraintNetwork createConstraintNetwork() {
@@ -108,6 +112,7 @@ public class APSPSolver extends ConstraintSolver {
 		this.MAX_TPS = maxTPs+2; //+2 To account for O and H
 		tPoints = new TimePoint[MAX_TPS];
 		distance = new long[MAX_TPS][MAX_TPS];
+		
 				
 		//Init
 		H = horizon;
@@ -954,6 +959,34 @@ public class APSPSolver extends ConstraintSolver {
 		//=================================================================
 		//End STP plotting
 		//=================================================================
+	}
+	/**
+	 * it compute the root mean square rigidity of a consistent STN, shows the inverse concept of flexibility of a STN 
+	 * @return root mean square rigidity of a consistent STN 
+	 */
+	public double getRMSRigidity(){
+		
+		rigidity = new double[MAX_TPS][MAX_TPS];
+		for (int i = 0; i < this.getVariables().length; i++) {
+			for (int j = 0; j < this.getVariables().length; j++) {
+				rigidity[i][j] = ((double)1 / ((double)(1 + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()] 
+						+ distance[this.getVariables()[j].getID()][this.getVariables()[i].getID()])));
+				//System.out.println(i + " " + j + " -> " + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()]);
+				//System.out.println(i + " " + j + " -> " + rigidity[i][j]);
+			}
+		}
+
+		double sigma = 0;
+		
+		
+		for (int i = 0; i < this.getVariables().length; i++) {
+			for (int j = i + 1; j < this.getVariables().length; j++) {
+				sigma += Math.pow(rigidity[i][j], 2.0);
+			}			
+		}
+		System.out.println("sigma:" + sigma);
+
+		return (double)1/(double)sigma;
 	}
 
 }
