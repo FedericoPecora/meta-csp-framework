@@ -1,6 +1,12 @@
 package spatial.rectangleAlgebra;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
+
+import framework.ConstraintNetwork;
+import framework.Variable;
 
 import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalConstraint;
@@ -26,7 +32,10 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	private Bounds xUB;
 	private Bounds yLB;
 	private Bounds yUB;
-
+	private boolean isInconsistent = false;
+	private Vector<AllenIntervalConstraint> xBinaryAllenConstraint;//it stands for RA relation in qualitative level in x dimension not At constraint which is a unary constraint at qualitative level 
+	private Vector<AllenIntervalConstraint> yBinaryAllenConstraint;//it stands for RA relation in qualitative level in y dimension not At constraint which is a unary constraint at qualitative level
+	private Vector<Variable> unaryCulprintVar;
 	
 	public AugmentedRectangleConstraintSolver() {
 		super();
@@ -59,12 +68,18 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		
 		AllenInterval[] intervalsx = (AllenInterval[])solverX.createVariables(consrels.size());
 		AllenInterval[] intervalsy = (AllenInterval[])solverY.createVariables(consrels.size());
+		
+		xBinaryAllenConstraint = new Vector<AllenIntervalConstraint>();
+		yBinaryAllenConstraint = new Vector<AllenIntervalConstraint>();
+		unaryCulprintVar = new Vector<Variable>();
 
 		Bounds xLB, xUB,yLB, yUB;
 		for (int i = 0; i < this.getVariables().length; i++) {
 			intervalsx[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 			intervalsy[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 			if(((RectangularRegion)this.getVariables()[i]).getBoundingbox() != null){
+				if(((RectangularRegion)this.getVariables()[i]).getName().compareTo("table1") != 0)
+					unaryCulprintVar.add(this.getVariables()[i]);
 				xLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB();
 				xUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB();
 				
@@ -99,8 +114,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				deadlineY.setTo(intervalsy[i]);
 				yAllenConstraint.add(deadlineY);
 			}
-			else{
-				
+			else{//for those which are unbounded
+				System.out.println(((RectangularRegion)this.getVariables()[i]).getName());
 				AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
 						new Bounds(0, APSPSolver.INF));
 				releaseX.setFrom(intervalsx[i]);
@@ -147,14 +162,17 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				btwintervalx.setFrom(intervalsx[i]);
 				btwintervalx.setTo(intervalsx[j]);
 				xAllenConstraint.add(btwintervalx);
+				xBinaryAllenConstraint.add(btwintervalx);
 				
 				AllenIntervalConstraint btwintervaly = new AllenIntervalConstraint(ytp.toArray(new AllenIntervalConstraint.Type[ytp.size()]));
 				btwintervaly.setFrom(intervalsy[i]);
 				btwintervaly.setTo(intervalsy[j]);
-				yAllenConstraint.add(btwintervaly);				
+				yAllenConstraint.add(btwintervaly);
+				yBinaryAllenConstraint.add(btwintervaly);
 			}
 		}
 		
+		//for bounded RA constraint
 		if(super.getBoundedConstraint() != null){
 			for (int i = 0; i < super.getBoundedConstraint().size(); i++) {
 				AllenIntervalConstraint boundedIntervalX = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintX().getType(), 
@@ -162,29 +180,35 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				boundedIntervalX.setFrom(intervalsx[super.getBoundedConstraint().get(i).getFrom().getID()]);
 				boundedIntervalX.setTo(intervalsx[super.getBoundedConstraint().get(i).getTo().getID()]);
 				xAllenConstraint.add(boundedIntervalX);
+				xBinaryAllenConstraint.add(boundedIntervalX);
 				
 				AllenIntervalConstraint boundedIntervalY = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintY().getType(), 
 						super.getBoundedConstraint().get(i).getBoundedConstraintY().getBounds());
 				boundedIntervalY.setFrom(intervalsy[super.getBoundedConstraint().get(i).getFrom().getID()]);
 				boundedIntervalY.setTo(intervalsy[super.getBoundedConstraint().get(i).getTo().getID()]);
 				yAllenConstraint.add(boundedIntervalY);
+				yBinaryAllenConstraint.add(boundedIntervalY);
 			}
 		}
+		
 		
 		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);	
 		if (!solverX.addConstraints(consX)) { 
 			System.out.println("Failed to add constraints in X dimension! ");
-			return false;
+			isInconsistent = true;
 			
 		}
 		//ConstraintNetwork.draw(solverX.getConstraintNetwork(), "X");
 		AllenIntervalConstraint[] consY = yAllenConstraint.toArray(new AllenIntervalConstraint[yAllenConstraint.size()]);
 		if (!solverY.addConstraints(consY)) { 
 			System.out.println("Failed to add constraints in Y dimension! ");
-			return false;
+			isInconsistent = true;
 		}
 		
 		
+		
+		if(isInconsistent)
+			return false;
 		
 		//ConstraintNetwork.draw(solverY.getConstraintNetwork(), "Y"); 		
 		return true;
@@ -276,56 +300,119 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		return ret;
 	}
 	
-//	public void getCentredBoundingRectangle(String name){
-//		
-//		extractBoundingBoxesFromSTPs(name);
-//		
-//
-//		Point cmExRec = getExtremeRectangleCM1();
-//		Point cmUpTri = getUpperTriangleCM(name);
-//		//Point cmLowTri = getLowerTriangleCM(name);
-//
-////		Point cmExRec = getExtremeRectangleCM();
-////		Point cmUpTri = getUpperTriangleCM();
-////		Point cmLowTri = getLowerTriangleCM();
-//
-//	
-//	}
-//
-//
-//	private Point getLowerTriangleCM(String name, Dimension dim) {
-//		getDurationConstraintByVariableName(name, dim).
-//		double x, y;
-//		if(dim == Dimension.X){
-//			x = (2/3 * (xLB.max - (xUB.min - dl)) + (xUB.min - dl));
-//		}
-//		
-//		return null;
-//	}
-//
-//	private Point getUpperTriangleCM(String name) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	private Point getExtremeRectangleCM1() {
-//		return new Point(xLB.max - xLB.min, xUB.max - xUB.min);
-//	}
-//
-//	private Point getLowerTriangleCM() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	private Point getUpperTriangleCM() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	private Point getExtremeRectangleCM() {
-//		return new Point(xLB.max - xLB.min, xUB.max - xUB.min);
-//	}
 
+	public void culpritDetector(){
+		
+		HashMap<RectangularRegion, Double> rigidityHuristic = new HashMap<RectangularRegion, Double>();
+		//culprit set with cardinality one (at constraint)
+		for (int u = 0; u < unaryCulprintVar.size(); u++) {
+			
+			AllenIntervalNetworkSolver tmpSolverX = new AllenIntervalNetworkSolver(0, horizon);
+			AllenIntervalNetworkSolver tmpSolverY = new AllenIntervalNetworkSolver(0, horizon);
+
+			
+			Vector<AllenIntervalConstraint> xAllenConstraint = new Vector<AllenIntervalConstraint>();
+			Vector<AllenIntervalConstraint> yAllenConstraint = new Vector<AllenIntervalConstraint>();
+			
+			AllenInterval[] intervalsx = (AllenInterval[])tmpSolverX.createVariables(super.getCompleteRARelations().size());
+			AllenInterval[] intervalsy = (AllenInterval[])tmpSolverY.createVariables(super.getCompleteRARelations().size());
+			
+			Bounds xLB, xUB,yLB, yUB;
+			for (int i = 0; i < this.getVariables().length; i++) {
+				intervalsx[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
+				intervalsy[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
+				if(((RectangularRegion)this.getVariables()[i]).getBoundingbox() != null && 
+						((RectangularRegion)this.getVariables()[i]).getID() !=  unaryCulprintVar.get(u).getID())
+				{
+					xLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB();
+					xUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB();
+					
+					yLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyLB();
+					yUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyUB();
+		
+
+					
+					AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
+							xLB);
+					releaseX.setFrom(intervalsx[i]);
+					releaseX.setTo(intervalsx[i]);
+					xAllenConstraint.add(releaseX);
+					
+					AllenIntervalConstraint deadlineX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, 
+							xUB);
+					deadlineX.setFrom(intervalsx[i]);
+					deadlineX.setTo(intervalsx[i]);
+					xAllenConstraint.add(deadlineX);
+					
+					
+					AllenIntervalConstraint releaseY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
+							yLB);
+					releaseY.setFrom(intervalsy[i]);
+					releaseY.setTo(intervalsy[i]);
+					yAllenConstraint.add(releaseY);
+					
+					
+					AllenIntervalConstraint deadlineY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, 
+							yUB);
+					deadlineY.setFrom(intervalsy[i]);
+					deadlineY.setTo(intervalsy[i]);
+					yAllenConstraint.add(deadlineY);
+				}
+				else{//for those which are unbounded
+					
+					AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
+							new Bounds(0, APSPSolver.INF));
+					releaseX.setFrom(intervalsx[i]);
+					releaseX.setTo(intervalsx[i]);
+					xAllenConstraint.add(releaseX);
+					
+					AllenIntervalConstraint deadlineX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, 
+							new Bounds(0, APSPSolver.INF));
+					deadlineX.setFrom(intervalsx[i]);
+					deadlineX.setTo(intervalsx[i]);
+					xAllenConstraint.add(deadlineX);
+					
+					
+					AllenIntervalConstraint releaseY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
+							new Bounds(0, APSPSolver.INF));
+					releaseY.setFrom(intervalsy[i]);
+					releaseY.setTo(intervalsy[i]);
+					yAllenConstraint.add(releaseY);
+					
+					AllenIntervalConstraint deadlineY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, 
+							new Bounds(0, APSPSolver.INF));
+					deadlineY.setFrom(intervalsy[i]);
+					deadlineY.setTo(intervalsy[i]);
+					yAllenConstraint.add(deadlineY);
+				}
+			}//end of loop for variables
+			
+			//add binary variables
+			for (int j = 0; j < xBinaryAllenConstraint.size(); j++) {
+				xAllenConstraint.add(xBinaryAllenConstraint.get(j));
+			}
+			for (int j = 0; j < yBinaryAllenConstraint.size(); j++) {
+				yAllenConstraint.add(yBinaryAllenConstraint.get(j));
+			}
+
+			//check whether they are consistent then measureRigidity and save rigidity with respect to rectangle  
+			AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
+			AllenIntervalConstraint[] consY = yAllenConstraint.toArray(new AllenIntervalConstraint[yAllenConstraint.size()]);
+			if (tmpSolverX.addConstraints(consX) && tmpSolverY.addConstraints(consY)) {
+				double avg = ((double)(tmpSolverX.getRigidityNumber()));
+				rigidityHuristic.put((RectangularRegion)unaryCulprintVar.get(u), 
+						avg);
+			}
+			
+		}//end of loop for unary culprit
+		
+		 Iterator it = rigidityHuristic.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)it.next();
+		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		        it.remove(); // avoids a ConcurrentModificationException
+		    }
+	}
 	
 	
 

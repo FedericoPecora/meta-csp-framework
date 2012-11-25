@@ -9,6 +9,13 @@ public class BoundingBox {
 	private Bounds xLB, xUB, yLB, yUB;
 	private String name = "";
 	
+	/**
+	 * 
+	 * @param xLB
+	 * @param xUB
+	 * @param yLB
+	 * @param yUB
+	 */
 	public BoundingBox(Bounds xLB, Bounds xUB, Bounds yLB, Bounds yUB){
 		
 		this.xLB = xLB;
