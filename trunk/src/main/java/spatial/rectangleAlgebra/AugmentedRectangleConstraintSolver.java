@@ -33,9 +33,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	private Bounds yLB;
 	private Bounds yUB;
 	private boolean isInconsistent = false;
-	private Vector<AllenIntervalConstraint> xBinaryAllenConstraint;//it stands for RA relation in qualitative level in x dimension not At constraint which is a unary constraint at qualitative level 
-	private Vector<AllenIntervalConstraint> yBinaryAllenConstraint;//it stands for RA relation in qualitative level in y dimension not At constraint which is a unary constraint at qualitative level
-	private Vector<Variable> unaryCulprintVar;
+	private Vector<Variable> unaryCulpritVar;
 	
 	public AugmentedRectangleConstraintSolver() {
 		super();
@@ -69,24 +67,23 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		AllenInterval[] intervalsx = (AllenInterval[])solverX.createVariables(consrels.size());
 		AllenInterval[] intervalsy = (AllenInterval[])solverY.createVariables(consrels.size());
 		
-		xBinaryAllenConstraint = new Vector<AllenIntervalConstraint>();
-		yBinaryAllenConstraint = new Vector<AllenIntervalConstraint>();
-		unaryCulprintVar = new Vector<Variable>();
+		unaryCulpritVar = new Vector<Variable>();
 
 		Bounds xLB, xUB,yLB, yUB;
 		for (int i = 0; i < this.getVariables().length; i++) {
 			intervalsx[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 			intervalsy[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 			if(((RectangularRegion)this.getVariables()[i]).getBoundingbox() != null){
-				if(((RectangularRegion)this.getVariables()[i]).getName().compareTo("table1") != 0)
-					unaryCulprintVar.add(this.getVariables()[i]);
+				
+				if(((RectangularRegion)this.getVariables()[i]).getName().compareTo("table1") != 0 && ((RectangularRegion)this.getVariables()[i]).getName().compareTo("dish1") != 0)
+					unaryCulpritVar.add(this.getVariables()[i]);
+				
 				xLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB();
 				xUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB();
 				
 				yLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyLB();
 				yUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyUB();
 	
-
 				
 				AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
 						xLB);
@@ -115,7 +112,6 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				yAllenConstraint.add(deadlineY);
 			}
 			else{//for those which are unbounded
-				System.out.println(((RectangularRegion)this.getVariables()[i]).getName());
 				AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
 						new Bounds(0, APSPSolver.INF));
 				releaseX.setFrom(intervalsx[i]);
@@ -143,54 +139,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			}
 		}
 		
-		for (int i = 0; i < consrels.size(); i++) {
-			for (int j = i + 1; j < consrels.size(); j++) {
-				
-				//create convexity
-				TwoDimensionsAllenConstraint[] convex2DAllen = RectangleConstraint.getRAConvexClosure(consrels.get(i).get(j).getTypes());
-				
-				Vector<AllenIntervalConstraint.Type> xtp = new Vector<AllenIntervalConstraint.Type>(); 
-				Vector<AllenIntervalConstraint.Type> ytp = new Vector<AllenIntervalConstraint.Type>();
-				for (int j2 = 0; j2 < convex2DAllen.length; j2++) {
-					if(!xtp.contains(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[0].name())))
-						xtp.add(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[0].name()));
-					if(!ytp.contains(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[1].name())))
-						ytp.add(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[1].name()));
-				}
-				
-				AllenIntervalConstraint btwintervalx = new AllenIntervalConstraint(xtp.toArray(new AllenIntervalConstraint.Type[xtp.size()]));
-				btwintervalx.setFrom(intervalsx[i]);
-				btwintervalx.setTo(intervalsx[j]);
-				xAllenConstraint.add(btwintervalx);
-				xBinaryAllenConstraint.add(btwintervalx);
-				
-				AllenIntervalConstraint btwintervaly = new AllenIntervalConstraint(ytp.toArray(new AllenIntervalConstraint.Type[ytp.size()]));
-				btwintervaly.setFrom(intervalsy[i]);
-				btwintervaly.setTo(intervalsy[j]);
-				yAllenConstraint.add(btwintervaly);
-				yBinaryAllenConstraint.add(btwintervaly);
-			}
-		}
-		
+		convertUnboundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, consrels);
 		//for bounded RA constraint
-		if(super.getBoundedConstraint() != null){
-			for (int i = 0; i < super.getBoundedConstraint().size(); i++) {
-				AllenIntervalConstraint boundedIntervalX = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintX().getType(), 
-						super.getBoundedConstraint().get(i).getBoundedConstraintX().getBounds());
-				boundedIntervalX.setFrom(intervalsx[super.getBoundedConstraint().get(i).getFrom().getID()]);
-				boundedIntervalX.setTo(intervalsx[super.getBoundedConstraint().get(i).getTo().getID()]);
-				xAllenConstraint.add(boundedIntervalX);
-				xBinaryAllenConstraint.add(boundedIntervalX);
-				
-				AllenIntervalConstraint boundedIntervalY = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintY().getType(), 
-						super.getBoundedConstraint().get(i).getBoundedConstraintY().getBounds());
-				boundedIntervalY.setFrom(intervalsy[super.getBoundedConstraint().get(i).getFrom().getID()]);
-				boundedIntervalY.setTo(intervalsy[super.getBoundedConstraint().get(i).getTo().getID()]);
-				yAllenConstraint.add(boundedIntervalY);
-				yBinaryAllenConstraint.add(boundedIntervalY);
-			}
-		}
-		
+		convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
 		
 		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);	
 		if (!solverX.addConstraints(consX)) { 
@@ -215,6 +166,66 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		
 	}
 	
+	private void convertBoundedRAConstraints(
+			Vector<AllenIntervalConstraint> xAllenConstraint, Vector<AllenIntervalConstraint> yAllenConstraint,
+			AllenInterval[] intervalsx, AllenInterval[] intervalsy, Vector<AugmentedRectangleConstraint> boundedConstraint) {
+		
+		if(super.getBoundedConstraint() != null){
+			for (int i = 0; i < super.getBoundedConstraint().size(); i++) {
+				AllenIntervalConstraint boundedIntervalX = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintX().getType(), 
+						super.getBoundedConstraint().get(i).getBoundedConstraintX().getBounds());
+				boundedIntervalX.setFrom(intervalsx[super.getBoundedConstraint().get(i).getFrom().getID()]);
+				boundedIntervalX.setTo(intervalsx[super.getBoundedConstraint().get(i).getTo().getID()]);
+				xAllenConstraint.add(boundedIntervalX);
+				
+				
+				AllenIntervalConstraint boundedIntervalY = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintY().getType(), 
+						super.getBoundedConstraint().get(i).getBoundedConstraintY().getBounds());
+				boundedIntervalY.setFrom(intervalsy[super.getBoundedConstraint().get(i).getFrom().getID()]);
+				boundedIntervalY.setTo(intervalsy[super.getBoundedConstraint().get(i).getTo().getID()]);
+				yAllenConstraint.add(boundedIntervalY);
+				
+			}
+		}
+		
+		
+	}
+
+	private void convertUnboundedRAConstraints(Vector<AllenIntervalConstraint> xAllenConstraint, Vector<AllenIntervalConstraint> yAllenConstraint,
+			AllenInterval[] intervalsx, AllenInterval[] intervalsy, Vector<Vector<RectangleConstraint>> consrels) {
+		
+		
+		for (int i = 0; i < consrels.size(); i++) {
+			for (int j = i + 1; j < consrels.size(); j++) {
+				
+				//create convexity
+				TwoDimensionsAllenConstraint[] convex2DAllen = RectangleConstraint.getRAConvexClosure(consrels.get(i).get(j).getTypes());
+				
+				Vector<AllenIntervalConstraint.Type> xtp = new Vector<AllenIntervalConstraint.Type>(); 
+				Vector<AllenIntervalConstraint.Type> ytp = new Vector<AllenIntervalConstraint.Type>();
+				for (int j2 = 0; j2 < convex2DAllen.length; j2++) {
+					if(!xtp.contains(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[0].name())))
+						xtp.add(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[0].name()));
+					if(!ytp.contains(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[1].name())))
+						ytp.add(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[1].name()));
+				}
+				
+				AllenIntervalConstraint btwintervalx = new AllenIntervalConstraint(xtp.toArray(new AllenIntervalConstraint.Type[xtp.size()]));
+				btwintervalx.setFrom(intervalsx[i]);
+				btwintervalx.setTo(intervalsx[j]);
+				xAllenConstraint.add(btwintervalx);
+				
+				
+				AllenIntervalConstraint btwintervaly = new AllenIntervalConstraint(ytp.toArray(new AllenIntervalConstraint.Type[ytp.size()]));
+				btwintervaly.setFrom(intervalsy[i]);
+				btwintervaly.setTo(intervalsy[j]);
+				yAllenConstraint.add(btwintervaly);
+				
+			}
+		}
+		
+	}
+
 	/**
 	 *  it computes a bounding box which with two bounds on both sides resulted from 2 extreme bounded 2D STP solution 
 	 * @param name of the rectangle region
@@ -303,9 +314,10 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 	public void culpritDetector(){
 		
+		System.out.println(unaryCulpritVar.size());
 		HashMap<RectangularRegion, Double> rigidityHuristic = new HashMap<RectangularRegion, Double>();
 		//culprit set with cardinality one (at constraint)
-		for (int u = 0; u < unaryCulprintVar.size(); u++) {
+		for (int u = 0; u < unaryCulpritVar.size(); u++) {
 			
 			AllenIntervalNetworkSolver tmpSolverX = new AllenIntervalNetworkSolver(0, horizon);
 			AllenIntervalNetworkSolver tmpSolverY = new AllenIntervalNetworkSolver(0, horizon);
@@ -322,8 +334,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				intervalsx[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 				intervalsy[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 				if(((RectangularRegion)this.getVariables()[i]).getBoundingbox() != null && 
-						((RectangularRegion)this.getVariables()[i]).getID() !=  unaryCulprintVar.get(u).getID())
+						((RectangularRegion)this.getVariables()[i]).getID() !=  unaryCulpritVar.get(u).getID())
 				{
+					System.out.println("if: " + ((RectangularRegion)this.getVariables()[i]).getName() );
 					xLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB();
 					xUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB();
 					
@@ -359,7 +372,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 					yAllenConstraint.add(deadlineY);
 				}
 				else{//for those which are unbounded
-					
+					System.out.println("else: " + ((RectangularRegion)this.getVariables()[i]).getName() );
 					AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
 							new Bounds(0, APSPSolver.INF));
 					releaseX.setFrom(intervalsx[i]);
@@ -388,22 +401,30 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			}//end of loop for variables
 			
 			//add binary variables
-			for (int j = 0; j < xBinaryAllenConstraint.size(); j++) {
-				xAllenConstraint.add(xBinaryAllenConstraint.get(j));
-			}
-			for (int j = 0; j < yBinaryAllenConstraint.size(); j++) {
-				yAllenConstraint.add(yBinaryAllenConstraint.get(j));
-			}
+//			for (int j = 0; j < xBinaryAllenConstraint.size(); j++) 
+//				xAllenConstraint.add(xBinaryAllenConstraint.get(j));
+//			
+//			for (int j = 0; j < yBinaryAllenConstraint.size(); j++) 
+//				yAllenConstraint.add(yBinaryAllenConstraint.get(j));
+			
+			convertUnboundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getCompleteRARelations());
+			//for bounded RA constraint
+			convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
+
+			
 
 			//check whether they are consistent then measureRigidity and save rigidity with respect to rectangle  
 			AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
 			AllenIntervalConstraint[] consY = yAllenConstraint.toArray(new AllenIntervalConstraint[yAllenConstraint.size()]);
 			if (tmpSolverX.addConstraints(consX) && tmpSolverY.addConstraints(consY)) {
 				double avg = ((double)(tmpSolverX.getRigidityNumber()));
-				rigidityHuristic.put((RectangularRegion)unaryCulprintVar.get(u), 
+				rigidityHuristic.put((RectangularRegion)unaryCulpritVar.get(u), 
 						avg);
 			}
-			
+			else{
+				System.out.println("it is not propagated" + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
+			}
+			System.out.println(".....................................................................");
 		}//end of loop for unary culprit
 		
 		 Iterator it = rigidityHuristic.entrySet().iterator();

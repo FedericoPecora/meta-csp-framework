@@ -977,16 +977,12 @@ public class APSPSolver extends ConstraintSolver {
 		}
 
 		double sigma = 0;
-		
-		
 		for (int i = 0; i < this.getVariables().length; i++) {
 			for (int j = i + 1; j < this.getVariables().length; j++) {
 				sigma += Math.pow(rigidity[i][j], 2.0);
 			}			
 		}
-		System.out.println("sigma:" + sigma);
-
-		return (double)1/(double)sigma;
+		return ((double)1/(double)sigma);
 	}
 
 }
