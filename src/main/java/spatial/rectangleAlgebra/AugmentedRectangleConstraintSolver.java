@@ -417,12 +417,13 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
 			AllenIntervalConstraint[] consY = yAllenConstraint.toArray(new AllenIntervalConstraint[yAllenConstraint.size()]);
 			if (tmpSolverX.addConstraints(consX) && tmpSolverY.addConstraints(consY)) {
+				System.out.println(((RectangularRegion)unaryCulpritVar.get(u)).getName() + "---" + tmpSolverX);
 				double avg = ((double)(tmpSolverX.getRigidityNumber()));
 				rigidityHuristic.put((RectangularRegion)unaryCulpritVar.get(u), 
 						avg);
 			}
 			else{
-				System.out.println("it is not propagated" + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
+				System.out.println("it is not propagated " + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
 			}
 			System.out.println(".....................................................................");
 		}//end of loop for unary culprit

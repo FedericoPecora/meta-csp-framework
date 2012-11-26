@@ -71,7 +71,7 @@ public class APSPSolver extends ConstraintSolver {
 	
 	
 	//rigidity matrix
-	private double[][] rigidity;
+	private double[] rigidity;
 
 	@Override
 	protected ConstraintNetwork createConstraintNetwork() {
@@ -966,23 +966,21 @@ public class APSPSolver extends ConstraintSolver {
 	 */
 	public double getRMSRigidity(){
 		
-		rigidity = new double[MAX_TPS][MAX_TPS];
+		rigidity = new double[this.getVariables().length];
 		for (int i = 0; i < this.getVariables().length; i++) {
-			for (int j = 0; j < this.getVariables().length; j++) {
-				rigidity[i][j] = ((double)1 / ((double)(1 + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()] 
-						+ distance[this.getVariables()[j].getID()][this.getVariables()[i].getID()])));
+				rigidity[i] = (
+						((double)1 / 
+						((double)(1 + ((TimePoint)this.getVariables()[i]).getUpperBound() - ((TimePoint)this.getVariables()[i]).getLowerBound()))
+						));
 				//System.out.println(i + " " + j + " -> " + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()]);
 				//System.out.println(i + " " + j + " -> " + rigidity[i][j]);
-			}
 		}
-
 		double sigma = 0;
 		for (int i = 0; i < this.getVariables().length; i++) {
-			for (int j = i + 1; j < this.getVariables().length; j++) {
-				sigma += Math.pow(rigidity[i][j], 2.0);
+				sigma += Math.pow(rigidity[i], 2.0);
 			}			
-		}
-		return ((double)1/(double)sigma);
+		
+		return ((double)sigma);
 	}
 
 }
