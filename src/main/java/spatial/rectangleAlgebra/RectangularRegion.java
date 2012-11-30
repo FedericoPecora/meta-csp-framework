@@ -16,6 +16,7 @@ public class RectangularRegion extends Region{
 	private Domain dom;
 	private BoundingBox boundingbox;
 	private String name = "";
+	private OntologicalSpatialProperty ontologicalProp = null;
 	
 	protected RectangularRegion(ConstraintSolver cs, int id) {
 		super(cs, id);
@@ -67,6 +68,16 @@ public class RectangularRegion extends Region{
 	public Domain getDomain() {
 		// TODO Auto-generated method stub
 		return dom;
+	}
+	
+	public OntologicalSpatialProperty getOntologicalProp() {
+		if(ontologicalProp == null)
+			return new OntologicalSpatialProperty();
+		return ontologicalProp;
+	}
+	
+	public void setOntologicalProp(OntologicalSpatialProperty ontologicalProp) {
+		this.ontologicalProp = ontologicalProp;
 	}
 
 }
