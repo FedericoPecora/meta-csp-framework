@@ -2,6 +2,7 @@ package spatial.rectangleAlgebra;
 
 public class SpatialAssertionalRelation extends AssertionalRelation{
 
+	OntologicalSpatialProperty ontologicalProp;
 	BoundingBox boundingBox;
 	public SpatialAssertionalRelation(String from, String to) {
 		super(from, to);
@@ -14,6 +15,15 @@ public class SpatialAssertionalRelation extends AssertionalRelation{
 	
 	public BoundingBox getCoordinate(){
 		return this.boundingBox;
+	}
+	
+	
+	public void setOntologicalProp(OntologicalSpatialProperty ontologicalProp) {
+		this.ontologicalProp = ontologicalProp;
+	}
+	
+	public OntologicalSpatialProperty getOntologicalProp() {
+		return ontologicalProp;
 	}
 
 }
