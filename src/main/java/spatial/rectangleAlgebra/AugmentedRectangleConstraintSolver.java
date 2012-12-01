@@ -141,10 +141,12 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				yAllenConstraint.add(deadlineY);
 			}
 		}
-
+		
+		
 		convertUnboundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, consrels);
 		//for bounded RA constraint
 		convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
+		
 
 		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);	
 		if (!solverX.addConstraints(consX)) { 
@@ -203,8 +205,6 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 			}
 		}
-
-
 	}
 
 	private void convertUnboundedRAConstraints(Vector<AllenIntervalConstraint> xAllenConstraint, Vector<AllenIntervalConstraint> yAllenConstraint,
@@ -231,7 +231,6 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				btwintervalx.setTo(intervalsx[j]);
 				xAllenConstraint.add(btwintervalx);
 
-
 				AllenIntervalConstraint btwintervaly = new AllenIntervalConstraint(ytp.toArray(new AllenIntervalConstraint.Type[ytp.size()]));
 				btwintervaly.setFrom(intervalsy[i]);
 				btwintervaly.setTo(intervalsy[j]);
@@ -241,6 +240,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		}
 
 	}
+	
 
 	/**
 	 *  it computes a bounding box which with two bounds on both sides resulted from 2 extreme bounded 2D STP solution 
