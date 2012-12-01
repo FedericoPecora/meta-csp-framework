@@ -7,7 +7,7 @@
   <property name="build" value="build"/>
   <property name="dist" value="dist"/>
   <property name="doc-dir" value="doc"/>
-  <property name="doc-dir-google" value="/home/fpa/svnroot.google/meta-csp-doc"/>
+  <property name="doc-dir-google" value="/home/fpa/svnroot.google/doc"/>
   <property name="install-jre" value="${java.home}/lib/ext"/>
   <property name="targ" value="${ant.project.name}"/>
   <property environment="env"/>

@@ -67,6 +67,7 @@ public class TestAPSPSolver {
 		
 		while (true) {
 			solver.addConstraint(con5);
+			System.out.println("Rigidity: " + solver.getRMSRigidity());
 			
 			try {
 				Thread.sleep(2000);
@@ -76,6 +77,7 @@ public class TestAPSPSolver {
 			}
 			
 			solver.removeConstraint(con2);
+			System.out.println("Rigidity: " + solver.getRMSRigidity());
 			
 			try {
 				Thread.sleep(2000);
@@ -84,6 +86,7 @@ public class TestAPSPSolver {
 				e.printStackTrace();
 			}
 			solver.removeConstraint(con5);
+			System.out.println("Rigidity: " + solver.getRMSRigidity());
 	
 			try {
 				Thread.sleep(2000);
@@ -93,6 +96,7 @@ public class TestAPSPSolver {
 			}
 	
 			solver.addConstraint(con2);
+			System.out.println("Rigidity: " + solver.getRMSRigidity());
 			
 			try {
 				Thread.sleep(2000);
