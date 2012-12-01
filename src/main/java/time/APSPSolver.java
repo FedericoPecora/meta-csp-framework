@@ -3,6 +3,7 @@ package time;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Toolkit;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -765,8 +766,10 @@ public class APSPSolver extends ConstraintSolver {
 		if (con instanceof SimpleDistanceConstraint) {
 			SimpleDistanceConstraint c = (SimpleDistanceConstraint)con;
 			Bounds interval = new Bounds(c.getMinimum(),c.getMaximum());
+			logger.finest("Trying to add constraint " + con + "...");
 			return cCreate(interval,((TimePoint)c.getFrom()).getID(),((TimePoint)c.getTo()).getID());
 		}
+		logger.finest("Failed to add constraint " + con);
 		return false;
 	}
 
@@ -787,6 +790,7 @@ public class APSPSolver extends ConstraintSolver {
 			}
 		}
 
+		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
 		return cCreate(tot,from,to);
 	}
 	

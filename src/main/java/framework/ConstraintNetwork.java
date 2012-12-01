@@ -131,7 +131,7 @@ public abstract class ConstraintNetwork implements Serializable{
 		if (c instanceof BinaryConstraint) {
 			for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
 			BinaryConstraint bc = (BinaryConstraint)c;
-			this.graph.addEdge(bc, bc.getFrom(), bc.getTo());
+					this.graph.addEdge(bc, bc.getFrom(), bc.getTo());
 			logger.finest("Added constraint " + c);
 		}	
 		else if (c instanceof MultiBinaryConstraint) {

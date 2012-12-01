@@ -139,48 +139,51 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @return <code>true</code> iff the constraint was added successfully.
 	 */
 	public final boolean addConstraint(Constraint c) {
-		if (c == null) return true;		
-		if (isCompatible(c)) {
-			/**/
-			// if we are in presence of a multi constraint, i.e. a constraint which entails multiple constraints...
-			if (c instanceof MultiConstraint) {
-				// MC: our current MultiConstraint
-				MultiConstraint mc = (MultiConstraint)c;
-				// MV: our source node which the MC refers to
-				MultiVariable mv = (MultiVariable)mc.getScope()[0];
-				
-				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-					boolean prop = false;
-					if (mc.propagateImmediately() && cs.addConstraints(mc.getInternalConstraints())) {
-						prop = true;
-					}
-					if (!prop && !((MultiConstraintSolver)mc.getScope()[0].getConstraintSolver()).getOption(MultiConstraintSolver.OPTIONS.ALLOW_INCONSISTENCIES)) {
-						return false;
-					}
-				}
-			}/**/
-			if (addConstraintSub(c)) {
-				this.theNetwork.addConstraint(c);
-				if (autoprop && checkDomainsInstantiated()) { 
-					if (this.propagate()) {
-						logger.finest("Added constraint " + c);
-						return true;
-					}
-					logger.finest("Failed to add constraint " + c);
-					this.theNetwork.removeConstraint(c);
-				}
-				else {
-					logger.finest("Added constraint " + c);
-					return true;
-				}
-			}	
-			/**/
-			if (autoprop && checkDomainsInstantiated()) 
-				this.propagate();
-			return false;
-		}
-		return true;
+		 return this.addConstraints(c);
 	}
+//	public final boolean addConstraint(Constraint c) {
+//		if (c == null) return true;		
+//		if (isCompatible(c)) {
+//			/**/
+//			// if we are in presence of a multi constraint, i.e. a constraint which entails multiple constraints...
+//			if (c instanceof MultiConstraint) {
+//				// MC: our current MultiConstraint
+//				MultiConstraint mc = (MultiConstraint)c;
+//				// MV: our source node which the MC refers to
+//				MultiVariable mv = (MultiVariable)mc.getScope()[0];
+//				
+//				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
+//					boolean prop = false;
+//					if (mc.propagateImmediately() && cs.addConstraints(mc.getInternalConstraints())) {
+//						prop = true;
+//					}
+//					if (!prop && !((MultiConstraintSolver)mc.getScope()[0].getConstraintSolver()).getOption(MultiConstraintSolver.OPTIONS.ALLOW_INCONSISTENCIES)) {
+//						return false;
+//					}
+//				}
+//			}/**/
+//			if (addConstraintSub(c)) {
+//				this.theNetwork.addConstraint(c);
+//				if (autoprop && checkDomainsInstantiated()) { 
+//					if (this.propagate()) {
+//						logger.finest("Added constraint " + c);
+//						return true;
+//					}
+//					logger.finest("Failed to add constraint " + c);
+//					this.theNetwork.removeConstraint(c);
+//				}
+//				else {
+//					logger.finest("Added constraint " + c);
+//					return true;
+//				}
+//			}	
+//			/**/
+//			if (autoprop && checkDomainsInstantiated()) 
+//				this.propagate();
+//			return false;
+//		}
+//		return true;
+//	}
 	
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
@@ -226,7 +229,7 @@ public abstract class ConstraintSolver implements Serializable {
 			return true;
 		}
 		
-		if (c.length == 1) return this.addConstraint(c[0]);
+		//if (c.length == 1) return this.addConstraint(c[0]);
 		
 		ArrayList<MultiConstraint> added = new ArrayList<MultiConstraint>(c.length);
 		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
