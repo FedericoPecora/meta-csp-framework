@@ -53,6 +53,15 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return ret;
 	}
 	
+	
+	/**
+	 * Get the rigidity number belonging to the  underlaying AllenIntervalNetworkSolver that in turn exploits an APSP solver
+	 * @param selectedVariableNames Only variable/components in this {@link Vector} will be plotted 
+	 */
+	public double getRigidityNumber(){
+		return (((AllenIntervalNetworkSolver) (this.constraintSolvers[0]))).getRigidityNumber();
+	}
+	
 	/**
 	 * Draw all activities on Gantt chart 
 	 */
