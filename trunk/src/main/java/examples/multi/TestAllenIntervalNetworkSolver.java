@@ -25,19 +25,15 @@ public class TestAllenIntervalNetworkSolver {
 		//DRAW IT!
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
-		AllenIntervalConstraint con1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(10, 20));
+		AllenIntervalConstraint con1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds());
 		con1.setFrom(intervals[0]);
 		con1.setTo(intervals[1]);
+		
+		AllenIntervalConstraint con2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(30, 40));
+		con2.setFrom(intervals[0]);
+		con2.setTo(intervals[0]);
 
-		AllenIntervalConstraint con2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(10, 20));
-		con2.setFrom(intervals[1]);
-		con2.setTo(intervals[2]);
-		
-		AllenIntervalConstraint con3 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.After.getDefaultBounds());
-		con3.setFrom(intervals[2]);
-		con3.setTo(intervals[0]);
-		
-		Constraint[] cons = new Constraint[]{con1,con2,con3};
+		Constraint[] cons = new Constraint[]{con1,con2};
 		System.out.println(solver.addConstraintsDebug(cons) == null);
 
 

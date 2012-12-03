@@ -965,9 +965,9 @@ public class APSPSolver extends ConstraintSolver {
 		//=================================================================
 	}
 	/**
-	 * This method compute the root mean square rigidity of a consistent STN (the inverse concept of flexibility of a STN).
-	 * If the STN is completely rigid, then its rigidity is 1. If the STN has absolutely no constraints, its rigidity is 0.
-	 * This Measurement in proposed in [Luke Hunsberger, 2002] 
+	 * This method computes the root mean square rigidity of a consistent STN (the inverse concept of flexibility of a STN).
+	 * If the STN is completely rigid, then its rigidity is 1. If the STN has no constraints, its rigidity is 0.
+	 * This measure in proposed in [Luke Hunsberger, 2002]. 
 	 * @return Root mean square rigidity of a consistent STN.
 	 */
 	public double getRMSRigidity(){

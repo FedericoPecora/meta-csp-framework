@@ -46,7 +46,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS [sl,su] [el,eu] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/contains.png> 
 		 */
-		Contains(0L, APSPSolver.INF,   0L, APSPSolver.INF),
+		Contains(1L, APSPSolver.INF,   1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/startedby.png> 
@@ -66,7 +66,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING [sl,su] [el,eu] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/during.png> 
 		 */
-		During(0L, APSPSolver.INF,   0L, APSPSolver.INF),
+		During(1L, APSPSolver.INF,   1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/finishes.png> 
