@@ -332,7 +332,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 
 	public BoundingBox[] minimalCulpritDetector(){
-
+		
+		
 		HashMap<RectangularRegion, HashMap<RectangularRegion, BoundingBox>> bestMoveCandidates = new HashMap<RectangularRegion, HashMap<RectangularRegion,BoundingBox>>(); 
 		HashMap<RectangularRegion, Double> rigidityHuristic = new HashMap<RectangularRegion, Double>();
 		//culprit set with cardinality one (at constraint)
@@ -458,11 +459,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 //		} 
 
 		Iterator i = as.iterator();  
-		System.out.println( ((Map.Entry)i.next()).getKey() );  
+		//System.out.println( ((Map.Entry)i.next()).getKey() );  
 		System.out.println(bestMoveCandidates.get((RectangularRegion)((Map.Entry)i.next()).getKey()));
-
-
-
 
 		return null;
 	}
