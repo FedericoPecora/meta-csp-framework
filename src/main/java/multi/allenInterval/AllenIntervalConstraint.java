@@ -36,7 +36,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/overlaps.png> 
 		 */
-		Overlaps(0L, APSPSolver.INF),
+		Overlaps(1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/finishedby.png> 
@@ -76,7 +76,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/overlappedby.png> 
 		 */
-		OverlappedBy(0L, APSPSolver.INF),
+		OverlappedBy(1L, APSPSolver.INF),
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/after.png> 
 		 */
@@ -545,7 +545,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				first.setMaximum(APSPSolver.INF);
 				first.setFrom(fs);
 				first.setTo(ts);
-				second.setMinimum(bounds[0].min+1);
+				second.setMinimum(bounds[0].min);
 				second.setMaximum(bounds[0].max);
 				second.setFrom(ts);
 				second.setTo(fe);
@@ -570,7 +570,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				first.setMaximum(APSPSolver.INF);
 				first.setFrom(ts);
 				first.setTo(fs);
-				second.setMinimum(bounds[0].min+1);
+				second.setMinimum(bounds[0].min);
 				second.setMaximum(bounds[0].max);
 				second.setFrom(fs);
 				second.setTo(te);
