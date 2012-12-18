@@ -298,7 +298,8 @@ public abstract class ConstraintSolver implements Serializable {
 				return false;
 			}
 		}
-		if (addConstraintsSub(toAddArray)) {
+		if ((toAddArray.length == 1 && addConstraintSub(toAddArray[0])) || (toAddArray.length > 1 && addConstraintsSub(toAddArray))) {			
+		//if (addConstraintsSub(toAddArray)) {
 			for (Constraint con : toAddArray) this.theNetwork.addConstraint(con);
 			if (autoprop && checkDomainsInstantiated()) { 
 				if (this.propagate()) {
