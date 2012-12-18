@@ -60,6 +60,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	private boolean breakSearch = false;
 	private HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
 	private long animationTime = 0;
+	private int counterMoves;
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
@@ -106,6 +107,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.animationTime = animationTime;
 		this.resolvers = new HashMap<ConstraintNetwork,ConstraintNetwork>();
+		this.counterMoves=0;
 	}
 		
 	/**
@@ -235,6 +237,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
+					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
+					this.counterMoves++;
+					
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
 						breakSearch = false;
@@ -250,6 +255,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
+					this.counterMoves--;
+					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
 					logger.fine("Failure... (2)");
 				}
 			}
@@ -287,6 +294,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
+					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
+					this.counterMoves++;
 
 					logger.fine("Success...");		
 					
@@ -303,10 +312,14 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					if (backtrackHelper(newConflict, initial_time)) return true;					
 					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
 					this.retractResolver(mostProblematicNetwork, value);
-					this.resolvers.remove(mostProblematicNetwork);					
+					this.resolvers.remove(mostProblematicNetwork);	
+
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
+					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
+					this.counterMoves--;
+
 					logger.fine("Failure... (2)");
 				}
 			}
@@ -575,6 +588,14 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		this.g=new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.resolvers.clear();
 		
+	}
+
+	public int getCounterMoves() {
+		return counterMoves;
+	}
+
+	public void setCounterMoves(int counterMoves) {
+		this.counterMoves = counterMoves;
 	}
 
 }
