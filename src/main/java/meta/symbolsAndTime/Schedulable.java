@@ -76,7 +76,7 @@ public abstract class Schedulable extends MetaConstraint {
 	
 	public Schedulable(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
-		this.beforeParameter=0;
+		this.beforeParameter=1;
 	}
 	
 	
