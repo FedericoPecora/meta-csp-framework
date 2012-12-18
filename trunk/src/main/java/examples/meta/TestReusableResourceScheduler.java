@@ -6,6 +6,7 @@ import meta.symbolsAndTime.SymbolicTimeline;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
+import multi.allenInterval.AllenIntervalConstraint.Type;
 import time.APSPSolver;
 import time.Bounds;
 import utility.UI.Callback;
@@ -42,7 +43,7 @@ public class TestReusableResourceScheduler {
 		dur3.setTo(three);
 
 		//PRECEDENCES
-		AllenIntervalConstraint con1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(0, APSPSolver.INF));
+		AllenIntervalConstraint con1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, Type.Before.getDefaultBounds());
 		con1.setFrom(one);
 		con1.setTo(two);
 		
