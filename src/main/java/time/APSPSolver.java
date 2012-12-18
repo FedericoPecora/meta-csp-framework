@@ -3,6 +3,9 @@ package time;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,41 +29,41 @@ import framework.Variable;
  * @author Federico Pecora and Planning and Scheduling Team
  */
 public class APSPSolver extends ConstraintSolver {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5029122662268797937L;
 
-	private Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	transient private Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
 	private int cubePropCount = 0;
 	private int quadPropCount = 0;
-	
+
 	/**
 	 * Public access class variable denoting the value infinity.
 	 */
 	public static final long INF = Long.MAX_VALUE-1;
 	public static final long MINUSINF = Long.MIN_VALUE + 1;
-	
+
 	public static final int DEFAULT_MAX_TPS = 2000;
-	
+
 	//MAX number of TPs in temporal network.
 	private final int MAX_TPS;
 
 	//All TimePoints in the STP
 	private TimePoint[] tPoints = null;
-	
+
 	//Envelope of used timepoints so we can keep size of F-W loops small
 	//without too much housekeeping.
 	private int MAX_USED = 2;
 
 	//Distance Matrix
 	private final long[][] distance;
-	
+
 	//Temporal Horizon
 	private long H;
-	
+
 	//Constraint between source (tPoints[0]) and sink (tPoints[1])
 	private SimpleDistanceConstraint horizonConstraint;
 
@@ -69,8 +72,8 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Time Point Counter
 	private int tpCounter = 0;
-	
-	
+
+
 	//rigidity matrix
 	private double[] rigidity;
 
@@ -87,16 +90,16 @@ public class APSPSolver extends ConstraintSolver {
 	public APSPSolver(long origin,long horizon) {
 		this(origin, horizon, DEFAULT_MAX_TPS);
 	}
-	
-	
-//	public SimpleDistanceConstraint[] getTimePointOuts() {
-//		Vector<SimpleDistanceConstraint> ret = new Vector<SimpleDistanceConstraint>();
-//		for (TimePoint tp : this.tPoints) {
-//			for (int i = 0; i < 6; i++)
-//				ret.add(tp.getOut(i));
-//		}
-//		return ret.toArray(new SimpleDistanceConstraint[ret.size()]);
-//	}
+
+
+	//	public SimpleDistanceConstraint[] getTimePointOuts() {
+	//		Vector<SimpleDistanceConstraint> ret = new Vector<SimpleDistanceConstraint>();
+	//		for (TimePoint tp : this.tPoints) {
+	//			for (int i = 0; i < 6; i++)
+	//				ret.add(tp.getOut(i));
+	//		}
+	//		return ret.toArray(new SimpleDistanceConstraint[ret.size()]);
+	//	}
 
 
 	/**
@@ -113,14 +116,14 @@ public class APSPSolver extends ConstraintSolver {
 		this.MAX_TPS = maxTPs+2; //+2 To account for O and H
 		tPoints = new TimePoint[MAX_TPS];
 		distance = new long[MAX_TPS][MAX_TPS];
-		
-				
+
+
 		//Init
 		H = horizon;
 		O = origin;
 		for (int i = 0; i < MAX_TPS; i++) {
 			for (int j = 0; j < MAX_TPS; j++) {
-//				if (i != j) distance[i][j] = Long.MAX_VALUE;
+				//				if (i != j) distance[i][j] = Long.MAX_VALUE;
 				if (i != j) distance[i][j] = APSPSolver.INF;
 				else distance[i][j] = 0;
 			}
@@ -131,7 +134,7 @@ public class APSPSolver extends ConstraintSolver {
 		tpCounter++;
 		tPoints[1] = new TimePoint(tpCounter,MAX_TPS,this);
 		tpCounter++;
-		
+
 		this.theNetwork.addVariable(tPoints[0]);
 		this.theNetwork.addVariable(tPoints[1]);
 
@@ -191,7 +194,7 @@ public class APSPSolver extends ConstraintSolver {
 	//TP creation
 	private int tpCreate() {
 		logger.log(Level.FINE, "Creating 1 TP");
-		
+
 		int i = 2;
 		boolean found = false;
 		while (i < MAX_TPS && !found) {
@@ -205,7 +208,7 @@ public class APSPSolver extends ConstraintSolver {
 			distance[i][l] = APSPSolver.INF;
 			distance[l][i] = APSPSolver.INF;				
 		}
-//		fromScratchDistanceMatrixComputation();
+		//		fromScratchDistanceMatrixComputation();
 		return i;
 	}
 
@@ -216,22 +219,22 @@ public class APSPSolver extends ConstraintSolver {
 		int[] ret = new int[n];
 		for (int i = 0; i < n; i++) ret[i] = tpCreate();
 		return ret;
-		
-//		logger.log(Level.FINE, "Creating " + n + " TPs");
-//		int[] ret = new int[n];
-//		int i = 2;
-//		int counter = 0;
-//		while (i < MAX_TPS && counter < n) {
-//			if (!tPoints[i].isUsed()) {
-//				tPoints[i].setUsed(true);
-//				ret[counter] = i;
-//				if (i == MAX_USED+1) MAX_USED = i;
-//				counter++;
-//			}
-//			i++;
-//		}
-//		fromScratchDistanceMatrixComputation();
-//		return ret;
+
+		//		logger.log(Level.FINE, "Creating " + n + " TPs");
+		//		int[] ret = new int[n];
+		//		int i = 2;
+		//		int counter = 0;
+		//		while (i < MAX_TPS && counter < n) {
+		//			if (!tPoints[i].isUsed()) {
+		//				tPoints[i].setUsed(true);
+		//				ret[counter] = i;
+		//				if (i == MAX_USED+1) MAX_USED = i;
+		//				counter++;
+		//			}
+		//			i++;
+		//		}
+		//		fromScratchDistanceMatrixComputation();
+		//		return ret;
 	}
 
 
@@ -268,7 +271,7 @@ public class APSPSolver extends ConstraintSolver {
 		fromScratchDistanceMatrixComputation();
 	}
 
-	
+
 	//Batch Time point erase
 	private void tpDelete(int[] IDtimePoint) {
 		logger.log(Level.FINE, "deleting " + IDtimePoint.length + " TP");
@@ -305,7 +308,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Create an interval for a constraint
 	private boolean cCreate(Bounds i, int from, int to) {
-		
+
 		//Conversion
 		long max = i.max;
 		long min = i.min;
@@ -336,7 +339,7 @@ public class APSPSolver extends ConstraintSolver {
 			if (con.getMaximum() > i.max) con.setMaximum(i.max);
 
 			if (!incrementalDistanceMatrixComputation(from,to,i)) {
-			//if (!fromScratchDistanceMatrixComputation()) {
+				//if (!fromScratchDistanceMatrixComputation()) {
 				//Inconsistency. Rollback
 				con.setMinimum(vecchiod);
 				con.setMaximum(vecchioD);
@@ -457,7 +460,7 @@ public class APSPSolver extends ConstraintSolver {
 
 		return true;	
 	}
-	
+
 	//Delete a constraint...
 	//throw error in case of parameter inconsistency
 	private boolean cDelete(Bounds i, int from, int to) throws ConstraintNotFound, MalformedSimpleDistanceConstraint {
@@ -467,9 +470,9 @@ public class APSPSolver extends ConstraintSolver {
 		if (i.max == Long.MAX_VALUE - 1) max = H-O;
 		if (i.min == Long.MIN_VALUE + 1) min = -1 * (H - O);
 		i = new Bounds(min,max);
-		
+
 		SimpleDistanceConstraint con = tPoints[from].getOut(to);
-		
+
 		if (con == null) throw new ConstraintNotFound(String.format("Interval %s, from %d, to %d", i.toString(), from, to));
 
 		if (con.getCounter() == 1) 
@@ -499,14 +502,14 @@ public class APSPSolver extends ConstraintSolver {
 			if (in[i].max == Long.MAX_VALUE - 1) max = H-O;
 			if (in[i].min == Long.MIN_VALUE + 1) min = -1 * (H - O);
 			in[i] = new Bounds(min,max);
-			
+
 			SimpleDistanceConstraint con = tPoints[from[i]].getOut(to[i]);
-			
+
 			if (con == null) {
 				throw new ConstraintNotFound(String.format("Interval %s, from %d, to %d", in[i].toString(), from[i], to[i]));
 				//Dbg.printMsg(from[i] + " " + to[i] + "[APSPNetwork.java]: cDelete()", LogLvl.Normal);
 			}
-			
+
 			if (con.getCounter() == 1) { 
 				if (con.removeInterval(in[i])) {
 					tPoints[from[i]].setOut(to[i],null);
@@ -535,7 +538,7 @@ public class APSPSolver extends ConstraintSolver {
 
 
 	//Access methods
-	
+
 	/**
 	 * Get a timepoint given its ID.
 	 * @param Id The ID of the timepoint.
@@ -576,11 +579,11 @@ public class APSPSolver extends ConstraintSolver {
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = i; j < MAX_USED+1; j++) {
 				if (i != j) {
-//					long dij = Long.MAX_VALUE;
-//					long dji = Long.MAX_VALUE;
+					//					long dij = Long.MAX_VALUE;
+					//					long dji = Long.MAX_VALUE;
 					long dij = APSPSolver.INF;
 					long dji = APSPSolver.INF;
-					
+
 					if(tPoints[i].getOut(j) != null) {
 						dij = Math.min(dij, +tPoints[i].getOut(j).getMaximum());
 						dji = Math.min(dji, -tPoints[i].getOut(j).getMinimum());
@@ -589,20 +592,20 @@ public class APSPSolver extends ConstraintSolver {
 						dij = Math.min(dij, -tPoints[j].getOut(i).getMinimum());
 						dji = Math.min(dji, +tPoints[j].getOut(i).getMaximum());
 					}
-					
+
 					if(-dji > +dij) {
 						return false;
 					}
-					
+
 					distance[i][j] = dij;
 					distance[j][i] = dji;
-					
+
 				}
 				else distance[i][j] = 0;
 			}
 		}
 		/*/
-		
+
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = i; j < MAX_USED+1; j++) {
 				if (i != j) {
@@ -627,13 +630,13 @@ public class APSPSolver extends ConstraintSolver {
 						distance[i][j] = Long.MAX_VALUE;
 						distance[j][i] = Long.MAX_VALUE;
 					}
-					
+
 				}
 				else distance[i][j] = 0;
 			}
 		}
 		//*/
-		
+
 		for (int k = 0; k < MAX_USED+1; k++) {
 			if (tPoints[k].isUsed() == true) {
 				for (int i = 0; i < MAX_USED+1; i++) {
@@ -643,7 +646,7 @@ public class APSPSolver extends ConstraintSolver {
 								long temp = distance[i][k] + distance[k][j];
 								//if (distance[i][k] == Long.MAX_VALUE || distance[k][j] == Long.MAX_VALUE)
 								if (distance[i][k] == APSPSolver.INF|| distance[k][j] == APSPSolver.INF)
-//									temp = Long.MAX_VALUE;
+									//									temp = Long.MAX_VALUE;
 									temp = APSPSolver.INF;
 								if (distance[i][j] > temp)
 									distance[i][j] = temp;
@@ -658,25 +661,25 @@ public class APSPSolver extends ConstraintSolver {
 		return true;
 	} 
 
-//	//interval intersection
-//	private Interval intervalIntersect (Interval a, Interval b) {
-//		Interval ret = new Interval(null);
-//		if (a.start > b.start) ret.start = a.start;
-//		else ret.start = b.start;
-//		if (a.stop > b.stop) ret.stop = b.stop;
-//		else ret.stop = a.stop;
-//		if (ret.stop < ret.start) return null;
-//		//else return ret;
-//		return ret;
-//	}
+	//	//interval intersection
+	//	private Interval intervalIntersect (Interval a, Interval b) {
+	//		Interval ret = new Interval(null);
+	//		if (a.start > b.start) ret.start = a.start;
+	//		else ret.start = b.start;
+	//		if (a.stop > b.stop) ret.stop = b.stop;
+	//		else ret.stop = a.stop;
+	//		if (ret.stop < ret.start) return null;
+	//		//else return ret;
+	//		return ret;
+	//	}
 
-	
+
 	//Gd graph propagation function
 	private boolean incrementalDistanceMatrixComputation(int from,int to,Bounds i) {
 		logger.log(Level.FINE, "Propagating (quad) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++quadPropCount) + ")");
-		
-//		if (distance[to][from] != Long.MAX_VALUE && i.max + distance[to][from] < 0) return false;
-//		if (distance[from][to] != Long.MAX_VALUE && -i.min + distance[from][to] < 0) return false;
+
+		//		if (distance[to][from] != Long.MAX_VALUE && i.max + distance[to][from] < 0) return false;
+		//		if (distance[from][to] != Long.MAX_VALUE && -i.min + distance[from][to] < 0) return false;
 		if (distance[to][from] != APSPSolver.INF && i.max + distance[to][from] < 0) return false;
 		if (distance[from][to] != APSPSolver.INF && -i.min + distance[from][to] < 0) return false;
 
@@ -685,7 +688,7 @@ public class APSPSolver extends ConstraintSolver {
 				for (int v = 0; v < MAX_USED+1;v++) {
 					if (tPoints[v].isUsed()) {
 						long temp = distance[u][from] + i.max + distance[to][v];
-//						if (distance[u][from] == Long.MAX_VALUE || distance[to][v] == Long.MAX_VALUE) temp = Long.MAX_VALUE;
+						//						if (distance[u][from] == Long.MAX_VALUE || distance[to][v] == Long.MAX_VALUE) temp = Long.MAX_VALUE;
 						if (distance[u][from] == APSPSolver.INF || distance[to][v] == APSPSolver.INF) temp = APSPSolver.INF;
 						if (distance[u][v] > temp) distance[u][v] = temp;
 					}
@@ -697,7 +700,7 @@ public class APSPSolver extends ConstraintSolver {
 				for (int v = 0; v < MAX_USED+1;v++) {
 					if (tPoints[v].isUsed()) {
 						long temp = distance[u][to] - i.min + distance[from][v];
-//						if (distance[u][to] == Long.MAX_VALUE || distance[from][v] == Long.MAX_VALUE) temp = Long.MAX_VALUE;
+						//						if (distance[u][to] == Long.MAX_VALUE || distance[from][v] == Long.MAX_VALUE) temp = Long.MAX_VALUE;
 						if (distance[u][to] == APSPSolver.INF|| distance[from][v] == APSPSolver.INF) temp = APSPSolver.INF;
 						if (distance[u][v] > temp) distance[u][v] = temp;
 					}
@@ -762,7 +765,7 @@ public class APSPSolver extends ConstraintSolver {
 	protected boolean addConstraintSub(Constraint con)
 	{
 		if (con == null) return true;
-		
+
 		if (con instanceof SimpleDistanceConstraint) {
 			SimpleDistanceConstraint c = (SimpleDistanceConstraint)con;
 			Bounds interval = new Bounds(c.getMinimum(),c.getMaximum());
@@ -793,7 +796,7 @@ public class APSPSolver extends ConstraintSolver {
 		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
 		return cCreate(tot,from,to);
 	}
-	
+
 
 	//Remove a constraint (SimpleDistanceConstraint)
 	@Override
@@ -812,7 +815,7 @@ public class APSPSolver extends ConstraintSolver {
 			Bounds[] tot = new Bounds[con.length];
 			int[] from = new int[con.length];
 			int[] to = new int[con.length];
-	
+
 			for (int i = 0; i < con.length; i++) {
 				if (con[i] instanceof SimpleDistanceConstraint) {
 					SimpleDistanceConstraint c = (SimpleDistanceConstraint)con[i];
@@ -821,11 +824,11 @@ public class APSPSolver extends ConstraintSolver {
 					to[i] = ((TimePoint)c.getTo()).getID();				
 				}
 			}
-	
+
 			cDelete(tot,from,to);
 		}
 	}
-	
+
 	/**
 	 * Perform complete propagation.  Computational cost is O(n^3) where n is the number of
 	 * timepoints in the Simple Temporal Network.
@@ -851,7 +854,7 @@ public class APSPSolver extends ConstraintSolver {
 	public long getH() {
 		return H;
 	}
-	
+
 	/**
 	 * Set a new horizon for this network.
 	 * @param val The new horizon.
@@ -872,7 +875,7 @@ public class APSPSolver extends ConstraintSolver {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Get the source timepoint of the Simple Temporal Network (anchored to origin of time).
 	 * @return the source timepoint of the Simple Temporal Network.
@@ -888,7 +891,7 @@ public class APSPSolver extends ConstraintSolver {
 	public TimePoint getSink() {
 		return tPoints[1];
 	}
-	
+
 	/**
 	 * Class method for pretty-printing longs (substitutes +/-INF appropriately). 
 	 * @param l The long value to pretty-print.
@@ -898,7 +901,7 @@ public class APSPSolver extends ConstraintSolver {
 		if (l >= 0) return "" + ((l == APSPSolver.INF ? "INF" : l));
 		return "-" + ((-l == APSPSolver.INF ? "INF" : l));
 	}
-	
+
 	/**
 	 * Get active constraint between two {@link TimePoint}s.
 	 * @param tpFrom The source {@link TimePoint}.
@@ -911,7 +914,7 @@ public class APSPSolver extends ConstraintSolver {
 			return tPoints[tpFrom.getID()].getOut(tpTo.getID());
 		return null;
 	}
-	
+
 	/**
 	 * Gets the effective bounds between a pair of {@link TimePoint}s.
 	 * (After propagation, considering all constraints in the network)
@@ -921,7 +924,7 @@ public class APSPSolver extends ConstraintSolver {
 		final long min = -distance[tpTo.getID()][tpFrom.getID()];
 		return new Bounds(min, max);
 	}
-	
+
 	/**
 	 * @return The maximum number of timepoints that can be added to this STP network
 	 * (excluding the Origin (O) and Horizon (H) timepoint).
@@ -931,7 +934,7 @@ public class APSPSolver extends ConstraintSolver {
 		//Subtract 2 (O and H) 
 		return this.MAX_TPS - 2;
 	}
-	
+
 	/**
 	 * Draw a graph representing this STPTemporalModule.  This method depends on the Prefuse library.
 	 */
@@ -944,11 +947,11 @@ public class APSPSolver extends ConstraintSolver {
 		int xSize = ((int) tk.getScreenSize().getWidth());
 		int ySize = ((int) tk.getScreenSize().getHeight());
 		//int ySize = 500;
-		
+
 		//GIVE tm TO VISIUALIZER		
 		view = new PlotSTPTemporalModule(this, xSize, ySize);
 		JFrame myFrame = new JFrame("Simple Temporal Network");
-				
+
 		Container pane = myFrame.getContentPane();
 		pane.setLayout(new BorderLayout());
 		pane.add(view, BorderLayout.NORTH);
@@ -971,22 +974,31 @@ public class APSPSolver extends ConstraintSolver {
 	 * @return Root mean square rigidity of a consistent STN.
 	 */
 	public double getRMSRigidity(){
-		
+
 		rigidity = new double[this.getVariables().length];
 		for (int i = 0; i < this.getVariables().length; i++) {
-				rigidity[i] = (
-						((double)1 / 
-						((double)(1 + ((TimePoint)this.getVariables()[i]).getUpperBound() - ((TimePoint)this.getVariables()[i]).getLowerBound()))
-						));
-				//System.out.println(i + " " + j + " -> " + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()]);
-				//System.out.println(i + " " + j + " -> " + rigidity[i][j]);
+			rigidity[i] = (
+					((double)1 / 
+							((double)(1 + ((TimePoint)this.getVariables()[i]).getUpperBound() - ((TimePoint)this.getVariables()[i]).getLowerBound()))
+							));
+			//System.out.println(i + " " + j + " -> " + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()]);
+			//System.out.println(i + " " + j + " -> " + rigidity[i][j]);
 		}
 		double sigma = 0;
 		for (int i = 0; i < this.getVariables().length; i++) {
-				sigma += Math.pow(rigidity[i], 2.0);
-			}			
-		
+			sigma += Math.pow(rigidity[i], 2.0);
+		}			
+
 		return Math.sqrt(((double)sigma) * ((double)2/(this.getVariables().length * (this.getVariables().length + 1))));
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		logger = MetaCSPLogging.getLogger(this.getClass());
 	}
 
 }

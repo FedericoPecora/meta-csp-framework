@@ -1,5 +1,8 @@
 package framework;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +31,7 @@ import framework.multi.MultiBinaryConstraint;
  * @author Federico Pecora
  */
 
-public abstract class ConstraintNetwork implements Serializable{
+public abstract class ConstraintNetwork implements Serializable {
 	
 	protected ConstraintSolver solver;
 	protected ObservableGraph<Variable,Constraint> graph;
@@ -390,6 +393,15 @@ public abstract class ConstraintNetwork implements Serializable{
 		for (Variable v : cn.getVariables()) if (!this.containsVariable(v)) return false;
 		for (Constraint c : cn.getConstraints()) if (!this.containsConstraint(c)) return false;
 		return true;
+	}
+	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		logger = MetaCSPLogging.getLogger(this.getClass());
 	}
 	
 }

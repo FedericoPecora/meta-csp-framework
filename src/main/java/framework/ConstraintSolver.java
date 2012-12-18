@@ -1,5 +1,8 @@
 package framework;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -725,5 +728,12 @@ public abstract class ConstraintSolver implements Serializable {
 		this.components = components;
 	}
 
-	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		logger = MetaCSPLogging.getLogger(this.getClass());
+	}
 }

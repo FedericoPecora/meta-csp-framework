@@ -115,7 +115,7 @@ final public class Matrix {
 	// return x = A^-1 b, assuming A is square and has full rank
 	public Matrix solve(Matrix rhs) {
 		if (M != N || rhs.M != N || rhs.N != 1)
-			throw new RuntimeException("Illegal matrix dimensions.");
+			throw new RuntimeException("Illegal matrix dimensions:\nM1xN1 = " + M + "x" + N + " and M2xN2 = " + rhs.M + "x" + rhs.N);
 
 		// create copies of the data
 		Matrix A = new Matrix(this);
