@@ -27,9 +27,9 @@ public class TestTCSPSolver {
 		
 //		APSPSolver groundGroundSolver = (APSPSolver)groundSolver.getConstraintSolvers()[0];
 		
-//		MetaCSPLogging.setLevel(Level.FINE);
+		MetaCSPLogging.setLevel(Level.FINEST);
 		try {
-			MetaCSPLogging.setLevel(metaSolver.getClass(), Level.FINE);
+			MetaCSPLogging.setLevel(metaSolver.getClass(), Level.FINEST);
 		} catch (LoggerNotDefined e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

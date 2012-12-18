@@ -28,7 +28,7 @@ public class TestSimplePlanner {
 		// This is a pointer toward the ActivityNetwork solver of the Scheduler
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
 
-		MetaCSPLogging.setLevel(planner.getClass(), Level.FINE);
+		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 //		MetaCSPLogging.setLevel(Level.FINEST);
 //		MetaCSPLogging.setLevel(planner.getClass(), Level.FINE);
 				

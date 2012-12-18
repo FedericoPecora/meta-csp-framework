@@ -232,6 +232,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
+					this.counterMoves++;
+					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 
 					logger.fine("Success...");		
 					
@@ -251,7 +253,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					if (backtrackHelper(newConflict)) return true;					
 					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
 					this.retractResolver(mostProblematicNetwork, value);
-					this.resolvers.remove(mostProblematicNetwork);					
+					this.resolvers.remove(mostProblematicNetwork);			
+					this.counterMoves--;
+					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
+
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
@@ -314,6 +319,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
 					this.retractResolver(mostProblematicNetwork, value);
 					this.resolvers.remove(mostProblematicNetwork);	
+					this.counterMoves--;
+					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
 
 				}
 				else {
@@ -322,9 +329,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 			}
 		}
-		this.counterMoves--;
-		logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
-		
+//		this.counterMoves--;
+//		logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
+//		
 
 		
 		logger.fine("Backtracking...");
