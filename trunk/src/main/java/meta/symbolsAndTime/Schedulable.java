@@ -159,6 +159,7 @@ public abstract class Schedulable extends MetaConstraint {
 	private ConstraintNetwork[] completePeakCollection() {
 		//System.out.println("CALLED!!");
 		if (activities != null && !activities.isEmpty()) {
+			logger.finest("Doing complete peak collection...");
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
 			Vector<Long> discontinuities = new Vector<Long>();
 			for (Activity a : groundVars) {

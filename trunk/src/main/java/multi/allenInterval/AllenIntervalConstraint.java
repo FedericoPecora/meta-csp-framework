@@ -41,7 +41,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/finishedby.png> 
 		 */
-		FinishedBy(0),
+		FinishedBy(1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS [sl,su] [el,eu] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/contains.png> 
@@ -51,7 +51,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/startedby.png> 
 		 */
-		StartedBy(0),
+		StartedBy(1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/equals.png> 
@@ -61,7 +61,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/starts.png> 
 		 */
-		Starts(0),
+		Starts(1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING [sl,su] [el,eu] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/during.png> 
@@ -71,7 +71,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/finishes.png> 
 		 */
-		Finishes(0),
+		Finishes(1L, APSPSolver.INF),
 		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/overlappedby.png> 
@@ -375,7 +375,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
-				first.setMinimum(bounds[0].min+1);
+				first.setMinimum(bounds[0].min);
 				first.setMaximum(bounds[0].max);
 				first.setFrom(fe);
 				first.setTo(ts);
@@ -387,7 +387,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				TimePoint fs = from.getStart();
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
-				first.setMinimum(bounds[0].min+1);
+				first.setMinimum(bounds[0].min);
 				first.setMaximum(bounds[0].max);
 				first.setFrom(te);
 				first.setTo(fs);
@@ -430,8 +430,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				first.setMaximum(0);
 				first.setFrom(fs);
 				first.setTo(ts);
-				second.setMinimum(1);
-				second.setMaximum(APSPSolver.INF);
+				second.setMinimum(bounds[0].min);
+				second.setMaximum(bounds[0].max);
 				second.setFrom(fe);
 				second.setTo(te);
 				Constraint[] ret = {first,second};
@@ -449,8 +449,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				first.setMaximum(0);
 				first.setFrom(fs);
 				first.setTo(ts);
-				second.setMinimum(1);
-				second.setMaximum(APSPSolver.INF);
+				second.setMinimum(bounds[0].min);
+				second.setMaximum(bounds[0].max);
 				second.setFrom(te);
 				second.setTo(fe);
 				Constraint[] ret = {first,second};
@@ -502,8 +502,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
-				first.setMinimum(1);
-				first.setMaximum(APSPSolver.INF);
+				first.setMinimum(bounds[0].min);
+				first.setMaximum(bounds[0].max);
 				first.setFrom(ts);
 				first.setTo(fs);
 				second.setMinimum(0);
@@ -521,8 +521,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
-				first.setMinimum(1);
-				first.setMaximum(APSPSolver.INF);
+				first.setMinimum(bounds[0].min);
+				first.setMaximum(bounds[0].max);
 				first.setFrom(fs);
 				first.setTo(ts);
 				second.setMinimum(0);
