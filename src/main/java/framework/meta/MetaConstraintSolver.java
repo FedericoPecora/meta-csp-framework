@@ -237,8 +237,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
-					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
-					this.counterMoves++;
+//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
+//					this.counterMoves++;
 					
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
@@ -255,8 +255,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
-					this.counterMoves--;
-					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
+//					this.counterMoves--;
+//					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
 					logger.fine("Failure... (2)");
 				}
 			}
@@ -294,8 +294,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
-					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
 					this.counterMoves++;
+					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
+					
 
 					logger.fine("Success...");		
 					
@@ -317,13 +318,15 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
-					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
-					this.counterMoves--;
-
 					logger.fine("Failure... (2)");
 				}
 			}
 		}
+		this.counterMoves--;
+		logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
+		
+
+		
 		logger.fine("Backtracking...");
 		currentVertex = this.g.getParent(currentVertex);
 		postBacktrack(metaVariable);
