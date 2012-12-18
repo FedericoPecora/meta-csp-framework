@@ -74,7 +74,7 @@ public class TestStateVariableScheduler {
 		AllenIntervalConstraint con4 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(0, APSPSolver.INF));
 		con4.setFrom(oneA);
 		con4.setTo(oneAB);
-		AllenIntervalConstraint con5 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(0, APSPSolver.INF));
+		AllenIntervalConstraint con5 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Before.getDefaultBounds());
 		con5.setFrom(oneA);
 		con5.setTo(oneAC);
 	
