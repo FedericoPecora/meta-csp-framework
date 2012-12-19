@@ -720,6 +720,18 @@ public abstract class ConstraintSolver implements Serializable {
 		for (Class<?> c : this.constraintTypes) ret += c.getSimpleName();
 		return ret + "]]";
 	}
+	/**
+	 * Deplenish the network associated to the ConstraintSolver  
+	 */
+	
+	public void deplenish(){
+		for(Constraint c: this.getConstraints()){
+			this.removeConstraint(c);
+		}
+		for(Variable v: this.getVariables()){
+			this.removeVariable(v);
+		}
+	}
 
 	public HashMap<String, ArrayList<Variable>> getComponents() {
 		return components;

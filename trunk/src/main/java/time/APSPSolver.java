@@ -975,6 +975,7 @@ public class APSPSolver extends ConstraintSolver {
 	 */
 	public double getRMSRigidity(){
 
+		logger.finest("TIME POINTS NUMBER "+ this.tpCounter+"  "+ this.tPoints.length);
 		rigidity = new double[this.getVariables().length];
 		for (int i = 0; i < this.getVariables().length; i++) {
 			rigidity[i] = (

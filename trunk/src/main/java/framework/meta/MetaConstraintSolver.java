@@ -278,6 +278,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 //		System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKKKK NUMBER OF VARIABLES" + groundSolver.getVariables().length);
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
+		logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
 		logger.fine("Solving conflict: " + metaVariable);
 		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
@@ -290,6 +291,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 			logger.fine("Failure (1)...");		
 		}
 		else {
+			logger.finest("FOUND " + values.length+" MOVES");
 			for (ConstraintNetwork value : values) {
 				if (animationTime != 0) {
 					try { Thread.sleep(animationTime); }
@@ -595,6 +597,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
 	public void failurePruning(int failure_time){
 		super.failurePruning(failure_time);
+		this.counterMoves=0;
 		this.g=new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.resolvers.clear();
 		

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
+import meta.simplePlanner.SimpleDomain.markings;
+
 import throwables.ConstraintNotFound;
 import framework.Constraint;
 import framework.ConstraintNetwork;
@@ -282,7 +284,28 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	
 	public void failurePruning(int failure_time){
 
-		this.theNetwork= createConstraintNetwork();
+		
+		for(Constraint c: this.getConstraints()){
+			this.removeConstraint(c);
+		}
+		for(Variable v: this.getVariables()){
+			
+			this.removeVariable(v);
+		}
+		
+//		this.deplenish();
+//		for(ConstraintSolver cs: this.constraintSolvers){
+//			cs.deplenish();
+//		}
+		
+//		for(Constraint c: this.theNetwork.getConstraints()){
+//			this.theNetwork.removeConstraint(c);
+//		}
+//		for(Variable v: this.theNetwork.getVariables()){
+//			this.theNetwork.removeVariable(v);
+//		}
+		
+//		this.theNetwork= createConstraintNetwork();
 		for(String k: this.components.keySet()){
 			ArrayList<Variable> list= this.components.get(k);
 			list.clear();
