@@ -115,16 +115,16 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return true;
 	}
 
-	@Override
-	protected void removeVariableSub(Variable v) {
-		// TODO Auto-generated method stub
+//	@Override
+//	protected void removeVariableSub(Variable v) {
+//		// TODO Auto-generated method stub
+//
+//	}
 
-	}
-
-	@Override
-	protected void removeVariablesSub(Variable[] v) {
-		// TODO Auto-generated method stub
-
-	}
+//	@Override
+//	protected void removeVariablesSub(Variable[] v) {
+//		// TODO Auto-generated method stub
+//
+//	}
 
 }
