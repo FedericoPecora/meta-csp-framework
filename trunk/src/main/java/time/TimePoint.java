@@ -86,7 +86,10 @@ public final class TimePoint extends Variable {
 	 * @return A String describing this {@link TimePoint}.
 	 */
 	public String toString() {
-		String ret = this.id + ":[" + APSPSolver.printLong(this.lowerBound) + "," + APSPSolver.printLong(this.upperBound) + "]";
+		String ret="";//\n((((((((((((";
+		
+		ret+= this.id + ":[" + APSPSolver.printLong(this.lowerBound) + "," + APSPSolver.printLong(this.upperBound) + "]";
+//		ret+="))))))))))))))))\n";
 		return ret;
     }
 	/*

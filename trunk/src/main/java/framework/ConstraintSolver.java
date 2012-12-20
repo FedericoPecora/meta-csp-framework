@@ -10,10 +10,15 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import multi.allenInterval.AllenIntervalNetworkSolver;
+
+import symbols.SymbolicVariableConstraintSolver;
 import throwables.ConstraintNotFound;
 import throwables.IllegalVariableRemoval;
 import throwables.VariableNotFound;
+import time.APSPSolver;
 import utility.logging.MetaCSPLogging;
+import framework.meta.MetaConstraintSolver;
 import framework.multi.MultiBinaryConstraint;
 import framework.multi.MultiConstraint;
 import framework.multi.MultiConstraintSolver;
@@ -40,6 +45,8 @@ public abstract class ConstraintSolver implements Serializable {
 	protected static int nesting = 0;
 	protected static String spacing = "  ";
 	private static final long serialVersionUID = 7526472295622776147L;
+	
+	protected String name;
 	
 	/**
 	 * Access to the underlying constraint network.
@@ -80,6 +87,7 @@ public abstract class ConstraintSolver implements Serializable {
 		this.theNetwork = this.createConstraintNetwork();
 		this.constraintTypes = constraintTypes;
 		this.variableTypes = variableTypes;
+		this.name="GENERAL CONSTRAINT SOLVER NAME: specify in the particular instantiation";
 	}
 	
 	/**
@@ -581,27 +589,65 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @param v The batch of {@link Variable}s to remove.
 	 */
 	public final void removeVariables(Variable[] v) throws VariableNotFound, IllegalVariableRemoval {
+//		System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+//		System.out.println(this.name);
+//		System.out.println(this.getClass());
+//		
+//		System.out.println("I WANT TO ELIMINATE THIS");
+//		for(Variable var: v){
+//			System.out.println(var);
+//		}
+//		System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		
 		for (Variable var : v) {
-			if (!this.theNetwork.containsVariable(var)) throw new VariableNotFound(var);
-			if (this.theNetwork.getIncidentEdges(var) != null && this.theNetwork.getIncidentEdges(var).length != 0)
+//			System.out.println("Removing variable " + var);
+//			if(var instanceof MultiVariable){
+//				for(Variable vx: ((MultiVariable) var).getInternalVariables()){
+//					if(vx.getID()==30){
+//						System.out.println("THE VAR 30 IS CONTAINED IN " + var);
+//					}
+//				}
+//			}
+			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
+//			if (!this.theNetwork.containsVariable(var) && !(this instanceof APSPSolver) ) throw new VariableNotFound(var);
+//			if (!this.theNetwork.containsVariable(var) ) return;
+			if (this.theNetwork.getIncidentEdges(var) != null && this.theNetwork.getIncidentEdges(var).length != 0){
 //				throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
+//				System.out.println("FOR CONTINUE");
 				continue;
+			}
 			/**/
+//			System.out.println("HHHHHHHHHH REMOVING CONSTRAINTS");
 			if (var instanceof MultiVariable) {
 				MultiVariable mv = (MultiVariable)var;
 				for (ConstraintSolver cs : mv.getInternalConstraintSolvers())
 					cs.removeConstraints(mv.getInternalConstraints());
 			}/**/
+//			System.out.println("HHHHHHHHHHHHHHHHHHHHHHH");
 		}
 		for (Variable var : v) {
+//			System.out.println("I AM "+ this.name);
+//			System.out.println("Removing variable " + var);
+//			if(var instanceof MultiVariable){
+//				for(Variable vx: ((MultiVariable) var).getInternalVariables()){
+//					if(vx.getID()==30){
+//						System.out.println("THE VAR 30 IS CONTAINED IN " + var);
+//					}
+//				}
+//			}
+//			System.out.println("DIRECTLY FROM THE  NET NOW");
 			this.theNetwork.removeVariable(var);
-			removeVariablesSub(v);
+//			System.out.println("DOWN IN THE SUB METHOD");
+			removeVariableSub(var);
+//			System.out.println("UP AGAIN");
 			for (ArrayList<Variable> vec : components.values()) {
-				vec.removeAll(Arrays.asList(v));
+				vec.removeAll(Arrays.asList(var));
 			}
 		}
+//		System.out.println("ENDNNNNDDNDNDNDN");
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Removed variables " + Arrays.toString(v));
+//		System.out.println("=====================================");
 	}
 
 	/**
@@ -749,4 +795,15 @@ public abstract class ConstraintSolver implements Serializable {
 		in.defaultReadObject();
 		logger = MetaCSPLogging.getLogger(this.getClass());
 	}
+	
+	/**
+	 * Return if the network of this ConstraintSolver contains a {@link Variable}.  
+	 * @param v The {@link Variable} variable to check
+	 * @return boolean value whether the variable is present in the network
+	 */
+	public boolean containsVariable(Variable v) {
+		return this.theNetwork.containsVariable(v);
+	}
+
+	
 }

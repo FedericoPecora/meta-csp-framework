@@ -89,6 +89,7 @@ public class APSPSolver extends ConstraintSolver {
 	 */
 	public APSPSolver(long origin,long horizon) {
 		this(origin, horizon, DEFAULT_MAX_TPS);
+		this.name="APSP solver";
 	}
 
 
@@ -116,6 +117,8 @@ public class APSPSolver extends ConstraintSolver {
 		this.MAX_TPS = maxTPs+2; //+2 To account for O and H
 		tPoints = new TimePoint[MAX_TPS];
 		distance = new long[MAX_TPS][MAX_TPS];
+		this.name="APSP solver";
+
 
 
 		//Init
@@ -739,6 +742,7 @@ public class APSPSolver extends ConstraintSolver {
 	//Remove a variable (timepoint).
 	@Override
 	protected void removeVariableSub(Variable ti) {
+		logger.finest("I AM REMOVING VAR " + ti);
 		if (ti instanceof TimePoint) {
 			tpDelete(((TimePoint)ti).getID());
 			//super.removeVariable(ti);
@@ -748,9 +752,12 @@ public class APSPSolver extends ConstraintSolver {
 	//Remove many variables (timepoints).
 	@Override
 	protected void removeVariablesSub(Variable[] ti) {
+		logger.finest("REMOVEVARIABLES");
 		int[] Ids = new int[ti.length];
 		for (int i = 0; i < ti.length;i ++) 
 		{
+			logger.finest("I AM REMOVING VAR " + ti[i]);
+
 			if (ti[i] instanceof TimePoint) {
 				Ids[i] = ((TimePoint)ti[i]).getID();
 			}
