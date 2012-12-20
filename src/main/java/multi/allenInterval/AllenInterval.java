@@ -92,11 +92,26 @@ public class AllenInterval extends MultiVariable {
 
 	@Override
 	public String toString() {
-		
-		if(name == "")
-			return this.getClass().getSimpleName() + " " + this.id + " " + this.getDomain();
+		String s="";
+//		s="\n<KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK>\n";
+
+		if(name == ""){
+			s+=this.getClass().getSimpleName() + " " + this.id +" "+ "(I-TP: ";
+			for(Variable x: this.variables){
+				s+= x.getID()+" ";
+			}
+			s+=")"+" " + this.getDomain();
+		}
 		else
-			return this.name + " " + this.id + " " + this.getDomain();
+			s+=this.name + " " + this.id + " " + this.getDomain();
+////		System.out.println("\n\tXXXXX");
+//		for(Variable v: this.variables){
+//			s+=("\n"+v);
+//		}
+//		s+="\n";
+////		s+="\n<ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ>\n";
+		return s;
+
 	}
 
 	@Override

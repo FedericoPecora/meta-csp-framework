@@ -54,8 +54,16 @@ public class Activity extends MultiVariable {
 
 	@Override
 	public String toString() {
-		String ret = this.getComponent() + "::<" + this.symbolicVariable.toString() + ">U<" + this.temporalVariable.toString() + ">";
-		if (this.getMarking() != null) ret += "/" + this.getMarking();
+		String ret="";
+//		ret+="\n<===================================>\n";
+		ret += this.getComponent() + "::<" + this.symbolicVariable.toString() + ">U<" + this.temporalVariable.toString() + ">";
+		if (this.getMarking() != null) ret += "/" + this.getMarking()+"\n";
+//		ret+=("\tLLLLLL");
+//		for(Variable v: this.variables){
+//			ret+="\n"+v.toString();
+//		}
+//		ret+=("\n\tMMMMM");
+//		ret+="\n<_____________________________________>\n"; 
 		return ret;
 	}
 	

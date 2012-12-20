@@ -1,4 +1,5 @@
 package multi.activity;
+import java.util.HashMap;
 import java.util.Vector;
 
 import multi.allenInterval.AllenIntervalConstraint;
@@ -10,6 +11,7 @@ import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
 import framework.multi.MultiConstraintSolver;
+import framework.multi.MultiVariable;
 
 public class ActivityNetworkSolver extends MultiConstraintSolver {
 
@@ -117,10 +119,21 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 
 //	@Override
 //	protected void removeVariableSub(Variable v) {
-//		// TODO Auto-generated method stub
-//
+//////		 TODO Auto-generated method stub
+////		if (v instanceof Activity) {
+////			MultiVariable mv = (MultiVariable)v;
+////			Variable[] intVars = mv.getInternalVariables();
+////			HashMap<ConstraintSolver,Vector<Variable>> solvers = new HashMap<ConstraintSolver,Vector<Variable>>();
+////			for (Variable intVar : intVars) {
+////				if (solvers.get(intVar.getConstraintSolver()) == null) solvers.put(intVar.getConstraintSolver(), new Vector<Variable>());
+////				solvers.get(intVar.getConstraintSolver()).add(intVar);
+////			}
+////			for (ConstraintSolver cs : solvers.keySet()) {
+////				cs.removeVariables(solvers.get(cs).toArray(new Variable[solvers.get(cs).size()]));
+////			}
+////		}
 //	}
-
+//
 //	@Override
 //	protected void removeVariablesSub(Variable[] v) {
 //		// TODO Auto-generated method stub
