@@ -640,9 +640,9 @@ public abstract class ConstraintSolver implements Serializable {
 //			System.out.println("DOWN IN THE SUB METHOD");
 			removeVariableSub(var);
 //			System.out.println("UP AGAIN");
-			for (ArrayList<Variable> vec : components.values()) {
-				vec.removeAll(Arrays.asList(var));
-			}
+		}
+		for (ArrayList<Variable> vec : components.values()) {
+			vec.removeAll(Arrays.asList(v));
 		}
 //		System.out.println("ENDNNNNDDNDNDNDN");
 		if (autoprop && checkDomainsInstantiated()) this.propagate();

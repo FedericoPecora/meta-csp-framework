@@ -65,7 +65,7 @@ public abstract class Schedulable extends MetaConstraint {
 	    T head = list.get(0);
 	    Set<T> rest = new HashSet<T>(list.subList(1, list.size())); 
 	    for (Set<T> set : powerSet(rest)) {
-	        Set<T> newSet = new HashSet<T>();
+	    	Set<T> newSet = new HashSet<T>();
 	        newSet.add(head);
 	        newSet.addAll(set);
 	        sets.add(newSet);
@@ -159,7 +159,7 @@ public abstract class Schedulable extends MetaConstraint {
 	private ConstraintNetwork[] completePeakCollection() {
 		//System.out.println("CALLED!!");
 		if (activities != null && !activities.isEmpty()) {
-			logger.finest("Doing complete peak collection...");
+			logger.finest("Doing complete peak collection with " + activities.size() + " activities...");
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
 			Vector<Long> discontinuities = new Vector<Long>();
 			for (Activity a : groundVars) {
@@ -173,7 +173,7 @@ public abstract class Schedulable extends MetaConstraint {
 			Arrays.sort(discontinuitiesArray);
 			
 			HashSet<HashSet<Activity>> superPeaks = new HashSet<HashSet<Activity>>();
-			
+
 			for (int i = 0; i < discontinuitiesArray.length-1; i++) {
 				HashSet<Activity> onePeak = new HashSet<Activity>();
 				superPeaks.add(onePeak);
@@ -192,6 +192,7 @@ public abstract class Schedulable extends MetaConstraint {
 
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			for (HashSet<Activity> superSet : superPeaks) {
+//				logger.finest("HEREEEEE and " + superSet);
 				for (Set<Activity> s : powerSet(superSet)) {
 					if (!s.isEmpty()) {
 						//System.out.println("ELEMENT: " + s);
@@ -201,7 +202,8 @@ public abstract class Schedulable extends MetaConstraint {
 					}
 				}
 			}
-			return ret.toArray(new ConstraintNetwork[ret.size()]);
+			logger.finest("Done peak sampling");
+			return ret.toArray(new ConstraintNetwork[ret.size()]);			
 		} 
 		
 		return (new ConstraintNetwork[0]);
@@ -209,19 +211,43 @@ public abstract class Schedulable extends MetaConstraint {
 
 	
 	private ConstraintNetwork[] binaryPeakCollection() {
-		ConstraintNetwork[] nonMinimalPeaks = this.completePeakCollection();
-		Vector<ConstraintNetwork> ret = null;
-		for (ConstraintNetwork cn : nonMinimalPeaks) {
-			if (cn.getVariables().length == 2) {
-				if (ret == null) ret = new Vector<ConstraintNetwork>();
-//				Variable[] vaux= cn.getVariables();
-//				if(!vaux[0].equals(vaux[1]))
-					ret.add(cn);
+		if (activities != null && !activities.isEmpty()) {
+			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+			logger.finest("Doing binary peak collection with " + activities.size() + " activities...");
+			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
+			for (int i = 0; i < groundVars.length; i++) {
+				for (int j = 0; j < groundVars.length; j++) {
+					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
+					if (!groundVars[i].getComponent().equals(groundVars[j].getComponent())) {
+						Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
+						if (bi.intersect(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
+							ActivityNetwork cn = new ActivityNetwork(null);
+							cn.addVariable(groundVars[i]);
+							cn.addVariable(groundVars[j]);
+							ret.add(cn);
+						}
+					}
+				}
 			}
+			if (!ret.isEmpty()) return ret.toArray(new ConstraintNetwork[ret.size()]);			
 		}
-		if (ret != null) return ret.toArray(new ConstraintNetwork[ret.size()]);
 		return (new ConstraintNetwork[0]);
 	}
+	
+//	private ConstraintNetwork[] binaryPeakCollection() {
+//		ConstraintNetwork[] nonMinimalPeaks = this.completePeakCollection();
+//		Vector<ConstraintNetwork> ret = null;
+//		for (ConstraintNetwork cn : nonMinimalPeaks) {
+//			if (cn.getVariables().length == 2) {
+//				if (ret == null) ret = new Vector<ConstraintNetwork>();
+////				Variable[] vaux= cn.getVariables();
+////				if(!vaux[0].equals(vaux[1]))
+//					ret.add(cn);
+//			}
+//		}
+//		if (ret != null) return ret.toArray(new ConstraintNetwork[ret.size()]);
+//		return (new ConstraintNetwork[0]);
+//	}
 	
 	
 	@Override
