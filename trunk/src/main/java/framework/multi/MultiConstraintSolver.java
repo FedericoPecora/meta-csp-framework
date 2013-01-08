@@ -285,13 +285,18 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	public void failurePruning(int failure_time){
 
 		
-		for(Constraint c: this.getConstraints()){
-			this.removeConstraint(c);
-		}
-		for(Variable v: this.getVariables()){
-			
-			this.removeVariable(v);
-		}
+//		for(Constraint c: this.getConstraints()){
+//			this.removeConstraint(c);
+//		}
+//		for(Variable v: this.getVariables()){
+//			
+//			this.removeVariable(v);
+//		}
+		
+		this.removeConstraints(this.getConstraints());
+		this.removeVariables(this.getVariables());
+		
+		
 		
 //		this.deplenish();
 //		for(ConstraintSolver cs: this.constraintSolvers){

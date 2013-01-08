@@ -28,7 +28,7 @@ public class SimpleDomain extends MetaConstraint {
 
 	private String name;
 	
-	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC};
+	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT};
 	
 	public Schedulable[] getSchedulingMetaConstraints() {
 		return currentResourceUtilizers.keySet().toArray(new Schedulable[currentResourceUtilizers.keySet().size()]);

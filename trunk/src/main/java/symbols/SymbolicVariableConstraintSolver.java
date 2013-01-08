@@ -255,7 +255,7 @@ public class SymbolicVariableConstraintSolver extends ConstraintSolver {
 			//System.out.println("Getting domain of " + sv + " (setvar = " + setvar + ")");
 			SymbolicDomain st = (SymbolicDomain)sv.getDomain();
 			String[] chocostates = this.getDomain(setvar);
-			System.out.println("Chocostates = " + Arrays.toString(chocostates));
+//			System.out.println("Chocostates = " + Arrays.toString(chocostates));
 			//System.out.println("Internal state of " + setvar + ": " + Arrays.toString(s.getVar(setvar).getValue()));
 			for (String stname : st.getSymbols()) {
 				//need to mask state
