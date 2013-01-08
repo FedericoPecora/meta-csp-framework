@@ -37,15 +37,23 @@ public class TestAPSPSolver {
 		con2.setMinimum(7);
 		con2.setMaximum(9);
 		
+//		SimpleDistanceConstraint con3 = new SimpleDistanceConstraint();
+//		con3.setFrom(solver.getVariable(0));
+//		con3.setTo(two);
+//		con3.setMinimum(40);
+//		con3.setMaximum(100);
+
 		SimpleDistanceConstraint con3 = new SimpleDistanceConstraint();
 		con3.setFrom(solver.getVariable(0));
 		con3.setTo(three);
 		con3.setMinimum(40);
 		con3.setMaximum(100);
+	
+//		System.out.println(solver.addConstraint(con1)); //O(n^3)
+//		System.out.println(solver.addConstraint(con2)); //O(n^2)
+//		System.out.println(solver.addConstraint(con3)); //O(n^2)
 		
-		solver.addConstraint(con1); //O(n^3)
-		solver.addConstraint(con2); //O(n^2)
-		solver.addConstraint(con3); //O(n^2)
+		solver.addConstraints(new SimpleDistanceConstraint[] {con1, con2, con3});
 		
 //		System.out.println("(Domain,Value) of " + one.getID() + ": (" + one.getDomain() + "," + one.getDomain().chooseValue("ET") + ")");
 //		System.out.println("(*Domain,Value) of " + two.getID() + ": (" + two.getDomain() + "," + two.getDomain().chooseValue("LT") + ")");		
@@ -56,7 +64,7 @@ public class TestAPSPSolver {
 		con4.setMinimum(56);
 		con4.setMaximum(100);
 		
-		solver.addConstraint(con4);
+		System.out.println(solver.addConstraint(con4));
 		
 		SimpleDistanceConstraint con5 = new SimpleDistanceConstraint();
 		con5.setFrom(one);
