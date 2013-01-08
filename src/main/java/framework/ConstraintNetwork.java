@@ -141,7 +141,7 @@ public abstract class ConstraintNetwork implements Serializable {
 			for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
 			MultiBinaryConstraint bc = (MultiBinaryConstraint)c;
 			this.graph.addEdge(bc, bc.getFrom(), bc.getTo());
-			logger.finest("Added constraint " + c);
+//			logger.finest("Added constraint " + c);
 		}
 	}
 	
@@ -411,7 +411,7 @@ public abstract class ConstraintNetwork implements Serializable {
 		
 		
 	}
-	
+
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 	}

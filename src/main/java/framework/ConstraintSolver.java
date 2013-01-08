@@ -320,7 +320,7 @@ public abstract class ConstraintSolver implements Serializable {
 				}
 			}
 			else {
-				logger.finest("Added constraints " + Arrays.toString(toAddArray));
+//				logger.finest("Added constraints " + Arrays.toString(toAddArray));
 				return true;
 			}
 		}
@@ -449,34 +449,37 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @return A new {@link Variable}.
 	 */
 	public final Variable createVariable() {
-		Variable ret = createVariableSub();
-		this.theNetwork.addVariable(ret);
-		/**/
-		if (ret instanceof MultiVariable) {
-			MultiVariable mv = (MultiVariable)ret;
-			HashMap<ConstraintSolver, Constraint[]> added = new HashMap<ConstraintSolver, Constraint[]>();
-			boolean oneFailed = false;
-			for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-				if (!cs.addConstraints(mv.getInternalConstraints())) {
-					oneFailed = true;
-					this.removeVariable(ret);
-				}
-				else added.put(cs, mv.getInternalConstraints());
-			}
-			if (oneFailed) {
-				for (ConstraintSolver cs : added.keySet()) {
-					cs.removeConstraints(added.get(cs));
-				}
-				return null;
-			}
-			
-		}
-		/**/
-		if (this.getOption(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) this.domainsInstantiated = false;
-		if (autoprop && checkDomainsInstantiated()) this.propagate();
-		logger.finest("Created variable " + ret);
-		return ret;
+		return createVariables(1)[0];
 	}
+//	public final Variable createVariable() {
+//		Variable ret = createVariableSub();
+//		this.theNetwork.addVariable(ret);
+//		/**/
+//		if (ret instanceof MultiVariable) {
+//			MultiVariable mv = (MultiVariable)ret;
+//			HashMap<ConstraintSolver, Constraint[]> added = new HashMap<ConstraintSolver, Constraint[]>();
+//			boolean oneFailed = false;
+//			for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
+//				if (!cs.addConstraints(mv.getInternalConstraints())) {
+//					oneFailed = true;
+//					this.removeVariable(ret);
+//				}
+//				else added.put(cs, mv.getInternalConstraints());
+//			}
+//			if (oneFailed) {
+//				for (ConstraintSolver cs : added.keySet()) {
+//					cs.removeConstraints(added.get(cs));
+//				}
+//				return null;
+//			}
+//			
+//		}
+//		/**/
+//		if (this.getOption(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) this.domainsInstantiated = false;
+//		if (autoprop && checkDomainsInstantiated()) this.propagate();
+//		logger.finest("Created variable " + ret);
+//		return ret;
+//	}
 	
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}

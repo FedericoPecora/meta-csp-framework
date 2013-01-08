@@ -1,7 +1,10 @@
 package multi.activity;
 
+import edu.uci.ics.jung.graph.ObservableGraph;
+import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
+import framework.Variable;
 
 public class ActivityNetwork extends ConstraintNetwork {
 
@@ -23,4 +26,15 @@ public class ActivityNetwork extends ConstraintNetwork {
 		return ((ActivityNetworkSolver)this.solver).getHorizon();
 	}
 	
+	public ActivityNetwork clone() {
+		ActivityNetwork c = new ActivityNetwork(super.solver);
+		
+		for ( Variable v : super.g.getVertices() ) {
+			c.g.addVertex(v);
+		}
+		for ( Constraint e : super.g.getEdges() ) {
+			c.g.addEdge(e, g.getEndpoints(e));
+		}
+		return c;
+	}
 }

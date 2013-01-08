@@ -1,10 +1,18 @@
 package multi.allenInterval;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
+import choco.cp.solver.constraints.integer.bool.sat.Vec;
+
+import multi.activity.ActivityNetwork;
 import time.APSPSolver;
 import time.Bounds;
 import time.TimePoint;
+import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
+import framework.Variable;
 import framework.multi.MultiConstraintSolver;
 
 public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
@@ -88,5 +96,49 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		// Do nothing, APSPSolver takes care of propagation...
 		return true;
 	}
+	
+	private ArrayList<AllenIntervalNetwork> activityNetworkRollback = new ArrayList<AllenIntervalNetwork>();
+	
+	
+	public int bookmark() {
+		AllenIntervalNetwork aNet = (AllenIntervalNetwork) ((AllenIntervalNetwork)this.getConstraintNetwork()).clone();
+		activityNetworkRollback.add(aNet);
+		
+		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
+		return stpSolver.bookmark();
+	}
+	
+	public void removeBookmark( int i ) {
+		activityNetworkRollback.remove(i);
+		
+		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
+		stpSolver.removeBookmark(i);
+	}
+	
+	public void revert( int i ) {
+		this.theNetwork = this.activityNetworkRollback.get(i);
+		
+		for ( int j = this.activityNetworkRollback.size()-1 ; j >= i ; j-- ) {
+			this.activityNetworkRollback.remove(j);
+		}		
+		
+		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
+		stpSolver.revert(i);
+		
+		AllenIntervalNetwork aNet = ((AllenIntervalNetwork)this.theNetwork);		
+		for ( Variable v : aNet.getVariables() ) {
+			AllenInterval vAI = (AllenInterval)v;
+			
+			vAI.setStart(stpSolver.getEqualTimePoint(vAI.getStart()));
+			vAI.setEnd(stpSolver.getEqualTimePoint(vAI.getEnd()));
+		}
+	}
+	
+	public int numBookmarks() {
+		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
+		return stpSolver.numBookmarks();
+	}
+	
+
 	
 }

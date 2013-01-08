@@ -39,16 +39,17 @@ public class AllenInterval extends MultiVariable {
 	
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
-		TimePoint ts = (TimePoint)variables[0];
-		TimePoint te = (TimePoint)variables[1];
-		SimpleDistanceConstraint sdc = new SimpleDistanceConstraint();
-		sdc.setFrom(ts);
-		sdc.setTo(te);
-		sdc.setMinimum(0);
-		sdc.setMaximum(APSPSolver.INF);
-		Constraint[] cons = new Constraint[1];
-		cons[0] = sdc;
-		return cons;	
+//		TimePoint ts = (TimePoint)variables[0];
+//		TimePoint te = (TimePoint)variables[1];
+//		SimpleDistanceConstraint sdc = new SimpleDistanceConstraint();
+//		sdc.setFrom(ts);
+//		sdc.setTo(te);
+//		sdc.setMinimum(0);
+//		sdc.setMaximum(APSPSolver.INF);
+//		Constraint[] cons = new Constraint[1];
+//		cons[0] = sdc;
+//		return cons;	
+		return null;
 	}
 
 	@Override
@@ -59,13 +60,18 @@ public class AllenInterval extends MultiVariable {
 	public TimePoint getStart() {
 		return (TimePoint)this.variables[0];
 	}
-	
-
 
 	public TimePoint getEnd() {
 		return (TimePoint)this.variables[1];
 	}
 	
+	public void setStart( TimePoint s ) {
+		this.variables[0] = s;
+	}
+
+	public void setEnd( TimePoint e ) {
+		this.variables[1] = e;
+	}
 	
 	
 	public long getEST() {

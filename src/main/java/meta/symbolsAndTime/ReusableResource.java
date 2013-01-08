@@ -37,8 +37,8 @@ public class ReusableResource extends Schedulable {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+//		return this.getMetaVariable().toString() + "[" + this.capacity + "]";
+		return "---not implemented---";
 	}
 
 	@Override
