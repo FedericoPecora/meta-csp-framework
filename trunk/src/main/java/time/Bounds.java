@@ -11,8 +11,8 @@ public class Bounds implements Serializable, Comparable<Bounds> {
 
 	private static final long serialVersionUID = 8712498014900634496L;
 	
-	public final long min;
-	public final long max;
+	public long min;
+	public long max;
 	
 	public Bounds(long min, long max) {
 		this.min = min;

@@ -158,6 +158,4 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	public Paint getColor(){return this.color;}
 	
 	public void setColor(Paint c){this.color=c;}
-	
-
 }

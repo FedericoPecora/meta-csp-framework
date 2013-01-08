@@ -22,7 +22,7 @@ public class TestAPSPSolver {
 		Variable one = vars[0];
 		Variable two = vars[1];
 		Variable three = vars[2];
-		
+
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
 		SimpleDistanceConstraint con1 = new SimpleDistanceConstraint();
@@ -45,7 +45,7 @@ public class TestAPSPSolver {
 
 		SimpleDistanceConstraint con3 = new SimpleDistanceConstraint();
 		con3.setFrom(solver.getVariable(0));
-		con3.setTo(three);
+		con3.setTo(two);
 		con3.setMinimum(40);
 		con3.setMaximum(100);
 	
@@ -54,6 +54,8 @@ public class TestAPSPSolver {
 //		System.out.println(solver.addConstraint(con3)); //O(n^2)
 		
 		solver.addConstraints(new SimpleDistanceConstraint[] {con1, con2, con3});
+		
+		solver.addConstraints(new SimpleDistanceConstraint[] {con1,con2,con3});
 		
 //		System.out.println("(Domain,Value) of " + one.getID() + ": (" + one.getDomain() + "," + one.getDomain().chooseValue("ET") + ")");
 //		System.out.println("(*Domain,Value) of " + two.getID() + ": (" + two.getDomain() + "," + two.getDomain().chooseValue("LT") + ")");		

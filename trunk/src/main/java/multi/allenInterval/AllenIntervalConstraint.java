@@ -386,7 +386,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.After)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.After, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -423,7 +423,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.Starts)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Starts, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -443,7 +443,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.StartedBy)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.StartedBy, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -463,8 +463,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.During)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
-				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.Before, bounds[1]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.During, bounds[0]);
+				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.During, bounds[1]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -484,8 +484,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.Contains)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
-				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.Before, bounds[1]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Contains, bounds[0]);
+				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.Contains, bounds[1]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -505,7 +505,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.Finishes)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Finishes, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -525,7 +525,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.FinishedBy)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.FinishedBy, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -545,7 +545,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			if (type.equals(Type.Overlaps)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -571,7 +571,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			
 		
 			if (type.equals(Type.OverlappedBy)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.OverlappedBy, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();

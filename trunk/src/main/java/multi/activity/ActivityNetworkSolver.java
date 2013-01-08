@@ -1,11 +1,17 @@
 package multi.activity;
+
+import java.util.ArrayList;
 import java.util.Vector;
 
+import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalConstraint;
+import multi.allenInterval.AllenIntervalNetwork;
 import multi.allenInterval.AllenIntervalNetworkSolver;
 import symbols.SymbolicValueConstraint;
 import symbols.SymbolicVariableConstraintSolver;
+import time.APSPSolver;
 import utility.UI.PlotActivityNetworkGantt;
+import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
@@ -106,6 +112,14 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		Variable[] ret = new Variable[num];
 		for (int i = 0; i < num; i++)
 			ret[i] = new Activity(this, IDs++, this.constraintSolvers); 
+		Vector<Constraint> cons = new Vector<Constraint>();
+		for (Variable ai : ret) {
+			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
+			dur.setFrom(ai);
+			dur.setTo(ai);
+			cons.add(dur);
+		}
+		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
 		return ret;
 	}
 
@@ -115,4 +129,35 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return true;
 	}
 
+	@Override
+	protected void removeVariableSub(Variable v) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void removeVariablesSub(Variable[] v) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	public int bookmark() {
+		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];
+		return aSolver.bookmark();
+	}
+	
+	public void removeBookmarks( int i ) {
+		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];
+		aSolver.removeBookmark(i);
+	}
+	
+	public void revert( int i ) {
+		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];
+		aSolver.revert(i);
+	}
+	
+	public int numBookmarks() {		
+		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];
+		return aSolver.numBookmarks();
+	}
 }

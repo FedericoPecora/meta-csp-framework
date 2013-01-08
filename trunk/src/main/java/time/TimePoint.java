@@ -1,7 +1,9 @@
 package time;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
+import framework.Constraint;
 import framework.Domain;
 import framework.Variable;
 
@@ -30,6 +32,8 @@ public final class TimePoint extends Variable {
 	private long upperBound;
 	
 
+//	public static HashMap<Constraint,SimpleDistanceConstraint> sdcMap = new HashMap<Constraint, SimpleDistanceConstraint>();
+	
 	/**
 	 * Instantiate a new {@link TimePoint} with a given identifier and maximum number of time points that can be
 	 * added to the temporal network.  This constructor should NOT be used.  As the {@link APSPSolver} is static,
@@ -45,6 +49,13 @@ public final class TimePoint extends Variable {
 		//this.MAX_TPS = MAX_TPS;
 		out = new SimpleDistanceConstraint[MAX_TPS];
 	}
+	
+//	public TimePoint(int id, int MAX_TPS, APSPSolverIncrementelPPC sol) {
+//		//must invoke 2-arg superconstructor, lest compilation error
+//		super(sol,id);
+//		//this.MAX_TPS = MAX_TPS;
+//		out = new SimpleDistanceConstraint[MAX_TPS];
+//	}
 
 	/**
 	 * Instantiate a new {@link TimePoint} with a given identifier, upper bound and lower bound that can be
@@ -117,7 +128,6 @@ public final class TimePoint extends Variable {
 	 * @param newVal The new lower bound to set.
 	 */
 	public void setLowerBound(long newVal){
-		//System.out.println("SET LB of " + this.id + " to " + newVal);
 		lowerBound = newVal;
 	}
 
@@ -133,8 +143,7 @@ public final class TimePoint extends Variable {
 	 * Set this time point's upper bound.
 	 * @param newVal The new upper bound to set.
 	 */
-	public void setUpperBound(long newVal){
-		//System.out.println("SET UB of " + this.id + " to " + newVal);		
+	public void setUpperBound(long newVal){		
 		upperBound = newVal;
 	}
 
@@ -198,6 +207,43 @@ public final class TimePoint extends Variable {
 	public int compareTo(Variable o) {
 		// TODO Auto-generated method stub
 		return this.id - o.getID();
+	}
+	
+//	@Override
+	public TimePoint clone( ) {
+		
+//		HashMap<Variable,TimePoint> tpMap = new HashMap<Variable, TimePoint>();
+//		HashMap<Constraint,SimpleDistanceConstraint> sdcMap = new HashMap<Constraint, SimpleDistanceConstraint>();
+		
+//		TimePoint c = new TimePoint(id, this.lowerBound, this.upperBound, (APSPSolver) this.solver);
+//		System.out.println("CONSTRUCT");
+		TimePoint c = new TimePoint(id, this.out.length, (APSPSolver) this.solver);
+		c.setLowerBound(this.getLowerBound());
+		c.setUpperBound(this.getUpperBound());
+		c.setUsed(this.used);
+//		try {
+//			System.out.println(c.out);
+//			c.out = new SimpleDistanceConstraint[this.out.length];
+			
+			for ( int i = 0 ; i < this.out.length ; i++ ) {
+//				System.out.println(c.out);
+				if ( this.out[i] != null ) {
+//					System.out.println(c.out);
+//					System.out.println(c.getOut());
+					SimpleDistanceConstraint sdc = this.out[i].clone();
+					
+//					sdcMap.put(this.out[i], sdc);
+					
+					c.out[i] = sdc;
+				} else {
+					c.out[i] = null;
+				}
+			}
+//		} catch ( Exception e ) {
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
+		return c;
 	}
 
 }

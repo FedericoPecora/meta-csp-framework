@@ -260,6 +260,10 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	public ConstraintSolver[] getConstraintSolvers() {
 		return this.constraintSolvers;
 	}
+	
+	public void setConstraintSolver( int i, ConstraintSolver cSolver ) {
+		this.constraintSolvers[i] = cSolver;
+	}
 
 	@Override
 	public String getDescription() {
