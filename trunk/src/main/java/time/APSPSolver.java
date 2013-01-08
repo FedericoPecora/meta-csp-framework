@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+
+import choco.cp.solver.constraints.integer.bool.sat.Vec;
 
 import throwables.ConstraintNotFound;
 import throwables.time.MalformedSimpleDistanceConstraint;
@@ -221,6 +224,7 @@ public class APSPSolver extends ConstraintSolver {
 		if (n > MAX_TPS) return null;
 		int[] ret = new int[n];
 		for (int i = 0; i < n; i++) ret[i] = tpCreate();
+		fromScratchDistanceMatrixComputation();
 		return ret;
 
 		//		logger.log(Level.FINE, "Creating " + n + " TPs");
@@ -236,7 +240,7 @@ public class APSPSolver extends ConstraintSolver {
 		//			}
 		//			i++;
 		//		}
-		//		fromScratchDistanceMatrixComputation();
+//				fromScratchDistanceMatrixComputation();
 		//		return ret;
 	}
 
@@ -784,6 +788,25 @@ public class APSPSolver extends ConstraintSolver {
 	}
 
 	//Add a many new constraints (SimpleDistanceConstraints)
+//	@Override
+//	protected boolean addConstraintsSub(Constraint[] con) {
+//		if (con == null || con.length == 0) return true;
+//		Bounds[] tot = new Bounds[con.length];
+//		int[] from = new int[con.length];
+//		int[] to = new int[con.length];
+//
+//		for (int i = 0; i < con.length; i++) {
+//			if (con[i] instanceof SimpleDistanceConstraint) {
+//				SimpleDistanceConstraint c = (SimpleDistanceConstraint)con[i];
+//				tot[i] = new Bounds(c.getMinimum(),c.getMaximum());
+//				from[i] = ((TimePoint)c.getFrom()).getID();
+//				to[i] = ((TimePoint)c.getTo()).getID();
+//			}
+//		}
+//
+//		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
+//		return cCreate(tot,from,to);
+//	}
 	@Override
 	protected boolean addConstraintsSub(Constraint[] con) {
 		if (con == null || con.length == 0) return true;
@@ -801,7 +824,24 @@ public class APSPSolver extends ConstraintSolver {
 		}
 
 		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
-		return cCreate(tot,from,to);
+		Vector<Constraint> added = new Vector<Constraint>();
+		for (int i = 0; i < con.length; i++) {
+			if (cCreate(tot[i],from[i],to[i])) added.add(con[i]);
+			else {
+				logger.fine("Could not add " + con[i]);
+				Bounds[] toDeleteBounds = new Bounds[added.size()];
+				int[] toDeleteFrom = new int[added.size()];
+				int[] toDeleteTo = new int[added.size()];
+				for (int j = 0; j < added.size(); j++) {
+					toDeleteBounds[j] = new Bounds(((SimpleDistanceConstraint)added.get(j)).getMinimum(),((SimpleDistanceConstraint)added.get(j)).getMaximum());
+					toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
+					toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
+				}
+				cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
+				return false;
+			}
+		}
+		return true;
 	}
 
 
