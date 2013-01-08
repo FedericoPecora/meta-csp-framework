@@ -388,11 +388,28 @@ public abstract class ConstraintNetwork implements Serializable {
 	 * {@link Variable}s and the same {@link Constraint}s as this.
 	 */
 	public boolean equals(Object o) {
+//		if (!(o instanceof ConstraintNetwork)) return false;
+//		ConstraintNetwork cn = (ConstraintNetwork)o;
+//		for (Variable v : cn.getVariables()) if (!this.containsVariable(v)) return false;
+//		for (Constraint c : cn.getConstraints()) if (!this.containsConstraint(c)) return false;
+//		return true;
+		
 		if (!(o instanceof ConstraintNetwork)) return false;
-		ConstraintNetwork cn = (ConstraintNetwork)o;
-		for (Variable v : cn.getVariables()) if (!this.containsVariable(v)) return false;
-		for (Constraint c : cn.getConstraints()) if (!this.containsConstraint(c)) return false;
+		
+		
+		
+		ConstraintNetwork otherNetwork = (ConstraintNetwork)o;
+		for (Variable v : otherNetwork.getVariables()) if (!this.containsVariable(v)) return false;
+		for (Constraint c : otherNetwork.getConstraints()) if (!this.containsConstraint(c)) return false;
+		
+		for(Variable v: this.getVariables()) if(!otherNetwork.containsVariable(v)) return false;
+		for(Constraint c: this.getConstraints()) if (!this.containsConstraint(c))return false;
+		
+		
 		return true;
+
+		
+		
 	}
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {

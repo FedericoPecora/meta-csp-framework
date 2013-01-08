@@ -611,4 +611,12 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		this.counterMoves = counterMoves;
 	}
 
+	public HashMap<ConstraintNetwork, ConstraintNetwork> getResolvers() {
+		return resolvers;
+	}
+
+	public void setResolvers(HashMap<ConstraintNetwork, ConstraintNetwork> resolvers) {
+		this.resolvers = resolvers;
+	}
+
 }
