@@ -80,7 +80,7 @@ public abstract class Schedulable extends MetaConstraint {
 	}
 	
 	
-	// it is evaluated if, over time, some resource's capacity is exceeded
+	// Finds sets of overlapping activities and assesses whether they are conflicting (e.g., over-consuming a resource)
 	private ConstraintNetwork[] samplingPeakCollection() {
 
 		if (activities != null && !activities.isEmpty()) {
@@ -130,7 +130,6 @@ public abstract class Schedulable extends MetaConstraint {
 							break;						
 						}
 						// if they don't exceed the capacity, just the newIntersection is taken into account...
-						// mmmm...
 						else intersection = intersectionNew;
 					}
 				}
@@ -147,7 +146,6 @@ public abstract class Schedulable extends MetaConstraint {
 			
 			for (Activity key : usages.keySet()) {
 				if (usages.get(key).getVariables().length > 1) ret.add(usages.get(key));
-				//System.out.println("PEAK: " + usages.get(key));
 			}
 			
 			return ret.toArray(new ConstraintNetwork[ret.size()]);
@@ -157,7 +155,6 @@ public abstract class Schedulable extends MetaConstraint {
 
 	
 	private ConstraintNetwork[] completePeakCollection() {
-		//System.out.println("CALLED!!");
 		if (activities != null && !activities.isEmpty()) {
 			logger.finest("Doing complete peak collection with " + activities.size() + " activities...");
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
@@ -177,9 +174,7 @@ public abstract class Schedulable extends MetaConstraint {
 			for (int i = 0; i < discontinuitiesArray.length-1; i++) {
 				HashSet<Activity> onePeak = new HashSet<Activity>();
 				superPeaks.add(onePeak);
-				//Interval interval = new Interval(null,discontinuitiesArray[i], discontinuitiesArray[i+1]);
 				Bounds interval = new Bounds(discontinuitiesArray[i], discontinuitiesArray[i+1]);
-				//System.out.println("D-INTERVAL: " + interval);
 				for (Activity a : groundVars) {
 					Bounds interval1 = new Bounds(a.getTemporalVariable().getEST(), a.getTemporalVariable().getEET());
 					Bounds intersection = interval.intersect(interval1);
@@ -187,15 +182,12 @@ public abstract class Schedulable extends MetaConstraint {
 						onePeak.add(a);
 					}
 				}
-				//System.out.println(onePeak);
 			}
 
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			for (HashSet<Activity> superSet : superPeaks) {
-//				logger.finest("HEREEEEE and " + superSet);
 				for (Set<Activity> s : powerSet(superSet)) {
 					if (!s.isEmpty()) {
-						//System.out.println("ELEMENT: " + s);
 						ActivityNetwork cn = new ActivityNetwork(null);
 						for (Activity a : s) cn.addVariable(a); 
 						if (!ret.contains(cn) && isConflicting(s.toArray(new Activity[s.size()]))) ret.add(cn);
@@ -218,7 +210,7 @@ public abstract class Schedulable extends MetaConstraint {
 			for (int i = 0; i < groundVars.length; i++) {
 				for (int j = 0; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
-					if (!groundVars[i].getComponent().equals(groundVars[j].getComponent())) {
+					if (groundVars[i].getComponent().equals(groundVars[j].getComponent())) {
 						Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
 						if (bi.intersect(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
 							ActivityNetwork cn = new ActivityNetwork(null);
