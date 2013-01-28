@@ -113,24 +113,26 @@ public abstract class Schedulable extends MetaConstraint {
 				Bounds intersection = new Bounds(start, end);
 				// starting from act[i] all the forthcoming activities are evaluated to see if they temporally
 				// overlaps with act[i]
-				for (int j = i+1; j < groundVars.length; j++) {
-					start = (groundVars[j]).getTemporalVariable().getEST();
-					end = (groundVars[j]).getTemporalVariable().getEET();
-					Bounds nextInterval = new Bounds(start, end);
-					Bounds intersectionNew = intersection.intersect(nextInterval);
-					// if act[j] overlaps it is added to the temporary (wrt i) set of activities
-					if (intersectionNew != null) {
-						overlapping.add(groundVars[j]);
-						// the current set of overlapping activities is evaluated to see if
-						// the resource capacity is exceeded
-						if (isConflicting(overlapping.toArray(new Activity[overlapping.size()]))) {
-							// if it is exceeded the Vector of activities gathered in this iteration is put
-							// in a Vector<Vector<Activity>>
-							overlappingAll.add(overlapping);
-							break;						
+				for (int j = 0; j < groundVars.length; j++) {
+					if (i != j) {
+						start = (groundVars[j]).getTemporalVariable().getEST();
+						end = (groundVars[j]).getTemporalVariable().getEET();
+						Bounds nextInterval = new Bounds(start, end);
+						Bounds intersectionNew = intersection.intersect(nextInterval);
+						// if act[j] overlaps it is added to the temporary (wrt i) set of activities
+						if (intersectionNew != null) {
+							overlapping.add(groundVars[j]);
+							// the current set of overlapping activities is evaluated to see if
+							// the resource capacity is exceeded
+							if (isConflicting(overlapping.toArray(new Activity[overlapping.size()]))) {
+								// if it is exceeded the Vector of activities gathered in this iteration is put
+								// in a Vector<Vector<Activity>>
+								overlappingAll.add(overlapping);
+								break;						
+							}
+							// if they don't exceed the capacity, just the newIntersection is taken into account...
+							else intersection = intersectionNew;
 						}
-						// if they don't exceed the capacity, just the newIntersection is taken into account...
-						else intersection = intersectionNew;
 					}
 				}
 			}
