@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Logger;
@@ -34,8 +35,26 @@ public final class TimelinePublisher
 	private long min = Long.MAX_VALUE;
 	private long max = Long.MIN_VALUE;
 	private Bounds bounds;
+	private boolean slidingWindow = false;
 	private TimelineVisualizer viz = null;
+	private long timeNow = 0;
+	private long temporalResolution = 1000;
 	
+	/**
+	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
+	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
+	 * @param slidingWindow If <code>true</code>, the bounds are interpreted as a sliding window.
+	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
+	 */
+	public TimelinePublisher(ActivityNetworkSolver ans, Bounds bounds, boolean slidingWindow, String ... components)
+	{
+		this.components = components;
+		this.ans = ans;
+		this.bounds = bounds;
+		this.imageEncoder.start();
+		this.slidingWindow = slidingWindow;
+	}
+
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
 	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
@@ -104,6 +123,10 @@ public final class TimelinePublisher
 					if (stl.getPulses()[0] < min) min = stl.getPulses()[0];
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];
 				}
+				else if (slidingWindow) {
+					min += timeNow;
+					max += timeNow;
+				}
 				timelinesToRefresh.add(stl);
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);
@@ -159,8 +182,10 @@ public final class TimelinePublisher
 			boolean tryCreateOutputDir = true;
 			BufferedImage mergedImage = null;
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(50*1024);
+			long startTime = Calendar.getInstance().getTimeInMillis();
 			for(;;)
 			{
+				timeNow = (long)(((float)(Calendar.getInstance().getTimeInMillis()-startTime))/temporalResolution);				
 				//Wait until we are cleared to encode an image
 				try { runSemaphore.acquire(); }
 				catch (InterruptedException e) { break; }
