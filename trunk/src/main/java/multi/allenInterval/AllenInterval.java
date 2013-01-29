@@ -106,7 +106,7 @@ public class AllenInterval extends MultiVariable {
 			for(Variable x: this.variables){
 				s+= x.getID()+" ";
 			}
-			s+=")"+" " + this.getDomain();
+			s+=") "+ this.getDomain();
 		}
 		else
 			s+=this.name + " " + this.id + " " + this.getDomain();
