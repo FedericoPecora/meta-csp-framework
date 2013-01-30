@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Vector;
 
 import spatial.RCC.RCCConstraint;
+import spatial.cardinal.CardinalConstraint;
+import spatial.cardinal.CardinalConstraint.Type;
 import framework.BinaryConstraint;
 import framework.Constraint;
 
@@ -69,6 +71,71 @@ public class RectangleConstraint extends BinaryConstraint {
 				
 		return ReactangleToRCC[x.ordinal()][y.ordinal()];
 	}
+	
+	public static CardinalConstraint.Type getCardinalConstraint(QualitativeAllenIntervalConstraint.Type x,  QualitativeAllenIntervalConstraint.Type y){
+		
+		if(x.compareTo(QualitativeAllenIntervalConstraint.Type.Equals) == 0 && y.compareTo(QualitativeAllenIntervalConstraint.Type.Equals) == 0)
+			return CardinalConstraint.Type.EQUAL;
+		return makeCardinalBy2Dim(ReactangleToCardinalX[x.ordinal()], ReactangleToCardinalY[y.ordinal()]);
+
+	}
+	
+	private static Type makeCardinalBy2Dim(Type t1, Type t2) {
+		
+		if(t1.compareTo(CardinalConstraint.Type.NO) == 0 && t2.compareTo(CardinalConstraint.Type.NO) == 0)
+			return CardinalConstraint.Type.NO;
+		if(t1.compareTo(CardinalConstraint.Type.NO) == 0 && t2.compareTo(CardinalConstraint.Type.NO) != 0)
+			return t2;
+		if(t1.compareTo(CardinalConstraint.Type.NO) != 0 && t2.compareTo(CardinalConstraint.Type.NO) == 0)
+			return t1;
+		if(t1.compareTo(CardinalConstraint.Type.East) == 0 && t2.compareTo(CardinalConstraint.Type.North) == 0)
+			return CardinalConstraint.Type.NorthEast;
+		if(t1.compareTo(CardinalConstraint.Type.West) == 0 && t2.compareTo(CardinalConstraint.Type.North) == 0)
+			return CardinalConstraint.Type.NorthWest;
+		if(t1.compareTo(CardinalConstraint.Type.East) == 0 && t2.compareTo(CardinalConstraint.Type.South) == 0)
+			return CardinalConstraint.Type.SouthEast;
+		if(t1.compareTo(CardinalConstraint.Type.West) == 0 && t2.compareTo(CardinalConstraint.Type.South) == 0)
+			return CardinalConstraint.Type.SouthWest;
+		
+		return null;
+	}
+
+	public static CardinalConstraint.Type[] ReactangleToCardinalX = {
+	
+			CardinalConstraint.Type.West, //before			
+			CardinalConstraint.Type.West, //meets
+			CardinalConstraint.Type.West, //overlaps
+			CardinalConstraint.Type.NO, //fi
+			CardinalConstraint.Type.NO, //di
+			CardinalConstraint.Type.NO, //si
+			CardinalConstraint.Type.NO, //=
+			CardinalConstraint.Type.NO, //s
+			CardinalConstraint.Type.NO, //d
+			CardinalConstraint.Type.NO, //f
+			CardinalConstraint.Type.East, //oi
+			CardinalConstraint.Type.East, //mi
+			CardinalConstraint.Type.East, //bi
+
+	};
+	
+	public static CardinalConstraint.Type[] ReactangleToCardinalY = {
+		
+		CardinalConstraint.Type.South, //before			
+		CardinalConstraint.Type.South, //meets
+		CardinalConstraint.Type.South, //overlaps
+		CardinalConstraint.Type.NO, //fi
+		CardinalConstraint.Type.NO, //di
+		CardinalConstraint.Type.NO, //si
+		CardinalConstraint.Type.NO, //=
+		CardinalConstraint.Type.NO, //s
+		CardinalConstraint.Type.NO, //d
+		CardinalConstraint.Type.NO, //f
+		CardinalConstraint.Type.North, //oi
+		CardinalConstraint.Type.North, //mi
+		CardinalConstraint.Type.North, //bi
+
+};
+
 	
 	public static RCCConstraint.Type[][] ReactangleToRCC = {
 		{

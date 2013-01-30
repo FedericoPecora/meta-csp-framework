@@ -27,8 +27,8 @@ public class RectangleConstraintSolver extends ConstraintSolver{
 	private int IDs = 0;
 	private HashMap<Integer, Variable> getVaribaleById = new HashMap<Integer, Variable>();
 	private boolean debug = false;
-	private Vector<Vector<RectangleConstraint>> recRels = new Vector<Vector<RectangleConstraint>>(); 
-	private Vector<AugmentedRectangleConstraint> boundedCons = new Vector<AugmentedRectangleConstraint>();
+	private Vector<Vector<RectangleConstraint>> recRels; //= new Vector<Vector<RectangleConstraint>>(); 
+	private Vector<AugmentedRectangleConstraint> boundedCons;// = new Vector<AugmentedRectangleConstraint>();
 	private HashMap<String, AugmentedRectangleConstraint> durationByname = new HashMap<String, AugmentedRectangleConstraint>();
 	public enum Dimension  {X, Y};
 	
@@ -121,8 +121,11 @@ public class RectangleConstraintSolver extends ConstraintSolver{
 		for (int i = 0; i < this.getVariables().length; i++) {
 			getVaribaleById.put(this.getVariables()[i].getID(), this.getVariables()[i]);
 		}
-		recRels.clear();
-		boundedCons.clear();
+		
+		recRels = new Vector<Vector<RectangleConstraint>>();
+		boundedCons = new Vector<AugmentedRectangleConstraint>();
+//		recRels.clear();
+//		boundedCons.clear();
 		recRels = createAllenCompleteNetwork(this.getConstraints());
 		
 		

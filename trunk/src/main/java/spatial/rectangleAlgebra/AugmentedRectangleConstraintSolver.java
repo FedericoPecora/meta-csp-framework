@@ -31,7 +31,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	/**
 	 * 
 	 */
-	private long horizon = 100;
+	private long horizon = 2000;
 	private AllenIntervalNetworkSolver solverX;
 	private AllenIntervalNetworkSolver solverY;
 	private boolean isInconsistent = false;
@@ -59,8 +59,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 	private boolean convertRectangleTo2DimensionSTP(Vector<Vector<RectangleConstraint>> consrels){
 
-		solverX = new AllenIntervalNetworkSolver(0, horizon);
-		solverY = new AllenIntervalNetworkSolver(0, horizon);
+		solverX = new AllenIntervalNetworkSolver(0, horizon, 50);
+		solverY = new AllenIntervalNetworkSolver(0, horizon, 50);
 
 
 		Vector<AllenIntervalConstraint> xAllenConstraint = new Vector<AllenIntervalConstraint>();
@@ -71,18 +71,19 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 		unaryCulpritVar = new Vector<Variable>();
 
-		Bounds xLB, xUB,yLB, yUB;
+		
 		for (int i = 0; i < this.getVariables().length; i++) {
 			intervalsx[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 			intervalsy[i].setName(((RectangularRegion)this.getVariables()[i]).getName());
 			if(((RectangularRegion)this.getVariables()[i]).getBoundingbox() != null){
+				
+				Bounds xLB = new Bounds(((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB().min, ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB().max);
+				Bounds xUB = new Bounds(((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB().min, ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB().max);
 
-				xLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxLB();
-				xUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getxUB();
-
-				yLB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyLB();
-				yUB = ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyUB();
-
+				Bounds yLB = new Bounds(((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyLB().min, ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyLB().max);
+				Bounds yUB = new Bounds(((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyUB().min, ((RectangularRegion)this.getVariables()[i]).getBoundingbox().getyUB().max);
+				
+				
 				if(!isUnboundedBoundingBox(xLB, xUB, yLB, yUB) && ((RectangularRegion)this.getVariables()[i]).getOntologicalProp().isMovable()){
 					unaryCulpritVar.add(this.getVariables()[i]);
 				}
@@ -146,11 +147,10 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		convertUnboundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, consrels);
 		//for bounded RA constraint
 		convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
-		
-
-		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);	
+		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
+		System.out.println("......................................................................");
 		if (!solverX.addConstraints(consX)) { 
-			System.out.println("Failed to add constraints in X dimension! ");
+			System.out.println(solverX + "Failed to add constraints in X dimension! ");
 			isInconsistent = true;
 
 		}
@@ -160,8 +160,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			System.out.println("Failed to add constraints in Y dimension! ");
 			isInconsistent = true;
 		}
-
-
+		
+//		double avg = ((double)(solverX.getRigidityNumber()) + (double)(solverY.getRigidityNumber())) / 2;
+//		System.out.println("TMP AVG:" + avg);
 
 		if(isInconsistent)
 			return false;
@@ -432,6 +433,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				double avg = ((double)(tmpSolverX.getRigidityNumber()) + (double)(tmpSolverY.getRigidityNumber())) / 2;
 				rigidityHuristic.put((RectangularRegion)unaryCulpritVar.get(u), 
 						avg);
+				System.out.print("name: " + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
+				System.out.println(", avg: " + avg);
+				ConstraintNetwork.draw(this.theNetwork, ((RectangularRegion)unaryCulpritVar.get(u)).getName());
 				bestMoveCandidates.put((RectangularRegion)unaryCulpritVar.get(u), getbestPlacementBoundingBox(tmpSolverX, tmpSolverY));
 			}
 			else{
