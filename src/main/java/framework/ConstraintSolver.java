@@ -303,6 +303,8 @@ public abstract class ConstraintSolver implements Serializable {
 			else {
 				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
 				logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
+				
+				
 				return false;
 			}
 		}

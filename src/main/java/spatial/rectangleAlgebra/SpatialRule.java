@@ -1,5 +1,7 @@
 package spatial.rectangleAlgebra;
 
+
+
 public class SpatialRule {
 	
 	private String from = "";
@@ -29,7 +31,9 @@ public class SpatialRule {
 		return araCons;
 	}
 	
-	
+	public String toString() {
+		return "(" + this.getFrom() + ") --" + this.getRaCons() + "--> (" + this.getTo() + ")";
+	}
 	
 	
 
