@@ -38,7 +38,7 @@ public final class TimelinePublisher
 	private boolean slidingWindow = false;
 	private TimelineVisualizer viz = null;
 	private long timeNow = 0;
-	private long temporalResolution = 1000;
+	private long temporalResolution = 1;
 	
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
@@ -74,6 +74,14 @@ public final class TimelinePublisher
 	 */
 	public TimelinePublisher(ActivityNetworkSolver ans, String ... components) {
 		this(ans,null,components);
+	}
+	
+	/**
+	 * Sets the temporal resolution of this publisher (default is 1).
+	 * @param temporalResolution The desired temporal resolution of this publisher (e.g., milliseconds if <code>temporalResolution = 1000</code>).
+	 */
+	public void setTemporalResolution(long temporalResolution) {
+		this.temporalResolution = temporalResolution;
 	}
 
 	/**
@@ -123,11 +131,11 @@ public final class TimelinePublisher
 					if (stl.getPulses()[0] < min) min = stl.getPulses()[0];
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];
 				}
-				else if (slidingWindow) {
-					min += timeNow;
-					max += timeNow;
-				}
 				timelinesToRefresh.add(stl);
+			}
+			if (slidingWindow) {
+				min = bounds.min + (long)(((double)timeNow)/(1000.0/temporalResolution));
+				max = bounds.max + (long)(((double)timeNow)/(1000.0/temporalResolution));
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);
 			logger.finest("Image being rendered...");
@@ -185,7 +193,7 @@ public final class TimelinePublisher
 			long startTime = Calendar.getInstance().getTimeInMillis();
 			for(;;)
 			{
-				timeNow = (long)(((float)(Calendar.getInstance().getTimeInMillis()-startTime))/temporalResolution);				
+				timeNow = Calendar.getInstance().getTimeInMillis()-startTime;				
 				//Wait until we are cleared to encode an image
 				try { runSemaphore.acquire(); }
 				catch (InterruptedException e) { break; }
