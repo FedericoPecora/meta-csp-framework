@@ -325,15 +325,15 @@ public class RectangleConstraintSolver extends ConstraintSolver{
 		int row = 0 , col = 0;
 		for(int i = 0; i < c.length; i++){
 			//this is because the Augmented rectangle Algebra Allow to have During which is need for further process, in this way, we do not iterate again to extract During 
-			//if(c[i] instanceof AugmentedRectangleConstraint){
+			if(c[i] instanceof AugmentedRectangleConstraint){
 				if(((AugmentedRectangleConstraint)c[i]).getBoundedConstraintX() != null && ((AugmentedRectangleConstraint)c[i]).getBoundedConstraintY() != null){
 					boundedCons.add((AugmentedRectangleConstraint)c[i]);
-					if(((AugmentedRectangleConstraint)c[i]).getBoundedConstraintX().getType().equals(AllenIntervalConstraint.Type.Duration) && 
-							((AugmentedRectangleConstraint)c[i]).getBoundedConstraintY().getType().equals(AllenIntervalConstraint.Type.Duration))			
-					durationByname.put(((RectangularRegion)((AugmentedRectangleConstraint)c[i]).getFrom()).getName(), (AugmentedRectangleConstraint)c[i]);
+//					if(((AugmentedRectangleConstraint)c[i]).getBoundedConstraintX().getType().equals(AllenIntervalConstraint.Type.Duration) && 
+//							((AugmentedRectangleConstraint)c[i]).getBoundedConstraintY().getType().equals(AllenIntervalConstraint.Type.Duration))			
+//					durationByname.put(((RectangularRegion)((AugmentedRectangleConstraint)c[i]).getFrom()).getName(), (AugmentedRectangleConstraint)c[i]);
 					continue;
 				}
-			//}
+			}
 			row = this.getID(c[i].getScope()[0]);
 			col = this.getID(c[i].getScope()[1]);
 			tmp[row][col] = (RectangleConstraint)c[i];

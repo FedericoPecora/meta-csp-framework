@@ -16,6 +16,7 @@ public class Region extends Variable {
 	
 	protected Region(ConstraintSolver cs, int id) {
 		super(cs, id);
+		this.dom = new Rectangle(this);
 		
 	}
 
