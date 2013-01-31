@@ -57,30 +57,6 @@ public class TestFuzzySymbolicVariableConstraintSolver {
 				}
 			}
 		}
-
-		
-
-				
-//		/***/
-//		System.out.println("---------------------");
-//
-//		SymbolicValueConstraint con3 = new SymbolicValueConstraint(solver,SymbolicValueConstraint.Type.UNARYEQUALS);
-//		con3.setFrom(var2);
-//		con3.setTo(var2);
-//		con3.setUnaryValue("B");
-//		solver.addConstraint(con3);
-//
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		System.out.println(var0);
-//		System.out.println(var1);
-//		System.out.println(var2);
-
 	}
 
 }

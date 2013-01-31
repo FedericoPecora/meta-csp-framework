@@ -22,11 +22,8 @@ public class TestAugmentedRectangleConstraintSolver {
 	 * @param args
 	 */
 	
-	private static final Logger logger = Logger.getLogger(TestAugmentedRectangleConstraintSolver.class.getPackage().getName());
 	public static void main(String[] args) {
-		
-		logger.log(Level.FINEST, "Propagating (quad) with #TPs = " + "test");
-
+	
 		AugmentedRectangleConstraintSolver solver = new AugmentedRectangleConstraintSolver();
 		Vector<AugmentedRectangleConstraint> allConstraints = new Vector<AugmentedRectangleConstraint>();
 		
