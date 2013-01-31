@@ -11,7 +11,6 @@ public class TestRCCConstraintNetworkSolver {
 
 	public static void main(String[] args) {
 		
-		//Region r1 = 
 		RCCConstraintSolver solver = new RCCConstraintSolver(); 
 		Variable[] vars = solver.createVariables(3);
 		
