@@ -1,12 +1,19 @@
 package utility.timelinePlotting;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import meta.symbolsAndTime.SymbolicTimeline;
 
@@ -32,7 +39,41 @@ public class TimelineVisualizer extends JFrame {
 		if (image == null) {
 			this.image = im;
 //			this.setSize(image.getWidth(), image.getHeight());
-			panel.setSize(image.getWidth(), image.getHeight());
+			int panelX = image.getWidth(); 
+			int panelY = image.getHeight(); 
+			panel.setSize(panelX, panelY);
+
+//			Toolkit tk = Toolkit.getDefaultToolkit();  
+//			int xSize = ((int) tk.getScreenSize().getWidth());  
+//			int ySize = ((int) tk.getScreenSize().getHeight());
+			
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedLookAndFeelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			Rectangle bounds = ge.getMaximumWindowBounds();
+
+			int deltaX = 70;
+			int deltaY = 30;
+			int xSize = Math.min(bounds.width-deltaX, panelX);
+			int ySize = Math.min(bounds.height-deltaY, panelY);
+			
+			System.out.println("x and y " + xSize + " " + ySize);
+			
+			this.setPreferredSize(new Dimension(xSize, ySize));
+			
 			this.setResizable(false);
 			this.pack();
 		}
@@ -50,10 +91,12 @@ public class TimelineVisualizer extends JFrame {
 		panel = new JPanel();
 		panel.setBackground(Color.GRAY);
 		icon = new ImageIcon();
-		JLabel label = new JLabel(); 
+		JLabel label = new JLabel();
 		label.setIcon(icon); 
 		panel.add(label);
-		this.getContentPane().add(panel);
+		JScrollPane sp = new JScrollPane(panel);
+		sp.setAutoscrolls(true);
+		this.getContentPane().add(sp);
 		this.setVisible(false);
 	}
 	
