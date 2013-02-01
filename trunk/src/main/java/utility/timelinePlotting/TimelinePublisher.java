@@ -26,7 +26,7 @@ import utility.logging.MetaCSPLogging;
  */
 public final class TimelinePublisher
 {
-	private final TimelineEncoder imageEncoder = new TimelineEncoder(640, 80, "png", "TimeLine", "./TimeLines");
+	private final TimelineEncoder imageEncoder = new TimelineEncoder(768, 80, "png", "TimeLine", "./TimeLines");
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
@@ -95,6 +95,14 @@ public final class TimelinePublisher
 	public void registerTimelineVisualizer(TimelineVisualizer viz) {
 		this.viz = viz;
 	}
+	
+	/**
+	 * Set the list of components for which to publish {@link SymbolicTimeline}s.
+	 * @param components The list of components for which to publish {@link SymbolicTimeline}s.
+	 */
+	public void setComponents(String ... components) {
+		this.components = components;
+	}
 		
 	private final ArrayList<SymbolicTimeline> timelinesToRefresh = new ArrayList<SymbolicTimeline>();
 	
@@ -133,9 +141,10 @@ public final class TimelinePublisher
 				}
 				timelinesToRefresh.add(stl);
 			}
-			if (slidingWindow) {
-				min = bounds.min + (long)(((double)timeNow)/(1000.0/temporalResolution));
-				max = bounds.max + (long)(((double)timeNow)/(1000.0/temporalResolution));
+			long delta = bounds.max-bounds.min;
+			if (slidingWindow && (long)(((double)timeNow)/(1000.0/temporalResolution)) > ((double)delta)/2.0) {
+				min = bounds.min + (long)(((double)timeNow)/(1000.0/temporalResolution)-((double)delta)/2.0);
+				max = bounds.max + (long)(((double)timeNow)/(1000.0/temporalResolution)-((double)delta)/2.0);
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);
 			logger.finest("Image being rendered...");
