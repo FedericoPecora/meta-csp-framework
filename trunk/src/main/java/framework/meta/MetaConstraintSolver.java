@@ -236,30 +236,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					catch (InterruptedException e) { e.printStackTrace(); }
 				}
 				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
-				
-//				ActivityNetworkSolver aSolver = (ActivityNetworkSolver)this.getConstraintSolvers()[0];
-//				AllenIntervalNetworkSolver alSolver = (AllenIntervalNetworkSolver)aSolver.getConstraintSolvers()[0];
-//				APSPSolver apSolver = (APSPSolver)alSolver.getConstraintSolvers()[0];
-				
-//				System.out.println("......... DIST BEFORE ");
-//				System.out.println(apSolver.printDist());
-//				System.out.println("..............................");
-//				for ( int i = 0 ; i < apSolver.tPoints.length ; i++ ) {
-//					if ( apSolver.tPoints[i] != null )
-//						System.out.println(apSolver.tPoints[i]);
-//				}
-//				System.out.println("..........................");
-				
+								
 				if (this.addResolver(mostProblematicNetwork, value)) {
-					
-//					System.out.println("......... DIST AFTER ");
-//					System.out.println(apSolver.printDist());
-//					System.out.println("..............................");
-//					for ( int i = 0 ; i < apSolver.tPoints.length ; i++ ) {
-//						if ( apSolver.tPoints[i] != null )
-//							System.out.println(apSolver.tPoints[i]);
-//					}
-//					System.out.println("..........................");
 					
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
@@ -269,15 +247,12 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					resolvedConflictCounter++;
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
-//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
-//					this.counterMoves++;
 					
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
 						breakSearch = false;
 						return true;
 					}
-					// addEdege(e,v,v)
 					this.g.addEdge(value, currentVertex, newConflict);
 					currentVertex = newConflict;
 					if (backtrackHelper(newConflict)) return true;					
@@ -290,8 +265,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
-//					this.counterMoves--;
-//					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
 					logger.fine("Failure... (2)");
 				}
 			}
@@ -304,8 +277,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	
 	
 	private boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
-//		ActivityNetworkSolver groundSolver 	= (ActivityNetworkSolver)this.getConstraintSolvers()[0];
-//		System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKKKK NUMBER OF VARIABLES" + groundSolver.getVariables().length);
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
@@ -313,7 +284,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		logger.fine("Solving conflict: " + metaVariable);
 		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
 		if (metaVariable.getMetaConstraint().valOH != null && values!=null){
-//			ConfigMetaConstraintValOH v= (ConfigMetaConstraintValOH)metaVariable.getMetaConstraint().valOH;
 			Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
 		}
 		if (values == null || values.length == 0) {
@@ -361,10 +331,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 			}
 		}
-//		this.counterMoves--;
-//		logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
-//		
-
 		
 		logger.fine("Backtracking...");
 		currentVertex = this.g.getParent(currentVertex);
@@ -428,12 +394,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	public boolean propagate() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	protected Variable createVariableSub() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -618,7 +578,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}
 		ret += "]";
 		nesting++;
-//		for (MetaConstraintSolver cs : this.nextMetaConstraintSolvers) ret += "\n" + cs.getDescription();
 		for (ConstraintSolver cs : this.getConstraintSolvers()) ret += "\n" + cs.getDescription();
 		nesting--;
 		ret += "]";

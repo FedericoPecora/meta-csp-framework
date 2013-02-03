@@ -1,23 +1,28 @@
 package examples.multi;
 
+import java.util.Calendar;
 import java.util.logging.Level;
 
+import meta.symbolsAndTime.SymbolicTimeline;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
+import multi.fuzzyActivity.SimpleTimeline;
 import symbols.SymbolicValueConstraint;
 import time.Bounds;
 import utility.logging.MetaCSPLogging;
 import utility.timelinePlotting.TimelinePublisher;
 import utility.timelinePlotting.TimelineVisualizer;
 import framework.Constraint;
+import framework.ConstraintNetwork;
 
 public class TestTimelinePlotting {
 	
 	public static void main(String[] args) {
 		
 		MetaCSPLogging.setLevel(TimelinePublisher.class, Level.FINEST);
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(10,1000);
+		long timeNow = Calendar.getInstance().getTimeInMillis();
+		ActivityNetworkSolver solver = new ActivityNetworkSolver(timeNow,timeNow+1000);
 		Activity act1 = (Activity)solver.createVariable("One Component");
 		act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable("Another Component");
@@ -47,10 +52,12 @@ public class TestTimelinePlotting {
 		solver.addConstraints(cons);
 		
 		TimelinePublisher tp = new TimelinePublisher(solver, "One Component", "Another Component");
-		tp.setTemporalResolution(1000);
+		//tp.setTemporalResolution(1000);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		
 		tp.publish(false, true);
+		
+		ConstraintNetwork.draw(solver.getConstraintSolvers()[0].getConstraintNetwork());
 		
 		AllenIntervalConstraint con3 = null;
 		
@@ -58,7 +65,7 @@ public class TestTimelinePlotting {
 			try { Thread.sleep(500); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 			if (con3 != null) solver.removeConstraint(con3);
-			con3 = new AllenIntervalConstraint( AllenIntervalConstraint.Type.Release, new Bounds(7+i, 10+i));
+			con3 = new AllenIntervalConstraint( AllenIntervalConstraint.Type.Release, new Bounds(solver.getOrigin()+7+i, solver.getOrigin()+10+i));
 			con3.setFrom(act1);
 			con3.setTo(act1);
 			solver.addConstraint(con3);

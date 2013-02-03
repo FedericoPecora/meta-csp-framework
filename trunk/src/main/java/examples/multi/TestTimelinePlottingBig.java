@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import symbols.SymbolicValueConstraint;
 import time.Bounds;
 import utility.logging.MetaCSPLogging;
 import utility.timelinePlotting.TimelinePublisher;
@@ -30,7 +29,8 @@ public class TestTimelinePlottingBig {
 			Activity act = (Activity)solver.createVariable("aComponent");
 			long v = rand.nextInt(100);
 			act.setSymbolicDomain(v + "");
-			long l = rand.nextInt(5);
+			//rndm duration in [1,8]
+			long l = rand.nextInt(5)+1;
 			long u = l+rand.nextInt(5);
 			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(l,u));
 			dur.setFrom(act);
@@ -40,7 +40,9 @@ public class TestTimelinePlottingBig {
 			release.setTo(act);
 			solver.addConstraints(new Constraint[]{dur,release});
 			tp.publish(false, true);
-			oldEnd += u;
+			oldEnd = act.getTemporalVariable().getEET();
+			System.out.println(release);
+			System.out.println("end = " + oldEnd);
 			System.out.println(++numact);
 			try {
 				Thread.sleep(1000);

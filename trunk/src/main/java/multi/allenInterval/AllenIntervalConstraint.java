@@ -273,9 +273,9 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				SimpleDistanceConstraint second = new SimpleDistanceConstraint();//fs te
 				SimpleDistanceConstraint third = new SimpleDistanceConstraint();//fe ts
 				SimpleDistanceConstraint fourth = new SimpleDistanceConstraint();//fe te
-				if(bounds[0].min == APSPSolver.MINUSINF && bounds[0].max == APSPSolver.INF)
+				if(bounds[0].min == -APSPSolver.INF && bounds[0].max == APSPSolver.INF)
 					first = null;
-				else if(bounds[0].min == APSPSolver.MINUSINF){
+				else if(bounds[0].min == -APSPSolver.INF){
 					first.setMinimum(0);
 					first.setMaximum(APSPSolver.INF);
 					first.setFrom(ts);
@@ -289,9 +289,9 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 					first.setTo(ts);
 				}
 
-				if(bounds[1].min == APSPSolver.MINUSINF && bounds[1].max == APSPSolver.INF)
+				if(bounds[1].min == -APSPSolver.INF && bounds[1].max == APSPSolver.INF)
 					second = null;
-				else if(bounds[1].min == APSPSolver.MINUSINF){
+				else if(bounds[1].min == -APSPSolver.INF){
 					second.setMinimum(0);
 					second.setMaximum(APSPSolver.INF);
 					second.setFrom(te);
@@ -305,9 +305,9 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 					second.setTo(te);
 				}
 
-				if(bounds[2].min == APSPSolver.MINUSINF && bounds[2].max == APSPSolver.INF)
+				if(bounds[2].min == -APSPSolver.INF && bounds[2].max == APSPSolver.INF)
 					third = null;
-				else if(bounds[2].min == APSPSolver.MINUSINF){
+				else if(bounds[2].min == -APSPSolver.INF){
 					third.setMinimum(0);
 					third.setMaximum(APSPSolver.INF);
 					third.setFrom(ts);
@@ -320,9 +320,9 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 					third.setTo(ts);
 				}
 				
-				if(bounds[3].min == APSPSolver.MINUSINF && bounds[3].max == APSPSolver.INF)
+				if(bounds[3].min == -APSPSolver.INF && bounds[3].max == APSPSolver.INF)
 					fourth = null;
-				else if(bounds[3].min == APSPSolver.MINUSINF){
+				else if(bounds[3].min == -APSPSolver.INF){
 					fourth.setMinimum(0);
 					fourth.setMaximum(APSPSolver.INF);
 					fourth.setFrom(te);
@@ -828,10 +828,10 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		Bounds[] bound = new Bounds[4];
 		
 		if(aType.equals(Type.OverlappedBy)){
-			bound[0] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[0] = new Bounds(-APSPSolver.INF, 0);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[3] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
+			bound[3] = new Bounds(-APSPSolver.INF, 0);
 		}
 		
 		else if(aType.equals(Type.Meets)){
@@ -842,37 +842,37 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		}
 		
 		else if(aType.equals(Type.MetBy)){
-			bound[0] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[0] = new Bounds(-APSPSolver.INF, 0);
 			bound[1] = new Bounds(0, 0);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[3] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
+			bound[3] = new Bounds(-APSPSolver.INF, 0);
 		}
 		
 		else if(aType.equals(Type.Starts)){
 			bound[0] = new Bounds(0, 0);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
 			bound[3] = new Bounds(0, APSPSolver.INF);
 		}
 		
 		else if(aType.equals(Type.StartedBy)){
 			bound[0] = new Bounds(0, 0);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[3] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
+			bound[3] = new Bounds(-APSPSolver.INF, 0);
 		}
 		
 		else if(aType.equals(Type.Finishes)){
-			bound[0] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[0] = new Bounds(-APSPSolver.INF, 0);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
 			bound[3] = new Bounds(0, 0);
 		}
 		
 		else if(aType.equals(Type.Equals)){
 			bound[0] = new Bounds(0, 0);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
 			bound[3] = new Bounds(0, 0);
 		}
 		
@@ -884,37 +884,37 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		}
 		
 		else if(aType.equals(Type.After)){
-			bound[0] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[1] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[3] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[0] = new Bounds(-APSPSolver.INF, 0);
+			bound[1] = new Bounds(-APSPSolver.INF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
+			bound[3] = new Bounds(-APSPSolver.INF, 0);
 		}
 		
 		else if(aType.equals(Type.During)){
-			bound[0] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[0] = new Bounds(-APSPSolver.INF, 0);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
 			bound[3] = new Bounds(0, APSPSolver.INF);
 		}
 		
 		else if(aType.equals(Type.Contains)){
 			bound[0] = new Bounds(0, APSPSolver.INF);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
-			bound[3] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
+			bound[3] = new Bounds(-APSPSolver.INF, 0);
 		}
 		
 		else if(aType.equals(Type.Overlaps)){
 			bound[0] = new Bounds(0, APSPSolver.INF);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
 			bound[3] = new Bounds(0, APSPSolver.INF);
 		}
 
 		else if(aType.equals(Type.FinishedBy)){
 			bound[0] = new Bounds(0, APSPSolver.INF);
 			bound[1] = new Bounds(0, APSPSolver.INF);
-			bound[2] = new Bounds(APSPSolver.MINUSINF, 0);
+			bound[2] = new Bounds(-APSPSolver.INF, 0);
 			bound[3] = new Bounds(0, 0);
 		}
 		

@@ -66,9 +66,9 @@ public final class TimePoint extends Variable {
 	 * @param ub The upper bound of this time point.
 	 * @param sol the {@link APSPSolver} managing this {@link TimePoint}.
 	 */
-	public TimePoint(int id, long lb, long ub, APSPSolver sol) {
+	public TimePoint(int id, int MAX_TPS, APSPSolver sol, long lb, long ub) {
 		//must invoke 2-arg superconstructor, lest compilation error		
-		super(sol,id);
+		this(id,MAX_TPS,sol);
 		this.lowerBound = lb;
 		this.upperBound = ub;
 	}
@@ -143,7 +143,7 @@ public final class TimePoint extends Variable {
 	 * Set this time point's upper bound.
 	 * @param newVal The new upper bound to set.
 	 */
-	public void setUpperBound(long newVal){		
+	public void setUpperBound(long newVal){
 		upperBound = newVal;
 	}
 

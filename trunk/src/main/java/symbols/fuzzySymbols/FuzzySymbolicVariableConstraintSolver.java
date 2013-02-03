@@ -50,13 +50,6 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		//this.propagateFuzzyValues(c);
 		return true;
 	}
-	
-	@Override
-	protected Variable createVariableSub() {
-		FuzzySymbolicVariable sv = new FuzzySymbolicVariable(this, SVIDs++);
-		return sv;
-	}
-
 
 	@Override
 	protected Variable[] createVariablesSub(int num) {
@@ -64,8 +57,6 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		for (int i = 0; i < num; i++) ret[i] = new FuzzySymbolicVariable (this, SVIDs++);
 		return ret;
 	}
-	
-	
 	
 	public double getUpperBound() 
 	{

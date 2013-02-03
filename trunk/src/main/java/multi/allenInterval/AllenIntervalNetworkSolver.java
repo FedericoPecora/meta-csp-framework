@@ -78,11 +78,6 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	}
 
 	@Override
-	protected AllenInterval createVariableSub() {
-		return new AllenInterval(this, IDs++, this.constraintSolvers);
-	}
-
-	@Override
 	protected AllenInterval[] createVariablesSub(int num) {
 		AllenInterval[] ret = new AllenInterval[num];
 		for (int i = 0; i < num; i++) {

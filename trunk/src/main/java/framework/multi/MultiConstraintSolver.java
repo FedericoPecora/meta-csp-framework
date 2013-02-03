@@ -91,7 +91,6 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 								
 				Constraint newConstraint = (Constraint)c.clone();
 				newConstraint.setScope(internalScopeArray);
-//				System.out.println("OLD: " + c + " NEW: " + newConstraint);
 				if (!this.constraintSolvers[i].addConstraint(newConstraint)) {
 					/*if (!allowInconsistencies)*/ return false;
 				}
@@ -134,12 +133,10 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		
 		boolean retract = false;
 		for (int i = 0; i < this.constraintTypes.length && !retract; i++) {
-			// I keep the related vector of constraints related to the i-th constraint type 
 			Vector<Constraint> newCons = newToAdd.elementAt(i);
 			//	if there is something to insert...
 			if (!newCons.isEmpty()) {
 				Constraint[] newConsArray = newCons.toArray(new Constraint[newCons.size()]);
-//				System.out.println("OLD: " + Arrays.toString(c) + " NEW: " + Arrays.toString(newConsArray));
 				if (!this.constraintSolvers[i].addConstraints(newConsArray)) {
 					/* if (!allowInconsistencies) */ retract = true;
 				}
@@ -203,9 +200,6 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	@Override
 	protected abstract ConstraintNetwork createConstraintNetwork();
 	
-	@Override
-	protected abstract Variable createVariableSub();
-
 	@Override
 	protected abstract Variable[] createVariablesSub(int num);
 

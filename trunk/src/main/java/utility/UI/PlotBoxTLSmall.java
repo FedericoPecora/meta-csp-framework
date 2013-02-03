@@ -4,6 +4,7 @@ package utility.UI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.swing.JPanel;
@@ -125,7 +126,6 @@ public class PlotBoxTLSmall extends JPanel {
 		//super(title);
 		if (min != -1 && max != -1) {
 			this.range = new Range(min, max);
-			//System.out.println("Range is " + this.range);
 		}
 		first = f;
 		last = l;
@@ -222,13 +222,13 @@ public class PlotBoxTLSmall extends JPanel {
         //long origin = stl.getSerializableSimpleTimeline().getEarliestStartTime();
         //long horizon = stl.getSerializableSimpleTimeline().getLatestEndTime();
         long origin = stl.getPulses()[0].longValue();
-        NumberFormat nf = new PlotDecimalFormat(origin);
+        NumberFormat nf = new DecimalFormat();
         rangeAxis.setNumberFormatOverride ( nf ); 
         if (this.range != null) rangeAxis.setRange(range);
         //rangeAxis.setRange((new Double(origin)).doubleValue(), (new Double(horizon)).doubleValue());
    
         ///// 0 should be replaced by the start of the horizon
-        renderer.setBase(0);
+        renderer.setBase(origin);
         
         //renderer.setBase();
         
