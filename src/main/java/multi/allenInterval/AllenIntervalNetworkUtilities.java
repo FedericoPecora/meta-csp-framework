@@ -61,12 +61,11 @@ public class AllenIntervalNetworkUtilities {
 			this.createReducedIntervals = createReducedIntervals;
 		}
 		
-		@Override
-		protected AllenInterval createVariableSub() {
+		private AllenInterval createReducedIfNecessary() {
 			if(createReducedIntervals) {
 				return new ReducedAllenInterval(this, IDs++, this.constraintSolvers);
 			} else {
-				return super.createVariableSub();
+				return super.createVariablesSub(1)[0];
 			}
 		}
 		
@@ -74,7 +73,7 @@ public class AllenIntervalNetworkUtilities {
 		protected AllenInterval[] createVariablesSub(int num) {
 			AllenInterval[] intervals = new AllenInterval[num];
 			for(int i = 0; i < num; ++i) {
-				intervals[i] = createVariableSub();
+				intervals[i] = createReducedIfNecessary();
 			}
 			return intervals;
 		}

@@ -323,13 +323,6 @@ public class RCCConstraintSolver extends ConstraintSolver{
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	protected Variable createVariableSub() {
-		Region ret = new Region(this, IDs++);
-		return ret;
-	}
-	
 	
 	@Override
 	protected Variable[] createVariablesSub(int num) {

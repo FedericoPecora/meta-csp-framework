@@ -47,7 +47,7 @@ public class APSPSolver extends ConstraintSolver {
 	 * Public access class variable denoting the value infinity.
 	 */
 	public static final long INF = Long.MAX_VALUE-1;
-	public static final long MINUSINF = Long.MIN_VALUE + 1;
+//	public static final long MINUSINF = Long.MIN_VALUE + 1;
 
 	public static final int DEFAULT_MAX_TPS = 2000;
 
@@ -132,16 +132,15 @@ public class APSPSolver extends ConstraintSolver {
 		O = origin;
 		for (int i = 0; i < MAX_TPS; i++) {
 			for (int j = 0; j < MAX_TPS; j++) {
-				//				if (i != j) distance[i][j] = Long.MAX_VALUE;
 				if (i != j) distance[i][j] = APSPSolver.INF;
 				else distance[i][j] = 0;
 			}
 		}
 
 		//edges between reference and horizon
-		tPoints[0] = new TimePoint(tpCounter,MAX_TPS,this);
+		tPoints[0] = new TimePoint(tpCounter,MAX_TPS,this,O,H);
 		tpCounter++;
-		tPoints[1] = new TimePoint(tpCounter,MAX_TPS,this);
+		tPoints[1] = new TimePoint(tpCounter,MAX_TPS,this,O,H);
 		tpCounter++;
 
 		this.theNetwork.addVariable(tPoints[0]);
@@ -201,6 +200,7 @@ public class APSPSolver extends ConstraintSolver {
 //		MAX_USED = MAX_TPS-1;
 //		fromScratchDistanceMatrixComputation();
 //		MAX_USED = 2;
+			
 	}
 
 	//TP creation
@@ -330,8 +330,9 @@ public class APSPSolver extends ConstraintSolver {
 		//Conversion
 		long max = i.max;
 		long min = i.min;
-		if (i.max == Long.MAX_VALUE - 1) max = H-O;
-		if (i.min == Long.MIN_VALUE + 1) min = -1 * (H - O);
+		if (i.max == APSPSolver.INF) max = H-O;
+//		if (i.min == APSPSolver.MINUSINF) min = -1 * (H - O);
+		if (i.min == -APSPSolver.INF) min = -1 * (H - O);
 		i = new Bounds(min,max);
 
 		// Checks
@@ -370,8 +371,8 @@ public class APSPSolver extends ConstraintSolver {
 			//[lb,ub] = [-di0,d0i]
 			for (int j = 0; j < MAX_USED+1; j++)
 				if (tPoints[j].isUsed()) {
-					tPoints[j].setLowerBound( - distance[j][0]);
-					tPoints[j].setUpperBound( distance[0][j] );
+					tPoints[j].setLowerBound(sum(-distance[j][0],O));
+					tPoints[j].setUpperBound(sum(distance[0][j],O));
 				}
 		}				
 		else {
@@ -399,12 +400,12 @@ public class APSPSolver extends ConstraintSolver {
 				if (tPoints[j].isUsed() == true) {
 //					System.out.println("Prev. low: " + tPoints[j].getLowerBound());
 //					System.out.println("Dist: " + distance[j][0]);
-					tPoints[j].setLowerBound (- distance[j][0]);
+					tPoints[j].setLowerBound (sum(-distance[j][0],O));
 //					System.out.println("New low: " + tPoints[j].getLowerBound());
 					
 //					System.out.println("Prev. up: " + tPoints[j].getUpperBound());
 //					System.out.println("Dist: " + distance[0][j]);
-					tPoints[j].setUpperBound (distance[0][j]);
+					tPoints[j].setUpperBound (sum(distance[0][j],O));
 //					System.out.println("New up: " + tPoints[j].getUpperBound());
 					
 				}
@@ -486,8 +487,8 @@ public class APSPSolver extends ConstraintSolver {
 		//[lb,ub] = [-di0,d0i]
 		for (int j = 0; j < MAX_USED+1; j++)
 			if (tPoints[j].isUsed() == true) {
-				tPoints[j].setLowerBound( - distance[j][0]);
-				tPoints[j].setUpperBound( distance[0][j] );
+				tPoints[j].setLowerBound(sum(-distance[j][0],O));
+				tPoints[j].setUpperBound(sum(distance[0][j],O));
 			}
 
 		return true;	
@@ -517,8 +518,8 @@ public class APSPSolver extends ConstraintSolver {
 
 		for (int j = 0; j < MAX_USED+1; j++)
 			if (tPoints[j].isUsed()) {
-				tPoints[j].setLowerBound(- distance[j][0]);
-				tPoints[j].setUpperBound(distance[0][j]);
+				tPoints[j].setLowerBound(sum(-distance[j][0],O));
+				tPoints[j].setUpperBound(sum(distance[0][j],O));
 			}
 
 		return true;
@@ -561,8 +562,8 @@ public class APSPSolver extends ConstraintSolver {
 
 		for (int j = 0; j < MAX_USED+1; j++)
 			if (tPoints[j].isUsed() == true) {
-				tPoints[j].setLowerBound(- distance[j][0]);
-				tPoints[j].setUpperBound(distance[0][j]);
+				tPoints[j].setLowerBound(sum(-distance[j][0],O));
+				tPoints[j].setUpperBound(sum(distance[0][j],O));
 			}
 
 		return true;
@@ -611,8 +612,6 @@ public class APSPSolver extends ConstraintSolver {
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = i; j < MAX_USED+1; j++) {
 				if (i != j) {
-					//					long dij = Long.MAX_VALUE;
-					//					long dji = Long.MAX_VALUE;
 					long dij = APSPSolver.INF;
 					long dji = APSPSolver.INF;
 
@@ -675,11 +674,7 @@ public class APSPSolver extends ConstraintSolver {
 					if (tPoints[i].isUsed() == true) {
 						for (int j = 0; j < MAX_USED+1; j++) { 
 							if (tPoints[j].isUsed() == true) {
-								long temp = distance[i][k] + distance[k][j];
-								//if (distance[i][k] == Long.MAX_VALUE || distance[k][j] == Long.MAX_VALUE)
-								if (distance[i][k] == APSPSolver.INF|| distance[k][j] == APSPSolver.INF)
-									//									temp = Long.MAX_VALUE;
-									temp = APSPSolver.INF;
+								long temp = sum(distance[i][k],distance[k][j]);
 								if (distance[i][j] > temp)
 									distance[i][j] = temp;
 							}
@@ -710,50 +705,36 @@ public class APSPSolver extends ConstraintSolver {
 	private boolean incrementalDistanceMatrixComputation(int from,int to,Bounds i) {
 		logger.log(Level.FINE, "Propagating (quad) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++quadPropCount) + ")");
 
-		//		if (distance[to][from] != Long.MAX_VALUE && i.max + distance[to][from] < 0) return false;
-		//		if (distance[from][to] != Long.MAX_VALUE && -i.min + distance[from][to] < 0) return false;
 		if (distance[to][from] != APSPSolver.INF && i.max + distance[to][from] < 0) return false;
 		if (distance[from][to] != APSPSolver.INF && -i.min + distance[from][to] < 0) return false;
 
-		for (int u = 0; u < MAX_USED+1; u++)
+		for (int u = 0; u < MAX_USED+1; u++) {
 			if (tPoints[u].isUsed()) {
 				for (int v = 0; v < MAX_USED+1;v++) {
 					if (tPoints[v].isUsed()) {
-						long temp = distance[u][from] + i.max + distance[to][v];
-						//						if (distance[u][from] == Long.MAX_VALUE || distance[to][v] == Long.MAX_VALUE) temp = Long.MAX_VALUE;
-						if (distance[u][from] == APSPSolver.INF || distance[to][v] == APSPSolver.INF) temp = APSPSolver.INF;
+						long temp = sum(distance[u][from],sum(i.max,distance[to][v]));
 						if (distance[u][v] > temp) distance[u][v] = temp;
 					}
 				}
 			}
+		}
 
-		for (int u = 0; u < MAX_USED+1; u++)
+		for (int u = 0; u < MAX_USED+1; u++) {
 			if (tPoints[u].isUsed()) {
 				for (int v = 0; v < MAX_USED+1;v++) {
 					if (tPoints[v].isUsed()) {
-						long temp = distance[u][to] - i.min + distance[from][v];
-						//						if (distance[u][to] == Long.MAX_VALUE || distance[from][v] == Long.MAX_VALUE) temp = Long.MAX_VALUE;
-						if (distance[u][to] == APSPSolver.INF|| distance[from][v] == APSPSolver.INF) temp = APSPSolver.INF;
+						long temp = sum(distance[u][to],sum(-i.min,distance[from][v]));
 						if (distance[u][v] > temp) distance[u][v] = temp;
 					}
 				}
 			}
-
+		}
 		return true;
 
 	}
 
 
 	//Interface to framework classes 
-
-
-	//Create a new variable (i.e., a timepoint).
-	@Override
-	protected Variable createVariableSub() {
-		int tp = tpCreate();
-		TimePoint v = tPoints[tp];
-		return v;
-	}
 
 
 	//Create many new variables (batch) - i.e., many timepoints.
@@ -1164,6 +1145,11 @@ public class APSPSolver extends ConstraintSolver {
 			s += "\n";
 		}
 		return s;
+	}
+	
+	private static long sum(long a, long b) {
+		if (a == APSPSolver.INF || b == APSPSolver.INF) return APSPSolver.INF;
+		return a+b;
 	}
 	
 	public String printDistHist() {

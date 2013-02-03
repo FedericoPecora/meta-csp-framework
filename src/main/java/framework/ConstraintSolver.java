@@ -483,13 +483,13 @@ public abstract class ConstraintSolver implements Serializable {
 //		return ret;
 //	}
 	
-	/**
-	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
-	 * class.  It should implement all operations necessary to create a variable for the specific
-	 * type of {@link ConstraintSolver}. 
-	 * @return  A new {@link Variable} for this {@link ConstraintSolver}.
-	 */
-	protected abstract Variable createVariableSub();
+//	/**
+//	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
+//	 * class.  It should implement all operations necessary to create a variable for the specific
+//	 * type of {@link ConstraintSolver}. 
+//	 * @return  A new {@link Variable} for this {@link ConstraintSolver}.
+//	 */
+//	protected abstract Variable createVariableSub();
 
 
 	/**
@@ -594,65 +594,27 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @param v The batch of {@link Variable}s to remove.
 	 */
 	public final void removeVariables(Variable[] v) throws VariableNotFound, IllegalVariableRemoval {
-//		System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-//		System.out.println(this.name);
-//		System.out.println(this.getClass());
-//		
-//		System.out.println("I WANT TO ELIMINATE THIS");
-//		for(Variable var: v){
-//			System.out.println(var);
-//		}
-//		System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-		
 		for (Variable var : v) {
-//			System.out.println("Removing variable " + var);
-//			if(var instanceof MultiVariable){
-//				for(Variable vx: ((MultiVariable) var).getInternalVariables()){
-//					if(vx.getID()==30){
-//						System.out.println("THE VAR 30 IS CONTAINED IN " + var);
-//					}
-//				}
-//			}
 			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
-//			if (!this.theNetwork.containsVariable(var) && !(this instanceof APSPSolver) ) throw new VariableNotFound(var);
-//			if (!this.theNetwork.containsVariable(var) ) return;
 			if (this.theNetwork.getIncidentEdges(var) != null && this.theNetwork.getIncidentEdges(var).length != 0){
-//				throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
-//				System.out.println("FOR CONTINUE");
 				continue;
 			}
 			/**/
-//			System.out.println("HHHHHHHHHH REMOVING CONSTRAINTS");
 			if (var instanceof MultiVariable) {
 				MultiVariable mv = (MultiVariable)var;
 				for (ConstraintSolver cs : mv.getInternalConstraintSolvers())
 					cs.removeConstraints(mv.getInternalConstraints());
 			}/**/
-//			System.out.println("HHHHHHHHHHHHHHHHHHHHHHH");
 		}
 		for (Variable var : v) {
-//			System.out.println("I AM "+ this.name);
-//			System.out.println("Removing variable " + var);
-//			if(var instanceof MultiVariable){
-//				for(Variable vx: ((MultiVariable) var).getInternalVariables()){
-//					if(vx.getID()==30){
-//						System.out.println("THE VAR 30 IS CONTAINED IN " + var);
-//					}
-//				}
-//			}
-//			System.out.println("DIRECTLY FROM THE  NET NOW");
 			this.theNetwork.removeVariable(var);
-//			System.out.println("DOWN IN THE SUB METHOD");
 			removeVariableSub(var);
-//			System.out.println("UP AGAIN");
 		}
 		for (ArrayList<Variable> vec : components.values()) {
 			vec.removeAll(Arrays.asList(v));
 		}
-//		System.out.println("ENDNNNNDDNDNDNDN");
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Removed variables " + Arrays.toString(v));
-//		System.out.println("=====================================");
 	}
 
 	/**

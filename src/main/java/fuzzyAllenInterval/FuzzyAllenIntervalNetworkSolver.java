@@ -58,11 +58,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 	}
 
 	@Override
-	protected Variable createVariableSub() {
-		return new SimpleAllenInterval(this, IDs++);
-	}
-
-	@Override
 	protected Variable[] createVariablesSub(int num) {
 		SimpleAllenInterval[] ret = new SimpleAllenInterval[num];
 		for (int i = 0; i < num; i++) {

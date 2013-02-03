@@ -103,11 +103,6 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	}
 
 	@Override
-	protected Variable createVariableSub() {
-		return new Activity(this, IDs++, this.constraintSolvers);
-	}
-
-	@Override
 	protected Variable[] createVariablesSub(int num) {
 		Variable[] ret = new Variable[num];
 		for (int i = 0; i < num; i++)

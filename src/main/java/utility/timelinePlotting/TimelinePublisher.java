@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import cern.colt.Arrays;
+
 import meta.symbolsAndTime.SymbolicTimeline;
 import multi.activity.ActivityNetworkSolver;
 import time.Bounds;
@@ -143,23 +145,15 @@ public final class TimelinePublisher
 				SymbolicTimeline stl = new SymbolicTimeline(ans, comp);
 				if (bounds == null) {
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];
-					System.out.println("min: " + min);
-					System.out.println("max: " + max);
-					System.out.println("origin: " + origin);
 				}
 				timelinesToRefresh.add(stl);
 			}
 			long delta = 0;
 			if (slidingWindow && bounds != null) {
 				delta = bounds.max-bounds.min;				
-//				System.out.println( "((double)timeNow)/temporalResolution = " + ((double)timeNow)/temporalResolution);
-//				System.out.println( " origin+((double)delta)/2.0  = "  + (origin+((double)delta)/2.0)  );
 				if (((double)timeNow)/temporalResolution > origin+((double)delta)/2.0) {
 					min = (long)( ((double)timeNow)/temporalResolution  -  ((double)delta)/2.0);
 					max = (long)( ((double)timeNow)/temporalResolution  +  ((double)delta)/2.0);
-//					System.out.println("Timenow = " + timeNow);
-//					System.out.println("min = " + min);
-//					System.out.println("max = " + max);
 				}
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);

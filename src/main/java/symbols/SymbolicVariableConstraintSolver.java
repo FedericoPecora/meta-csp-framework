@@ -90,12 +90,6 @@ public class SymbolicVariableConstraintSolver extends ConstraintSolver {
 	}
 
 	@Override
-	protected Variable createVariableSub() {
-		SymbolicVariable sv = new SymbolicVariable(this, SVIDs++);
-		return sv;
-	}
-
-	@Override
 	protected Variable[] createVariablesSub(int num) {
 		SymbolicVariable[] ret = new SymbolicVariable[num];
 		for (int i = 0; i < num; i++) ret[i] = new SymbolicVariable(this, SVIDs++);

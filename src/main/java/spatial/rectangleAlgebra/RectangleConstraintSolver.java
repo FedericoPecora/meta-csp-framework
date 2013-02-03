@@ -86,13 +86,6 @@ public class RectangleConstraintSolver extends ConstraintSolver{
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	protected Variable createVariableSub() {
-		RectangularRegion ret = new RectangularRegion(this, IDs++);
-		return ret;
-	}
-	
 	
 	@Override
 	protected Variable[] createVariablesSub(int num) {
