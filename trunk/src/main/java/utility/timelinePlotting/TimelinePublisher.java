@@ -39,6 +39,8 @@ public final class TimelinePublisher
 	private TimelineVisualizer viz = null;
 	private long timeNow = 0;
 	private long temporalResolution = 1;
+	private long origin = 0;
+	private long horizon = 0;
 	
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
@@ -53,6 +55,8 @@ public final class TimelinePublisher
 		this.bounds = bounds;
 		this.imageEncoder.start();
 		this.slidingWindow = slidingWindow;
+		this.origin = ans.getOrigin();
+		this.horizon = ans.getHorizon();
 	}
 
 	/**
@@ -66,6 +70,8 @@ public final class TimelinePublisher
 		this.ans = ans;
 		this.bounds = bounds;
 		this.imageEncoder.start();
+		this.origin = ans.getOrigin();
+		this.horizon = ans.getHorizon();
 	}
 
 	/**
@@ -77,8 +83,8 @@ public final class TimelinePublisher
 	}
 	
 	/**
-	 * Sets the temporal resolution of this publisher (default is 1).
-	 * @param temporalResolution The desired temporal resolution of this publisher (e.g., milliseconds if <code>temporalResolution = 1000</code>).
+	 * Sets the temporal resolution of this publisher (default is milliseconds).
+	 * @param temporalResolution The desired temporal resolution of this publisher (e.g., seconds if <code>temporalResolution = 1000</code>).
 	 */
 	public void setTemporalResolution(long temporalResolution) {
 		this.temporalResolution = temporalResolution;
@@ -125,26 +131,36 @@ public final class TimelinePublisher
 		if(!imageEncoder.isWorking()) {
 			timelinesToRefresh.clear();
 			if (bounds != null) {
-				min = bounds.min;
-				max = bounds.max;
+				min = bounds.min+origin;
+				max = bounds.max+origin;
 			}
 			else {
-				min = Long.MAX_VALUE;
+				min = origin;
 				max = Long.MIN_VALUE;
 			}
 			for(int tl = 0; tl < components.length; tl++) {
 				String comp = components[tl];
 				SymbolicTimeline stl = new SymbolicTimeline(ans, comp);
 				if (bounds == null) {
-					if (stl.getPulses()[0] < min) min = stl.getPulses()[0];
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];
+					System.out.println("min: " + min);
+					System.out.println("max: " + max);
+					System.out.println("origin: " + origin);
 				}
 				timelinesToRefresh.add(stl);
 			}
-			long delta = bounds.max-bounds.min;
-			if (slidingWindow && (long)(((double)timeNow)/(1000.0/temporalResolution)) > ((double)delta)/2.0) {
-				min = bounds.min + (long)(((double)timeNow)/(1000.0/temporalResolution)-((double)delta)/2.0);
-				max = bounds.max + (long)(((double)timeNow)/(1000.0/temporalResolution)-((double)delta)/2.0);
+			long delta = 0;
+			if (slidingWindow && bounds != null) {
+				delta = bounds.max-bounds.min;				
+//				System.out.println( "((double)timeNow)/temporalResolution = " + ((double)timeNow)/temporalResolution);
+//				System.out.println( " origin+((double)delta)/2.0  = "  + (origin+((double)delta)/2.0)  );
+				if (((double)timeNow)/temporalResolution > origin+((double)delta)/2.0) {
+					min = (long)( ((double)timeNow)/temporalResolution  -  ((double)delta)/2.0);
+					max = (long)( ((double)timeNow)/temporalResolution  +  ((double)delta)/2.0);
+//					System.out.println("Timenow = " + timeNow);
+//					System.out.println("min = " + min);
+//					System.out.println("max = " + max);
+				}
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);
 			logger.finest("Image being rendered...");
@@ -202,7 +218,7 @@ public final class TimelinePublisher
 			long startTime = Calendar.getInstance().getTimeInMillis();
 			for(;;)
 			{
-				timeNow = Calendar.getInstance().getTimeInMillis()-startTime;				
+				timeNow = origin*temporalResolution+(Calendar.getInstance().getTimeInMillis()-startTime);				
 				//Wait until we are cleared to encode an image
 				try { runSemaphore.acquire(); }
 				catch (InterruptedException e) { break; }

@@ -18,9 +18,10 @@ public class TestTimelinePlottingBig {
 	public static void main(String[] args) {
 		
 		MetaCSPLogging.setLevel(TimelinePublisher.class, Level.FINE);
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,10000,1000);
+		ActivityNetworkSolver solver = new ActivityNetworkSolver(10,10000,1000);
 		Random rand = new Random(12314);
 		TimelinePublisher tp = new TimelinePublisher(solver, new Bounds(0,30), true, "aComponent");
+		tp.setTemporalResolution(1000);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		
 		long oldEnd = 0;
@@ -42,7 +43,7 @@ public class TestTimelinePlottingBig {
 			oldEnd += u;
 			System.out.println(++numact);
 			try {
-				Thread.sleep(50);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

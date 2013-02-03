@@ -17,7 +17,7 @@ public class TestTimelinePlotting {
 	public static void main(String[] args) {
 		
 		MetaCSPLogging.setLevel(TimelinePublisher.class, Level.FINEST);
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,1000);
+		ActivityNetworkSolver solver = new ActivityNetworkSolver(10,1000);
 		Activity act1 = (Activity)solver.createVariable("One Component");
 		act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable("Another Component");
@@ -47,6 +47,7 @@ public class TestTimelinePlotting {
 		solver.addConstraints(cons);
 		
 		TimelinePublisher tp = new TimelinePublisher(solver, "One Component", "Another Component");
+		tp.setTemporalResolution(1000);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		
 		tp.publish(false, true);
