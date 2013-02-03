@@ -125,6 +125,7 @@ public class PlotBoxTLSmall extends JPanel {
 		//super(title);
 		if (min != -1 && max != -1) {
 			this.range = new Range(min, max);
+			//System.out.println("Range is " + this.range);
 		}
 		first = f;
 		last = l;
