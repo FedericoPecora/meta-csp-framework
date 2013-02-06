@@ -65,12 +65,10 @@ public class TimelineVisualizer extends JFrame {
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			Rectangle bounds = ge.getMaximumWindowBounds();
 
-			int deltaX = 70;
-			int deltaY = 30;
-			int xSize = Math.min(bounds.width-deltaX, panelX);
-			int ySize = Math.min(bounds.height-deltaY, panelY);
-			
-			System.out.println("x and y " + xSize + " " + ySize);
+			int deltaX = 30;
+			int deltaY = 50;
+			int xSize = Math.min(bounds.width, panelX+deltaX);
+			int ySize = Math.min(bounds.height, panelY+deltaY);
 			
 			this.setPreferredSize(new Dimension(xSize, ySize));
 			
