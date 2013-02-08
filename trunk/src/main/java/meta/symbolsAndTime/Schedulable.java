@@ -234,14 +234,12 @@ public abstract class Schedulable extends MetaConstraint {
 			for (int i = 0; i < groundVars.length; i++) {
 				for (int j = 0; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
-					if (groundVars[i].getComponent().equals(groundVars[j].getComponent())) {
-						Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
-						if (bi.intersect(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
-							ActivityNetwork cn = new ActivityNetwork(null);
-							cn.addVariable(groundVars[i]);
-							cn.addVariable(groundVars[j]);
-							ret.add(cn);
-						}
+					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
+					if (bi.intersect(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
+						ActivityNetwork cn = new ActivityNetwork(null);
+						cn.addVariable(groundVars[i]);
+						cn.addVariable(groundVars[j]);
+						ret.add(cn);
 					}
 				}
 			}
