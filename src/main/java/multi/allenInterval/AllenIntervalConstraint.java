@@ -194,27 +194,28 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		}
 	};
 	
-	protected Type type;
+	//protected Type type;
 	private Bounds[] bounds;
 	protected Type[] types;
 	
-	@Deprecated
-	public AllenIntervalConstraint(Type type, Interval first, Interval... remainder) {		
-		this.type = type;
-		Interval[] intervals = Arrays.asList(first, remainder).toArray(new Interval[remainder.length + 1]);
-		bounds = new Bounds[intervals.length];
-		for(int i = 0; i < bounds.length; ++i) {
-			bounds[i] = new Bounds(intervals[i].getLowerBound(), intervals[i].getUpperBound());
-		}
-		
-		if(type.numParams >= 0 && type.numParams != bounds.length) {
-			throw new IllegalArgumentException("Invalid numer of parameters for constraint " + type + ", expected: " + type.numParams);
-		}
-	}
+//	@Deprecated
+//	public AllenIntervalConstraint(Type type, Interval first, Interval... remainder) {		
+//		this.type = type;
+//		Interval[] intervals = Arrays.asList(first, remainder).toArray(new Interval[remainder.length + 1]);
+//		bounds = new Bounds[intervals.length];
+//		for(int i = 0; i < bounds.length; ++i) {
+//			bounds[i] = new Bounds(intervals[i].getLowerBound(), intervals[i].getUpperBound());
+//		}
+//		
+//		if(type.numParams >= 0 && type.numParams != bounds.length) {
+//			throw new IllegalArgumentException("Invalid numer of parameters for constraint " + type + ", expected: " + type.numParams);
+//		}
+//	}
 	
 	
 	public AllenIntervalConstraint(Type type, Bounds ...bounds) {
-		this.type = type;
+		//this.type = type;
+		this.types = new Type[] {type};
 		this.bounds = bounds;
 		if(type.numParams >= 0 && type.numParams != bounds.length) {
 			throw new IllegalArgumentException("Invalid numer of parameters for constraint " + type + ", expected: " + type.numParams + " got "+ bounds.length );
@@ -223,16 +224,17 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	
 	
 //	public AllenIntervalConstraint(Option opt, Type... types) {
-	public AllenIntervalConstraint(Type[] types) {
+	public AllenIntervalConstraint(Type ... types) {
 		
 		if(types.length == 1){
-			this.type = types[0];
-			this.bounds = type.getDefaultBounds();
+			//this.type = types[0];
+			this.types = types;
+			this.bounds = types[0].getDefaultBounds();
 		}
 		else{
 			//it assumed that creating convexity is done one step before, in other words, where it calls this constructor
 			this.types = types;
-			this.type = Type.DisjunctionRelation;
+			//this.type = Type.DisjunctionRelation;
 		
 			this.bounds = new Bounds[4];
 			
@@ -264,7 +266,20 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	 * Get the type of this {@link AllenIntervalConstraint}.
 	 * @return The type of this {@link AllenIntervalConstraint}.
 	 */
-	public Type getType() { return type; }
+	@Deprecated
+	public Type getType() { 
+		//return type;
+		return types[0];
+	}
+
+	/**
+	 * Get the type of this {@link AllenIntervalConstraint}.
+	 * @return The type of this {@link AllenIntervalConstraint}.
+	 */
+	public Type[] getTypes() { 
+		//return type;
+		return types;
+	}
 	
 	/**
 	 * Get the bounds for this {@link AllenIntervalConstraint}.
@@ -282,7 +297,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			 * The quantitative constraint between two bounds in the translation of R is the union of quantitative constraints between 
 			 * these two bounds which are in the translations of the atomic relations forming R
 			 */
-			if(type.equals(Type.DisjunctionRelation)){
+			//if(type.equals(Type.DisjunctionRelation)){
+			if(this.types.length > 1){
 				
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -375,7 +391,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Equals)) {
+			if (types[0].equals(Type.Equals)) {
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -394,7 +410,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Before)) {
+			if (types[0].equals(Type.Before)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Before, bounds[0]);
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -407,7 +423,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.After)) {
+			if (types[0].equals(Type.After)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.After, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint te = to.getEnd();
@@ -420,7 +436,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Meets)) {
+			if (types[0].equals(Type.Meets)) {
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -432,7 +448,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.MetBy)) {
+			if (types[0].equals(Type.MetBy)) {
 				TimePoint fs = from.getStart();
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -444,7 +460,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Starts)) {
+			if (types[0].equals(Type.Starts)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Starts, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -464,7 +480,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.StartedBy)) {
+			if (types[0].equals(Type.StartedBy)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.StartedBy, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -484,7 +500,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.During)) {
+			if (types[0].equals(Type.During)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.During, bounds[0]);
 				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.During, bounds[1]);
 				TimePoint fs = from.getStart();
@@ -505,7 +521,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Contains)) {
+			if (types[0].equals(Type.Contains)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Contains, bounds[0]);
 				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.Contains, bounds[1]);
 				TimePoint fs = from.getStart();
@@ -526,7 +542,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Finishes)) {
+			if (types[0].equals(Type.Finishes)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Finishes, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -546,7 +562,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.FinishedBy)) {
+			if (types[0].equals(Type.FinishedBy)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.FinishedBy, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -566,7 +582,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Overlaps)) {
+			if (types[0].equals(Type.Overlaps)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -592,7 +608,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 		
-			if (type.equals(Type.OverlappedBy)) {
+			if (types[0].equals(Type.OverlappedBy)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.OverlappedBy, bounds[0]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
@@ -617,7 +633,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.At)) {
+			if (types[0].equals(Type.At)) {
 				TimePoint fs = from.getStart();
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -639,7 +655,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 						
-			if (type.equals(Type.Duration)) {
+			if (types[0].equals(Type.Duration)) {
 				TimePoint fs = from.getStart();
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -651,7 +667,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.Release)) {
+			if (types[0].equals(Type.Release)) {
 				
 				TimePoint fs = from.getStart();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -663,7 +679,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;	
 			}
 			
-			if (type.equals(Type.Deadline)) {
+			if (types[0].equals(Type.Deadline)) {
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 //				first.setMinimum(((APSPSolver)from.getInternalConstraintSolvers()[0]).getH()-bounds[0].max);
@@ -676,7 +692,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;	
 			}
 			
-			if (type.equals(Type.BeforeOrMeets)) {
+			if (types[0].equals(Type.BeforeOrMeets)) {
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -689,7 +705,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 			
 			
-			if (type.equals(Type.MetByOrAfter)) {
+			if (types[0].equals(Type.MetByOrAfter)) {
 				TimePoint fs = from.getStart();
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -701,7 +717,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.MetByOrOverlappedBy)) {
+			if (types[0].equals(Type.MetByOrOverlappedBy)) {
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -725,7 +741,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 
-			if (type.equals(Type.MetByOrOverlappedByOrAfter)) {
+			if (types[0].equals(Type.MetByOrOverlappedByOrAfter)) {
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -744,7 +760,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 
-			if (type.equals(Type.MeetsOrOverlapsOrBefore)) {
+			if (types[0].equals(Type.MeetsOrOverlapsOrBefore)) {
 				TimePoint ts = from.getStart();
 				TimePoint fs = to.getStart();
 				TimePoint te = from.getEnd();
@@ -763,7 +779,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 
-			if (type.equals(Type.DuringOrEquals)) {
+			if (types[0].equals(Type.DuringOrEquals)) {
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -782,7 +798,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;
 			}
 			
-			if (type.equals(Type.StartStart)) {
+			if (types[0].equals(Type.StartStart)) {
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -794,7 +810,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;	
 			}
 			
-			if (type.equals(Type.EndEnd)) {
+			if (types[0].equals(Type.EndEnd)) {
 				TimePoint fe = from.getEnd();
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
@@ -812,30 +828,37 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 
 	@Override
 	public String getEdgeLabel() {
-		String ret = this.type.toString();
-		if(!type.equals(Type.DisjunctionRelation))
+		//String ret = this.type.toString();
+		String ret = Arrays.toString(this.types);
+		//if(!type.equals(Type.DisjunctionRelation))
+		if(this.types.length == 1)
 			for (Bounds in : bounds) ret += " " + in.toString();
 		return ret;
 	}
 
 	@Override
 	public Object clone() {
-		if (this.type.equals(Type.DisjunctionRelation))
+//		if (this.type.equals(Type.DisjunctionRelation))
+//			return new AllenIntervalConstraint(this.types);
+//		return new AllenIntervalConstraint(this.type, this.bounds);
+		if (this.types.length > 1)
 			return new AllenIntervalConstraint(this.types);
-		return new AllenIntervalConstraint(this.type, this.bounds);
+		return new AllenIntervalConstraint(this.types[0], this.bounds);
 	}
 
 
 	@Override
 	public boolean isEquivalent(Constraint c) {
 		AllenIntervalConstraint ac = (AllenIntervalConstraint)c;
-		if (this.type.equals(Type.DisjunctionRelation)) {
+		//if (this.type.equals(Type.DisjunctionRelation)) {
+		if (this.types.length > 1) {
 			for (Type t : this.types) {
 				if (Arrays.binarySearch(ac.types, t) < 0) return false;
 			}
 			return true;
 		}
-		return (ac.getType().equals(this.getType()) && ac.getFrom().equals(this.getFrom()) && ac.getTo().equals(this.getTo()));
+		//return (ac.getType().equals(this.getType()) && ac.getFrom().equals(this.getFrom()) && ac.getTo().equals(this.getTo()));
+		return (ac.getTypes()[0].equals(this.getTypes()[0]) && ac.getFrom().equals(this.getFrom()) && ac.getTo().equals(this.getTo()));
 	}
 
 	/*

@@ -38,7 +38,7 @@ import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
  */
 
 
-public class QualitativeAllenIntervalConstraint extends BinaryConstraint{
+public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 
 
 	/**
