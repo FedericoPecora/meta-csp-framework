@@ -268,7 +268,8 @@ public abstract class ConstraintSolver implements Serializable {
 		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 		ArrayList<Constraint> incomp = new ArrayList<Constraint>(c.length);
 		for (Constraint con : c) {
-			if (isCompatible(con)) {
+			//If constraint is compatible AND it shouldn't be skipped for some other reason...
+			if (isCompatible(con) && !con.isSkippableSolver(this)) {
 				/**/
 				// if we are in presence of a multi constraint, i.e. a constraint which entails multiple constraints...
 				if (con instanceof MultiConstraint) {

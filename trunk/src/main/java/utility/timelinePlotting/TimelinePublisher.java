@@ -174,8 +174,8 @@ public final class TimelinePublisher
 			if (slidingWindow && bounds != null) {
 				delta = bounds.max-bounds.min;				
 				if (((double)timeNow)/temporalResolution > origin+((double)delta)/2.0) {
-					min = (long)( ((double)timeNow)/temporalResolution  -  ((double)delta)/2.0);
-					max = (long)( ((double)timeNow)/temporalResolution  +  ((double)delta)/2.0);
+					min = (long)( ((double)timeNow)/(double)temporalResolution  -  ((double)delta)/2.0);
+					max = (long)( ((double)timeNow)/(double)temporalResolution  +  ((double)delta)/2.0);
 				}
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);

@@ -145,7 +145,7 @@ public class AllenIntervalNetworkUtilities {
 			final AllenInterval new_from = translate_intervals.get(old_from);
 			final AllenInterval new_to = translate_intervals.get(old_to);
 
-			final AllenIntervalConstraint.Type old_type = old_constraint.getType();
+			final AllenIntervalConstraint.Type old_type = old_constraint.getTypes()[0];
 			final Bounds[] old_intervals = old_constraint.getBounds();
 
 			AllenIntervalConstraint new_constraint = new AllenIntervalConstraint(old_type,  old_intervals);

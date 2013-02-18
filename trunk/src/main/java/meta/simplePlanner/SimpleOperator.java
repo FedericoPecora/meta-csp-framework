@@ -74,7 +74,7 @@ public class SimpleOperator {
 		String ret = "";
 		if (requirementActivities != null) {
 			for (int i = 0; i < requirementActivities.length; i++) {
-				ret += head + " " + requirementConstraints[i].getType() + " " + Arrays.toString(requirementConstraints[i].getBounds()) + " " + requirementActivities[i];
+				ret += head + " " + Arrays.toString(requirementConstraints[i].getTypes()) + " " + Arrays.toString(requirementConstraints[i].getBounds()) + " " + requirementActivities[i];
 				if (i != requirementActivities.length-1) ret += "\n";
 			}
 		}

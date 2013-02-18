@@ -23,7 +23,7 @@
 package framework;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
 
 /**
  * This class is used to represent n-ary constraints in the MetaCSP framework.
@@ -37,10 +37,8 @@ import java.io.Serializable;
 public abstract class Constraint implements Cloneable, Serializable {
 	
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8278654163054138810L;
+	private ArrayList<ConstraintSolver> solversToSkip = new ArrayList<ConstraintSolver>();
 
 	/**
 	 * Progressive ID of a constraint
@@ -52,6 +50,24 @@ public abstract class Constraint implements Cloneable, Serializable {
 	protected Variable[] scope;
 	
 	protected Object annotation;
+	
+	/**
+	 * Provide a list of solvers that should not process this constraint.
+	 * @param solvers Solvers that should not process this constraint.
+	 */
+	public void skipSolver(ConstraintSolver ... solvers) {
+		solversToSkip = new ArrayList<ConstraintSolver>();
+		for (ConstraintSolver solver : solvers) solversToSkip.add(solver);
+	}
+	
+	/**
+	 * assess whether a given solver is allowed to process this constraint.
+	 * @param cs The {@link ConstraintSolver} to check.
+	 * @return <code>true</code> iff the given solver will process this constraint.
+	 */
+	public boolean isSkippableSolver(ConstraintSolver cs) {
+		return solversToSkip.contains(cs);
+	}
 	
 	/**
 	 * Get this {@link Constraint}'s annotation (can be any {@link Object} and used in any way).

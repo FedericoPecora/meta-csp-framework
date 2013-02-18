@@ -22,9 +22,7 @@
  ******************************************************************************/
 package multi.allenInterval;
 
-import time.APSPSolver;
 import time.Bounds;
-import time.SimpleDistanceConstraint;
 import time.TimePoint;
 import framework.Constraint;
 import framework.ConstraintSolver;
@@ -121,8 +119,6 @@ public class AllenInterval extends MultiVariable {
 	@Override
 	public String toString() {
 		String s="";
-//		s="\n<KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK>\n";
-
 		if(name == ""){
 			s+=this.getClass().getSimpleName() + " " + this.id +" "+ "(I-TP: ";
 			for(Variable x: this.variables){
@@ -132,12 +128,6 @@ public class AllenInterval extends MultiVariable {
 		}
 		else
 			s+=this.name + " " + this.id + " " + this.getDomain();
-////		System.out.println("\n\tXXXXX");
-//		for(Variable v: this.variables){
-//			s+=("\n"+v);
-//		}
-//		s+="\n";
-////		s+="\n<ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ>\n";
 		return s;
 
 	}
