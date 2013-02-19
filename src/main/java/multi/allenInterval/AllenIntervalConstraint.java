@@ -212,8 +212,49 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 //		}
 //	}
 	
+
+	/**
+	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * @param type The type of the constraint.
+	 * @param bounds The one and only upper-lower bound pair for the constraint.
+	 */
+	public AllenIntervalConstraint(Type type, Bounds bounds) {
+		this(type, new Bounds[] {bounds});
+	}
+
+	/**
+	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * @param type The type of the constraint.
+	 * @param bounds The two upper-lower bound pairs for the constraint.
+	 */
+	public AllenIntervalConstraint(Type type, Bounds bounds1, Bounds bounds2) {
+		this(type, new Bounds[] {bounds1, bounds2});
+	}
+
+	/**
+	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * @param type The type of the constraint.
+	 * @param bounds The three upper-lower bound pairs for the constraint.
+	 */
+	public AllenIntervalConstraint(Type type, Bounds bounds1, Bounds bounds2, Bounds bounds3) {
+		this(type, new Bounds[] {bounds1, bounds2, bounds3});
+	}
 	
-	public AllenIntervalConstraint(Type type, Bounds ...bounds) {
+	/**
+	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * @param type The type of the constraint.
+	 * @param bounds The four upper-lower bound pairs for the constraint.
+	 */
+	public AllenIntervalConstraint(Type type, Bounds bounds1, Bounds bounds2, Bounds bounds3, Bounds bounds4) {
+		this(type, new Bounds[] {bounds1, bounds2, bounds3, bounds4});
+	}
+	
+	/**
+	 * Creates an elementary {@link AllenIntervalConstraint} of a given type with given bounds.
+	 * @param type The type of the constraint.
+	 * @param bounds The bounds of the constraint.
+	 */
+	public AllenIntervalConstraint(Type type, Bounds[] bounds) {
 		//this.type = type;
 		this.types = new Type[] {type};
 		this.bounds = bounds;
@@ -223,7 +264,10 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	}
 	
 	
-//	public AllenIntervalConstraint(Option opt, Type... types) {
+	/**
+	 * Creates an {@link AllenIntervalConstraint} of a given (disjunctive) type with default bounds.
+	 * @param types The elementary Allen relations that constitute this constraint.
+	 */
 	public AllenIntervalConstraint(Type ... types) {
 		
 		if(types.length == 1){
