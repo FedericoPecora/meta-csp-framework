@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.xml.datatype.Duration;
+
 import org.w3c.dom.css.Rect;
 
 import framework.ConstraintNetwork;
@@ -44,7 +46,7 @@ import time.Bounds;
 
 /**
  * 
- * @author iran
+ * @author iran Mansouri
  *
  */
 
@@ -58,6 +60,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	private AllenIntervalNetworkSolver solverY;
 	private boolean isInconsistent = false;
 	private Vector<Variable> unaryCulpritVar;
+	private HashMap<AllenInterval, Bounds> durationConsX = new HashMap<AllenInterval, Bounds>();
+	private HashMap<AllenInterval, Bounds> durationConsY = new HashMap<AllenInterval, Bounds>();
 
 	public AugmentedRectangleConstraintSolver() {
 		super();
@@ -213,6 +217,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 		if(super.getBoundedConstraint() != null){
 			for (int i = 0; i < super.getBoundedConstraint().size(); i++) {
+				
 				AllenIntervalConstraint boundedIntervalX = new AllenIntervalConstraint(super.getBoundedConstraint().get(i).getBoundedConstraintX().getType(), 
 						super.getBoundedConstraint().get(i).getBoundedConstraintX().getBounds());
 				boundedIntervalX.setFrom(intervalsx[super.getBoundedConstraint().get(i).getFrom().getID()]);
@@ -225,6 +230,13 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				boundedIntervalY.setFrom(intervalsy[super.getBoundedConstraint().get(i).getFrom().getID()]);
 				boundedIntervalY.setTo(intervalsy[super.getBoundedConstraint().get(i).getTo().getID()]);
 				yAllenConstraint.add(boundedIntervalY);
+				
+				if(super.getBoundedConstraint().get(i).getBoundedConstraintX().getType().equals(AllenIntervalConstraint.Type.Duration)){
+					durationConsX.put(intervalsx[super.getBoundedConstraint().get(i).getFrom().getID()], boundedIntervalX.getBounds()[0]);
+					durationConsY.put(intervalsy[super.getBoundedConstraint().get(i).getFrom().getID()], boundedIntervalY.getBounds()[0]);
+				}
+
+					
 
 			}
 		}
@@ -285,6 +297,77 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		}
 		return null;
 	}
+	
+	private BoundingBox incrementalPathConsistencyByCMConstraints(){
+		
+		HashMap<RectangularRegion, BoundingBox> cmBBs = new HashMap<RectangularRegion, BoundingBox>(); //centre of mass bounding boxes
+
+		for (int i = 0; i < solverX.getVariables().length; i++) {
+			//calculate the centre of mass
+			BoundingBox bb = getCentreOfMass((AllenInterval)solverX.getVariables()[i], (AllenInterval)solverY.getVariables()[i]);
+			//extractBoundingBoxesFromSTPs()
+			
+			//impose the At constraint (exact position)
+			Vector<AllenIntervalConstraint> xAllenConstraint = new Vector<AllenIntervalConstraint>();
+			Vector<AllenIntervalConstraint> yAllenConstraint = new Vector<AllenIntervalConstraint>();
+			
+			AllenIntervalConstraint releaseX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
+					bb.getxLB());
+			releaseX.setFrom(solverX.getVariables()[i]);
+			releaseX.setTo(solverX.getVariables()[i]);
+			xAllenConstraint.add(releaseX);
+
+			AllenIntervalConstraint deadlineX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, 
+					bb.getxUB());
+			deadlineX.setFrom(solverX.getVariables()[i]);
+			deadlineX.setTo(solverX.getVariables()[i]);
+			xAllenConstraint.add(deadlineX);
+
+
+			AllenIntervalConstraint releaseY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, 
+					bb.getyLB());
+			releaseY.setFrom(solverY.getVariables()[i]);
+			releaseY.setTo(solverY.getVariables()[i]);
+			yAllenConstraint.add(releaseY);
+
+
+			AllenIntervalConstraint deadlineY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, 
+					bb.getyUB());
+			deadlineY.setFrom(solverY.getVariables()[i]);
+			deadlineY.setTo(solverY.getVariables()[i]);
+			yAllenConstraint.add(deadlineY);
+			
+			solverX.addConstraints(xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]));
+			solverY.addConstraints(yAllenConstraint.toArray(new AllenIntervalConstraint[yAllenConstraint.size()]));
+			
+			//add them to hashMap			
+			//cmBBs.put((RectangularRegion)solverX.getVariables()[i], getCentreOfMass((AllenInterval)solverX.getVariables()[i], (AllenInterval)solverY.getVariables()[i]));
+		}
+		
+		
+		//add them to the constraint network
+		//store them in a hashMap! by name!?
+		return null;
+		
+	}
+
+	private BoundingBox getCentreOfMass(AllenInterval intervalX,
+			AllenInterval intervalY) {
+		
+		double minx, maxx, miny, maxy;
+		double durMinX = 0, durMaxX = 0, durMinY = 0, durMaxY = 0;
+
+		if(durationConsX.get(intervalX) != null){
+			durMinX = durationConsX.get(intervalX).min;
+			durMaxX = durationConsX.get(intervalX).max;
+			durMinY = durationConsY.get(intervalY).min;
+			durMaxY = durationConsY.get(intervalY).max;
+		}
+		//return new BoundingBox(xLB, xUB, yLB, yUB);
+		return null;
+	}
+
+
 
 	/**
 	 * make script readable for gnuplot
@@ -509,7 +592,6 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	
 
 }
-
 
 
 
