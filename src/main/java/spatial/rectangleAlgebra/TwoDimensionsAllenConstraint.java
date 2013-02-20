@@ -26,7 +26,7 @@ package spatial.rectangleAlgebra;
 public class TwoDimensionsAllenConstraint extends QualitativeAllenIntervalConstraint {
 
 	/**
-	 * 
+	 * test
 	 */
 	private static final long serialVersionUID = -8168190298662846847L;
 	private QualitativeAllenIntervalConstraint.Type[] con = new QualitativeAllenIntervalConstraint.Type[2];
