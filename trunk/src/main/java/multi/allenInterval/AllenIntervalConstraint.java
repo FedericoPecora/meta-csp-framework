@@ -214,7 +214,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	
 
 	/**
-	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
 	 * @param type The type of the constraint.
 	 * @param bounds The one and only upper-lower bound pair for the constraint.
 	 */
@@ -223,7 +223,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	}
 
 	/**
-	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
 	 * @param type The type of the constraint.
 	 * @param bounds The two upper-lower bound pairs for the constraint.
 	 */
@@ -232,7 +232,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	}
 
 	/**
-	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
 	 * @param type The type of the constraint.
 	 * @param bounds The three upper-lower bound pairs for the constraint.
 	 */
@@ -241,7 +241,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	}
 	
 	/**
-	 * Convenience constructor for not casting bounds into an array (see 2-arg constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
 	 * @param type The type of the constraint.
 	 * @param bounds The four upper-lower bound pairs for the constraint.
 	 */
