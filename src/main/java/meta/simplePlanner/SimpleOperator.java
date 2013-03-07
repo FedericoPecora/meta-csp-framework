@@ -44,6 +44,7 @@ public class SimpleOperator {
 		this.requirementActivities = requirementActivities;
 		this.usages = usages;
 		if (requirementConstraints != null) this.extraConstraints = new AllenIntervalConstraint[requirementActivities.length+1][requirementActivities.length+1];
+		else this.extraConstraints = new AllenIntervalConstraint[1][1];
 	}
 	
 	public void addConstraint(AllenIntervalConstraint c, int from, int to) {

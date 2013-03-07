@@ -40,13 +40,7 @@ import framework.Constraint;
  */
 public class FuzzyAllenIntervalConstraint extends QualitativeAllenIntervalConstraint {
 	
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6199642316673769575L;
-
-
 
 	/**
 	 * Create a {@link FuzzyAllenIntervalConstraint} given an array of constraint types
