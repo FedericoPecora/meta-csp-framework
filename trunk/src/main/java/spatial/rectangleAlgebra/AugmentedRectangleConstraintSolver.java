@@ -174,7 +174,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		//for bounded RA constraint
 		convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
 		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
-		System.out.println("......................................................................");
+		
 		if (!solverX.addConstraints(consX)) { 
 			System.out.println(solverX + "Failed to add constraints in X dimension! ");
 			isInconsistent = true;
@@ -304,7 +304,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 		for (int i = 0; i < solverX.getVariables().length; i++) {
 			//calculate the centre of mass
-			BoundingBox bb = getCentreOfMass((AllenInterval)solverX.getVariables()[i], (AllenInterval)solverY.getVariables()[i]);
+			BoundingBox bb = getCMbasedBB((AllenInterval)solverX.getVariables()[i], (AllenInterval)solverY.getVariables()[i]);
 			//extractBoundingBoxesFromSTPs()
 			
 			//impose the At constraint (exact position)
@@ -351,20 +351,56 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		
 	}
 
-	private BoundingBox getCentreOfMass(AllenInterval intervalX,
-			AllenInterval intervalY) {
+	private BoundingBox getCMbasedBB(AllenInterval intervalX,
+			AllenInterval intervalY){
+			
+		Point px = getCentreOfMass(intervalX);
+		Point py = getCentreOfMass(intervalY);
+		return new BoundingBox(new Bounds(px.x(),px.x()), new Bounds(px.y(),px.y()), new Bounds(py.x(),py.x()), new Bounds(py.y(),py.y()));
+	}
+	
+	private Point getCentreOfMass(AllenInterval interval) {
 		
-		double minx, maxx, miny, maxy;
-		double durMinX = 0, durMaxX = 0, durMinY = 0, durMaxY = 0;
+		double cRecX = (double)(interval.getLST() - interval.getEST()) /2;
+		double cRecY = 	(double)(interval.getLET() - interval.getEET()) /2;	
+		double cx = 0, cy = 0;
+		double durMinX = 0, durMaxX = 0;
 
-		if(durationConsX.get(intervalX) != null){
-			durMinX = durationConsX.get(intervalX).min;
-			durMaxX = durationConsX.get(intervalX).max;
-			durMinY = durationConsY.get(intervalY).min;
-			durMaxY = durationConsY.get(intervalY).max;
+		if(durationConsX.get(interval) != null){
+			durMinX = durationConsX.get(interval).min;
+			durMaxX = durationConsX.get(interval).max;
 		}
+		
+		//This is for X dimension
+		//area of triangle
+		double s0 = ((double)(interval.getLET() - interval.getEET()) * (interval.getLST() - interval.getEST())) / 2; // area of rectangle
+		double s1 = ((double)(interval.getEET() - interval.getLST()) * (interval.getLST() - interval.getEET())) / 2; //area of triangle without duration
+		double s2 = ((double)((interval.getLST() + durMinX) - interval.getEET()) * (interval.getLST() - (interval.getEET() - durMinX))) / 2; // lower triangle when lower bound duration exists 
+		double s3 = ((double)(((interval.getLET() - durMaxX) - interval.getEST()) * (interval.getLET() - (interval.getEST() + durMaxX)))) / 2; // upper triangle when upper bound duration exists
+		
+		//
+		if(durationConsX.get(interval) == null){
+			double cTrinagleX = (2/3 * (interval.getLST() - interval.getEET()) + interval.getEET());
+			double cTrinagleY = (1/3 * (interval.getLST() - interval.getEET()) + interval.getEET());;
+			cx = (double) ((-cTrinagleX * s1) + ( cRecX * s0)) / (s1 + s0);
+			cy = (double) ((-cTrinagleY * s1) + ( cRecY * s0)) / (s1 + s0);
+		}
+		else{			
+			double cLTrinagleX = (2/3 * (interval.getLST() - (interval.getEET() - durMinX))) + (interval.getEET() - durMinX);
+			double cLTrinagleY = (1/3 * (interval.getLST() + durMinX - interval.getEET())) + interval.getEET();
+			
+			double cUTrinagleX = (1/3 * (interval.getLET() - durMaxX - interval.getEST())) + interval.getEST();
+			double cUTrinagleY = (1/3 * (interval.getEST() + durMaxX - interval.getLET())) + (interval.getEST() + durMaxX);
+
+			cx = (double) ((-cLTrinagleX * s2) + (-cUTrinagleX * s3) + ( cRecX * s0)) / (s0 + s2 + s3);
+			cy = (double) ((-cLTrinagleY * s2) + (-cUTrinagleY * s3) + ( cRecY * s0)) / (s0 + s2 + s3);
+		}
+		
+		
+		
+		
 		//return new BoundingBox(xLB, xUB, yLB, yUB);
-		return null;
+		return new Point(cx, cy);
 	}
 
 
@@ -546,7 +582,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			else{
 				System.out.println("it is not propagated " + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
 			}
-			System.out.println(".....................................................................");
+			//System.out.println(".....................................................................");
 		}//end of loop for unary culprit
 
 		ArrayList as = new ArrayList( rigidityHuristic.entrySet() );          
