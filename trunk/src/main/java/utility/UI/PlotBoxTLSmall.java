@@ -224,6 +224,7 @@ public class PlotBoxTLSmall extends JPanel {
         StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
         renderer.setItemLabelsVisible(true);
         renderer.setItemLabelGenerator( new utility.UI.PlotBoxTLSmall.LabelGenerator(true));
+        renderer.setItemMargin(70.0);
         /*
         if (values.elementAt(0) instanceof ResourceLevel) {
         	renderer.setItemLabelGenerator( new PlotBoxTL.LabelGenerator(true));
