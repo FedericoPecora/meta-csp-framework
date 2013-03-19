@@ -39,6 +39,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
@@ -47,6 +49,7 @@ import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.HorizontalAlignment;
+import org.jfree.ui.TextAnchor;
 
 
 //ApplicationFrame
@@ -224,7 +227,12 @@ public class PlotBoxTLSmall extends JPanel {
         StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
         renderer.setItemLabelsVisible(true);
         renderer.setItemLabelGenerator( new utility.UI.PlotBoxTLSmall.LabelGenerator(true));
-        renderer.setItemMargin(70.0);
+        ItemLabelPosition pos = new ItemLabelPosition(ItemLabelAnchor.INSIDE1, TextAnchor.TOP_RIGHT);
+    	renderer.setPositiveItemLabelPositionFallback(pos);
+        for(int i = 0; i < dataset.getRowCount(); i++) {
+        	renderer.setSeriesPositiveItemLabelPosition(i, pos);
+        }
+        
         /*
         if (values.elementAt(0) instanceof ResourceLevel) {
         	renderer.setItemLabelGenerator( new PlotBoxTL.LabelGenerator(true));
