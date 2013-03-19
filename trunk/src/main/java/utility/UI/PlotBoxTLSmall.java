@@ -92,7 +92,7 @@ public class PlotBoxTLSmall extends JPanel {
         	String label = "(null)";
         	if (values[new Integer(dataset.getRowKey(series).toString()).intValue()] != null) {
 	        	label = new String(values[new Integer(dataset.getRowKey(series).toString()).intValue()].toString());
-	        	label = label.replaceAll(", ", "\n");
+	        	//label = label.replaceAll(", ", "\n");
         	}
         	//getPositiveItemLabelPositionFallback() <-- this is called when it doesn't fit.
         	//if (!renderer.isItemLabelVisible(series, category))
