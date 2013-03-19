@@ -50,7 +50,7 @@ import utility.logging.MetaCSPLogging;
  */
 public final class TimelinePublisher
 {
-	private final TimelineEncoder imageEncoder = new TimelineEncoder(768, 80, "png", "TimeLine", "./TimeLines");
+	private final TimelineEncoder imageEncoder = new TimelineEncoder(4096/*768*/, 80, "png", "TimeLine", "TimeLines");
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
@@ -171,11 +171,12 @@ public final class TimelinePublisher
 				timelinesToRefresh.add(stl);
 			}
 			long delta = 0;
+			double portionBefore = 0.9;
 			if (slidingWindow && bounds != null) {
 				delta = bounds.max-bounds.min;				
-				if (((double)timeNow)/temporalResolution > origin+((double)delta)/2.0) {
-					min = (long)( ((double)timeNow)/(double)temporalResolution  -  ((double)delta)/2.0);
-					max = (long)( ((double)timeNow)/(double)temporalResolution  +  ((double)delta)/2.0);
+				if (((double)timeNow)/temporalResolution > origin+((double)delta)*portionBefore) {
+					min = (long)( ((double)timeNow)/(double)temporalResolution  -  ((double)delta)*portionBefore);
+					max = (long)( ((double)timeNow)/(double)temporalResolution  +  ((double)delta)*(1-portionBefore));
 				}
 			}
 			imageEncoder.encodeTimelines(timelinesToRefresh);
