@@ -28,8 +28,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Logger;
@@ -223,7 +225,10 @@ public final class TimelinePublisher
 			this.imageWidth = imageWidth;
 			this.subImageHeight = subImageHeight;
 			this.imageType = imageType;
-			this.filePath = filePath;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+			Date date = new Date(Calendar.getInstance().getTimeInMillis());
+			String time = sdf.format(date);
+			this.filePath = filePath+"-"+time;
 		}
 				
 		@Override
