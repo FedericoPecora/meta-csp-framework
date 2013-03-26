@@ -140,7 +140,7 @@ public abstract class Schedulable extends MetaConstraint {
 						start = (groundVars[j]).getTemporalVariable().getEST();
 						end = (groundVars[j]).getTemporalVariable().getEET();
 						Bounds nextInterval = new Bounds(start, end);
-						Bounds intersectionNew = intersection.intersect(nextInterval);
+						Bounds intersectionNew = intersection.intersectStrict(nextInterval);
 						// if act[j] overlaps it is added to the temporary (wrt i) set of activities
 						if (intersectionNew != null) {
 							overlapping.add(groundVars[j]);
@@ -201,7 +201,7 @@ public abstract class Schedulable extends MetaConstraint {
 				Bounds interval = new Bounds(discontinuitiesArray[i], discontinuitiesArray[i+1]);
 				for (Activity a : groundVars) {
 					Bounds interval1 = new Bounds(a.getTemporalVariable().getEST(), a.getTemporalVariable().getEET());
-					Bounds intersection = interval.intersect(interval1);
+					Bounds intersection = interval.intersectStrict(interval1);
 					if (intersection != null && !intersection.isSingleton()) {
 						onePeak.add(a);
 					}
@@ -231,11 +231,11 @@ public abstract class Schedulable extends MetaConstraint {
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			logger.finest("Doing binary peak collection with " + activities.size() + " activities...");
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
-			for (int i = 0; i < groundVars.length; i++) {
-				for (int j = 0; j < groundVars.length; j++) {
+			for (int i = 0; i < groundVars.length-1; i++) {
+				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
-					if (bi.intersect(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
+					if (bi.intersectStrict(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
 						ActivityNetwork cn = new ActivityNetwork(null);
 						cn.addVariable(groundVars[i]);
 						cn.addVariable(groundVars[j]);
