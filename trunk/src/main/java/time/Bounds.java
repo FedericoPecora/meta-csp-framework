@@ -74,6 +74,20 @@ public class Bounds implements Serializable, Comparable<Bounds> {
 	
 	/**
 	 * Get intersection with another {@link Bounds}.
+	 * This version treats intervals [n,n] as empty, which is necessary for
+	 * intersections in scheduling where "a meets b" should not create a conflict.
+	 * @param b The {@link Bounds} object to intersect this with.
+	 * @return <code>true</code> is there is a non-empty intersection, <code>null</code> otherwise.
+	 */
+	public final Bounds intersectStrict(Bounds b) {
+		final long _min = Math.max(this.min, b.min);
+		final long _max = Math.min(this.max, b.max);
+		if(_min < _max) return new Bounds(_min, _max);
+		return null;
+	}
+	
+	/**
+	 * Get intersection with another {@link Bounds}.
 	 * @param b The {@link Bounds} object to intersect this with.
 	 * @return <code>true</code> is there is a non-empty intersection, <code>null</code> otherwise.
 	 */
