@@ -77,11 +77,13 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	 * Get a String representation of this constraint.
 	 * @return A String describing this constraint.
 	 */
-	/*
 	public String toString() {
-		return "(" + this.getFrom() + ") --["+APSPSolver.printLong(minimum)+","+APSPSolver.printLong(maximum)+"]--> (" + this.getTo() + ")";
+		
+		String s=super.toString();
+		s+=" INTVS: "+bs.toString();
+		return s;
 	}
-	 */
+	
 	
 	/**
 	 * Draw a graphical representation of this constraint.  This method is NOT implemented.
@@ -157,6 +159,8 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	 */
 	public boolean removeInterval(Bounds i) {
 		
+		
+		System.out.println("SimpleDC removal");
 		if(bs.remove(i)) {
 			Bounds intersection = new Bounds(0, APSPSolver.INF);
 			

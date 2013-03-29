@@ -1,25 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2010-2013 Federico Pecora <federico.pecora@oru.se>
- * 
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- * 
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- ******************************************************************************/
 package framework.meta;
 
 import java.util.Arrays;
@@ -27,14 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import meta.TCSP.TCSPSolver;
 import meta.symbolsAndTime.Scheduler;
-import multi.activity.ActivityNetworkSolver;
-import multi.allenInterval.AllenIntervalNetworkSolver;
-import time.APSPSolver;
 import utility.UI.SearchTreeFrame;
 import utility.logging.MetaCSPLogging;
 import edu.uci.ics.jung.graph.DelegateForest;
@@ -76,9 +50,6 @@ import framework.multi.MultiConstraintSolver;
  */
 public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
-	public int resolvedConflictCounter = 0;
-	public int triedValuesCounter = 0;
-	
 	/**
 	 * 
 	 */
@@ -190,25 +161,22 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 * satisfies the {@link MetaConstraint}s was found.
 	 */
 	public boolean backtrack() {
-		resolvedConflictCounter = 0;
-		triedValuesCounter = 0;
-//		logger.setLevel(Level.FINEST);
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
-//		logger.info("Starting search...");
+		logger.info("Starting search...");
 //		preBacktrack();
 		MetaVariable conflict = null;
 		if ((conflict = this.getConflict()) != null) {
 			currentVertex = conflict;
 			if (backtrackHelper(conflict)) {
 //				postBacktrack();
-//				logger.info("... solution found");
+				logger.info("... solution found");
 				return true;
 			}
 //			postBacktrack();
 			return false;
 		}
 //		postBacktrack();
-//		logger.info("... no conflicts found");		
+		logger.info("... no conflicts found");		
 		return true;
 	}
 	
@@ -238,6 +206,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return true;
 	}
 	
+	
+	
+	
+	
+	
 	private boolean backtrackHelper(MetaVariable metaVariable) {
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
@@ -250,31 +223,31 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 			logger.fine("Failure (1)...");		
 		}
 		else {
-			logger.fine("num values: " + values.length);
 			for (ConstraintNetwork value : values) {
-				triedValuesCounter++;
 				if (animationTime != 0) {
 					try { Thread.sleep(animationTime); }
 					catch (InterruptedException e) { e.printStackTrace(); }
 				}
 				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
-								
+				
 				if (this.addResolver(mostProblematicNetwork, value)) {
-					
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
 					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 
 					logger.fine("Success...");		
-					resolvedConflictCounter++;
+					
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
+//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
+//					this.counterMoves++;
 					
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
 						breakSearch = false;
 						return true;
 					}
+					// addEdege(e,v,v)
 					this.g.addEdge(value, currentVertex, newConflict);
 					currentVertex = newConflict;
 					if (backtrackHelper(newConflict)) return true;					
@@ -287,6 +260,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
+//					this.counterMoves--;
+//					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
 					logger.fine("Failure... (2)");
 				}
 			}
@@ -299,6 +274,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	
 	
 	private boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
+//		ActivityNetworkSolver groundSolver 	= (ActivityNetworkSolver)this.getConstraintSolvers()[0];
+//		System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKKKK NUMBER OF VARIABLES" + groundSolver.getVariables().length);
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
@@ -306,6 +283,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		logger.fine("Solving conflict: " + metaVariable);
 		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
 		if (metaVariable.getMetaConstraint().valOH != null && values!=null){
+//			ConfigMetaConstraintValOH v= (ConfigMetaConstraintValOH)metaVariable.getMetaConstraint().valOH;
 			Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
 		}
 		if (values == null || values.length == 0) {
@@ -324,6 +302,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
+//					System.out.println("INCREMENTED COUNTERMOVES");
 					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 					
 
@@ -331,11 +310,19 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
+					
+					
+					
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
 						breakSearch = false;
 						return true;
 					}
+					if(newConflict.getConstraintNetwork().getVariables()[0].getID()>500){
+						logger.severe("PLANNING VARIABLE GENERATION LIMIT SET TO 1000, plan failed");
+						return false;
+					}
+
 					// addEdege(e,v,v)
 					this.g.addEdge(value, currentVertex, newConflict);
 					currentVertex = newConflict;
@@ -353,6 +340,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 			}
 		}
+//		this.counterMoves--;
+//		logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
+//		
+
 		
 		logger.fine("Backtracking...");
 		currentVertex = this.g.getParent(currentVertex);
@@ -416,6 +407,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	public boolean propagate() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	protected Variable createVariableSub() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -600,6 +596,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}
 		ret += "]";
 		nesting++;
+//		for (MetaConstraintSolver cs : this.nextMetaConstraintSolvers) ret += "\n" + cs.getDescription();
 		for (ConstraintSolver cs : this.getConstraintSolvers()) ret += "\n" + cs.getDescription();
 		nesting--;
 		ret += "]";
