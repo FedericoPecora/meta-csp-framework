@@ -261,23 +261,14 @@ public abstract class ConstraintSolver implements Serializable {
 		if (c == null || c.length == 0){ 
 			return true;
 		}
-		
-		//if (c.length == 1) return this.addConstraint(c[0]);
-		
 		ArrayList<MultiConstraint> added = new ArrayList<MultiConstraint>(c.length);
 		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 		ArrayList<Constraint> incomp = new ArrayList<Constraint>(c.length);
 		for (Constraint con : c) {
-			//If constraint is compatible AND it shouldn't be skipped for some other reason...
 			if (isCompatible(con) && !con.isSkippableSolver(this)) {
-				/**/
-				// if we are in presence of a multi constraint, i.e. a constraint which entails multiple constraints...
 				if (con instanceof MultiConstraint) {
-					// MC: our current MultiConstraint
 					MultiConstraint mc = (MultiConstraint)con;
-					// MV: our source node which the MC refers to
 					MultiVariable mv = (MultiVariable)mc.getScope()[0];
-					
 					for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
 						if (mc.propagateImmediately()) {
 							added.add(mc);
@@ -290,49 +281,32 @@ public abstract class ConstraintSolver implements Serializable {
 								}
 							}
 						}
-
-//						if (mc.propagateImmediately() && cs.addConstraints(mc.getInternalConstraints())) {
-//							added.add(mc);
-//							prop = true;
-//						}
-//						if (!prop && !((MultiConstraintSolver)mc.getScope()[0].getConstraintSolver()).getOption(MultiConstraintSolver.OPTIONS.ALLOW_INCONSISTENCIES)) {
-//							for (MultiConstraint mcadded : added) {
-//								MultiVariable mvadded = (MultiVariable)mcadded.getScope()[0];
-//								for (ConstraintSolver cs1 : mvadded.getInternalConstraintSolvers()) {
-//									logger.finest("hahaha " + Arrays.toString(mc.getInternalConstraints()));
-//									cs1.removeConstraints(mcadded.getInternalConstraints());
-//								}
-//							}
-//							return false;
-//						}
 					}
-				}/**/
+				}
 			}
 			else incomp.add(con);
 		}
-				
-		//now filter out the incompatible constraints (we don't wanna fail, just let them pass silently)		
 		ArrayList<Constraint> toAdd = new ArrayList<Constraint>(c.length);
 
 		for (Constraint con : c) if (!incomp.contains(con)) toAdd.add(con);
 		Constraint[] toAddArray = toAdd.toArray(new Constraint[toAdd.size()]);
 		
 		if (toAddArray.length == 0) return true;
-		
-		//add collected internal constraints for each internal solver...
+
 		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedConsRetract = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 		for (ConstraintSolver cs : sortedCons.keySet()) {
-			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) sortedConsRetract.put(cs, sortedCons.get(cs));
+			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) 
+				sortedConsRetract.put(cs, sortedCons.get(cs));
 			else {
-				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
-				logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
+				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) 
+					cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
+				logger.finest("Sec1 Failed to add constraints " + Arrays.toString(toAddArray));
 				
 				
 				return false;
 			}
 		}
 		if ((toAddArray.length == 1 && addConstraintSub(toAddArray[0])) || (toAddArray.length > 1 && addConstraintsSub(toAddArray))) {			
-		//if (addConstraintsSub(toAddArray)) {
 			for (Constraint con : toAddArray) this.theNetwork.addConstraint(con);
 			if (autoprop && checkDomainsInstantiated()) { 
 				if (this.propagate()) {
@@ -340,26 +314,17 @@ public abstract class ConstraintSolver implements Serializable {
 					return true;
 				}
 				for (Constraint con : toAddArray) {
-					logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
+					logger.finest("Sec2 Failed to add constraints " + Arrays.toString(toAddArray));
 					this.theNetwork.removeConstraint(con);
 				}
 			}
 			else {
-//				logger.finest("Added constraints " + Arrays.toString(toAddArray));
 				return true;
 			}
 		}
-		//something went wrong... retract what's already added
-		/**/
-		
-		for (ConstraintSolver cs1 : sortedConsRetract.keySet()) cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
-		logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));		
-//		for (MultiConstraint mcadded : added) {
-//			MultiVariable mvadded = (MultiVariable)mcadded.getScope()[0];
-//			for (ConstraintSolver cs : mvadded.getInternalConstraintSolvers())
-//				cs.removeConstraints(mcadded.getInternalConstraints());
-//		}/**/
-		
+		for (ConstraintSolver cs1 : sortedConsRetract.keySet()) 
+			cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
+		logger.finest("Sec3 Failed to add constraints " + Arrays.toString(toAddArray));		
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		return false;
 	}

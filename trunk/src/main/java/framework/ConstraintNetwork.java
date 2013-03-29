@@ -1,25 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2010-2013 Federico Pecora <federico.pecora@oru.se>
- * 
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- * 
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- ******************************************************************************/
 package framework;
 
 import java.io.IOException;
@@ -64,6 +42,8 @@ public abstract class ConstraintNetwork implements Serializable {
 	
 	private transient  Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
+	
+	private int weight=-1;
 
 	
 	//This is so that subclasses must invoke 1-arg constructor of ConstraintNetwork (below)
@@ -99,6 +79,7 @@ public abstract class ConstraintNetwork implements Serializable {
 		solver = sol;
 		g = new DirectedSparseMultigraph<Variable,Constraint>();
 		graph = new ObservableGraph<Variable,Constraint>(g);
+		this.weight=-1;
 	}
 
 	/**
@@ -163,7 +144,7 @@ public abstract class ConstraintNetwork implements Serializable {
 			for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
 			MultiBinaryConstraint bc = (MultiBinaryConstraint)c;
 			this.graph.addEdge(bc, bc.getFrom(), bc.getTo());
-//			logger.finest("Added constraint " + c);
+			logger.finest("Added constraint " + c);
 		}
 	}
 	
@@ -433,7 +414,7 @@ public abstract class ConstraintNetwork implements Serializable {
 		
 		
 	}
-
+	
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 	}
@@ -441,6 +422,18 @@ public abstract class ConstraintNetwork implements Serializable {
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		logger = MetaCSPLogging.getLogger(this.getClass());
+	}
+
+	/**
+	 * Weight to associate to the {@link ConstraintNetwork} for some metrics.
+	 * @return <code>int</code> weight related to the {@link ConstraintNetwork} 
+	 */
+	public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
 	}
 	
 }
