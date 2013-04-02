@@ -158,9 +158,6 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	 * an attempt to remove the active constraint.
 	 */
 	public boolean removeInterval(Bounds i) {
-		
-		
-		System.out.println("SimpleDC removal");
 		if(bs.remove(i)) {
 			Bounds intersection = new Bounds(0, APSPSolver.INF);
 			
@@ -168,12 +165,7 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 				//intersection = intervalIntersect(intersection, toIntersect);//intervalIntersect(intersection, inter);
 				intersection = intersection.intersect(toIntersect);
 			}
-			
-//			if(intersection.stop < intersection.start) {
-//				//intersection = new Interval(null);
-//				throw new Error("This should not happen");
-//			}
-			
+					
 			minimum = intersection.min;
 			maximum = intersection.max;
 			

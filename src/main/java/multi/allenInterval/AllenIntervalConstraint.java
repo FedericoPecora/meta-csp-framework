@@ -137,7 +137,6 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		Deadline(0L, APSPSolver.INF),
 		DisjunctionRelation;
 		
-		
 		private static Bounds[] createDefaultBounds(Long... bounds) {
 			assert bounds.length % 2 == 0;
 			
