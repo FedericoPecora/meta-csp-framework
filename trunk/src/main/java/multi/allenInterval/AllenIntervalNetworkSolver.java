@@ -105,6 +105,16 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		for (int i = 0; i < num; i++) {
 			ret[i] = new AllenInterval(this, IDs++, this.constraintSolvers);
 		}
+		
+		Vector<Constraint> cons = new Vector<Constraint>();
+		for (Variable ai : ret) {
+			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
+			dur.setFrom(ai);
+			dur.setTo(ai);
+			cons.add(dur);
+		}
+		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
+		
 		return ret;
 	}
 
