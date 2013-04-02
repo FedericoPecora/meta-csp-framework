@@ -22,7 +22,9 @@
  ******************************************************************************/
 package multi.allenInterval;
 
+import time.APSPSolver;
 import time.Bounds;
+import time.SimpleDistanceConstraint;
 import time.TimePoint;
 import framework.Constraint;
 import framework.ConstraintSolver;

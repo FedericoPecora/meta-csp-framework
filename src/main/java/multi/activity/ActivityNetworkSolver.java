@@ -129,14 +129,16 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		Variable[] ret = new Variable[num];
 		for (int i = 0; i < num; i++)
 			ret[i] = new Activity(this, IDs++, this.constraintSolvers); 
-		Vector<Constraint> cons = new Vector<Constraint>();
-		for (Variable ai : ret) {
-			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
-			dur.setFrom(ai);
-			dur.setTo(ai);
-			cons.add(dur);
-		}
-		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
+		// Has been moved to AllenIntervalNetworkSolver because it is bypassed 
+		// if AllenIntervalNetworkSolver is used without ActivityIntervalNetworkSolver 
+//		Vector<Constraint> cons = new Vector<Constraint>();
+//		for (Variable ai : ret) {
+//			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
+//			dur.setFrom(ai);
+//			dur.setTo(ai);
+//			cons.add(dur);
+//		}
+//		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
 		return ret;
 	}
 
