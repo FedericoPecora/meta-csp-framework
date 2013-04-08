@@ -101,7 +101,10 @@ public class BoundingBox {
 	}
 
 	
-	public Rectangle getAlmostCentreRectangle(){
+	public Rectangle getAlmostCentreRectangle(){	
+		
+		System.out.println(yLB + " " + yUB);
+		
 		return new Rectangle(
 				(int)(xLB.min + ((xLB.max - xLB.min)/2)), 
 				(int)(yLB.min + ((yLB.max - yLB.min)/2)), 

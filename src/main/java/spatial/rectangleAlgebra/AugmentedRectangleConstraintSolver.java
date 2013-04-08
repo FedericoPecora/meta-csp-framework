@@ -62,6 +62,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	private Vector<Variable> unaryCulpritVar;
 	private HashMap<AllenInterval, Bounds> durationConsX = new HashMap<AllenInterval, Bounds>();
 	private HashMap<AllenInterval, Bounds> durationConsY = new HashMap<AllenInterval, Bounds>();
+	private RectangularRegion[] culpritset = null;
+	private Vector<Vector<RectangleConstraint>> recRelsCopy = new Vector<Vector<RectangleConstraint>>();
+	
 
 	public AugmentedRectangleConstraintSolver() {
 		super();
@@ -72,8 +75,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 	public boolean propagate() {
 		if(super.getConstraints().length == 0) 
 			return true;
-		if(super.propagate())
+		if(super.propagate()){
 			convertRectangleTo2DimensionSTP(super.getCompleteRARelations());
+		}
 
 		return true;
 	}
@@ -84,7 +88,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 
 	private boolean convertRectangleTo2DimensionSTP(Vector<Vector<RectangleConstraint>> consrels){
-
+		
+		
 		solverX = new AllenIntervalNetworkSolver(0, horizon, 50);
 		solverY = new AllenIntervalNetworkSolver(0, horizon, 50);
 
@@ -171,6 +176,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		
 		
 		convertUnboundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, consrels);
+		
+
+		
 		//for bounded RA constraint
 		convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
 		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
@@ -187,6 +195,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			isInconsistent = true;
 		}
 		
+		
 //		double avg = ((double)(solverX.getRigidityNumber()) + (double)(solverY.getRigidityNumber())) / 2;
 //		System.out.println("TMP AVG:" + avg);
 
@@ -197,7 +206,11 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		return true;
 
 	}
-
+	
+	public boolean inConsistent(){
+		return !this.isInconsistent;
+	}
+	
 	private boolean isUnboundedBoundingBox(Bounds xLB, Bounds xUB,
 			Bounds yLB, Bounds yUB) {
 		if(xLB.min != 0 && xLB.max != APSPSolver.INF)
@@ -260,7 +273,9 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 					if(!ytp.contains(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[1].name())))
 						ytp.add(AllenIntervalConstraint.Type.fromString(convex2DAllen[j2].getAllenType()[1].name()));
 				}
-
+				
+				
+				
 				AllenIntervalConstraint btwintervalx = new AllenIntervalConstraint(xtp.toArray(new AllenIntervalConstraint.Type[xtp.size()]));
 				btwintervalx.setFrom(intervalsx[i]);
 				btwintervalx.setTo(intervalsx[j]);
@@ -270,7 +285,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				btwintervaly.setFrom(intervalsy[i]);
 				btwintervaly.setTo(intervalsy[j]);
 				yAllenConstraint.add(btwintervaly);
-
+				
 			}
 		}
 
@@ -475,7 +490,8 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 
 	public BoundingBox[] minimalCulpritDetector(){
 		
-		
+
+		culpritset = new RectangularRegion[2];
 		HashMap<RectangularRegion, HashMap<RectangularRegion, BoundingBox>> bestMoveCandidates = new HashMap<RectangularRegion, HashMap<RectangularRegion,BoundingBox>>(); 
 		HashMap<RectangularRegion, Double> rigidityHuristic = new HashMap<RectangularRegion, Double>();
 		//culprit set with cardinality one (at constraint)
@@ -560,29 +576,35 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 				}
 			}//end of loop for variables
 
-
+			//for qualitative RA constraint
 			convertUnboundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getCompleteRARelations());
+			
 			//for bounded RA constraint
 			convertBoundedRAConstraints(xAllenConstraint, yAllenConstraint, intervalsx, intervalsy, super.getBoundedConstraint());
+			
 
 
 
 			//check whether they are consistent then measureRigidity and save rigidity with respect to rectangle  
 			AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
 			AllenIntervalConstraint[] consY = yAllenConstraint.toArray(new AllenIntervalConstraint[yAllenConstraint.size()]);
+			
 			if (tmpSolverX.addConstraints(consX) && tmpSolverY.addConstraints(consY)) {
 				double avg = ((double)(tmpSolverX.getRigidityNumber()) + (double)(tmpSolverY.getRigidityNumber())) / 2;
 				rigidityHuristic.put((RectangularRegion)unaryCulpritVar.get(u), 
 						avg);
 				System.out.print("name: " + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
 				System.out.println(", avg: " + avg);
-				ConstraintNetwork.draw(this.theNetwork, ((RectangularRegion)unaryCulpritVar.get(u)).getName());
+				//ConstraintNetwork.draw(this.theNetwork, ((RectangularRegion)unaryCulpritVar.get(u)).getName());
+				
 				bestMoveCandidates.put((RectangularRegion)unaryCulpritVar.get(u), getbestPlacementBoundingBox(tmpSolverX, tmpSolverY));
 			}
 			else{
 				System.out.println("it is not propagated " + ((RectangularRegion)unaryCulpritVar.get(u)).getName());
 			}
 			//System.out.println(".....................................................................");
+
+		
 		}//end of loop for unary culprit
 
 		ArrayList as = new ArrayList( rigidityHuristic.entrySet() );          
@@ -604,11 +626,21 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 //		} 
 
 		Iterator i = as.iterator();  
-		//System.out.println( ((Map.Entry)i.next()).getKey() );  
-		System.out.println(bestMoveCandidates.get((RectangularRegion)((Map.Entry)i.next()).getKey()));
+		  
+		culpritset[0] =  (RectangularRegion)((Map.Entry)i.next()).getKey() ;
+//		System.out.println(culpritset[0]);
+		
+//		System.out.println("Best Move: " + (Map.Entry)i.next());
+//		System.out.println(bestMoveCandidates.get((RectangularRegion)((Map.Entry)i.next()).getKey()));
 
 		return null;
 	}
+	
+	public RectangularRegion[] getCulpritSet(){
+		
+		return culpritset;
+	}
+	
 
 	private HashMap<RectangularRegion, BoundingBox> getbestPlacementBoundingBox(
 			AllenIntervalNetworkSolver tmpSolverX,
@@ -620,7 +652,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 			xLB = new Bounds(((AllenInterval)tmpSolverX.getVariables()[i]).getEST(), ((AllenInterval)tmpSolverX.getVariables()[i]).getLST());
 			xUB = new Bounds(((AllenInterval)tmpSolverX.getVariables()[i]).getEET(), ((AllenInterval)tmpSolverX.getVariables()[i]).getLET());
 			yLB = new Bounds(((AllenInterval)tmpSolverY.getVariables()[i]).getEST(), ((AllenInterval)tmpSolverY.getVariables()[i]).getLST());
-			yUB = new Bounds(((AllenInterval)tmpSolverY.getVariables()[i]).getEET(), ((AllenInterval)tmpSolverY.getVariables()[i]).getLET());
+			yUB = new Bounds(((AllenInterval)tmpSolverY.getVariables()[i]).getEET(), ((AllenInterval)tmpSolverY.getVariables()[i]).getLET());			
 			ret.put((RectangularRegion)this.getVariables()[i], new BoundingBox(xLB, xUB, yLB, yUB));
 		}
 		return ret;
