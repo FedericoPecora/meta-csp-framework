@@ -165,6 +165,13 @@ public class SimpleDomain extends MetaConstraint {
 				for (AllenIntervalConstraint con : toAddExtra) activityNetworkToReturn.addConstraint(con);
 			}
 		}
+		else if (possibleOperator.getExtraConstraints()[0][0] != null) {
+			AllenIntervalConstraint ec = possibleOperator.getExtraConstraints()[0][0];
+			AllenIntervalConstraint newCon = (AllenIntervalConstraint) ec.clone();
+			newCon.setFrom(problematicActivity);
+			newCon.setTo(problematicActivity);
+			activityNetworkToReturn.addConstraint(newCon);
+		}
 		
 		if (possibleOperator.getUsages() != null) {
 			String resource = possibleOperatorSymbol.substring(possibleOperatorSymbol.indexOf("(")+1,possibleOperatorSymbol.indexOf(")"));
