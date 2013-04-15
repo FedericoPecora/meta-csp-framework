@@ -832,45 +832,6 @@ public class APSPSolver extends ConstraintSolver {
 //		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
 //		return cCreate(tot,from,to);
 //	}
-//	 @Override
-//     protected boolean addConstraintsSub(Constraint[] con) {
-//             if (con == null || con.length == 0) return true;
-//             Bounds[] tot = new Bounds[con.length];
-//             int[] from = new int[con.length];
-//             int[] to = new int[con.length];
-//
-//             for (int i = 0; i < con.length; i++) {
-//                     if (con[i] instanceof SimpleDistanceConstraint) {
-//                             SimpleDistanceConstraint c = (SimpleDistanceConstraint)con[i];
-//                             tot[i] = new Bounds(c.getMinimum(),c.getMaximum());                             
-//                             from[i] = ((TimePoint)c.getFrom()).getID();
-//                             to[i] = ((TimePoint)c.getTo()).getID();
-//                     }
-//             }
-//
-//             logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
-//             Vector<Constraint> added = new Vector<Constraint>();
-//             for (int i = 0; i < con.length; i++) {
-////            	 	System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
-//                     if (cCreate(tot[i],from[i],to[i])) {
-//                    	 added.add(con[i]);
-//                     }
-//                     else {
-//                             logger.fine("Failed to add " + con[i]);
-//                             Bounds[] toDeleteBounds = new Bounds[added.size()];
-//                             int[] toDeleteFrom = new int[added.size()];
-//                             int[] toDeleteTo = new int[added.size()];
-//                             for (int j = 0; j < added.size(); j++) {
-//                                     toDeleteBounds[j] = new Bounds(((SimpleDistanceConstraint)added.get(j)).getMinimum(),((SimpleDistanceConstraint)added.get(j)).getMaximum());
-//                                     toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
-//                                     toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
-//                             }
-//                             cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
-//                             return false;
-//                     }
-//             }
-//             return true;
-//     }
 	 @Override
      protected boolean addConstraintsSub(Constraint[] con) {
              if (con == null || con.length == 0) return true;
@@ -881,25 +842,64 @@ public class APSPSolver extends ConstraintSolver {
              for (int i = 0; i < con.length; i++) {
                      if (con[i] instanceof SimpleDistanceConstraint) {
                              SimpleDistanceConstraint c = (SimpleDistanceConstraint)con[i];
-                             tot[i] = new Bounds(c.getMinimum(),c.getMaximum());
+                             tot[i] = new Bounds(c.getMinimum(),c.getMaximum());                             
                              from[i] = ((TimePoint)c.getFrom()).getID();
                              to[i] = ((TimePoint)c.getTo()).getID();
                      }
              }
 
              logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
-             int bookmarkBeforeAdding = this.bookmark();
+             Vector<Constraint> added = new Vector<Constraint>();
              for (int i = 0; i < con.length; i++) {
-//            	 System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
-            	 
-                     if ( !cCreate(tot[i],from[i],to[i]) ) {
-                    	 this.revert(bookmarkBeforeAdding);
-                    	 return false;
+//            	 	System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
+                     if (cCreate(tot[i],from[i],to[i])) {
+                    	 added.add(con[i]);
+                     }
+                     else {
+                             logger.fine("Failed to add " + con[i]);
+                             Bounds[] toDeleteBounds = new Bounds[added.size()];
+                             int[] toDeleteFrom = new int[added.size()];
+                             int[] toDeleteTo = new int[added.size()];
+                             for (int j = 0; j < added.size(); j++) {
+                                     toDeleteBounds[j] = new Bounds(((SimpleDistanceConstraint)added.get(j)).getMinimum(),((SimpleDistanceConstraint)added.get(j)).getMaximum());
+                                     toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
+                                     toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
+                             }
+                             cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
+                             return false;
                      }
              }
-             this.removeBookmark(bookmarkBeforeAdding);
              return true;
      }
+//	 @Override
+//     protected boolean addConstraintsSub(Constraint[] con) {
+//             if (con == null || con.length == 0) return true;
+//             Bounds[] tot = new Bounds[con.length];
+//             int[] from = new int[con.length];
+//             int[] to = new int[con.length];
+//
+//             for (int i = 0; i < con.length; i++) {
+//                     if (con[i] instanceof SimpleDistanceConstraint) {
+//                             SimpleDistanceConstraint c = (SimpleDistanceConstraint)con[i];
+//                             tot[i] = new Bounds(c.getMinimum(),c.getMaximum());
+//                             from[i] = ((TimePoint)c.getFrom()).getID();
+//                             to[i] = ((TimePoint)c.getTo()).getID();
+//                     }
+//             }
+//
+//             logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
+//             int bookmarkBeforeAdding = this.bookmark();
+//             for (int i = 0; i < con.length; i++) {
+////            	 System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
+//            	 
+//                     if ( !cCreate(tot[i],from[i],to[i]) ) {
+//                    	 this.revert(bookmarkBeforeAdding);
+//                    	 return false;
+//                     }
+//             }
+//             this.removeBookmark(bookmarkBeforeAdding);
+//             return true;
+//     }
 
 	//Remove a constraint (SimpleDistanceConstraint)
 	@Override
@@ -914,6 +914,7 @@ public class APSPSolver extends ConstraintSolver {
 	//Remove a constraint (SimpleDistanceConstraint)
 	@Override
 	protected void removeConstraintsSub(Constraint[] con) {
+		logger.finest("Trying to remove constraints " + Arrays.toString(con) + "...");
 		if (con != null && con.length != 0) {
 			Bounds[] tot = new Bounds[con.length];
 			int[] from = new int[con.length];
