@@ -61,7 +61,7 @@ public abstract class Constraint implements Cloneable, Serializable {
 	}
 	
 	/**
-	 * assess whether a given solver is allowed to process this constraint.
+	 * Assess whether a given solver is allowed to process this constraint.
 	 * @param cs The {@link ConstraintSolver} to check.
 	 * @return <code>true</code> iff the given solver will process this constraint.
 	 */

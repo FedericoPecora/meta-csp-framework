@@ -58,7 +58,7 @@ public abstract class MultiVariable extends Variable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5070818185640197097L;
-	protected ConstraintSolver[] internalSolvers;
+	protected transient ConstraintSolver[] internalSolvers;
 	protected Variable[] variables;
 	protected Constraint[] constraints;
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());

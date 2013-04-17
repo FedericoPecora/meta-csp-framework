@@ -53,7 +53,7 @@ public class SymbolicVariableConstraintSolver extends ConstraintSolver {
 	private Vector<SetVariable> auxVariables = null;
 	private Model m = null;
 	private Vector<String> allValues = new Vector<String>();
-	private Solver s = null;
+	private transient Solver s = null;
 	
 	private SetConstantVariable cEmpty = Choco.emptySet();
 	

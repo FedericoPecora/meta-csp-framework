@@ -43,7 +43,7 @@ import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 public class DomainDescription {
 
 	private Rule[] rules;
-	private transient FuzzyActivityNetworkSolver solver;
+	private FuzzyActivityNetworkSolver solver;
 	private Vector<FuzzyActivity> ongoignActs = new Vector<FuzzyActivity>();
 	private Vector<FuzzyAllenIntervalConstraint> truthMaintenanceConstraints = new Vector<FuzzyAllenIntervalConstraint>();
 	private long clockStart = -1;

@@ -39,7 +39,7 @@ public class Activity extends MultiVariable {
 	 */
 	private static final long serialVersionUID = 4709760631961797060L;
 	private String[] symbols;
-	private transient SymbolicVariable symbolicVariable;
+	private SymbolicVariable symbolicVariable;
 
 	private AllenInterval temporalVariable;
 	
