@@ -31,7 +31,7 @@ public abstract class Sensor {
 	
 	private String name;
 	private String[] states;
-	private transient FuzzyActivityNetworkSolver solver;
+	private FuzzyActivityNetworkSolver solver;
 	private double[] currentPossibilities;
 	private FuzzyActivity currentAct = null;
 	

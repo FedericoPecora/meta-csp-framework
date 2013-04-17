@@ -22,7 +22,6 @@
  ******************************************************************************/
 package multi.activity;
 
-import edu.uci.ics.jung.graph.ObservableGraph;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;

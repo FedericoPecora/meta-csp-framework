@@ -60,7 +60,7 @@ public class FuzzyActivityDomain extends MetaConstraint {
 	 */
 	private static final long serialVersionUID = -7673606470845404508L;
 	private Vector<Rule> rules = new Vector<Rule>();
-	private transient FuzzyActivityNetworkSolver solver;
+	private FuzzyActivityNetworkSolver solver;
 	private Vector<FuzzyActivity> ongoignActs = new Vector<FuzzyActivity>();
 	private Vector<FuzzyAllenIntervalConstraint> truthMaintenanceConstraints = new Vector<FuzzyAllenIntervalConstraint>();
 	private HashMap<String, SimpleTimeline> timelines = new HashMap<String, SimpleTimeline>();

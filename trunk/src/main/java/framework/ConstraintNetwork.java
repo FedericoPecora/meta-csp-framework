@@ -40,7 +40,7 @@ public abstract class ConstraintNetwork implements Serializable {
 	protected HashMap<Variable, Integer> variablesR = new HashMap<Variable, Integer>();
 	protected HashMap<VariablePrototype,Variable> substitutions = new HashMap<VariablePrototype, Variable>();
 	
-	private transient  Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
 	
 	private int weight=-1;

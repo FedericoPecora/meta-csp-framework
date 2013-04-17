@@ -85,7 +85,7 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	/**
 	 * Every variable has a constraint solver.
 	 */
-	protected transient ConstraintSolver solver;
+	protected ConstraintSolver solver;
 
 	//This is so that extending classes must invoke 2-arg constructor of Variable (below) 
 	@SuppressWarnings("unused")
