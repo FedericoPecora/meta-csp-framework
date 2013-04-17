@@ -231,6 +231,14 @@ public abstract class Schedulable extends MetaConstraint {
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			logger.finest("Doing binary peak collection with " + activities.size() + " activities...");
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
+			for (Activity a : groundVars) {
+				if (isConflicting(new Activity[] {a})) {
+					ActivityNetwork cn = new ActivityNetwork(null);
+					cn.addVariable(a);
+					ret.add(cn);
+				}
+			}
+			if (!ret.isEmpty()) return ret.toArray(new ConstraintNetwork[ret.size()]);
 			for (int i = 0; i < groundVars.length-1; i++) {
 				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
