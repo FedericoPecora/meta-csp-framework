@@ -238,7 +238,9 @@ public abstract class Schedulable extends MetaConstraint {
 					ret.add(cn);
 				}
 			}
-			if (!ret.isEmpty()) return ret.toArray(new ConstraintNetwork[ret.size()]);
+			if (!ret.isEmpty()) {
+				return ret.toArray(new ConstraintNetwork[ret.size()]);
+			}
 			for (int i = 0; i < groundVars.length-1; i++) {
 				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
@@ -251,7 +253,9 @@ public abstract class Schedulable extends MetaConstraint {
 					}
 				}
 			}
-			if (!ret.isEmpty()) return ret.toArray(new ConstraintNetwork[ret.size()]);			
+			if (!ret.isEmpty()) {
+				return ret.toArray(new ConstraintNetwork[ret.size()]);			
+			}
 		}
 		return (new ConstraintNetwork[0]);
 	}
