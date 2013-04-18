@@ -123,6 +123,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 
 		DuringOrEquals(0L, APSPSolver.INF,   0L, APSPSolver.INF),
 		
+		DuringOrEqualsOrStartsOrFinishes(0L, APSPSolver.INF,   0L, APSPSolver.INF),
+		
 		EndsDuring(0),
 		EndEnd(0L, APSPSolver.INF),
 		
@@ -819,6 +821,25 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			}
 
 			if (types[0].equals(Type.DuringOrEquals)) {
+				TimePoint fs = from.getStart();
+				TimePoint ts = to.getStart();
+				TimePoint fe = from.getEnd();
+				TimePoint te = to.getEnd();
+				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
+				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
+				first.setMinimum(bounds[0].min);
+				first.setMaximum(bounds[0].max);
+				first.setFrom(ts);
+				first.setTo(fs);
+				second.setMinimum(bounds[1].min);
+				second.setMaximum(bounds[1].max);
+				second.setFrom(fe);
+				second.setTo(te);
+				Constraint[] ret = {first,second};
+				return ret;
+			}
+			
+			if (types[0].equals(Type.DuringOrEqualsOrStartsOrFinishes)) {
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
