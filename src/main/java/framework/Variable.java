@@ -57,6 +57,11 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	 * A field to set the entity that creates this variable
 	 */
 	private transient Object owner;
+	
+	/**
+	 * A field to set generic attributes  
+	 */
+	protected transient Object attributes;
 
 	/**
 	 * A field to set the visualization color. If further modified, variables will be visualized in red
