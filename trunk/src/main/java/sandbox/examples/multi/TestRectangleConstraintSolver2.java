@@ -116,12 +116,6 @@ public class TestRectangleConstraintSolver2 {
 		allConstraints.add(cupToDish);
 
 		
-//		AugmentedRectangleConstraint knifetoDish = new AugmentedRectangleConstraint(new TwoDimensionsAllenConstraint(QualitativeAllenIntervalConstraint.Type.After,
-//				QualitativeAllenIntervalConstraint.Type.During));
-//		knifetoDish.setFrom(knife);
-//		knifetoDish.setTo(dish);
-//		allConstraints.add(knifetoDish);
-		
 		RectangleConstraint2 knifetoDish = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, new Bounds(4, 10)), new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()));
 		knifetoDish.setFrom(knife);
 		knifetoDish.setTo(dish);
