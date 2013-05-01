@@ -36,6 +36,7 @@ import sandbox.spatial.rectangleAlgebra2.RectangularRegion2;
 import sandbox.spatial.rectangleAlgebra2.UnaryRectangleConstraint2;
 import time.APSPSolver;
 import time.Bounds;
+import utility.logging.MetaCSPLogging;
 
 public class TestRectangleConstraintSolver2 {
 
@@ -155,6 +156,7 @@ public class TestRectangleConstraintSolver2 {
 		allConstraints.add(dishAssertion);
 		
 		Constraint[] allConstraintsArray = allConstraints.toArray(new Constraint[allConstraints.size()]);
+		MetaCSPLogging.setLevel(Level.FINEST);
 		if (!solver.addConstraints(allConstraintsArray)) { 
 			System.out.println("Failed to add constraints!");
 			System.exit(0);

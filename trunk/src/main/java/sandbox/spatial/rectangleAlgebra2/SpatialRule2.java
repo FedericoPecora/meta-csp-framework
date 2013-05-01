@@ -1,5 +1,6 @@
 package sandbox.spatial.rectangleAlgebra2;
 
+import framework.multi.MultiBinaryConstraint;
 import spatial.rectangleAlgebra.AugmentedRectangleConstraint;
 
 public class SpatialRule2 {
@@ -32,20 +33,22 @@ public class SpatialRule2 {
 		return from;
 	}
 	
-
-	public RectangleConstraint2 getBinaryRectangleConstraint() {
-		return binaryRA;
-	}
 	
-	public UnaryRectangleConstraint2 getUnaryRectangleConstraint(){
-		return unaryRA;
+	public MultiBinaryConstraint getRAConstraint(){
+		
+		if(binaryRA != null)
+			return this.binaryRA;
+		if(unaryRA != null)
+			return this.unaryRA;
+		return null;
+		
 	}
 	
 	public String toString() {
 		if(binaryRA != null)
-			return "(" + this.getFrom() + ") --" + this.getBinaryRectangleConstraint() + "--> (" + this.getTo() + ")";
+			return "(" + this.getFrom() + ") --" + this.binaryRA + "--> (" + this.getTo() + ")";
 		if(unaryRA != null)
-			return "(" + this.getFrom() + ") --" + this.getUnaryRectangleConstraint() + "--> (" + this.getTo() + ")";
+			return "(" + this.getFrom() + ") --" + this.unaryRA + "--> (" + this.getTo() + ")";
 		return null;
 	}
 	

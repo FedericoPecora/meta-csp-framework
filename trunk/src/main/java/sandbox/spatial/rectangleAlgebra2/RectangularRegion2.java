@@ -22,6 +22,7 @@
  ******************************************************************************/
 package sandbox.spatial.rectangleAlgebra2;
 
+import spatial.rectangleAlgebra.OntologicalSpatialProperty;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;
@@ -29,7 +30,9 @@ import framework.Variable;
 import framework.multi.MultiVariable;
 
 public class RectangularRegion2 extends MultiVariable {
-
+	
+	
+	private OntologicalSpatialProperty ontologicalProp = null;
 	protected RectangularRegion2(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
 		super(cs, id, internalSolvers);
 	}
@@ -39,6 +42,10 @@ public class RectangularRegion2 extends MultiVariable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 				
 	@Override
@@ -71,6 +78,14 @@ public class RectangularRegion2 extends MultiVariable {
 		// TODO Auto-generated method stub		
 	}
 	
-
+	public OntologicalSpatialProperty getOntologicalProp() {
+		if(ontologicalProp == null)
+			return new OntologicalSpatialProperty();
+		return ontologicalProp;
+	}
+	
+	public void setOntologicalProp(OntologicalSpatialProperty ontologicalProp) {
+		this.ontologicalProp = ontologicalProp;
+	}
 
 }
