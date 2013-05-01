@@ -47,7 +47,7 @@ public class SimpleAllenInterval extends Variable {
 	private static final long serialVersionUID = 6378743562708507485L;
 	private Domain dom;
 	
-	SimpleAllenInterval(ConstraintSolver cs, int id) {
+	public SimpleAllenInterval(ConstraintSolver cs, int id) {
 		super(cs, id);
 		setDomain(new SimpleInterval(this));
 		// TODO Auto-generated constructor stub
