@@ -34,15 +34,15 @@ public class SpatialRule2 {
 	}
 	
 	
-	public MultiBinaryConstraint getRAConstraint(){
-		
-		if(binaryRA != null)
-			return this.binaryRA;
-		if(unaryRA != null)
-			return this.unaryRA;
-		return null;
-		
+	
+	public UnaryRectangleConstraint2 getUnaryRAConstraint(){
+		return this.unaryRA;
 	}
+	
+	public RectangleConstraint2 getBinaryRAConstraint(){
+		return this.binaryRA;
+	}
+	
 	
 	public String toString() {
 		if(binaryRA != null)

@@ -184,7 +184,7 @@ public class AugmentedRectangleConstraintSolver extends RectangleConstraintSolve
 		AllenIntervalConstraint[] consX = xAllenConstraint.toArray(new AllenIntervalConstraint[xAllenConstraint.size()]);
 		
 		if (!solverX.addConstraints(consX)) { 
-			System.out.println(solverX + "Failed to add constraints in X dimension! ");
+			System.out.println("Failed to add constraints in X dimension! ");
 			isInconsistent = true;
 
 		}

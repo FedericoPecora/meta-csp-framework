@@ -104,5 +104,7 @@ public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
 	}
 	
 	public Type getType() { return type; }
-	
+	public Bounds[] getBounds(){
+		return this.bounds;
+	}
 }

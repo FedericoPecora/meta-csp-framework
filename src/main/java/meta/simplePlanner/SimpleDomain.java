@@ -122,7 +122,7 @@ public class SimpleDomain extends MetaConstraint {
 		if (possibleOperator.getRequirementActivities() != null) {
 			for (String possibleOperatorTail : possibleOperator.getRequirementActivities()) {
 				String possibleOperatorTailComponent = possibleOperatorTail.substring(0, possibleOperatorTail.indexOf("::"));
-				String possibleOperatorTailSymbol = possibleOperatorTail.substring(possibleOperatorTail.indexOf("::")+2, possibleOperatorTail.length());				
+				String possibleOperatorTailSymbol = possibleOperatorTail.substring(possibleOperatorTail.indexOf("::")+2, possibleOperatorTail.length());
 				if (possibleOperatorTailComponent.equals(possibleOperatorComponent) && possibleOperatorTailSymbol.equals(possibleOperatorSymbol)) {
 					operatorTailActivitiesToInsert.add(problematicActivity);
 				}
