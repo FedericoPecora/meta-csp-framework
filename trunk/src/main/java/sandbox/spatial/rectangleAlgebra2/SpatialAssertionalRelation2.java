@@ -29,6 +29,4 @@ public class SpatialAssertionalRelation2 extends AssertionalRelation{
 	public OntologicalSpatialProperty getOntologicalProp() {
 		return ontologicalProp;
 	}
-	
-
 }

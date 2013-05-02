@@ -55,6 +55,10 @@ public class RectangleConstraint2 extends MultiBinaryConstraint {
 		return ReactangleToRCC[x.ordinal()][y.ordinal()];
 	}
 	
+	public AllenIntervalConstraint[] getInternalAllenIntervalConstraints(){
+		return new AllenIntervalConstraint[] {this.xConstraint, this.yConstraint};	
+	}
+	
 	public static CardinalConstraint.Type getCardinalConstraint(RectangleConstraint2 c){
 		
 		if(c.getType()[0][0].compareTo(AllenIntervalConstraint.Type.Equals) == 0 && c.getType()[1][0].compareTo(AllenIntervalConstraint.Type.Equals) == 0)
