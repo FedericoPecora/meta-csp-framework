@@ -70,7 +70,6 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	
 	private static final long serialVersionUID = 7L;
 
-
 	
 	/**
 	 * Set the marking of this {@link Variable}.
