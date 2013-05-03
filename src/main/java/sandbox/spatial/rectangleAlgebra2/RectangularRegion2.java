@@ -22,6 +22,7 @@
  ******************************************************************************/
 package sandbox.spatial.rectangleAlgebra2;
 
+import multi.allenInterval.AllenInterval;
 import spatial.rectangleAlgebra.OntologicalSpatialProperty;
 import framework.Constraint;
 import framework.ConstraintSolver;
@@ -63,8 +64,10 @@ public class RectangularRegion2 extends MultiVariable {
 		Variable[] ret = new Variable[2];
 		//X
 		ret[0] = this.getInternalConstraintSolvers()[0].createVariable();
+		((AllenInterval)ret[0]).setName("!X!");
 		//Y
 		ret[1] = this.getInternalConstraintSolvers()[1].createVariable();
+		((AllenInterval)ret[1]).setName("!Y!");
 		return ret;
 	}
 

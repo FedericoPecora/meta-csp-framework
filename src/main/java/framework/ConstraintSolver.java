@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 
 import multi.allenInterval.AllenIntervalNetworkSolver;
 
+import sandbox.spatial.rectangleAlgebra2.RectangleConstraintSolver2;
 import symbols.SymbolicVariableConstraintSolver;
 import throwables.ConstraintNotFound;
 import throwables.IllegalVariableRemoval;
@@ -62,6 +63,7 @@ import framework.multi.MultiVariable;
  */
 public abstract class ConstraintSolver implements Serializable {
 	
+	public static int numcalls = 0;
 	protected Class<?>[] constraintTypes = {};
 	protected Class<?>[] variableTypes = {};
 	protected static int nesting = 0;
@@ -100,6 +102,8 @@ public abstract class ConstraintSolver implements Serializable {
 	protected HashMap<String,ArrayList<Variable>> components = new HashMap<String,ArrayList<Variable>>();
 
 	private transient  Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	
+	public void setName(String name) { this.name = name; }
 	
 	/**
 	 * Default constructor for this class.  Calls to subclass constructors will
@@ -258,6 +262,7 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @return A boolean value indicating the success of adding the constraints.
 	 */
 	public final boolean addConstraints(Constraint... c) {
+		if (this instanceof RectangleConstraintSolver2) numcalls++;
 		if (c == null || c.length == 0){ 
 			return true;
 		}
@@ -277,7 +282,7 @@ public abstract class ConstraintSolver implements Serializable {
 							}
 							if (mc.getInternalConstraints() != null) {
 								for (Constraint ic : mc.getInternalConstraints()) {
-									sortedCons.get(cs).add(ic);
+									if (!ic.isSkippableSolver(cs)) sortedCons.get(cs).add(ic);
 								}
 							}
 						}
@@ -295,13 +300,16 @@ public abstract class ConstraintSolver implements Serializable {
 
 		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedConsRetract = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 		for (ConstraintSolver cs : sortedCons.keySet()) {
-			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) 
+			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) {
+				logger.finest("Added sub-constraints " + sortedCons.get(cs));
 				sortedConsRetract.put(cs, sortedCons.get(cs));
+			}
 			else {
-				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) 
+				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) {
+					logger.finest("Removing internatl constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
 					cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
-				logger.finest("Sec1 Failed to add constraints " + Arrays.toString(toAddArray));
-				
+				}
+				logger.finest("Failed to add sub-constraints " + Arrays.toString(toAddArray));
 				
 				return false;
 			}
@@ -314,7 +322,7 @@ public abstract class ConstraintSolver implements Serializable {
 					return true;
 				}
 				for (Constraint con : toAddArray) {
-					logger.finest("Sec2 Failed to add constraints " + Arrays.toString(toAddArray));
+					logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
 					this.theNetwork.removeConstraint(con);
 				}
 			}
@@ -705,7 +713,7 @@ public abstract class ConstraintSolver implements Serializable {
 	
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + ": "+ Arrays.asList(this.getVariables());
+		return this.getClass().getSimpleName() + " (" + ((this.name == null) ? "" : this.name) + "): "+ Arrays.asList(this.getVariables());
 	}
 	
 	/**
