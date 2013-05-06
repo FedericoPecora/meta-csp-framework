@@ -70,7 +70,9 @@ public class RectangularRegion2 extends MultiVariable {
 		((AllenInterval)ret[1]).setName("!Y!");
 		return ret;
 	}
-
+	
+	
+	
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
 		return null;
