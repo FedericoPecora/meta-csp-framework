@@ -45,7 +45,6 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	public static enum Type {
 		//Before,Meets,Overlaps,FinishedBy,Contains,StartedBy,Equals,Starts,During,Finishes,OverlappedBy,
 		//MetBy,After,
-		
 		/**
 		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/before.png> 
 		 */
@@ -723,10 +722,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			if (types[0].equals(Type.Deadline)) {
 				TimePoint fe = from.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
-//				first.setMinimum(((APSPSolver)from.getInternalConstraintSolvers()[0]).getH()-bounds[0].max);
-//				first.setMaximum(((APSPSolver)from.getInternalConstraintSolvers()[0]).getH()-bounds[0].min);
-				first.setMinimum(bounds[0].min);
-				first.setMaximum(bounds[0].max);
+				first.setMinimum(bounds[0].min-((APSPSolver)from.getInternalConstraintSolvers()[0]).getO());
+				first.setMaximum(bounds[0].max-((APSPSolver)from.getInternalConstraintSolvers()[0]).getO());
 				first.setFrom(((APSPSolver)from.getInternalConstraintSolvers()[0]).getSource());
 				first.setTo(fe);
 				Constraint[] ret = {first};
