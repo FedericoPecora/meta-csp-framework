@@ -8,7 +8,7 @@ public class SpatialAssertionalRelation2 extends AssertionalRelation{
 	
 	OntologicalSpatialProperty ontologicalProp;
 	UnaryRectangleConstraint2 unaryRAConstraint;
-	SpatialFuent spatialFluent;
+	SpatialFluent spatialFluent;
 	
 	public SpatialAssertionalRelation2(String from, String to) {
 		super(from, to);
@@ -31,11 +31,11 @@ public class SpatialAssertionalRelation2 extends AssertionalRelation{
 		return ontologicalProp;
 	}
 	
-	public void associateSpatialFlunt (SpatialFuent spatialFluent){
+	public void associateSpatialFlunt (SpatialFluent spatialFluent){
 		this.spatialFluent = spatialFluent;
 	}
 	
-	public SpatialFuent getSpatialFleunt(){
+	public SpatialFluent getSpatialFleunt(){
 		return this.spatialFluent;
 	}
 	
