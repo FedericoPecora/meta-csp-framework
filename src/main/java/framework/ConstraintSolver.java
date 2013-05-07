@@ -113,7 +113,7 @@ public abstract class ConstraintSolver implements Serializable {
 		this.theNetwork = this.createConstraintNetwork();
 		this.constraintTypes = constraintTypes;
 		this.variableTypes = variableTypes;
-		this.name="GENERAL CONSTRAINT SOLVER NAME: specify in the particular instantiation";
+//		this.name="GENERAL CONSTRAINT SOLVER NAME: specify in the particular instantiation";
 	}
 	
 	/**
