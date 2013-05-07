@@ -50,7 +50,7 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	protected Variable[] createVariablesSub(int num) {
 		Variable[] ret = new Variable[num];
 		for (int i = 0; i < num; i++)
-			ret[i] = new SpatialFuent(this, IDs++, this.constraintSolvers);
+			ret[i] = new SpatialFluent(this, IDs++, this.constraintSolvers);
 		return ret;
 	}
 
