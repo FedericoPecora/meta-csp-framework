@@ -36,7 +36,7 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxFluents) {		
 		ConstraintSolver[] ret = maxFluents != -1 ? new ConstraintSolver[] {new RectangleConstraintSolver2(origin, horizon, maxFluents), new ActivityNetworkSolver(origin, horizon, maxFluents)}
-			:new ConstraintSolver[] {new AllenIntervalNetworkSolver(origin, horizon), new SymbolicVariableConstraintSolver()};	
+			:new ConstraintSolver[] {new RectangleConstraintSolver2(origin, horizon), new ActivityNetworkSolver(origin, horizon)};	
 		return ret;
 	}
 
@@ -50,7 +50,7 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	protected Variable[] createVariablesSub(int num) {
 		Variable[] ret = new Variable[num];
 		for (int i = 0; i < num; i++)
-			ret[i] = new SpatialFeunt(this, IDs++, this.constraintSolvers);
+			ret[i] = new SpatialFuent(this, IDs++, this.constraintSolvers);
 		return ret;
 	}
 

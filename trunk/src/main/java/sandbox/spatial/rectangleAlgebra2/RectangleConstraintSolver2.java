@@ -57,8 +57,6 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	private int IDs = 0;
 	
 	private HashMap<Integer, Variable> getVaribaleById = new HashMap<Integer, Variable>();
-	private boolean debug = false;
-	private Vector<Vector<RectangleConstraint2>> recRels; //= new Vector<Vector<RectangleConstraint2>>(); 
 	public enum Dimension  {X, Y};
 
 	
