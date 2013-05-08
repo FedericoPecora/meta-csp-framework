@@ -50,6 +50,7 @@ public class SimpleReusableResource extends Schedulable {
 		this.rd = rd;
 		this.name = name;
 	}
+	
 
 	@Override
 	public boolean isConflicting(Activity[] peak) {
