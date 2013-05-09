@@ -1,8 +1,6 @@
 package sandbox.spatial.rectangleAlgebra2;
 
-import symbols.SymbolicVariable;
 import multi.activity.Activity;
-import multi.allenInterval.AllenInterval;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;
@@ -11,6 +9,10 @@ import framework.multi.MultiVariable;
 
 public class SpatialFluent extends MultiVariable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6226801218238415115L;
 	private String name= "";
 	private Activity activity;
 	private RectangularRegion2 rectangularRegion;
@@ -18,7 +20,6 @@ public class SpatialFluent extends MultiVariable{
 	
 	protected SpatialFluent(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
 		super(cs, id, internalSolvers);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void setName(String name) {
