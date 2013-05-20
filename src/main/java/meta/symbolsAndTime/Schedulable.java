@@ -53,15 +53,15 @@ public abstract class Schedulable extends MetaConstraint {
 	private static final long serialVersionUID = 5719994497319584156L;
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
-	public int getBeforeParameter() {
+	public long getBeforeParameter() {
 		return beforeParameter;
 	}
 
-	public void setBeforeParameter(int beforeParameter) {
+	public void setBeforeParameter(long beforeParameter) {
 		this.beforeParameter = beforeParameter;
 	}
 
-	int beforeParameter;
+	long beforeParameter = 1;
 
 	public PEAKCOLLECTION getPeakCollectionStrategy() {
 		return peakCollectionStrategy;
@@ -98,7 +98,6 @@ public abstract class Schedulable extends MetaConstraint {
 	
 	public Schedulable(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
-		this.beforeParameter=1;
 	}
 	
 	
