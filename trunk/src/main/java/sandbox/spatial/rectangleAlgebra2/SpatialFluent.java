@@ -44,7 +44,16 @@ public class SpatialFluent extends MultiVariable{
 		this.rectangularRegion = rectangleVariable;
 		return new Variable[]{rectangleVariable, activityVariable};
 	}
+	
+	public void setActivity(Activity activity){
+		this.activity = activity;
+	}
 
+	public void setRectangularRegion(RectangularRegion2 rectangluarRegion){
+		this.rectangularRegion = rectangluarRegion;
+	}
+
+	
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
 		// TODO Auto-generated method stub
