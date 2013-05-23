@@ -233,7 +233,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
-					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
+//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 
 					logger.fine("Success...");		
 					
@@ -303,7 +303,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
 //					System.out.println("INCREMENTED COUNTERMOVES");
-					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
+//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 					
 
 					logger.fine("Success...");		
