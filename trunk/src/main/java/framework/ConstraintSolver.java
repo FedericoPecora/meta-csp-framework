@@ -593,7 +593,8 @@ public abstract class ConstraintSolver implements Serializable {
 		for (Variable var : v) {
 			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
 			if (this.theNetwork.getIncidentEdges(var) != null && this.theNetwork.getIncidentEdges(var).length != 0){
-				continue;
+				//continue;
+				throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
 			}
 			/**/
 			if (var instanceof MultiVariable) {
