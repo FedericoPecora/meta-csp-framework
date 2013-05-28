@@ -144,7 +144,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 
 	@Override
 	public boolean propagate() {
-		// For now, does nothing...
+		// For now, does nothing...in the future...
 		return true;
 	}
 
