@@ -36,6 +36,8 @@ public class SymbolicVariable extends Variable {
 	
 	protected SymbolicVariable(ConstraintSolver cs, int id) {
 		super(cs, id);
+		String[] s={"default"};
+		this.setDomain(s);
 	}
 
 	@Override
