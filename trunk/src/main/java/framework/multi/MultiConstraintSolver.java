@@ -188,7 +188,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	}
 	
 	@Override
-	protected void removeVariableSub(Variable v) {
+	protected final void removeVariableSub(Variable v) {
 		if (v instanceof MultiVariable) {
 			MultiVariable mv = (MultiVariable)v;
 			Variable[] intVars = mv.getInternalVariables();
@@ -204,7 +204,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	}
 
 	@Override
-	protected void removeVariablesSub(Variable[] v) {
+	protected final void removeVariablesSub(Variable[] v) {
 		HashMap<ConstraintSolver,Vector<Variable>> solvers = new HashMap<ConstraintSolver,Vector<Variable>>();
 		for (Variable oneVar : v) {
 			if (oneVar instanceof MultiVariable) {
