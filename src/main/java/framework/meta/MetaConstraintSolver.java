@@ -419,17 +419,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	protected void removeVariableSub(Variable v) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void removeVariablesSub(Variable[] v) {
-		// TODO Auto-generated method stub		
-	}
 	
 	/**
 	 * Implement this method to define any extra operations that should happen
