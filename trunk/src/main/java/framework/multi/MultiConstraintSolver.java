@@ -101,7 +101,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	
 
 	@Override
-	protected boolean addConstraintSub(Constraint c) {
+	protected final boolean addConstraintSub(Constraint c) {
 		for (int i = 0; i < this.constraintTypes.length; i++) {
 			
 			if (c.getClass().equals(this.constraintTypes[i])) {
@@ -126,7 +126,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	}
 	
 	@Override
-	protected boolean addConstraintsSub(Constraint[] c) {
+	protected final boolean addConstraintsSub(Constraint[] c) {
 		
 		Vector<Vector<Constraint>> newToAdd = new Vector<Vector<Constraint>>();
 		Vector<Vector<Constraint>> added = new Vector<Vector<Constraint>>();
@@ -231,7 +231,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	public abstract boolean propagate();
 
 	@Override
-	protected void removeConstraintSub(Constraint c) {
+	protected final void removeConstraintSub(Constraint c) {
 		Constraint newConstraint = newConstraintMapping.get(c);
 		if (newConstraint == null) throw new ConstraintNotFound(c);
 		for (int i = 0; i < this.constraintTypes.length; i++) {
@@ -244,7 +244,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	}
 
 	@Override
-	protected void removeConstraintsSub(Constraint[] c) {
+	protected final void removeConstraintsSub(Constraint[] c) {
 		Vector<Vector<Constraint>> newToRemove = new Vector<Vector<Constraint>>();
 		//for (Class<?> cl : this.constraintTypes) {
 		for (int i = 0; i < this.constraintTypes.length; i++) {

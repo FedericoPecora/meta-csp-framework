@@ -144,21 +144,10 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 
 	@Override
 	public boolean propagate() {
-		// For now, does nothing...in the future...
+		// For now, does nothing.  Propagation is take care of by lower layers (ultimately, the underlying
+		// temporal constraints are propagated by the APSPSolver)  
 		return true;
 	}
-
-//	@Override
-//	protected void removeVariableSub(Variable v) {
-//		// TODO Auto-generated method stub
-//
-//	}
-//
-//	@Override
-//	protected void removeVariablesSub(Variable[] v) {
-//		// TODO Auto-generated method stub
-//
-//	}
 	
 	public int bookmark() {
 		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];

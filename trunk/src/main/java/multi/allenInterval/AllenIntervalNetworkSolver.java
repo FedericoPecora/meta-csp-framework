@@ -112,6 +112,7 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 			dur.setFrom(ai);
 			dur.setTo(ai);
 			cons.add(dur);
+			dur.setAutoRemovable(true);
 		}
 		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
 		
