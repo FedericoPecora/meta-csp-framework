@@ -51,6 +51,8 @@ public abstract class Constraint implements Cloneable, Serializable {
 	
 	protected Object annotation;
 	
+	private boolean autoRemovable = false;
+	
 	/**
 	 * Provide a list of solvers that should not process this constraint.
 	 * @param solvers Solvers that should not process this constraint.
@@ -136,6 +138,14 @@ public abstract class Constraint implements Cloneable, Serializable {
 	 */
 	public String getDescription() {
 		return this.getClass().getSimpleName();
+	}
+
+	public boolean isAutoRemovable() {
+		return autoRemovable;
+	}
+
+	public void setAutoRemovable(boolean autoRemovable) {
+		this.autoRemovable = autoRemovable;
 	}
 
 }

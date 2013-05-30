@@ -555,26 +555,26 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @param v The {@link Variable} to remove.
 	 */
 	public final void removeVariable(Variable v) throws VariableNotFound, IllegalVariableRemoval {
-		if (!this.theNetwork.containsVariable(v)) throw new VariableNotFound(v);
-		if (this.theNetwork.getIncidentEdges(v) != null && this.theNetwork.getIncidentEdges(v).length != 0)
-			throw new IllegalVariableRemoval(v, this.theNetwork.getIncidentEdges(v));
-		/**/
-		if (v instanceof MultiVariable) {
-			MultiVariable mv = (MultiVariable)v;
-			Constraint[] internalCons = mv.getInternalConstraints();
-			for (ConstraintSolver cs : mv.getInternalConstraintSolvers())
-				cs.removeConstraints(internalCons);
-		}/**/
-//		Constraint[] incidentEdges = this.theNetwork.getIncidentEdges(v); 
-//		this.removeConstraints(incidentEdges);
-		this.theNetwork.removeVariable(v);
-		removeVariableSub(v);
-		for (ArrayList<Variable> vec : components.values()) {
-			if (vec.contains(v)) vec.remove(v);
-		}
-		if (autoprop && checkDomainsInstantiated()) this.propagate();
-		logger.finest("Removed variable " + v);
-
+		this.removeVariables(new Variable[] {v});
+//		if (!this.theNetwork.containsVariable(v)) throw new VariableNotFound(v);
+//		if (this.theNetwork.getIncidentEdges(v) != null && this.theNetwork.getIncidentEdges(v).length != 0)
+//			throw new IllegalVariableRemoval(v, this.theNetwork.getIncidentEdges(v));
+//		/**/
+//		if (v instanceof MultiVariable) {
+//			MultiVariable mv = (MultiVariable)v;
+//			Constraint[] internalCons = mv.getInternalConstraints();
+//			for (ConstraintSolver cs : mv.getInternalConstraintSolvers())
+//				cs.removeConstraints(internalCons);
+//		}/**/
+////		Constraint[] incidentEdges = this.theNetwork.getIncidentEdges(v); 
+////		this.removeConstraints(incidentEdges);
+//		this.theNetwork.removeVariable(v);
+//		removeVariableSub(v);
+//		for (ArrayList<Variable> vec : components.values()) {
+//			if (vec.contains(v)) vec.remove(v);
+//		}
+//		if (autoprop && checkDomainsInstantiated()) this.propagate();
+//		logger.finest("Removed variable " + v);
 	} 
 	
 	/**
@@ -592,10 +592,9 @@ public abstract class ConstraintSolver implements Serializable {
 	public final void removeVariables(Variable[] v) throws VariableNotFound, IllegalVariableRemoval {
 		for (Variable var : v) {
 			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
-			if (this.theNetwork.getIncidentEdges(var) != null && this.theNetwork.getIncidentEdges(var).length != 0){
-//				continue;
-				throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
-			}
+			Constraint[] incident = this.theNetwork.getIncidentEdges(var);
+			for (Constraint con : incident) if (!con.isAutoRemovable()) throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
+			this.removeConstraints(incident);
 			/**/
 			if (var instanceof MultiVariable) {
 				MultiVariable mv = (MultiVariable)var;
