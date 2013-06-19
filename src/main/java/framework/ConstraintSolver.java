@@ -388,7 +388,10 @@ public abstract class ConstraintSolver implements Serializable {
 			HashMap<ConstraintSolver,ArrayList<Constraint>> internalCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 			for (Constraint con : c) {
 				if (isCompatible(con)) {
-					if (!this.theNetwork.containsConstraint(con)) throw new ConstraintNotFound(con);
+					if (!this.theNetwork.containsConstraint(con)) {
+						logger.info("Gonna fail - the constraint type is " + con.getClass().getSimpleName());
+						throw new ConstraintNotFound(con);
+					}
 					/**/
 					if (con instanceof MultiConstraint) {
 						MultiConstraint mc = (MultiConstraint)con;
