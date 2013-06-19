@@ -37,7 +37,7 @@ import framework.ConstraintNetwork;
 public class TestActivityNetworkSolver {
 	
 	public static void main(String[] args) {
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,100);
+		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500);
 		Activity act1 = (Activity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable();
@@ -58,8 +58,25 @@ public class TestActivityNetworkSolver {
 		con2.setFrom(act1);
 		con2.setTo(act2);
 		//solver.addConstraint(con2);
+
+		AllenIntervalConstraint con3 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(5, 5));
+		con3.setFrom(act1);
+		con3.setTo(act1);
+
+		AllenIntervalConstraint con4 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(5, 5));
+		con4.setFrom(act2);
+		con4.setTo(act2);
+
+		AllenIntervalConstraint con5 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(13, solver.getHorizon()));
+		con5.setFrom(act2);
+		con5.setTo(act2);
+
+		AllenIntervalConstraint con5a = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(13, solver.getHorizon()));
+		con5a.setFrom(act2);
+		con5a.setTo(act2);
+
 		
-		Constraint[] cons = new Constraint[]{con1,con2};
+		Constraint[] cons = new Constraint[]{con1,con2,con3,con4,con5,con5a};
 		solver.addConstraints(cons);
 		
 		try {
@@ -69,9 +86,16 @@ public class TestActivityNetworkSolver {
 			e.printStackTrace();
 		}
 
-		System.out.println(solver.getDescription());
-		System.out.println(act1.getDescription());
+		solver.removeConstraint(con5a);
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		solver.removeConstraint(con5);
 	}
 
 }

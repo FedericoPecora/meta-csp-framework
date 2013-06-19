@@ -53,24 +53,24 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 
 	//Utility methods
 
-	/**
-	 * Compare two constraints.
-	 * @param obj The constraint to compare with this constraint.
-	 * @return True iff the two constraints have equal minimum/maximum distances and source/destination {@link TimePoint}s. 
-	 */
-	@Override
-	public boolean equals (Object obj)
-	{return (obj instanceof SimpleDistanceConstraint) &&
-		this.getFrom() == ((SimpleDistanceConstraint) obj).getFrom() &&
-		this.getTo() == ((SimpleDistanceConstraint) obj).getTo() &&
-		minimum == ((SimpleDistanceConstraint) obj).minimum &&
-		maximum == ((SimpleDistanceConstraint) obj).maximum;
-	}
+//	/**
+//	 * Compare two constraints.
+//	 * @param obj The constraint to compare with this constraint.
+//	 * @return True iff the two constraints have equal minimum/maximum distances and source/destination {@link TimePoint}s. 
+//	 */
+//	@Override
+//	public boolean equals (Object obj)
+//	{return (obj instanceof SimpleDistanceConstraint) &&
+//		this.getFrom() == ((SimpleDistanceConstraint) obj).getFrom() &&
+//		this.getTo() == ((SimpleDistanceConstraint) obj).getTo() &&
+//		minimum == ((SimpleDistanceConstraint) obj).minimum &&
+//		maximum == ((SimpleDistanceConstraint) obj).maximum;
+//	}
 	
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(new Object[]{this.getFrom(), this.getTo()});
-	}
+//	@Override
+//	public int hashCode() {
+//		return Arrays.hashCode(new Object[]{this.getFrom(), this.getTo()});
+//	}
 
 	//Print methods
 	/**
