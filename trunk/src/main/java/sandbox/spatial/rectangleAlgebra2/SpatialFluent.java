@@ -45,6 +45,10 @@ public class SpatialFluent extends MultiVariable{
 		return new Variable[]{rectangleVariable, activityVariable};
 	}
 	
+	
+
+	
+	
 	public void setActivity(Activity activity){
 		this.activity = activity;
 	}
