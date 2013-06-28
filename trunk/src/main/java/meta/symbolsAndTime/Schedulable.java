@@ -184,7 +184,7 @@ public abstract class Schedulable extends MetaConstraint {
 			Vector<Long> discontinuities = new Vector<Long>();
 			for (Activity a : groundVars) {
 				long start = a.getTemporalVariable().getEST();
-				long end = a.getTemporalVariable().getEST();
+				long end = a.getTemporalVariable().getEET();
 				if (!discontinuities.contains(start)) discontinuities.add(start);
 				if (!discontinuities.contains(end)) discontinuities.add(end);
 			}
