@@ -438,10 +438,11 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @return A new {@link Variable}.
 	 */
 	public final Variable createVariable(String component) {
-		Variable ret = createVariable();
-		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>()); 
-		components.get(component).add(ret);
-		return ret;
+//		Variable ret = createVariable();
+//		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>()); 
+//		components.get(component).add(ret);
+//		return ret;
+		return createVariables(1, component)[0];
 	}
 
 	
@@ -490,6 +491,10 @@ public abstract class ConstraintSolver implements Serializable {
 //	 */
 //	protected abstract Variable createVariableSub();
 
+	public void setComponent(String component, Variable ... vars) {
+		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>());
+		for (Variable var : vars) components.get(component).add(var);
+	}
 
 	/**
 	 * Create a batch of new {@link Variable}s for this {@link ConstraintSolver}.
@@ -499,8 +504,17 @@ public abstract class ConstraintSolver implements Serializable {
 	 */
 	public final Variable[] createVariables(int num, String component) {
 		Variable[] ret = createVariables(num);
-		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>());
-		for (Variable var : ret) components.get(component).add(var);
+		setComponent(component, ret);		
+		for (Variable v : ret) {
+			if (v instanceof MultiVariable) {
+				MultiVariable mv = (MultiVariable)v;
+				Variable[] internalVars = mv.getInternalVariables();
+				for (Variable v1 : internalVars) {
+					v1.getConstraintSolver().setComponent(component, v1);
+					logger.info("Set component of " + v1 + " to " + component);
+				}
+			}
+		}
 		return ret;
 	}
 	
