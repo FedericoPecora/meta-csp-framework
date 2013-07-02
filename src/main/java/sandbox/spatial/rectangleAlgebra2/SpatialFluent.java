@@ -16,12 +16,11 @@ public class SpatialFluent extends MultiVariable{
 	private String name= "";
 	private Activity activity;
 	private RectangularRegion2 rectangularRegion;
-
 	
 	protected SpatialFluent(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
 		super(cs, id, internalSolvers);
 	}
-	
+		
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -38,7 +37,7 @@ public class SpatialFluent extends MultiVariable{
 	@Override
 	protected Variable[] createInternalVariables() {
 		RectangularRegion2 rectangleVariable = (RectangularRegion2)internalSolvers[0].createVariable();
-		Activity activityVariable= (Activity)internalSolvers[1].createVariable("robot1");
+		Activity activityVariable = (Activity)internalSolvers[1].createVariable();
 		this.activity = activityVariable;
 		this.rectangularRegion = rectangleVariable;
 		return new Variable[]{rectangleVariable, activityVariable};

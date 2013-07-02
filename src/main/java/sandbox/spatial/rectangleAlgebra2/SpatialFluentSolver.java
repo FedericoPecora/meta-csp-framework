@@ -1,5 +1,8 @@
 package sandbox.spatial.rectangleAlgebra2;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import multi.activity.Activity;
 import multi.activity.ActivityNetwork;
 import multi.activity.ActivityNetworkSolver;
