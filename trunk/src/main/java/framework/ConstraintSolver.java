@@ -511,7 +511,7 @@ public abstract class ConstraintSolver implements Serializable {
 				Variable[] internalVars = mv.getInternalVariables();
 				for (Variable v1 : internalVars) {
 					v1.getConstraintSolver().setComponent(component, v1);
-					logger.info("Set component of " + v1 + " to " + component);
+//					logger.info("Set component of " + v1 + " to " + component);
 				}
 			}
 		}
