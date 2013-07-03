@@ -387,10 +387,8 @@ public abstract class ConstraintSolver implements Serializable {
 			Vector<Constraint> incomp = new Vector<Constraint>();
 			HashMap<ConstraintSolver,ArrayList<Constraint>> internalCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 			for (Constraint con : c) {
-				System.out.println("iran con" + con);
 				if (isCompatible(con) && !con.isSkippableSolver(this)) {
 					if (!this.theNetwork.containsConstraint(con)) {
-						System.out.println("iran the network: " + theNetwork);
 						logger.info("Gonna fail - the constraint type is " + con.getClass().getSimpleName());
 						throw new ConstraintNotFound(con);
 					}
@@ -416,7 +414,6 @@ public abstract class ConstraintSolver implements Serializable {
 
 			//get rid of internal constraints
 			for (ConstraintSolver cs : internalCons.keySet()) {
-				System.out.println("iran: " + internalCons.get(cs) );
 				cs.removeConstraints(internalCons.get(cs).toArray(new Constraint[internalCons.get(cs).size()]));
 			}
 			
