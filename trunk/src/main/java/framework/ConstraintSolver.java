@@ -306,7 +306,7 @@ public abstract class ConstraintSolver implements Serializable {
 			}
 			else {
 				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) {
-					logger.finest("Removing internatl constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
+					logger.finest("Removing internal constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
 					cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
 				}
 				logger.finest("Failed to add sub-constraints " + Arrays.toString(toAddArray));
@@ -422,7 +422,7 @@ public abstract class ConstraintSolver implements Serializable {
 			if (autoprop && checkDomainsInstantiated()) this.propagate();
 		}
 	}
-
+	
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
 	 * class.  Should implement all operations necessary to remove a batch of constraints. 

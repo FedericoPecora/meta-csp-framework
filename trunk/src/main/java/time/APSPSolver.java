@@ -349,6 +349,7 @@ public class APSPSolver extends ConstraintSolver {
 	//Create an interval for a constraint
 	private boolean cCreate(Bounds i, int from, int to) {
 
+//		logger.info("DBG: adding temporal con: " + i + " from " + from + " to " +  to);
 		//Conversion
 		long max = i.max;
 		long min = i.min;
@@ -399,8 +400,12 @@ public class APSPSolver extends ConstraintSolver {
 		}				
 		else {
 			//new edge
-			if (!incrementalDistanceMatrixComputation(from,to,i)) return false;	
-			//if (!fromScratchDistanceMatrixComputation()) return false;
+//			logger.info("New edge, about to propagate...");
+//			logger.info("D-matrix distance is " + distance[from][to] + " (min), " + distance[to][from] + " (max)");
+			if (!incrementalDistanceMatrixComputation(from,to,i)) return false;
+//			logger.info("Prop successful and from in (" + tPoints[from].getLowerBound() + "," + tPoints[from].getUpperBound() + ")");
+//			logger.info("Prop successful and to in (" + tPoints[to].getLowerBound() + "," + tPoints[to].getUpperBound() + ")");
+//			logger.info("D-matrix distance is " + distance[from][to] + " (min), " + distance[to][from] + " (max)");
 			//Ok no inconsistency
 			con = new SimpleDistanceConstraint();
 			con.setFrom(this.getVariable(from));
@@ -727,8 +732,8 @@ public class APSPSolver extends ConstraintSolver {
 	private boolean incrementalDistanceMatrixComputation(int from,int to,Bounds i) {
 		logger.log(Level.FINE, "Propagating (quad) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++quadPropCount) + ")");
 
-		if (distance[to][from] != APSPSolver.INF && i.max + distance[to][from] < 0) return false;
-		if (distance[from][to] != APSPSolver.INF && -i.min + distance[from][to] < 0) return false;
+		if (distance[to][from] != APSPSolver.INF && sum(i.max,distance[to][from]) < 0) return false;
+		if (distance[from][to] != APSPSolver.INF && sum(-i.min,distance[from][to]) < 0) return false;
 
 		for (int u = 0; u < MAX_USED+1; u++) {
 			if (tPoints[u].isUsed()) {
@@ -737,6 +742,7 @@ public class APSPSolver extends ConstraintSolver {
 						long temp = sum(distance[u][from],sum(i.max,distance[to][v]));
 						if (distance[u][v] > temp) distance[u][v] = temp;
 					}
+					//if (u == v && distance[u][v] < 0) return false;
 				}
 			}
 		}
@@ -748,6 +754,7 @@ public class APSPSolver extends ConstraintSolver {
 						long temp = sum(distance[u][to],sum(-i.min,distance[from][v]));
 						if (distance[u][v] > temp) distance[u][v] = temp;
 					}
+					//if (u == v && distance[u][v] < 0) return false;
 				}
 			}
 		}

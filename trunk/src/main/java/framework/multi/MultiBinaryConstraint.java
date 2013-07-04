@@ -100,7 +100,9 @@ public abstract class MultiBinaryConstraint extends MultiConstraint {
 
 	@Override
 	public String toString() {
-		return "(" + this.getFrom() + ") --" + this.getEdgeLabel() + "--> (" + this.getTo() + ")";
+		Variable fromVar = this.getFrom();
+		Variable toVar = this.getTo();
+		return "(" + fromVar + ") --" + this.getEdgeLabel() + "--> (" + toVar + ")";
 	}
 
 
