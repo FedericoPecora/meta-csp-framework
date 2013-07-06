@@ -110,6 +110,9 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		
 		After(1L, APSPSolver.INF),
 
+		Release(0L, APSPSolver.INF),
+		Deadline(0L, APSPSolver.INF),
+		
 		BeforeOrMeets(0L, APSPSolver.INF), 
 
 		MetByOrAfter(0L, APSPSolver.INF),
@@ -130,8 +133,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		At(0L, APSPSolver.INF, 0L, APSPSolver.INF),		
 		StartStart(0L, APSPSolver.INF),
 		Duration(0L, APSPSolver.INF),		
-		Release(0L, APSPSolver.INF),
-		Deadline(0L, APSPSolver.INF),
+//		Release(0L, APSPSolver.INF),
+//		Deadline(0L, APSPSolver.INF),
 		Forever(0),
 		DisjunctionRelation;
 		

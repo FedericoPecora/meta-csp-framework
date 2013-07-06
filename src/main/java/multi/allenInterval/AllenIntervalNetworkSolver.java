@@ -23,6 +23,7 @@
 package multi.allenInterval;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import choco.cp.solver.constraints.integer.bool.sat.Vec;
@@ -36,6 +37,7 @@ import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
 import framework.multi.MultiConstraintSolver;
+import framework.multi.MultiVariable;
 
 public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	
@@ -43,7 +45,6 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	 * 
 	 */
 	private static final long serialVersionUID = 2059523989033941914L;
-	private int IDs = 0;
 	
 	public AllenIntervalNetworkSolver(long origin, long horizon, int maxActivities) {
 		super(new Class[]{AllenIntervalConstraint.class}, new Class[]{AllenInterval.class}, createConstraintSolvers(origin, horizon, maxActivities));
@@ -98,26 +99,45 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	protected ConstraintNetwork createConstraintNetwork() {
 		return new AllenIntervalNetwork(this);
 	}
-
+	
 	@Override
-	protected AllenInterval[] createVariablesSub(int num) {
-		AllenInterval[] ret = new AllenInterval[num];
-		for (int i = 0; i < num; i++) {
-			ret[i] = new AllenInterval(this, IDs++, this.constraintSolvers);
-		}
-		
-		Vector<Constraint> cons = new Vector<Constraint>();
-		for (Variable ai : ret) {
-			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
-			dur.setFrom(ai);
-			dur.setTo(ai);
-			cons.add(dur);
-			dur.setAutoRemovable(true);
-		}
-		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
-		
-		return ret;
+	protected Variable[] createVariablesSub(int num) {
+		int[] ingredients = new int[] {2};
+		return super.createVariablesSub(ingredients, num);
 	}
+
+//	@Override
+//	protected AllenInterval[] createVariablesSub(int num) {
+//		HashMap<ConstraintSolver,Integer> ingredients = new HashMap<ConstraintSolver, Integer>();
+//		ingredients.put(this.constraintSolvers[0], 2);
+//		Variable[][] internalVars = MultiVariable.createInternalVariables(ingredients, num);
+//		AllenInterval[] ret = new AllenInterval[num];
+//		for (int i = 0; i < num; i++) {
+//			ret[i] = new AllenInterval(this, IDs++, this.constraintSolvers, internalVars[i]);
+//		}
+//		return ret;
+//	}
+
+	
+//	@Override
+//	protected AllenInterval[] createVariablesSub(int num) {
+//		AllenInterval[] ret = new AllenInterval[num];
+//		for (int i = 0; i < num; i++) {
+//			ret[i] = new AllenInterval(this, IDs++, this.constraintSolvers);
+//		}
+//		
+////		Vector<Constraint> cons = new Vector<Constraint>();
+////		for (Variable ai : ret) {
+////			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
+////			dur.setFrom(ai);
+////			dur.setTo(ai);
+////			cons.add(dur);
+////			dur.setAutoRemovable(true);
+////		}
+////		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
+//		
+//		return ret;
+//	}
 
 	@Override
 	public boolean propagate() {

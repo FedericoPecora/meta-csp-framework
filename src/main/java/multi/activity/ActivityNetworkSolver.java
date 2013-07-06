@@ -23,6 +23,7 @@
 package multi.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import multi.allenInterval.AllenInterval;
@@ -126,21 +127,27 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 
 	@Override
 	protected Variable[] createVariablesSub(int num) {
-		Variable[] ret = new Variable[num];
-		for (int i = 0; i < num; i++)
-			ret[i] = new Activity(this, IDs++, this.constraintSolvers); 
-		// Has been moved to AllenIntervalNetworkSolver because it is bypassed 
-		// if AllenIntervalNetworkSolver is used without ActivityIntervalNetworkSolver 
-//		Vector<Constraint> cons = new Vector<Constraint>();
-//		for (Variable ai : ret) {
-//			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
-//			dur.setFrom(ai);
-//			dur.setTo(ai);
-//			cons.add(dur);
-//		}
-//		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
-		return ret;
+		int[] ingredients = new int[] {1,1};
+		return super.createVariablesSub(ingredients, num);
 	}
+	
+//	@Override
+//	protected Variable[] createVariablesSub(int num) {
+//		Variable[] ret = new Variable[num];
+//		for (int i = 0; i < num; i++)
+//			ret[i] = new Activity(this, IDs++, this.constraintSolvers); 
+//		// Has been moved to AllenIntervalNetworkSolver because it is bypassed 
+//		// if AllenIntervalNetworkSolver is used without ActivityIntervalNetworkSolver 
+////		Vector<Constraint> cons = new Vector<Constraint>();
+////		for (Variable ai : ret) {
+////			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
+////			dur.setFrom(ai);
+////			dur.setTo(ai);
+////			cons.add(dur);
+////		}
+////		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
+//		return ret;
+//	}
 
 	@Override
 	public boolean propagate() {

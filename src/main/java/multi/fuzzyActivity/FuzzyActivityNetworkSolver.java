@@ -58,10 +58,16 @@ public class FuzzyActivityNetworkSolver extends MultiConstraintSolver {
 
 	@Override
 	protected Variable[] createVariablesSub(int num) {
-		Variable[] ret = new Variable[num];
-		for (int i = 0; i < num; i++) ret[i] = new FuzzyActivity(this, IDs++, this.constraintSolvers); 
-		return ret;
+		int[] ingredients = new int[] {1,1};
+		return super.createVariablesSub(ingredients, num);
 	}
+	
+//	@Override
+//	protected Variable[] createVariablesSub(int num) {
+//		Variable[] ret = new Variable[num];
+//		for (int i = 0; i < num; i++) ret[i] = new FuzzyActivity(this, IDs++, this.constraintSolvers); 
+//		return ret;
+//	}
 
 	@Override
 	public boolean propagate() {

@@ -14,11 +14,11 @@ public class SpatialFluent extends MultiVariable{
 	 */
 	private static final long serialVersionUID = -6226801218238415115L;
 	private String name= "";
-	private Activity activity;
-	private RectangularRegion2 rectangularRegion;
+//	private Activity activity;
+//	private RectangularRegion2 rectangularRegion;
 	
-	protected SpatialFluent(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-		super(cs, id, internalSolvers);
+	public SpatialFluent(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+		super(cs, id, internalSolvers, internalVars);
 	}
 		
 	public void setName(String name) {
@@ -34,21 +34,23 @@ public class SpatialFluent extends MultiVariable{
 		return this.getID() - arg0.getID();
 	}
 
-	@Override
-	protected Variable[] createInternalVariables() {
-		RectangularRegion2 rectangleVariable = (RectangularRegion2)internalSolvers[0].createVariable();
-		Activity activityVariable = (Activity)internalSolvers[1].createVariable();
-		this.activity = activityVariable;
-		this.rectangularRegion = rectangleVariable;
-		return new Variable[]{rectangleVariable, activityVariable};
-	}
+//	@Override
+//	protected Variable[] createInternalVariables() {
+//		RectangularRegion2 rectangleVariable = (RectangularRegion2)internalSolvers[0].createVariable();
+//		Activity activityVariable = (Activity)internalSolvers[1].createVariable();
+//		this.activity = activityVariable;
+//		this.rectangularRegion = rectangleVariable;
+//		return new Variable[]{rectangleVariable, activityVariable};
+//	}
 	
 	public void setActivity(Activity activity){
-		this.activity = activity;
+		//this.activity = activity;
+		this.variables[1] = activity;
 	}
 
 	public void setRectangularRegion(RectangularRegion2 rectangluarRegion){
-		this.rectangularRegion = rectangluarRegion;
+		//this.rectangularRegion = rectangluarRegion;
+		this.variables[0] = rectangluarRegion;
 	}
 
 	
@@ -66,16 +68,19 @@ public class SpatialFluent extends MultiVariable{
 
 	@Override
 	public String toString() {
-		String ret="<" + " Rectangle Variable: " + this.rectangularRegion + ", "+ "Activty: " + this.activity + ">";
+//		String ret="<" + " Rectangle Variable: " + this.rectangularRegion + ", "+ "Activty: " + this.activity + ">";
+		String ret="<" + " Rectangle Variable: " + this.getInternalVariables()[0] + ", "+ "Activty: " + this.getInternalVariables()[1] + ">";
 		return ret;
 	}
 	
 	public Activity getActivity() {
-		return activity;
+		//return activity;
+		return (Activity)this.getInternalVariables()[1];
 	}
 	
 	public RectangularRegion2 getRectangularRegion() {
-		return rectangularRegion;
+		//return rectangularRegion;
+		return (RectangularRegion2)this.getInternalVariables()[0];
 	}
 
 }

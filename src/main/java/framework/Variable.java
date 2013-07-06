@@ -40,7 +40,7 @@ import utility.logging.MetaCSPLogging;
  */
 public abstract class Variable implements Comparable<Variable>,Serializable{
 	
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	/**
 	 * ID generation is up to the implementing class.  No automatic generation provided.

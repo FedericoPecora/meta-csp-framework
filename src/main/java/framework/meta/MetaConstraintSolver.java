@@ -233,14 +233,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
-//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 
 					logger.fine("Success...");		
 					
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
-//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!");
-//					this.counterMoves++;
 					
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
@@ -255,7 +252,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					this.retractResolver(mostProblematicNetwork, value);
 					this.resolvers.remove(mostProblematicNetwork);			
 					this.counterMoves--;
-					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
 
 				}
 				else {

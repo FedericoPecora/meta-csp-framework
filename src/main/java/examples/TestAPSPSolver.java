@@ -26,29 +26,23 @@ import java.util.logging.Level;
 
 import time.APSPSolver;
 import time.SimpleDistanceConstraint;
-import time.TimePoint;
 import utility.logging.MetaCSPLogging;
 import framework.ConstraintNetwork;
 import framework.Variable;
-
 
 public class TestAPSPSolver {
 	
 	public static void main(String[] args) {
 				
-		APSPSolver solver = new APSPSolver(50, 500);
+		APSPSolver solver = new APSPSolver(100, 500);
 		
 		MetaCSPLogging.setLevel(solver.getClass(), Level.FINE);
-
-		System.out.println("1 " + ((TimePoint)solver.getVariable(0)));
 
 		//solver.setOptions(framework.ConstraintSolver.OPTIONS.AUTO_PROPAGATE);
 		Variable[] vars = solver.createVariables(3);
 		Variable one = vars[0];
 		Variable two = vars[1];
 		Variable three = vars[2];
-
-		System.out.println("2 " + ((TimePoint)solver.getVariable(0)));
 
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 

@@ -22,8 +22,12 @@
  ******************************************************************************/
 package framework.multi;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.logging.Logger;
+
+import org.apache.commons.collections15.iterators.EntrySetMapIterator;
 
 import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalConstraint;
@@ -44,9 +48,9 @@ import framework.Variable;
  * by an {@link AllenIntervalNetworkSolver}.
  * 
  * Defining a {@link MultiVariable} is reduced to creating the internal lower-level {@link Variable}s
- * (method  createInternalVariables()). Also, a {@link MultiVariable} may have "implementing constraints".  This is the case, e.g.,
- * in the {@link AllenInterval}, which, in addition to the two {@link TimePoint}s, also possesses
- * a {@link AllenIntervalConstraint} of type Duration.  For this reason, the designer of a
+ * (method  createVariablesSub(int num)). Also, a {@link MultiVariable} may have "implementing constraints".
+ * This is the case, e.g., in the {@link AllenInterval}, which, in addition to the two {@link TimePoint}s,
+ * also possesses a {@link AllenIntervalConstraint} of type Duration.  For this reason, the designer of a
  * {@link MultiVariable} must also define the createInternalConstraints() method.
  *  
  * @author Federico Pecora
@@ -61,23 +65,22 @@ public abstract class MultiVariable extends Variable {
 	protected transient ConstraintSolver[] internalSolvers;
 	protected Variable[] variables;
 	protected Constraint[] constraints;
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
-	/**
-	 * The constructor of an extensions to {@link MultiVariable} must call this constructor.
-	 * @param cs The {@link ConstraintSolver} of the {@link MultiVariable}.
-	 * @param id The {@link MultiVariable}'s ID.
-	 * @param internalSolvers The internal solvers of this {@link MultiVariable} (to which the
-	 * underlying constraints are added).
-	 */
-	protected MultiVariable(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-		super(cs, id);
-		this.internalSolvers = internalSolvers;
-		this.variables = this.createInternalVariables();
-		logger.finest("Created internal variables " + this.variables);		
-		this.constraints = this.createInternalConstraints(this.variables);
-		logger.finest("Created internal constraints " + this.constraints);
-	}
+//	/**
+//	 * The constructor of an extensions to {@link MultiVariable} must call this constructor.
+//	 * @param cs The {@link ConstraintSolver} of the {@link MultiVariable}.
+//	 * @param id The {@link MultiVariable}'s ID.
+//	 * @param internalSolvers The internal solvers of this {@link MultiVariable} (to which the
+//	 * underlying constraints are added).
+//	 */
+//	protected MultiVariable(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
+//		super(cs, id);
+//		this.internalSolvers = internalSolvers;
+//		this.variables = this.createInternalVariables();
+//		logger.finest("Created internal variables " + this.variables);		
+//		this.constraints = this.createInternalConstraints(this.variables);
+//		logger.finest("Created internal constraints " + this.constraints);
+//	}
 
 	/**
 	 * The constructor of an extensions to {@link MultiVariable} must call this constructor.
@@ -87,20 +90,23 @@ public abstract class MultiVariable extends Variable {
 	 * @param internalVars The internal {@link Variable}s implementing this {@link MultiVariable}.
 	 * @param internalCons The internal {@link Constraint}s implementing this {@link MultiVariable}.
 	 */
-	protected MultiVariable(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars, Constraint[] internalCons) {
+	protected MultiVariable(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id);
 		this.internalSolvers = internalSolvers;
 		this.variables = internalVars;
-		this.constraints = internalCons;
+		logger.finest("Set internal variables " + this.variables);		
+		this.constraints = this.createInternalConstraints(this.variables);
+		logger.finest("Created internal constraints " + this.constraints);
 	}
 
-	/**
-	 * This method must be implemented to define the internal lower-level {@link Variable}s of this
-	 * {@link MultiVariable}.  
-	 * @return The internal lower-level {@link Variable}s of this
-	 * {@link MultiVariable}.
-	 */
-	protected abstract Variable[] createInternalVariables();
+	
+//	/**
+//	 * This method must be implemented to define the internal lower-level {@link Variable}s of this
+//	 * {@link MultiVariable}.  
+//	 * @return The internal lower-level {@link Variable}s of this
+//	 * {@link MultiVariable}.
+//	 */
+//	protected abstract Variable[] createInternalVariables();
 
 	/**
 	 * This method must be implemented to define the internal lower-level {@link Constraint}s of this

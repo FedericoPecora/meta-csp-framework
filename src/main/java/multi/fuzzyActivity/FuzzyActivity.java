@@ -39,14 +39,14 @@ public class FuzzyActivity extends MultiVariable {
 	 */
 	private static final long serialVersionUID = -6700038298629079368L;
 	//private String[] symbols;
-	private SimpleAllenInterval temporalVariable;
-	private FuzzySymbolicVariable fuzzySymbolicVariable; 
+//	private SimpleAllenInterval temporalVariable;
+//	private FuzzySymbolicVariable fuzzySymbolicVariable; 
 	//private boolean mask = true;//iran 
 	private Vector<FuzzyActivity> dependencies;//iran
 	private boolean isHypothesis = false;//iran
 	
-	protected FuzzyActivity(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-		super(cs, id, internalSolvers);
+	public FuzzyActivity(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+		super(cs, id, internalSolvers, internalVars);
 		dependencies = new Vector<FuzzyActivity>();
 	}
 	
@@ -79,7 +79,8 @@ public class FuzzyActivity extends MultiVariable {
 	*/
 	
 	public void setDomain(String[] symbols, double[] vals) {
-		fuzzySymbolicVariable.setDomain(symbols, vals);
+		//fuzzySymbolicVariable.setDomain(symbols, vals);
+		((FuzzySymbolicVariable)this.getInternalVariables()[1]).setDomain(symbols, vals);
 	}
 
 	
@@ -90,14 +91,14 @@ public class FuzzyActivity extends MultiVariable {
 		return null;
 	}
 
-	@Override
-	protected Variable[] createInternalVariables() {
-		SimpleAllenInterval temporalVariable = (SimpleAllenInterval)internalSolvers[0].createVariable();
-		FuzzySymbolicVariable fuzzySymbolicVariable = (FuzzySymbolicVariable)internalSolvers[1].createVariable();
-		this.fuzzySymbolicVariable = fuzzySymbolicVariable; 
-		this.temporalVariable = temporalVariable;
-		return new Variable[]{temporalVariable,fuzzySymbolicVariable};
-	}
+//	@Override
+//	protected Variable[] createInternalVariables() {
+//		SimpleAllenInterval temporalVariable = (SimpleAllenInterval)internalSolvers[0].createVariable();
+//		FuzzySymbolicVariable fuzzySymbolicVariable = (FuzzySymbolicVariable)internalSolvers[1].createVariable();
+//		this.fuzzySymbolicVariable = fuzzySymbolicVariable; 
+//		this.temporalVariable = temporalVariable;
+//		return new Variable[]{temporalVariable,fuzzySymbolicVariable};
+//	}
 
 	@Override
 	public void setDomain(Domain d) {
@@ -107,7 +108,8 @@ public class FuzzyActivity extends MultiVariable {
 
 	@Override
 	public String toString() {
-		return "<" + this.fuzzySymbolicVariable.toString() + ">U<" + this.temporalVariable.toString() + ">";
+		//return "<" + this.fuzzySymbolicVariable + ">U<" + this.temporalVariable + ">";
+		return "<" + this.getInternalVariables()[1] + ">U<" + this.getInternalVariables()[0] + ">";
 		//return "<" + this.fuzzySymbolicVariable.toString();
 	}
 

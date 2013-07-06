@@ -22,15 +22,22 @@
  ******************************************************************************/
 package framework.multi;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 import java.util.Vector;
 
+import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
+
 import meta.simplePlanner.SimpleDomain.markings;
+import multi.allenInterval.AllenInterval;
 
 import sandbox.spatial.rectangleAlgebra2.RectangleConstraintSolver2;
 import throwables.ConstraintNotFound;
+import utility.logging.MetaCSPLogging;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
@@ -55,6 +62,8 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	 * 
 	 */
 	private static final long serialVersionUID = 3328919153619683198L;
+	
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
 	/**
 	 * These are options used by the {@link ConstraintSolver} class to determine
@@ -224,6 +233,86 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	@Override
 	protected abstract ConstraintNetwork createConstraintNetwork();
 	
+	private Variable[][] createInternalVariables(int[] ingredients, int num) {
+		Vector<Vector<Variable>> ret = new Vector<Vector<Variable>>();
+		for (int k = 0; k < this.getConstraintSolvers().length; k++) {
+			Variable[] oneType = this.getConstraintSolvers()[k].createVariables(ingredients[k]*num);
+			logger.fine("Created " + ingredients[k]*num + " internal variables for " + this.getConstraintSolvers()[k].getClass().getSimpleName());
+			for (int i = 0; i < num; i++) {
+				Vector<Variable> oneVar = null;
+				if (ret.size() > i) oneVar = ret.elementAt(i);
+				else {
+					oneVar = new Vector<Variable>();
+					ret.add(oneVar);
+				}
+				for (int j = i*ingredients[k]; j < (i+1)*ingredients[k]; j++) {
+					oneVar.add(oneType[j]);
+				}
+			}
+		}
+		Variable[][] retArray = new Variable[ret.size()][];
+		for (int i = 0; i < num; i++) retArray[i] = ret.elementAt(i).toArray(new Variable[ret.elementAt(i).size()]);
+		return retArray;
+	}
+
+	/**
+	 * This method creates {@code num} {@link MultiVariable}s.  It must be called within the
+	 * (user-implemented) method {@link MultiConstraintSolver.createVariablesSub(int num)} of the
+	 * concrete {@link MultiVariable} implementation.  The creation of internal variables is
+	 * taken care of automatically, given a specification of the number of internal variables to create
+	 * for each internal solver.
+	 * @param ingredients The number of internal variables to create for each internal solver.   
+	 * @param num The number of {@link MultiVariable}s for which internal variables are to be created.
+	 * @return The {@link Variable}s for {@code num} {@link MultiVariable}s.
+	 */
+	protected Variable[] createVariablesSub(int[] ingredients, int num) {
+		Variable[][] internalVars = createInternalVariables(ingredients, num);
+		Variable[] ret = (Variable[]) java.lang.reflect.Array.newInstance(this.variableTypes[0], num);
+		HashMap<ConstraintSolver,Vector<Constraint>> solvers2Constraints = new HashMap<ConstraintSolver, Vector<Constraint>>();
+		for (int i = 0; i < num; i++) {
+			try {
+				ret[i] = (Variable) this.variableTypes[0].getConstructor(new Class[] {ConstraintSolver.class, int.class, ConstraintSolver[].class, Variable[].class}).newInstance(new Object[] {this, this.IDs++, this.constraintSolvers, internalVars[i]});
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (ret[i] instanceof MultiVariable) {
+				Constraint[] internalCons = ((MultiVariable)ret[i]).getInternalConstraints();
+				if (internalCons != null) {
+					logger.fine("Adding internal constraints for " + ret[i]);
+					for (Constraint con : internalCons) {
+						if (!solvers2Constraints.containsKey(con.getScope()[0].getConstraintSolver()))
+							solvers2Constraints.put(con.getScope()[0].getConstraintSolver(), new Vector<Constraint>());
+						solvers2Constraints.get(con.getScope()[0].getConstraintSolver()).add(con);
+					}
+				}
+			}
+			for (Entry<ConstraintSolver, Vector<Constraint>> es : solvers2Constraints.entrySet()) {
+				if (!es.getKey().addConstraints(es.getValue().toArray(new Constraint[es.getValue().size()])))
+					throw new Error("Malformed internal constraints: " + es.getValue());
+				else logger.fine("Added " + es.getValue().size() + " internal constraints");
+			}
+
+		}
+		return ret;
+	}
+
 	@Override
 	protected abstract Variable[] createVariablesSub(int num);
 
@@ -246,7 +335,6 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	@Override
 	protected final void removeConstraintsSub(Constraint[] c) {
 		Vector<Vector<Constraint>> newToRemove = new Vector<Vector<Constraint>>();
-		//for (Class<?> cl : this.constraintTypes) {
 		for (int i = 0; i < this.constraintTypes.length; i++) {
 			newToRemove.add(new Vector<Constraint>());
 		}

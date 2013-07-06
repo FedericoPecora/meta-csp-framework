@@ -78,7 +78,7 @@ public class TestStateVariableScheduler {
 		AllenIntervalConstraint dur5 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(35, 55));
 		dur5.setFrom(oneAB);
 		dur5.setTo(oneAB);
-		AllenIntervalConstraint dur6 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(35, 55));
+		AllenIntervalConstraint dur6 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(10, 25));
 		dur6.setFrom(oneAC);
 		dur6.setTo(oneAC);
 
