@@ -29,7 +29,7 @@ import framework.meta.MetaConstraintSolver;
 import framework.meta.MetaVariable;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 
-public class FuzzyActivityInferenceSolver extends MetaConstraintSolver{
+public class FuzzyActivityInferenceSolver extends MetaConstraintSolver {
 
 	/**
 	 * 

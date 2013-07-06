@@ -47,11 +47,11 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	private static final long serialVersionUID = 2059523989033941914L;
 	
 	public AllenIntervalNetworkSolver(long origin, long horizon, int maxActivities) {
-		super(new Class[]{AllenIntervalConstraint.class}, new Class[]{AllenInterval.class}, createConstraintSolvers(origin, horizon, maxActivities));
+		super(new Class[]{AllenIntervalConstraint.class}, new Class[]{AllenInterval.class}, createConstraintSolvers(origin, horizon, maxActivities), new int[] {2});
 	}
 	
 	public AllenIntervalNetworkSolver(long origin, long horizon) {
-		super(new Class[]{AllenIntervalConstraint.class}, new Class[]{AllenInterval.class}, createConstraintSolvers(origin, horizon, -1));
+		super(new Class[]{AllenIntervalConstraint.class}, new Class[]{AllenInterval.class}, createConstraintSolvers(origin, horizon, -1), new int[] {2});
 	}
 	
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxActivities) {
@@ -100,11 +100,6 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		return new AllenIntervalNetwork(this);
 	}
 	
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		int[] ingredients = new int[] {2};
-		return super.createVariablesSub(ingredients, num);
-	}
 
 //	@Override
 //	protected AllenInterval[] createVariablesSub(int num) {

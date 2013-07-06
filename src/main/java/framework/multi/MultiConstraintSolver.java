@@ -77,6 +77,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	private boolean allowInconsistencies = false;
 	
 	protected ConstraintSolver[] constraintSolvers;
+	protected int[] ingredients;
 	private HashMap<Constraint,Constraint> newConstraintMapping = new HashMap<Constraint,Constraint>();
 	
 		
@@ -85,9 +86,10 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	 * @param constraintTypes
 	 * @param internalSolvers
 	 */
-	protected MultiConstraintSolver(Class<?>[] constraintTypes, Class<?>[] variableTypes, ConstraintSolver[] internalSolvers) {
+	protected MultiConstraintSolver(Class<?>[] constraintTypes, Class<?>[] variableTypes, ConstraintSolver[] internalSolvers, int[] ingredients) {
 		super(constraintTypes, variableTypes);
 		this.constraintSolvers = internalSolvers;
+		this.ingredients = ingredients;
 	}
 
 	/**
@@ -107,36 +109,57 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		else if (op.equals(OPTIONS.FORCE_CONSISTENCY)) return !allowInconsistencies;
 		return false;
 	}
-	
-
-	@Override
-	protected final boolean addConstraintSub(Constraint c) {
-		for (int i = 0; i < this.constraintTypes.length; i++) {
-			
-			if (c.getClass().equals(this.constraintTypes[i])) {
-				Variable[] scope = c.getScope();
-				Variable[] internalScopeArray = new Variable[scope.length];
-				
-				for(int j = 0; j < scope.length; ++j) {
-					MultiVariable mv = (MultiVariable) scope[j];
-					internalScopeArray[j] = mv.getInternalVariables()[i];
-				}
-								
-				Constraint newConstraint = (Constraint)c.clone();
-				newConstraint.setScope(internalScopeArray);
-				if (!this.constraintSolvers[i].addConstraint(newConstraint)) {
-					/*if (!allowInconsistencies)*/ return false;
-				}
-				newConstraintMapping.put(c, newConstraint);
-				break;
-			}
-		}
-		return true;
-	}
-	
+		
 	@Override
 	protected final boolean addConstraintsSub(Constraint[] c) {
+		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
+		for (Constraint con : c) {
+			if (con instanceof MultiConstraint) {
+				MultiConstraint mc = (MultiConstraint)con;
+				MultiVariable mv = (MultiVariable)mc.getScope()[0];
+				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
+					if (mc.propagateImmediately()) {
+						if (!sortedCons.containsKey(cs)) {
+							sortedCons.put(cs, new ArrayList<Constraint>());
+						}
+						if (mc.getInternalConstraints() != null) {
+							for (Constraint ic : mc.getInternalConstraints()) {
+								if (!ic.isSkippableSolver(cs)) sortedCons.get(cs).add(ic);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedConsRetract = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
+		for (ConstraintSolver cs : sortedCons.keySet()) {
+			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) {
+				logger.finest("Added sub-constraints " + sortedCons.get(cs));
+				sortedConsRetract.put(cs, sortedCons.get(cs));
+			}
+			else {
+				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) {
+					logger.finest("Removing internal constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
+					cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
+				}
+				logger.finest("Failed to add sub-constraints " + Arrays.toString(c));
+				return false;
+			}
+		}
+
+		if (!instantiateLiftedConstraints(c)) {
+			for (ConstraintSolver cs1 : sortedConsRetract.keySet()) 
+				cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
+			logger.finest("Failed to instantiate lifted constraints " + Arrays.toString(c));
+			return false;
+		}
 		
+		return true;
+	
+	}
+
+	private boolean instantiateLiftedConstraints(Constraint[] c) {
 		Vector<Vector<Constraint>> newToAdd = new Vector<Vector<Constraint>>();
 		Vector<Vector<Constraint>> added = new Vector<Vector<Constraint>>();
 
@@ -194,23 +217,71 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			return false;
 		}
 		return true;
+		
 	}
 	
-	@Override
-	protected final void removeVariableSub(Variable v) {
-		if (v instanceof MultiVariable) {
-			MultiVariable mv = (MultiVariable)v;
-			Variable[] intVars = mv.getInternalVariables();
-			HashMap<ConstraintSolver,Vector<Variable>> solvers = new HashMap<ConstraintSolver,Vector<Variable>>();
-			for (Variable intVar : intVars) {
-				if (solvers.get(intVar.getConstraintSolver()) == null) solvers.put(intVar.getConstraintSolver(), new Vector<Variable>());
-				solvers.get(intVar.getConstraintSolver()).add(intVar);
-			}
-			for (ConstraintSolver cs : solvers.keySet()) {
-				cs.removeVariables(solvers.get(cs).toArray(new Variable[solvers.get(cs).size()]));
-			}
-		}
-	}
+//	@Override
+//	protected final boolean addConstraintsSub(Constraint[] c) {
+//		
+//		Vector<Vector<Constraint>> newToAdd = new Vector<Vector<Constraint>>();
+//		Vector<Vector<Constraint>> added = new Vector<Vector<Constraint>>();
+//
+//		for(int i = 0; i < this.constraintTypes.length; ++i) {
+//			newToAdd.add(new Vector<Constraint>());
+//			added.add(new Vector<Constraint>());			
+//		}
+//		
+//		for (Constraint constr : c) {
+//			for (int i = 0; i < this.constraintTypes.length; i++) {				
+//				Vector<Variable> internalScope = new Vector<Variable>(); 
+//				if (this.constraintTypes[i].isInstance(constr)) {
+//					Variable[] scope = constr.getScope();
+//					for (Variable v : scope) {
+//						MultiVariable mv = (MultiVariable)v;
+//						internalScope.add(mv.getInternalVariables()[i]);
+//					}
+//					Variable[] internalScopeArray = internalScope.toArray(new Variable[internalScope.size()]);
+//					Constraint newConstraint = (Constraint)constr.clone();
+//					newConstraint.setScope(internalScopeArray);
+//					newToAdd.elementAt(i).add(newConstraint);
+//					newConstraintMapping.put(constr, newConstraint);
+//					break;
+//				}
+//			}
+//		}
+//		
+//		boolean retract = false;
+//		for (int i = 0; i < this.constraintTypes.length && !retract; i++) {
+//			Vector<Constraint> newCons = newToAdd.elementAt(i);
+//			//	if there is something to insert...
+//			if (!newCons.isEmpty()) {
+//				Constraint[] newConsArray = newCons.toArray(new Constraint[newCons.size()]);
+//				if (!this.constraintSolvers[i].addConstraints(newConsArray)) {
+//					/* if (!allowInconsistencies) */ retract = true;
+//				}
+//				else {
+//					added.set(i, newCons);
+//				}
+//			}
+//		}
+//		if (retract) {
+//			for (int i = 0; i < added.size(); i++) {
+//				Vector<Constraint> toRetract = added.elementAt(i);
+//				if (!toRetract.isEmpty()) {
+//					this.constraintSolvers[i].removeConstraints(toRetract.toArray(new Constraint[toRetract.size()]));
+//					for (Constraint oldConstr : newConstraintMapping.keySet()) {
+//						for (Constraint newConstr : toRetract) {
+//							if (newConstraintMapping.get(oldConstr).equals(newConstr)) newConstraintMapping.remove(oldConstr);
+//							break;
+//						}
+//					}
+//				}
+//			}
+//			return false;
+//		}
+//		return true;
+//	}
+	
 
 	@Override
 	protected final void removeVariablesSub(Variable[] v) {
@@ -226,6 +297,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			}		
 		}
 		for (ConstraintSolver cs : solvers.keySet()) {
+			logger.info("Removing " + solvers.get(cs).size() + " internal variables (" + cs.getClass().getSimpleName() + ")");
 			cs.removeVariables(solvers.get(cs).toArray(new Variable[solvers.get(cs).size()]));
 		}
 	}
@@ -254,7 +326,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		for (int i = 0; i < num; i++) retArray[i] = ret.elementAt(i).toArray(new Variable[ret.elementAt(i).size()]);
 		return retArray;
 	}
-
+	
 	/**
 	 * This method creates {@code num} {@link MultiVariable}s.  It must be called within the
 	 * (user-implemented) method {@link MultiConstraintSolver.createVariablesSub(int num)} of the
@@ -265,13 +337,21 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	 * @param num The number of {@link MultiVariable}s for which internal variables are to be created.
 	 * @return The {@link Variable}s for {@code num} {@link MultiVariable}s.
 	 */
-	protected Variable[] createVariablesSub(int[] ingredients, int num) {
+	protected Variable[] createVariablesSub(int[] ingredients, int num, String component) {
 		Variable[][] internalVars = createInternalVariables(ingredients, num);
 		Variable[] ret = (Variable[]) java.lang.reflect.Array.newInstance(this.variableTypes[0], num);
 		HashMap<ConstraintSolver,Vector<Constraint>> solvers2Constraints = new HashMap<ConstraintSolver, Vector<Constraint>>();
 		for (int i = 0; i < num; i++) {
 			try {
 				ret[i] = (Variable) this.variableTypes[0].getConstructor(new Class[] {ConstraintSolver.class, int.class, ConstraintSolver[].class, Variable[].class}).newInstance(new Object[] {this, this.IDs++, this.constraintSolvers, internalVars[i]});
+				if (component != null) {
+					ret[i].getConstraintSolver().setComponent(component, ret[i]);
+					logger.info("Set component of " + ret[i] + " to " + component);
+					for (Variable internalVar : internalVars[i]) {
+						internalVar.getConstraintSolver().setComponent(component, internalVar);
+						logger.info("Set component of " + internalVar + " to " + component);
+					}
+				}
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -303,37 +383,55 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 					}
 				}
 			}
-			for (Entry<ConstraintSolver, Vector<Constraint>> es : solvers2Constraints.entrySet()) {
-				if (!es.getKey().addConstraints(es.getValue().toArray(new Constraint[es.getValue().size()])))
-					throw new Error("Malformed internal constraints: " + es.getValue());
-				else logger.fine("Added " + es.getValue().size() + " internal constraints");
-			}
-
+		}
+		for (Entry<ConstraintSolver, Vector<Constraint>> es : solvers2Constraints.entrySet()) {
+			if (!es.getKey().addConstraints(es.getValue().toArray(new Constraint[es.getValue().size()])))
+				throw new Error("Malformed internal constraints: " + es.getValue());
+			else logger.fine("Added " + es.getValue().size() + " internal constraints to " + es.getKey().getClass().getSimpleName());
 		}
 		return ret;
 	}
 
 	@Override
-	protected abstract Variable[] createVariablesSub(int num);
-
-	@Override
-	public abstract boolean propagate();
-
-	@Override
-	protected final void removeConstraintSub(Constraint c) {
-		Constraint newConstraint = newConstraintMapping.get(c);
-		if (newConstraint == null) throw new ConstraintNotFound(c);
-		for (int i = 0; i < this.constraintTypes.length; i++) {
-			if (newConstraint.getClass().equals(this.constraintTypes[i])) {
-				this.constraintSolvers[i].removeConstraint(newConstraint);
-				break;
-			}
-		}
-		newConstraintMapping.remove(c);
+	protected final Variable[] createVariablesSub(int num) {
+		return createVariablesSub(ingredients, num, null);
 	}
 
 	@Override
+	protected final Variable[] createVariablesSub(int num, String component) {
+		return createVariablesSub(ingredients, num, component);
+	}
+	
+	@Override
+	public abstract boolean propagate();
+	
+	@Override
 	protected final void removeConstraintsSub(Constraint[] c) {
+		HashMap<ConstraintSolver,ArrayList<Constraint>> internalCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
+		//gather internal constraints
+		for (Constraint con : c) {
+			/**/
+			if (con instanceof MultiConstraint) {
+				MultiConstraint mc = (MultiConstraint)con;
+				MultiVariable mv = (MultiVariable)mc.getScope()[0];
+				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
+					if (!internalCons.containsKey(cs)) internalCons.put(cs,new ArrayList<Constraint>());
+					if (mc.getInternalConstraints() != null) for (Constraint c1 : mc.getInternalConstraints()) internalCons.get(cs).add(c1);
+				}
+			}
+			/**/
+		}
+		
+		//get rid of internal constraints
+		for (ConstraintSolver cs : internalCons.keySet()) {
+			cs.removeConstraints(internalCons.get(cs).toArray(new Constraint[internalCons.get(cs).size()]));
+		}
+
+		uninstantiateLiftedConstraints(c);
+	}
+
+	
+	private void uninstantiateLiftedConstraints(Constraint[] c) {
 		Vector<Vector<Constraint>> newToRemove = new Vector<Vector<Constraint>>();
 		for (int i = 0; i < this.constraintTypes.length; i++) {
 			newToRemove.add(new Vector<Constraint>());

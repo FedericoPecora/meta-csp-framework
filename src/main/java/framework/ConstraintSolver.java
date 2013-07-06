@@ -32,26 +32,16 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import multi.allenInterval.AllenIntervalNetworkSolver;
-
-import sandbox.spatial.rectangleAlgebra2.RectangleConstraintSolver2;
-import symbols.SymbolicVariableConstraintSolver;
 import throwables.ConstraintNotFound;
 import throwables.IllegalVariableRemoval;
 import throwables.VariableNotFound;
-import time.APSPSolver;
 import utility.logging.MetaCSPLogging;
-import framework.meta.MetaConstraintSolver;
-import framework.multi.MultiBinaryConstraint;
-import framework.multi.MultiConstraint;
-import framework.multi.MultiConstraintSolver;
-import framework.multi.MultiVariable;
 
 /**
  * This class provides common infrastructure and functionality for
  * all constraint solvers. All constraint solvers should implement either
  * this class or the {@link MultiConstraint} class.  The latter is in fact an extension of this class,
- * as it implements the addConstraintSub(), addConstraintsSub(), removeConstraintSub() and
+ * as it implements the, addConstraintsSub() and
  * removeConstraintsSub() methods.
  * 
  * This abstract class also maintains a {@link ConstraintNetwork}, which is
@@ -181,14 +171,6 @@ public abstract class ConstraintSolver implements Serializable {
 		 return this.addConstraints(c);
 	}
 	
-	/**
-	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
-	 * class.  Should implement all operations necessary to add a constraint, and should return
-	 * <code>true</code>upon success, <code>false</code> otherwise. 
-	 * @param c  The constraint to add.
-	 * @return <code>true</code> iff the constraint was added to the {@link ConstraintNetwork}. 
-	 */
-	protected abstract boolean addConstraintSub(Constraint c);
 	
 	/**
 	 * Add a batch of constraints between {@link Variable}s.  This method is
@@ -211,7 +193,7 @@ public abstract class ConstraintSolver implements Serializable {
 		return null;
 	}
 	
-	
+
 	/**
 	 * Add a batch of constraints between {@link Variable}s.  This method is
 	 * implemented so as to perform only one propagation, thus being more convenient than
@@ -221,33 +203,12 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @return A boolean value indicating the success of adding the constraints.
 	 */
 	public final boolean addConstraints(Constraint... c) {
-		if (this instanceof RectangleConstraintSolver2) numcalls++;
 		if (c == null || c.length == 0){ 
 			return true;
 		}
-		ArrayList<MultiConstraint> added = new ArrayList<MultiConstraint>(c.length);
-		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 		ArrayList<Constraint> incomp = new ArrayList<Constraint>(c.length);
 		for (Constraint con : c) {
-			if (isCompatible(con) && !con.isSkippableSolver(this)) {
-				if (con instanceof MultiConstraint) {
-					MultiConstraint mc = (MultiConstraint)con;
-					MultiVariable mv = (MultiVariable)mc.getScope()[0];
-					for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-						if (mc.propagateImmediately()) {
-							added.add(mc);
-							if (!sortedCons.containsKey(cs)) {
-								sortedCons.put(cs, new ArrayList<Constraint>());
-							}
-							if (mc.getInternalConstraints() != null) {
-								for (Constraint ic : mc.getInternalConstraints()) {
-									if (!ic.isSkippableSolver(cs)) sortedCons.get(cs).add(ic);
-								}
-							}
-						}
-					}
-				}
-			}
+			if (isCompatible(con) && !con.isSkippableSolver(this)) { }
 			else incomp.add(con);
 		}
 		ArrayList<Constraint> toAdd = new ArrayList<Constraint>(c.length);
@@ -257,23 +218,7 @@ public abstract class ConstraintSolver implements Serializable {
 		
 		if (toAddArray.length == 0) return true;
 
-		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedConsRetract = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
-		for (ConstraintSolver cs : sortedCons.keySet()) {
-			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) {
-				logger.finest("Added sub-constraints " + sortedCons.get(cs));
-				sortedConsRetract.put(cs, sortedCons.get(cs));
-			}
-			else {
-				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) {
-					logger.finest("Removing internal constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
-					cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
-				}
-				logger.finest("Failed to add sub-constraints " + Arrays.toString(toAddArray));
-				
-				return false;
-			}
-		}
-		if ((toAddArray.length == 1 && addConstraintSub(toAddArray[0])) || (toAddArray.length > 1 && addConstraintsSub(toAddArray))) {			
+		if (addConstraintsSub(toAddArray)) {			
 			for (Constraint con : toAddArray) this.theNetwork.addConstraint(con);
 			if (autoprop && checkDomainsInstantiated()) { 
 				if (this.propagate()) {
@@ -289,12 +234,10 @@ public abstract class ConstraintSolver implements Serializable {
 				return true;
 			}
 		}
-		for (ConstraintSolver cs1 : sortedConsRetract.keySet()) 
-			cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
-		logger.finest("Sec3 Failed to add constraints " + Arrays.toString(toAddArray));		
+
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		return false;
-	}
+	}	
 
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
@@ -310,30 +253,9 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @param c The constraint to retract.
 	 */
 	public final void removeConstraint(Constraint c) throws ConstraintNotFound {
-		if (c != null) {
-			if (isCompatible(c) && !c.isSkippableSolver(this)) {
-				if (!this.theNetwork.containsConstraint(c)) throw new ConstraintNotFound(c);
-				/**/
-				if (c instanceof MultiConstraint) {
-					MultiConstraint mc = (MultiConstraint)c;
-					MultiVariable mv = (MultiVariable)mc.getScope()[0];
-					if (mc.getInternalConstraints() != null) for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) cs.removeConstraints(mc.getInternalConstraints());
-				}/**/
-				removeConstraintSub(c);
-				this.theNetwork.removeConstraint(c);
-				if (autoprop && checkDomainsInstantiated())
-					this.propagate();
-			}
-		}
+		if (c != null) this.removeConstraints(new Constraint[] {c});
 	}
 	
-	/**
-	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
-	 * class.  Should implement all operations necessary to remove a constraint. 
-	 * @param c  The constraint to remove. 
-	 */
-	protected abstract void removeConstraintSub(Constraint c);
-
 	/**
 	 * Retract a batch of constraints between {@link Variable}s.  This method should
 	 * be implemented so as to perform only one propagation, thus being more convenient than
@@ -344,24 +266,12 @@ public abstract class ConstraintSolver implements Serializable {
 	public final void removeConstraints(Constraint[] c) throws ConstraintNotFound {
 		if (c != null && c.length != 0) {
 			Vector<Constraint> incomp = new Vector<Constraint>();
-			HashMap<ConstraintSolver,ArrayList<Constraint>> internalCons = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 			for (Constraint con : c) {
 				if (isCompatible(con) && !con.isSkippableSolver(this)) {
 					if (!this.theNetwork.containsConstraint(con)) {
 						logger.info("Gonna fail - the constraint type is " + con.getClass().getSimpleName());
 						throw new ConstraintNotFound(con);
 					}
-					/**/
-					if (con instanceof MultiConstraint) {
-						MultiConstraint mc = (MultiConstraint)con;
-						MultiVariable mv = (MultiVariable)mc.getScope()[0];
-						for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-							//cs.removeConstraints(mc.getInternalConstraints());
-							if (!internalCons.containsKey(cs)) internalCons.put(cs,new ArrayList<Constraint>());
-							if (mc.getInternalConstraints() != null) for (Constraint c1 : mc.getInternalConstraints()) internalCons.get(cs).add(c1);
-						}
-					}
-					/**/
 				}
 				else incomp.add(con);
 			}
@@ -370,11 +280,6 @@ public abstract class ConstraintSolver implements Serializable {
 			Vector<Constraint> toRemove = new Vector<Constraint>();
 			for (Constraint con : c) if (!incomp.contains(con)) toRemove.add(con);
 			Constraint[] toRemoveArray = toRemove.toArray(new Constraint[toRemove.size()]);
-
-			//get rid of internal constraints
-			for (ConstraintSolver cs : internalCons.keySet()) {
-				cs.removeConstraints(internalCons.get(cs).toArray(new Constraint[internalCons.get(cs).size()]));
-			}
 			
 			removeConstraintsSub(toRemoveArray);
 			for (Constraint con : toRemove) this.theNetwork.removeConstraint(con);
@@ -397,10 +302,6 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @return A new {@link Variable}.
 	 */
 	public final Variable createVariable(String component) {
-//		Variable ret = createVariable();
-//		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>()); 
-//		components.get(component).add(ret);
-//		return ret;
 		return createVariables(1, component)[0];
 	}
 
@@ -427,56 +328,28 @@ public abstract class ConstraintSolver implements Serializable {
 	/**
 	 * Create a batch of new {@link Variable}s for this {@link ConstraintSolver}.
 	 * @param num The number of variables to create.
+	 * @return A batch of new {@link Variable}s.
+	 */
+	public final Variable[] createVariables(int num) {
+		return this.createVariables(num, null);
+	}
+
+	/**
+	 * Create a batch of new {@link Variable}s for this {@link ConstraintSolver}.
+	 * @param num The number of variables to create.
 	 * @param component The component tag to associate to these new variables.
 	 * @return A batch of new {@link Variable}s.
 	 */
 	public final Variable[] createVariables(int num, String component) {
-		Variable[] ret = createVariables(num);
-		setComponent(component, ret);		
-		for (Variable v : ret) {
-			if (v instanceof MultiVariable) {
-				MultiVariable mv = (MultiVariable)v;
-				Variable[] internalVars = mv.getInternalVariables();
-				for (Variable v1 : internalVars) {
-					v1.getConstraintSolver().setComponent(component, v1);
-				}
-			}
-		}
-		return ret;
-	}
-	
-	/**
-	 * Create a batch of new {@link Variable}s for this {@link ConstraintSolver}.
-	 * @param num The number of variables to create.
-	 * @return A batch of new {@link Variable}s.
-	 */
-	public final Variable[] createVariables(int num) {
-		Variable[] ret = createVariablesSub(num);
-		Vector<MultiVariable> added = new Vector<MultiVariable>();
+		Variable[] ret = createVariablesSub(num, component);
+		if (ret == null) return null;
 		//need to add all to network so if sth goes wrong I can delete all of them concurrently
 		for (Variable v : ret) this.theNetwork.addVariable(v);
-		for (Variable v : ret) {
-//			/**/
-//			if (v instanceof MultiVariable) {
-//				MultiVariable mv = (MultiVariable)v;
-//				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-//					if (cs.addConstraints(mv.getInternalConstraints())) added.add(mv);
-//					else {
-//						for (MultiVariable mvadded : added) {
-//							for (ConstraintSolver cs1 : mvadded.getInternalConstraintSolvers())
-//								cs1.removeConstraints(mv.getInternalConstraints());
-//						}
-//						this.removeVariablesSub(ret);
-//						return null;
-//					}					
-//				}
-//			}/**/
-		}
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Created variables " + Arrays.toString(ret));
 		return ret;
 	}
-	
+
 	private boolean checkDomainsInstantiated() {
 		if (domainsInstantiated) return true;
 		if (this.theNetwork.checkDomainsInstantiated() == null) {
@@ -495,40 +368,29 @@ public abstract class ConstraintSolver implements Serializable {
 	protected abstract Variable[] createVariablesSub(int num);
 
 	/**
+	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
+	 * class.  It should implement all operations necessary to create a batch of variable for the specific
+	 * type of {@link ConstraintSolver}. 
+	 * @param The component label to associate to the new {@link Variable}s.
+	 * @return  A batch of new {@link Variable} for this {@link ConstraintSolver}.
+	 */
+	protected Variable[] createVariablesSub(int num, String component) {
+		Variable[] ret = createVariablesSub(num);
+		if (component != null) {
+			logger.info("**Set component of " + Arrays.toString(ret) + " to " + component);
+			this.setComponent(component, ret);
+		}
+		return ret;
+	}
+
+	/**
 	 * Remove a {@link Variable} from this {@link ConstraintSolver}.
 	 * @param v The {@link Variable} to remove.
 	 */
 	public final void removeVariable(Variable v) throws VariableNotFound, IllegalVariableRemoval {
 		this.removeVariables(new Variable[] {v});
-//		if (!this.theNetwork.containsVariable(v)) throw new VariableNotFound(v);
-//		if (this.theNetwork.getIncidentEdges(v) != null && this.theNetwork.getIncidentEdges(v).length != 0)
-//			throw new IllegalVariableRemoval(v, this.theNetwork.getIncidentEdges(v));
-//		/**/
-//		if (v instanceof MultiVariable) {
-//			MultiVariable mv = (MultiVariable)v;
-//			Constraint[] internalCons = mv.getInternalConstraints();
-//			for (ConstraintSolver cs : mv.getInternalConstraintSolvers())
-//				cs.removeConstraints(internalCons);
-//		}/**/
-////		Constraint[] incidentEdges = this.theNetwork.getIncidentEdges(v); 
-////		this.removeConstraints(incidentEdges);
-//		this.theNetwork.removeVariable(v);
-//		removeVariableSub(v);
-//		for (ArrayList<Variable> vec : components.values()) {
-//			if (vec.contains(v)) vec.remove(v);
-//		}
-//		if (autoprop && checkDomainsInstantiated()) this.propagate();
-//		logger.finest("Removed variable " + v);
 	} 
-	
-	/**
-	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
-	 * class.  It should implement all operations necessary to remove a variable for
-	 * the specific type of {@link ConstraintSolver}. 
-	 * @param v The {@link Variable} to remove.
-	 */
-	protected abstract void removeVariableSub(Variable v);
-	
+		
 	/**
 	 * Remove a batch of {@link Variable}s from this {@link ConstraintSolver}.
 	 * @param v The batch of {@link Variable}s to remove.
@@ -539,16 +401,10 @@ public abstract class ConstraintSolver implements Serializable {
 			Constraint[] incident = this.theNetwork.getIncidentEdges(var);
 			for (Constraint con : incident) if (!con.isAutoRemovable()) throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
 			this.removeConstraints(incident);
-			/**/
-			if (var instanceof MultiVariable) {
-				MultiVariable mv = (MultiVariable)var;
-				for (ConstraintSolver cs : mv.getInternalConstraintSolvers())
-					cs.removeConstraints(mv.getInternalConstraints());
-			}/**/
 		}
+		removeVariablesSub(v);
 		for (Variable var : v) {
 			this.theNetwork.removeVariable(var);
-			removeVariableSub(var);
 		}
 		for (ArrayList<Variable> vec : components.values()) {
 			vec.removeAll(Arrays.asList(v));
@@ -556,6 +412,8 @@ public abstract class ConstraintSolver implements Serializable {
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Removed variables " + Arrays.toString(v));
 	}
+
+	
 
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
@@ -630,15 +488,9 @@ public abstract class ConstraintSolver implements Serializable {
 	public Constraint[] getConstraints(Variable from, Variable to) {
 		Vector<Constraint> ret = new Vector<Constraint>();
 		for (Constraint con : this.getConstraints()) {
-			if (con instanceof BinaryConstraint) {
-				if (((BinaryConstraint) con).getFrom().equals(from) &&
-						((BinaryConstraint) con).getTo().equals(to)) ret.add(con);
+			if (con.getScope().length == 2) {
+				if (con.getScope()[0].equals(from) && con.getScope()[1].equals(to)) ret.add(con);
 			}
-			/**/
-			else if (con instanceof MultiBinaryConstraint) {
-				if (((MultiBinaryConstraint) con).getFrom().equals(from) &&
-						((MultiBinaryConstraint) con).getTo().equals(to)) ret.add(con);
-			}/**/
 		}
 		return ret.toArray(new Constraint[ret.size()]);
 	}

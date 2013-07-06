@@ -60,12 +60,6 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
 		this.setOptions(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED);
 	}
-
-	@Override
-	protected boolean addConstraintSub(Constraint c) {
-		//this.propagateFuzzyValues(new Constraint[] {c});
-		return true;
-	}
 	
 	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
@@ -570,19 +564,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 	}
 
 	@Override
-	protected void removeConstraintSub(Constraint c) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	protected void removeConstraintsSub(Constraint[] c) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void removeVariableSub(Variable v) {
 		// TODO Auto-generated method stub
 		
 	}

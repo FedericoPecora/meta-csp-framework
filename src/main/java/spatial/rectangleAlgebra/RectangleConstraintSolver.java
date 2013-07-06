@@ -83,24 +83,10 @@ public class RectangleConstraintSolver extends ConstraintSolver{
 		return new RectangleConstraintNetwork(this);
 	}
 
-	
-
-	@Override
-	protected  boolean addConstraintSub(Constraint c) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
 	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
 		// TODO Auto-generated method stub
 		return true;
-	}
-
-	@Override
-	protected void removeConstraintSub(Constraint c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -116,11 +102,6 @@ public class RectangleConstraintSolver extends ConstraintSolver{
 			return ret;
 	}
 
-	@Override
-	protected void removeVariableSub(Variable v) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected void removeVariablesSub(Variable[] v) {

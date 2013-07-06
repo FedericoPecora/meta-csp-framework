@@ -66,13 +66,13 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	private long horizon;
 	
 	public ActivityNetworkSolver(long origin, long horizon) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,500));
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 	}
 	
 	public ActivityNetworkSolver(long origin, long horizon, int numActivities) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,numActivities));
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,numActivities), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 	}
@@ -123,12 +123,6 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	@Override
 	protected ConstraintNetwork createConstraintNetwork() {
 		return new ActivityNetwork(this);
-	}
-
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		int[] ingredients = new int[] {1,1};
-		return super.createVariablesSub(ingredients, num);
 	}
 	
 //	@Override
