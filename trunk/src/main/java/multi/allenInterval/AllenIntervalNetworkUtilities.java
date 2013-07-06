@@ -49,8 +49,8 @@ public class AllenIntervalNetworkUtilities {
 		 */
 		private static final long serialVersionUID = -6237200272058310041L;
 
-		private ReducedAllenInterval(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-			super(cs, id, internalSolvers);
+		private ReducedAllenInterval(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+			super(cs, id, internalSolvers, internalVars);
 		}
 		
 		@Override
@@ -85,9 +85,9 @@ public class AllenIntervalNetworkUtilities {
 		
 		private AllenInterval createReducedIfNecessary() {
 			if(createReducedIntervals) {
-				return new ReducedAllenInterval(this, IDs++, this.constraintSolvers);
+				return new ReducedAllenInterval(this, IDs++, this.constraintSolvers, this.getVariables());
 			} else {
-				return super.createVariablesSub(1)[0];
+				return (AllenInterval)super.createVariablesSub(1)[0];
 			}
 		}
 		

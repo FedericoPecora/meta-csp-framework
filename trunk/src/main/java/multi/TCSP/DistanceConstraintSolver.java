@@ -42,8 +42,8 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 		super(new Class[]{DistanceConstraint.class}, new Class[]{MultiTimePoint.class}, createConstraintSolvers(origin, horizon));	
 		//Create source and sink as wrappers of APSPSolver's source and sink
 		APSPSolver internalSolver = (APSPSolver)this.constraintSolvers[0];
-		source = new MultiTimePoint(this, IDs++, internalSolver, internalSolver.getSource());
-		sink = new MultiTimePoint(this, IDs++, internalSolver, internalSolver.getSink());
+		source = new MultiTimePoint(this, IDs++, constraintSolvers, new Variable[] {internalSolver.getSource()});
+		sink = new MultiTimePoint(this, IDs++, constraintSolvers, new Variable[] {internalSolver.getSink()});
 		this.theNetwork.addVariable(source);
 		this.theNetwork.addVariable(sink);
 		this.setOptions(OPTIONS.ALLOW_INCONSISTENCIES);		
@@ -61,12 +61,18 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 
 	@Override
 	protected Variable[] createVariablesSub(int num) {
-		MultiTimePoint[] ret = new MultiTimePoint[num];
-		for (int i = 0; i < num; i++) {
-			ret[i] = new MultiTimePoint(this, IDs++, this.constraintSolvers);
-		}
-		return ret;
+		int[] ingredients = new int[] {1};
+		return super.createVariablesSub(ingredients, num);
 	}
+	
+//	@Override
+//	protected Variable[] createVariablesSub(int num) {
+//		MultiTimePoint[] ret = new MultiTimePoint[num];
+//		for (int i = 0; i < num; i++) {
+//			ret[i] = new MultiTimePoint(this, IDs++, this.constraintSolvers);
+//		}
+//		return ret;
+//	}
 	
 	@Override
 	public boolean propagate() {

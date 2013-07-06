@@ -78,12 +78,10 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	 * @return A String describing this constraint.
 	 */
 	public String toString() {
-		
 		String s=super.toString();
 		s+=" INTVS: "+bs.toString();
 		return s;
 	}
-	
 	
 	/**
 	 * Draw a graphical representation of this constraint.  This method is NOT implemented.
@@ -133,8 +131,7 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	 * @return The number of [lb,ub] intervals added between the two {@link TimePoint}s
 	 * (including the active constraint).
 	 */
-	public int getCounter()
-	{
+	public int getCounter() {
 		return bs.size();
 	}
 

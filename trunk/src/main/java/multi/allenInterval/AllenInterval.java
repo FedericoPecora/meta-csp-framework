@@ -22,6 +22,8 @@
  ******************************************************************************/
 package multi.allenInterval;
 
+import java.util.Vector;
+
 import time.APSPSolver;
 import time.Bounds;
 import time.SimpleDistanceConstraint;
@@ -40,16 +42,20 @@ public class AllenInterval extends MultiVariable {
 	private static final long serialVersionUID = -4302592731389782557L;
 	private String name = "";
 	
-	AllenInterval(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-		super(cs, id, internalSolvers);
-		// TODO Auto-generated constructor stub
+//	public AllenInterval(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
+//		super(cs, id, internalSolvers);
+//		// TODO Auto-generated constructor stub
+//	}
+	
+	public AllenInterval(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+		super(cs,id,internalSolvers,internalVars);
 	}
 	
-	@Override
-	protected Variable[] createInternalVariables() {
-		Variable[] tps = internalSolvers[0].createVariables(2);
-		return tps;
-	}
+//	@Override
+//	protected Variable[] createInternalVariables() {
+//		Variable[] tps = internalSolvers[0].createVariables(2);
+//		return tps;
+//	}
 	
 	public void setName(String name) {
 		this.name = name;
@@ -61,7 +67,11 @@ public class AllenInterval extends MultiVariable {
 	
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
-		return null;
+		AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
+		dur.setFrom(this);
+		dur.setTo(this);
+		dur.setAutoRemovable(true);
+		return new Constraint[] {dur};
 	}
 
 	@Override

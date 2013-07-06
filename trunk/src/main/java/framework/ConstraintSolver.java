@@ -70,6 +70,8 @@ public abstract class ConstraintSolver implements Serializable {
 	protected static String spacing = "  ";
 	private static final long serialVersionUID = 7526472295622776147L;
 	
+	protected int IDs = 0;
+	
 	protected String name;
 	
 	/**
@@ -101,7 +103,7 @@ public abstract class ConstraintSolver implements Serializable {
 	
 	protected HashMap<String,ArrayList<Variable>> components = new HashMap<String,ArrayList<Variable>>();
 
-	private transient  Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	public void setName(String name) { this.name = name; }
 	
@@ -178,49 +180,6 @@ public abstract class ConstraintSolver implements Serializable {
 	public final boolean addConstraint(Constraint c) {
 		 return this.addConstraints(c);
 	}
-//	public final boolean addConstraint(Constraint c) {
-//		if (c == null) return true;		
-//		if (isCompatible(c)) {
-//			/**/
-//			// if we are in presence of a multi constraint, i.e. a constraint which entails multiple constraints...
-//			if (c instanceof MultiConstraint) {
-//				// MC: our current MultiConstraint
-//				MultiConstraint mc = (MultiConstraint)c;
-//				// MV: our source node which the MC refers to
-//				MultiVariable mv = (MultiVariable)mc.getScope()[0];
-//				
-//				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-//					boolean prop = false;
-//					if (mc.propagateImmediately() && cs.addConstraints(mc.getInternalConstraints())) {
-//						prop = true;
-//					}
-//					if (!prop && !((MultiConstraintSolver)mc.getScope()[0].getConstraintSolver()).getOption(MultiConstraintSolver.OPTIONS.ALLOW_INCONSISTENCIES)) {
-//						return false;
-//					}
-//				}
-//			}/**/
-//			if (addConstraintSub(c)) {
-//				this.theNetwork.addConstraint(c);
-//				if (autoprop && checkDomainsInstantiated()) { 
-//					if (this.propagate()) {
-//						logger.finest("Added constraint " + c);
-//						return true;
-//					}
-//					logger.finest("Failed to add constraint " + c);
-//					this.theNetwork.removeConstraint(c);
-//				}
-//				else {
-//					logger.finest("Added constraint " + c);
-//					return true;
-//				}
-//			}	
-//			/**/
-//			if (autoprop && checkDomainsInstantiated()) 
-//				this.propagate();
-//			return false;
-//		}
-//		return true;
-//	}
 	
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
@@ -453,44 +412,13 @@ public abstract class ConstraintSolver implements Serializable {
 	public final Variable createVariable() {
 		return createVariables(1)[0];
 	}
-//	public final Variable createVariable() {
-//		Variable ret = createVariableSub();
-//		this.theNetwork.addVariable(ret);
-//		/**/
-//		if (ret instanceof MultiVariable) {
-//			MultiVariable mv = (MultiVariable)ret;
-//			HashMap<ConstraintSolver, Constraint[]> added = new HashMap<ConstraintSolver, Constraint[]>();
-//			boolean oneFailed = false;
-//			for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-//				if (!cs.addConstraints(mv.getInternalConstraints())) {
-//					oneFailed = true;
-//					this.removeVariable(ret);
-//				}
-//				else added.put(cs, mv.getInternalConstraints());
-//			}
-//			if (oneFailed) {
-//				for (ConstraintSolver cs : added.keySet()) {
-//					cs.removeConstraints(added.get(cs));
-//				}
-//				return null;
-//			}
-//			
-//		}
-//		/**/
-//		if (this.getOption(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) this.domainsInstantiated = false;
-//		if (autoprop && checkDomainsInstantiated()) this.propagate();
-//		logger.finest("Created variable " + ret);
-//		return ret;
-//	}
 	
-//	/**
-//	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
-//	 * class.  It should implement all operations necessary to create a variable for the specific
-//	 * type of {@link ConstraintSolver}. 
-//	 * @return  A new {@link Variable} for this {@link ConstraintSolver}.
-//	 */
-//	protected abstract Variable createVariableSub();
-
+	/**
+	 * Used to set the component of a variable.  Components are "tags" that are used, e.g., in
+	 * timeline plotting.
+	 * @param component The component to set.
+	 * @param vars The variables that should be tagged under this component.
+	 */
 	public void setComponent(String component, Variable ... vars) {
 		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>());
 		for (Variable var : vars) components.get(component).add(var);
@@ -511,7 +439,6 @@ public abstract class ConstraintSolver implements Serializable {
 				Variable[] internalVars = mv.getInternalVariables();
 				for (Variable v1 : internalVars) {
 					v1.getConstraintSolver().setComponent(component, v1);
-//					logger.info("Set component of " + v1 + " to " + component);
 				}
 			}
 		}
@@ -529,21 +456,21 @@ public abstract class ConstraintSolver implements Serializable {
 		//need to add all to network so if sth goes wrong I can delete all of them concurrently
 		for (Variable v : ret) this.theNetwork.addVariable(v);
 		for (Variable v : ret) {
-			/**/
-			if (v instanceof MultiVariable) {
-				MultiVariable mv = (MultiVariable)v;
-				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
-					if (cs.addConstraints(mv.getInternalConstraints())) added.add(mv);
-					else {
-						for (MultiVariable mvadded : added) {
-							for (ConstraintSolver cs1 : mvadded.getInternalConstraintSolvers())
-								cs1.removeConstraints(mv.getInternalConstraints());
-						}
-						this.removeVariablesSub(ret);
-						return null;
-					}					
-				}
-			}/**/
+//			/**/
+//			if (v instanceof MultiVariable) {
+//				MultiVariable mv = (MultiVariable)v;
+//				for (ConstraintSolver cs : mv.getInternalConstraintSolvers()) {
+//					if (cs.addConstraints(mv.getInternalConstraints())) added.add(mv);
+//					else {
+//						for (MultiVariable mvadded : added) {
+//							for (ConstraintSolver cs1 : mvadded.getInternalConstraintSolvers())
+//								cs1.removeConstraints(mv.getInternalConstraints());
+//						}
+//						this.removeVariablesSub(ret);
+//						return null;
+//					}					
+//				}
+//			}/**/
 		}
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Created variables " + Arrays.toString(ret));

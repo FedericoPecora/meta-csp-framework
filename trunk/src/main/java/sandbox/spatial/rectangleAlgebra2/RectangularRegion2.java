@@ -34,8 +34,13 @@ public class RectangularRegion2 extends MultiVariable {
 	
 	
 	private OntologicalSpatialProperty ontologicalProp = null;
-	protected RectangularRegion2(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-		super(cs, id, internalSolvers);
+
+//	protected RectangularRegion2(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
+//		super(cs, id, internalSolvers);
+//	}
+	
+	public RectangularRegion2(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+		super(cs, id, internalSolvers, internalVars);
 	}
 
 	private static final long serialVersionUID = -864200952441853571L;	
@@ -59,17 +64,17 @@ public class RectangularRegion2 extends MultiVariable {
 		return this.getID() - arg0.getID();
 	}
 
-	@Override
-	protected Variable[] createInternalVariables() {
-		Variable[] ret = new Variable[2];
-		//X
-		ret[0] = this.getInternalConstraintSolvers()[0].createVariable();
-		((AllenInterval)ret[0]).setName("!X!");
-		//Y
-		ret[1] = this.getInternalConstraintSolvers()[1].createVariable();
-		((AllenInterval)ret[1]).setName("!Y!");
-		return ret;
-	}
+//	@Override
+//	protected Variable[] createInternalVariables() {
+//		Variable[] ret = new Variable[2];
+//		//X
+//		ret[0] = this.getInternalConstraintSolvers()[0].createVariable();
+//		((AllenInterval)ret[0]).setName("!X!");
+//		//Y
+//		ret[1] = this.getInternalConstraintSolvers()[1].createVariable();
+//		((AllenInterval)ret[1]).setName("!Y!");
+//		return ret;
+//	}
 	
 	
 	

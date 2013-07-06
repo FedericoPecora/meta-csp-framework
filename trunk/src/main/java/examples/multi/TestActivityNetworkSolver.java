@@ -33,6 +33,7 @@ import utility.logging.MetaCSPLogging;
 import utility.timelinePlotting.TimelinePublisher;
 import framework.Constraint;
 import framework.ConstraintNetwork;
+import framework.Variable;
 
 public class TestActivityNetworkSolver {
 	
@@ -78,7 +79,7 @@ public class TestActivityNetworkSolver {
 		
 		Constraint[] cons = new Constraint[]{con1,con2,con3,con4,con5,con5a};
 		solver.addConstraints(cons);
-		
+				
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -86,8 +87,8 @@ public class TestActivityNetworkSolver {
 			e.printStackTrace();
 		}
 
-		solver.removeConstraint(con5a);
-		
+		solver.removeConstraints(new Constraint[] {con1,con2,con3,con4,con5,con5a});
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -95,7 +96,7 @@ public class TestActivityNetworkSolver {
 			e.printStackTrace();
 		}
 
-		solver.removeConstraint(con5);
+		solver.removeVariables(new Variable[] {act2});
 	}
 
 }
