@@ -39,7 +39,7 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 	private MultiTimePoint sink = null;
 	
 	public DistanceConstraintSolver(long origin, long horizon) {
-		super(new Class[]{DistanceConstraint.class}, new Class[]{MultiTimePoint.class}, createConstraintSolvers(origin, horizon));	
+		super(new Class[]{DistanceConstraint.class}, new Class[]{MultiTimePoint.class}, createConstraintSolvers(origin, horizon), new int[] {1});	
 		//Create source and sink as wrappers of APSPSolver's source and sink
 		APSPSolver internalSolver = (APSPSolver)this.constraintSolvers[0];
 		source = new MultiTimePoint(this, IDs++, constraintSolvers, new Variable[] {internalSolver.getSource()});
@@ -57,12 +57,6 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 	@Override
 	protected ConstraintNetwork createConstraintNetwork() {
 		return new DistanceConstraintNetwork(this);
-	}
-
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		int[] ingredients = new int[] {1};
-		return super.createVariablesSub(ingredients, num);
 	}
 	
 //	@Override

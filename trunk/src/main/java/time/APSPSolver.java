@@ -274,38 +274,6 @@ public class APSPSolver extends ConstraintSolver {
 		backup = null;
 	}
 
-	//Time point erase
-	private void tpDelete(int IDtimePoint) {
-		logger.log(Level.FINE, "Deleting 1 TP");
-		tPoints[IDtimePoint].setUsed(false);
-
-		if (IDtimePoint == MAX_USED) MAX_USED--;
-
-		SimpleDistanceConstraint conO = new SimpleDistanceConstraint();
-		SimpleDistanceConstraint conH = new SimpleDistanceConstraint();
-		conO.setFrom(this.getVariable(0));
-		conO.setTo(this.getVariable(IDtimePoint));
-		conH.setFrom(this.getVariable(IDtimePoint));
-		conH.setTo(this.getVariable(1));
-
-		conO.setMinimum(0);
-		conO.setMaximum(H-O);
-		conH.setMinimum(0);
-		conH.setMaximum(H-O);
-
-		conO.addInterval(new Bounds(0,H-O));
-		conH.addInterval(new Bounds(0,H-O));
-
-		//[lb,ub] = [-di0,d0i]
-		tPoints[IDtimePoint].setLowerBound(O);
-		tPoints[IDtimePoint].setUpperBound(H);
-
-		tPoints[0].setOut(IDtimePoint,conO);
-		tPoints[IDtimePoint].setOut(1,conH);
-
-		fromScratchDistanceMatrixComputation();
-	}
-
 
 	//Batch Time point erase
 	private void tpDelete(int[] IDtimePoint) {
@@ -789,15 +757,6 @@ public class APSPSolver extends ConstraintSolver {
 	}
 
 
-	//Remove a variable (timepoint).
-	@Override
-	protected void removeVariableSub(Variable ti) {
-		if (ti instanceof TimePoint) {
-			tpDelete(((TimePoint)ti).getID());
-			//super.removeVariable(ti);
-		}
-	}
-
 	//Remove many variables (timepoints).
 	@Override
 	protected void removeVariablesSub(Variable[] ti) {
@@ -812,23 +771,6 @@ public class APSPSolver extends ConstraintSolver {
 		tpDelete(Ids);
 	}
 
-
-	//Add a new constraint (SimpleDistanceConstraint)
-	@Override
-	protected boolean addConstraintSub(Constraint con)
-	{
-		if (con == null) return true;
-
-		if (con instanceof SimpleDistanceConstraint) {
-			SimpleDistanceConstraint c = (SimpleDistanceConstraint)con;
-			Bounds interval = new Bounds(c.getMinimum(),c.getMaximum());
-			logger.finest("Trying to add constraint " + con + "...");
-			boolean ret = cCreate(interval,((TimePoint)c.getFrom()).getID(),((TimePoint)c.getTo()).getID());
-			if (!ret) logger.fine("Failed to add constraint " + con);
-			return ret;
-		}
-		return false;
-	}
 
 	@Override
 	protected boolean addConstraintsSub(Constraint[] con) {
@@ -875,16 +817,6 @@ public class APSPSolver extends ConstraintSolver {
 			}
 		}
 		return true;
-	}
-
-	//Remove a constraint (SimpleDistanceConstraint)
-	@Override
-	protected void removeConstraintSub(Constraint con) {
-		if (con != null) {
-			if (con instanceof SimpleDistanceConstraint) {
-				cDelete(new Bounds(((SimpleDistanceConstraint)con).getMinimum(),((SimpleDistanceConstraint)con).getMaximum()),((TimePoint)((SimpleDistanceConstraint)con).getFrom()).getID(),((TimePoint)((SimpleDistanceConstraint)con).getTo()).getID());
-			}
-		}
 	}
 
 	//Remove a constraint (SimpleDistanceConstraint)

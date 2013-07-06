@@ -60,11 +60,11 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	public enum Dimension  {X, Y};
 
 	public RectangleConstraintSolver2(long origin, long horizon) {
-		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class}, new Class[] {RectangularRegion2.class}, createConstraintSolvers(origin, horizon, -1));
+		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class}, new Class[] {RectangularRegion2.class}, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
 	}
 
 	public RectangleConstraintSolver2(long origin, long horizon, int maxRectangles) {
-		super(new Class[] {RectangleConstraint2.class}, new Class[] {RectangularRegion2.class}, createConstraintSolvers(origin, horizon, maxRectangles));
+		super(new Class[] {RectangleConstraint2.class}, new Class[] {RectangularRegion2.class}, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxRectangles) {
@@ -79,12 +79,6 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	@Override
 	protected ConstraintNetwork createConstraintNetwork() {
 		return new RectangleConstraintNetwork2(this);
-	}
-
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		int[] ingredients = new int[] {1,1};
-		return super.createVariablesSub(ingredients, num);
 	}
 
 //	@Override

@@ -74,7 +74,6 @@ public abstract class MultiConstraint extends Constraint {
 	 */
 	public Constraint[] getInternalConstraints() {
 		if (constraints == null) constraints = this.createInternalConstraints(this.scope);
-		logger.finest("Created internal constraints for " + this + ": " + Arrays.toString(constraints));
 		return constraints;
 	}
 	

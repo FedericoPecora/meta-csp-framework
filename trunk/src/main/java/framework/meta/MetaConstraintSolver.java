@@ -103,7 +103,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 	
 	protected MetaConstraintSolver(Class<?>[] constraintTypes, long animationTime, ConstraintSolver ... internalSolvers) {
-		super(constraintTypes, new Class[]{MetaVariable.class}, internalSolvers);
+		super(constraintTypes, new Class[]{MetaVariable.class}, internalSolvers, null);
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.animationTime = animationTime;
 		this.resolvers = new HashMap<ConstraintNetwork,ConstraintNetwork>();
@@ -403,17 +403,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	public boolean propagate() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	protected Variable createVariableSub() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	/**

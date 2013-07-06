@@ -323,21 +323,9 @@ public class RCCConstraintSolver extends ConstraintSolver{
 	}
 
 	@Override
-	protected boolean addConstraintSub(Constraint c) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
 		// TODO Auto-generated method stub
 		return true;
-	}
-
-	@Override
-	protected void removeConstraintSub(Constraint c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -351,12 +339,6 @@ public class RCCConstraintSolver extends ConstraintSolver{
 		Region[] ret = new Region[num];
 		for (int i = 0; i < num; i++) ret[i] = new Region(this, IDs++);
 			return ret;
-	}
-
-	@Override
-	protected void removeVariableSub(Variable v) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

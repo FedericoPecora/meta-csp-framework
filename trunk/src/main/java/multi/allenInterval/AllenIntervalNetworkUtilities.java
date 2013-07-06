@@ -91,14 +91,14 @@ public class AllenIntervalNetworkUtilities {
 			}
 		}
 		
-		@Override
-		protected AllenInterval[] createVariablesSub(int num) {
-			AllenInterval[] intervals = new AllenInterval[num];
-			for(int i = 0; i < num; ++i) {
-				intervals[i] = createReducedIfNecessary();
-			}
-			return intervals;
-		}
+//		@Override
+//		protected AllenInterval[] createVariablesSub(int num) {
+//			AllenInterval[] intervals = new AllenInterval[num];
+//			for(int i = 0; i < num; ++i) {
+//				intervals[i] = createReducedIfNecessary();
+//			}
+//			return intervals;
+//		}
 	}
 	
 	/**

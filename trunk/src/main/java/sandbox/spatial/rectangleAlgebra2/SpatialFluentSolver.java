@@ -28,14 +28,16 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				//new Class[] {RectangularRegion2.class, Activity.class},
 				new Class[] {SpatialFluent.class},
-				createConstraintSolvers(origin, horizon, -1));
+				createConstraintSolvers(origin, horizon, -1),
+				new int[] {1,1});
 	}
 
 	public SpatialFluentSolver(long origin, long horizon, int maxFluent) {
 		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				//new Class[] {RectangularRegion2.class, Activity.class},
 				new Class[] {SpatialFluent.class},
-				createConstraintSolvers(origin, horizon, maxFluent));
+				createConstraintSolvers(origin, horizon, maxFluent),
+				new int[] {1,1});
 	}
 	
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxFluents) {		
@@ -49,11 +51,6 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 		return new SpatialFluentNetwork(this);
 	}
 
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		int[] ingredients = new int[] {1,1};
-		return super.createVariablesSub(ingredients, num);
-	}
 	
 //	@Override
 //	protected Variable[] createVariablesSub(int num) {
