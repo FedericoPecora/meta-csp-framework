@@ -26,12 +26,10 @@ package examples.meta;
 
 import meta.symbolsAndTime.ReusableResource;
 import meta.symbolsAndTime.Scheduler;
-import meta.symbolsAndTime.SymbolicTimeline;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
 import multi.allenInterval.AllenIntervalConstraint.Type;
-import time.APSPSolver;
 import time.Bounds;
 import utility.UI.Callback;
 import utility.timelinePlotting.TimelinePublisher;

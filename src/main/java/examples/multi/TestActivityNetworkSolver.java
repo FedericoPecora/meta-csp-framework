@@ -30,7 +30,6 @@ import multi.allenInterval.AllenIntervalConstraint;
 import symbols.SymbolicValueConstraint;
 import time.Bounds;
 import utility.logging.MetaCSPLogging;
-import utility.timelinePlotting.TimelinePublisher;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.Variable;

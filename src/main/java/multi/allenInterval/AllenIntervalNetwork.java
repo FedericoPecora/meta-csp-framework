@@ -22,7 +22,6 @@
  ******************************************************************************/
 package multi.allenInterval;
 
-import multi.activity.ActivityNetwork;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;

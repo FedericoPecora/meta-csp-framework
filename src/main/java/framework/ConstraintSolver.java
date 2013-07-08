@@ -36,6 +36,8 @@ import throwables.ConstraintNotFound;
 import throwables.IllegalVariableRemoval;
 import throwables.VariableNotFound;
 import utility.logging.MetaCSPLogging;
+import framework.multi.MultiConstraint;
+import framework.multi.MultiConstraintSolver;
 
 /**
  * This class provides common infrastructure and functionality for

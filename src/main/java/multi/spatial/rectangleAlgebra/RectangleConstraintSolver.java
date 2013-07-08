@@ -20,21 +20,13 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatial.rectangleAlgebra;
 
 import java.util.HashMap;
-import java.util.Vector;
 
-import cern.colt.Arrays;
-import spatial.rectangleAlgebra.AugmentedRectangleConstraint;
-import spatial.rectangleAlgebra.BoundingBox;
-import spatial.rectangleAlgebra.QualitativeAllenIntervalConstraint;
-import spatial.rectangleAlgebra.TwoDimensionsAllenConstraint;
-import spatial.rectangleAlgebra.QualitativeAllenIntervalConstraint.Type;
-import time.Bounds;
 import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalNetworkSolver;
-import framework.Constraint;
+import time.Bounds;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
@@ -48,7 +40,7 @@ import framework.multi.MultiConstraintSolver;
  *
  */
 
-public class RectangleConstraintSolver2 extends MultiConstraintSolver {
+public class RectangleConstraintSolver extends MultiConstraintSolver {
 
 	/**
 	 * 
@@ -59,12 +51,12 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	private HashMap<Integer, Variable> getVaribaleById = new HashMap<Integer, Variable>();
 	public enum Dimension  {X, Y};
 
-	public RectangleConstraintSolver2(long origin, long horizon) {
-		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class}, new Class[] {RectangularRegion2.class}, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
+	public RectangleConstraintSolver(long origin, long horizon) {
+		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, new Class[] {RectangularRegion.class}, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
 	}
 
-	public RectangleConstraintSolver2(long origin, long horizon, int maxRectangles) {
-		super(new Class[] {RectangleConstraint2.class}, new Class[] {RectangularRegion2.class}, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
+	public RectangleConstraintSolver(long origin, long horizon, int maxRectangles) {
+		super(new Class[] {RectangleConstraint.class}, new Class[] {RectangularRegion.class}, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxRectangles) {
@@ -78,7 +70,7 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	
 	@Override
 	protected ConstraintNetwork createConstraintNetwork() {
-		return new RectangleConstraintNetwork2(this);
+		return new RectangleConstraintNetwork(this);
 	}
 
 //	@Override
@@ -98,7 +90,7 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	 * make script readable for gnuplot
 	 * @param st
 	 */
-	public String drawAlmostCentreRectangle(long horizon, RectangularRegion2 ... rect){
+	public String drawAlmostCentreRectangle(long horizon, RectangularRegion ... rect){
 		String ret = "";
 		int j = 1;
 		ret = "set xrange [0:" + horizon +"]"+ "\n";
@@ -124,7 +116,7 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 	 * @param name of the rectangle region
 	 * @return a bounding box 
 	 */
-	public BoundingBox extractBoundingBoxesFromSTPs(RectangularRegion2 rect){
+	public BoundingBox extractBoundingBoxesFromSTPs(RectangularRegion rect){
 		Bounds xLB, xUB, yLB, yUB;
 		xLB = new Bounds(((AllenInterval)rect.getInternalVariables()[0]).getEST(),((AllenInterval)rect.getInternalVariables()[0]).getLST()); 
 		xUB = new Bounds(((AllenInterval)rect.getInternalVariables()[0]).getEET(),((AllenInterval)rect.getInternalVariables()[0]).getLET()); 
@@ -137,7 +129,7 @@ public class RectangleConstraintSolver2 extends MultiConstraintSolver {
 		
 		Bounds xLB, xUB, yLB, yUB;
 		for (int i = 0; i < this.getConstraintSolvers()[0].getVariables().length; i++) {
-			if(((RectangularRegion2)this.getConstraintNetwork().getVariables()[i]).getName().compareTo(name) == 0){
+			if(((RectangularRegion)this.getConstraintNetwork().getVariables()[i]).getName().compareTo(name) == 0){
 				xLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getLST());
 				xUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getLET());
 				yLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getLST());

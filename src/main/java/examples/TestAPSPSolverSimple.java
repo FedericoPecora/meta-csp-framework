@@ -26,7 +26,6 @@ import java.util.logging.Level;
 
 import time.APSPSolver;
 import time.SimpleDistanceConstraint;
-import time.TimePoint;
 import utility.logging.MetaCSPLogging;
 import framework.ConstraintNetwork;
 import framework.Variable;

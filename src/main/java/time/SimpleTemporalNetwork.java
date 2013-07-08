@@ -22,9 +22,6 @@
  ******************************************************************************/
 package time;
 
-import java.util.HashMap;
-
-import multi.allenInterval.AllenIntervalNetwork;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;

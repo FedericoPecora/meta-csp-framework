@@ -20,26 +20,23 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatial.rectangleAlgebra;
 
-import multi.allenInterval.AllenInterval;
-import spatial.rectangleAlgebra.OntologicalSpatialProperty;
+
+import multi.spatial.rectangleAlgebraNew.toRemove.OntologicalSpatialProperty;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;
 import framework.Variable;
 import framework.multi.MultiVariable;
 
-public class RectangularRegion2 extends MultiVariable {
+public class RectangularRegion extends MultiVariable {
 	
 	
 	private OntologicalSpatialProperty ontologicalProp = null;
 
-//	protected RectangularRegion2(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-//		super(cs, id, internalSolvers);
-//	}
 	
-	public RectangularRegion2(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+	public RectangularRegion(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 	}
 

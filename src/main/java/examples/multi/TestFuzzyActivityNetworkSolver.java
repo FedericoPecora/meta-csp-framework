@@ -25,11 +25,9 @@ package examples.multi;
 import multi.fuzzyActivity.FuzzyActivity;
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import symbols.SymbolicValueConstraint;
-import symbols.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
-import fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
 
 public class TestFuzzyActivityNetworkSolver {
 	

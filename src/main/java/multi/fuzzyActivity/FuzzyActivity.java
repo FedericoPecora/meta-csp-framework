@@ -30,7 +30,6 @@ import framework.ConstraintSolver;
 import framework.Domain;
 import framework.Variable;
 import framework.multi.MultiVariable;
-import fuzzyAllenInterval.SimpleAllenInterval;
 
 public class FuzzyActivity extends MultiVariable {
 	
