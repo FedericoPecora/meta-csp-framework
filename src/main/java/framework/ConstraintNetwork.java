@@ -41,7 +41,7 @@ public abstract class ConstraintNetwork implements Serializable {
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
 	
-	private int weight=-1;
+	private double weight=-1;
 
 	
 	//This is so that subclasses must invoke 1-arg constructor of ConstraintNetwork (below)
@@ -404,7 +404,7 @@ public abstract class ConstraintNetwork implements Serializable {
 	 * Weight associated to the {@link ConstraintNetwork} for some metrics.
 	 * @return Weight related to the {@link ConstraintNetwork} 
 	 */
-	public int getWeight() {
+	public double getWeight() {
 		return weight;
 	}
 
@@ -412,7 +412,7 @@ public abstract class ConstraintNetwork implements Serializable {
 	 * Weight to associate to the {@link ConstraintNetwork} for some metrics.
 	 * @param weight Weight related to the {@link ConstraintNetwork} 
 	 */
-	public void setWeight(int weight) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 	

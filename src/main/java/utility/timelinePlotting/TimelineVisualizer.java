@@ -94,7 +94,7 @@ public class TimelineVisualizer extends JFrame {
 			
 			this.setPreferredSize(new Dimension(xSize, ySize));
 			
-			this.setResizable(false);
+			this.setResizable(true);
 			this.pack();
 		}
 		this.getContentPane().repaint();
