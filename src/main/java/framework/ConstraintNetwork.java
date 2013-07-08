@@ -12,15 +12,13 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
-import symbols.SymbolicVariable;
 import throwables.NonInstantiatedDomain;
 import utility.UI.Callback;
 import utility.UI.ConstraintNetworkFrame;
 import utility.logging.MetaCSPLogging;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.ObservableGraph;
-import framework.meta.MetaConstraintSolver;
-import framework.multi.MultiBinaryConstraint;
+
 
 /**
  * This class implements the necessary functionality to maintain networks of {@link Constraint}s.  It is used by all
@@ -134,16 +132,9 @@ public abstract class ConstraintNetwork implements Serializable {
 	 * {@link BinaryConstraint}s and {@link MultiBinaryConstraint}s in the current implementation. 
 	 */
 	public void addConstraint(Constraint c) {
-		if (c instanceof BinaryConstraint) {
+		if (c.getScope().length == 2) {
 			for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
-			BinaryConstraint bc = (BinaryConstraint)c;
-					this.graph.addEdge(bc, bc.getFrom(), bc.getTo());
-			logger.finest("Added constraint " + c);
-		}	
-		else if (c instanceof MultiBinaryConstraint) {
-			for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
-			MultiBinaryConstraint bc = (MultiBinaryConstraint)c;
-			this.graph.addEdge(bc, bc.getFrom(), bc.getTo());
+			this.graph.addEdge(c, c.getScope()[0], c.getScope()[1]);
 			logger.finest("Added constraint " + c);
 		}
 	}
@@ -390,29 +381,14 @@ public abstract class ConstraintNetwork implements Serializable {
 	 * @return <code>true</code> iff the given {@link ConstraintNetwork} has the same
 	 * {@link Variable}s and the same {@link Constraint}s as this.
 	 */
-	public boolean equals(Object o) {
-//		if (!(o instanceof ConstraintNetwork)) return false;
-//		ConstraintNetwork cn = (ConstraintNetwork)o;
-//		for (Variable v : cn.getVariables()) if (!this.containsVariable(v)) return false;
-//		for (Constraint c : cn.getConstraints()) if (!this.containsConstraint(c)) return false;
-//		return true;
-		
+	public boolean equals(Object o) {		
 		if (!(o instanceof ConstraintNetwork)) return false;
-		
-		
-		
 		ConstraintNetwork otherNetwork = (ConstraintNetwork)o;
 		for (Variable v : otherNetwork.getVariables()) if (!this.containsVariable(v)) return false;
 		for (Constraint c : otherNetwork.getConstraints()) if (!this.containsConstraint(c)) return false;
-		
 		for(Variable v: this.getVariables()) if(!otherNetwork.containsVariable(v)) return false;
 		for(Constraint c: this.getConstraints()) if (!this.containsConstraint(c))return false;
-		
-		
 		return true;
-
-		
-		
 	}
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -425,13 +401,17 @@ public abstract class ConstraintNetwork implements Serializable {
 	}
 
 	/**
-	 * Weight to associate to the {@link ConstraintNetwork} for some metrics.
-	 * @return <code>int</code> weight related to the {@link ConstraintNetwork} 
+	 * Weight associated to the {@link ConstraintNetwork} for some metrics.
+	 * @return Weight related to the {@link ConstraintNetwork} 
 	 */
 	public int getWeight() {
 		return weight;
 	}
 
+	/**
+	 * Weight to associate to the {@link ConstraintNetwork} for some metrics.
+	 * @param weight Weight related to the {@link ConstraintNetwork} 
+	 */
 	public void setWeight(int weight) {
 		this.weight = weight;
 	}

@@ -143,11 +143,15 @@ public class APSPSolver extends ConstraintSolver {
 		//Init
 		H = horizon;
 		O = origin;
-		for (int i = 0; i < MAX_TPS; i++) {
+		
+//		for (int i = 0; i < MAX_TPS; i++) {
 //			for (int j = 0; j < MAX_TPS; j++) {
 //				if (i == j) distance[i][j] = 0;
 //				else distance[i][j] = APSPSolver.INF;
 //			}
+//		}
+
+		for (int i = 0; i < MAX_TPS; i++) {
 			if (i == 0) {
 				for (int j = 1; j < MAX_TPS; j++) distance[i][j] = H;
 			}
@@ -227,7 +231,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	//TP creation
 	private int tpCreate() {
-		logger.log(Level.FINE, "Creating 1 TP");
+		logger.finest("Creating 1 TP");
 		int i = 2;
 		boolean found = false;
 		while (i < MAX_TPS && !found) {
@@ -277,7 +281,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Batch Time point erase
 	private void tpDelete(int[] IDtimePoint) {
-		logger.log(Level.FINE, "Deleting " + IDtimePoint.length + " TP");
+		logger.finest("Deleting " + IDtimePoint.length + " TP");
 		for (int i = 0; i < IDtimePoint.length; i++) {
 			tPoints[IDtimePoint[i]].setUsed(false);
 
@@ -418,12 +422,12 @@ public class APSPSolver extends ConstraintSolver {
 			if (con.getMinimum() < i.min) con.setMinimum(i.min);
 			if (con.getMaximum() > i.max) con.setMaximum(i.max);
 
-			saveDMatrix();
+//			saveDMatrix();
 			if (!incrementalDistanceMatrixComputation(from,to,i)) {
 				//Inconsistency. Rollback
 				con.setMinimum(oldd);
 				con.setMaximum(oldD);
-				restoreDMatrix();
+//				restoreDMatrix();
 				return false;
 			}
 
@@ -438,9 +442,9 @@ public class APSPSolver extends ConstraintSolver {
 				}
 		}				
 		else {
-			saveDMatrix();
+//			saveDMatrix();
 			if (!incrementalDistanceMatrixComputation(from,to,i)) {
-				restoreDMatrix();
+//				restoreDMatrix();
 				return false;
 			}
 			//Ok no inconsistency
@@ -657,7 +661,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	//"from scratch" re-computation
 	private boolean fromScratchDistanceMatrixComputation() {
-		logger.log(Level.FINE, "Propagating (cube) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++cubePropCount) + ")");
+		logger.fine("Propagating (cube) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++cubePropCount) + ")");
 		//*
 		//This code is not tested thoroughly but seems to work
 		for (int i = 0; i < MAX_USED+1; i++) {
@@ -709,7 +713,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Gd graph propagation function
 	private boolean incrementalDistanceMatrixComputation(int from,int to,Bounds i) {
-		logger.log(Level.FINE, "Propagating (quad) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++quadPropCount) + ")");
+		logger.fine("Propagating (quad) with (#TPs,#cons) = (" + this.MAX_USED + "," + this.theNetwork.getConstraints().length + ") (call num.: " + (++quadPropCount) + ")");
 
 		if (distance[to][from] != APSPSolver.INF && sum(i.max,distance[to][from]) < 0) return false;
 		if (distance[from][to] != APSPSolver.INF && sum(-i.min,distance[from][to]) < 0) return false;
@@ -728,9 +732,9 @@ public class APSPSolver extends ConstraintSolver {
 							long oldD = distance[u][v];
 							distance[u][v] = temp;
 							if (u == v && distance[u][v] != 0) {
-								logger.info("Updated distance[" + u + "][" + v + "] from " + oldD + " to " + temp);
-								return false;
-								//throw new Error("Found negative cycle in incremental propagation while adding (from,to,i) (" + from + "," + to + "," + i + ")");
+								logger.info("==================> Updated distance[" + u + "][" + v + "] from " + oldD + " to " + temp);
+								//return false;
+								throw new Error("Found negative cycle in incremental propagation while adding (from,to,i) (" + from + "," + to + "," + i + ")");
 							}
 						}
 					}
@@ -802,7 +806,7 @@ public class APSPSolver extends ConstraintSolver {
 					added.add(con[i]);
 				}
 				else {
-					logger.fine("Failed to add " + con[i]);
+					logger.finest("Failed to add " + con[i]);
 					Bounds[] toDeleteBounds = new Bounds[added.size()];
 					int[] toDeleteFrom = new int[added.size()];
 					int[] toDeleteTo = new int[added.size()];

@@ -297,7 +297,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			}		
 		}
 		for (ConstraintSolver cs : solvers.keySet()) {
-			logger.info("Removing " + solvers.get(cs).size() + " internal variables (" + cs.getClass().getSimpleName() + ")");
+			logger.finest("Removing " + solvers.get(cs).size() + " internal variables (" + cs.getClass().getSimpleName() + ")");
 			cs.removeVariables(solvers.get(cs).toArray(new Variable[solvers.get(cs).size()]));
 		}
 	}
@@ -309,7 +309,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		Vector<Vector<Variable>> ret = new Vector<Vector<Variable>>();
 		for (int k = 0; k < this.getConstraintSolvers().length; k++) {
 			Variable[] oneType = this.getConstraintSolvers()[k].createVariables(ingredients[k]*num);
-			logger.fine("Created " + ingredients[k]*num + " internal variables for " + this.getConstraintSolvers()[k].getClass().getSimpleName());
+			logger.finest("Created " + ingredients[k]*num + " internal variables for " + this.getConstraintSolvers()[k].getClass().getSimpleName());
 			for (int i = 0; i < num; i++) {
 				Vector<Variable> oneVar = null;
 				if (ret.size() > i) oneVar = ret.elementAt(i);
@@ -346,10 +346,10 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 				ret[i] = (Variable) this.variableTypes[0].getConstructor(new Class[] {ConstraintSolver.class, int.class, ConstraintSolver[].class, Variable[].class}).newInstance(new Object[] {this, this.IDs++, this.constraintSolvers, internalVars[i]});
 				if (component != null) {
 					ret[i].getConstraintSolver().setComponent(component, ret[i]);
-					logger.info("Set component of " + ret[i] + " to " + component);
+					logger.finest("Set component of " + ret[i] + " to " + component);
 					for (Variable internalVar : internalVars[i]) {
 						internalVar.getConstraintSolver().setComponent(component, internalVar);
-						logger.info("Set component of " + internalVar + " to " + component);
+						logger.finest("Set component of " + internalVar + " to " + component);
 					}
 				}
 			} catch (IllegalArgumentException e) {
@@ -375,7 +375,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			if (ret[i] instanceof MultiVariable) {
 				Constraint[] internalCons = ((MultiVariable)ret[i]).getInternalConstraints();
 				if (internalCons != null) {
-					logger.fine("Adding internal constraints for " + ret[i]);
+					logger.finest("Adding internal constraints for " + ret[i]);
 					for (Constraint con : internalCons) {
 						if (!solvers2Constraints.containsKey(con.getScope()[0].getConstraintSolver()))
 							solvers2Constraints.put(con.getScope()[0].getConstraintSolver(), new Vector<Constraint>());
@@ -387,7 +387,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		for (Entry<ConstraintSolver, Vector<Constraint>> es : solvers2Constraints.entrySet()) {
 			if (!es.getKey().addConstraints(es.getValue().toArray(new Constraint[es.getValue().size()])))
 				throw new Error("Malformed internal constraints: " + es.getValue());
-			else logger.fine("Added " + es.getValue().size() + " internal constraints to " + es.getKey().getClass().getSimpleName());
+			else logger.finest("Added " + es.getValue().size() + " internal constraints to " + es.getKey().getClass().getSimpleName());
 		}
 		return ret;
 	}

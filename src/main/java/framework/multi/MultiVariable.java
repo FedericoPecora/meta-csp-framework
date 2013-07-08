@@ -66,21 +66,6 @@ public abstract class MultiVariable extends Variable {
 	protected Variable[] variables;
 	protected Constraint[] constraints;
 
-//	/**
-//	 * The constructor of an extensions to {@link MultiVariable} must call this constructor.
-//	 * @param cs The {@link ConstraintSolver} of the {@link MultiVariable}.
-//	 * @param id The {@link MultiVariable}'s ID.
-//	 * @param internalSolvers The internal solvers of this {@link MultiVariable} (to which the
-//	 * underlying constraints are added).
-//	 */
-//	protected MultiVariable(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-//		super(cs, id);
-//		this.internalSolvers = internalSolvers;
-//		this.variables = this.createInternalVariables();
-//		logger.finest("Created internal variables " + this.variables);		
-//		this.constraints = this.createInternalConstraints(this.variables);
-//		logger.finest("Created internal constraints " + this.constraints);
-//	}
 
 	/**
 	 * The constructor of an extensions to {@link MultiVariable} must call this constructor.
@@ -88,7 +73,6 @@ public abstract class MultiVariable extends Variable {
 	 * @param id The {@link MultiVariable}'s ID.
 	 * @param internalSolvers The internal solvers of this {@link MultiVariable} (to which the
 	 * @param internalVars The internal {@link Variable}s implementing this {@link MultiVariable}.
-	 * @param internalCons The internal {@link Constraint}s implementing this {@link MultiVariable}.
 	 */
 	protected MultiVariable(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id);
@@ -98,15 +82,6 @@ public abstract class MultiVariable extends Variable {
 		this.constraints = this.createInternalConstraints(this.variables);
 		logger.finest("Created internal constraints " + this.constraints);
 	}
-
-	
-//	/**
-//	 * This method must be implemented to define the internal lower-level {@link Variable}s of this
-//	 * {@link MultiVariable}.  
-//	 * @return The internal lower-level {@link Variable}s of this
-//	 * {@link MultiVariable}.
-//	 */
-//	protected abstract Variable[] createInternalVariables();
 
 	/**
 	 * This method must be implemented to define the internal lower-level {@link Constraint}s of this

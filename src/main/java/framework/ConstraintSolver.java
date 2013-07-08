@@ -75,9 +75,10 @@ public abstract class ConstraintSolver implements Serializable {
 	 * <ul>
 	 * <li> {@code AUTO_PROPAGATE}: if set, the constraint solver will call (user implemented) propagate method
 	 * automatically.  Do not set if propagations must be dealt with in a more sophisticated way (e.g., incremental propagators).
+	 * Default is {@code false}.
 	 * </li>
 	 * <li> {@code DOMAINS_AUTO_INSTANTIATED}: if set, the constraint solver will not check whether domains
-	 * are instantiated before propagation.
+	 * are instantiated before propagation. Default is {@code false}.
 	 * </li>
 	 * </ul>
 	 */
@@ -86,7 +87,6 @@ public abstract class ConstraintSolver implements Serializable {
 	//internal options
 	protected boolean autoprop = false;
 	private boolean domainsAutoInstantiated = false;
-	//protected boolean seqConstraints = false;
 	
 	//have domains been instantiated? if not, propagation will be delayed...
 	private boolean domainsInstantiated = false;
@@ -105,7 +105,6 @@ public abstract class ConstraintSolver implements Serializable {
 		this.theNetwork = this.createConstraintNetwork();
 		this.constraintTypes = constraintTypes;
 		this.variableTypes = variableTypes;
-//		this.name="GENERAL CONSTRAINT SOLVER NAME: specify in the particular instantiation";
 	}
 	
 	/**
@@ -118,7 +117,6 @@ public abstract class ConstraintSolver implements Serializable {
 			else if (op.equals(OPTIONS.MANUAL_PROPAGATE)) autoprop = false;
 		    else if (op.equals(OPTIONS.DOMAINS_AUTO_INSTANTIATED)) domainsAutoInstantiated = true;
 			else if (op.equals(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) domainsAutoInstantiated = false;
-
 	}
 
 	/**
@@ -130,7 +128,6 @@ public abstract class ConstraintSolver implements Serializable {
 		else if (op.equals(OPTIONS.MANUAL_PROPAGATE)) return !autoprop;
 		else if (op.equals(OPTIONS.DOMAINS_AUTO_INSTANTIATED)) return domainsAutoInstantiated;
 		else if (op.equals(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) return !domainsAutoInstantiated;
-
 		return false;
 	}
 	
@@ -143,7 +140,6 @@ public abstract class ConstraintSolver implements Serializable {
 	 */
 	public boolean isCompatible(Constraint c) {
 		for (Class<?> conType : constraintTypes) if (conType.isInstance(c)) return true;
-			//if (conType.equals(c.getClass())) return true;
 		return false;
 	}
 	
@@ -171,7 +167,6 @@ public abstract class ConstraintSolver implements Serializable {
 		 return this.addConstraints(c);
 	}
 	
-	
 	/**
 	 * Add a batch of constraints between {@link Variable}s.  This method is
 	 * NOT implemented so as to perform only one propagation, rather it adds all constraints
@@ -192,7 +187,6 @@ public abstract class ConstraintSolver implements Serializable {
 		}
 		return null;
 	}
-	
 
 	/**
 	 * Add a batch of constraints between {@link Variable}s.  This method is
@@ -294,7 +288,6 @@ public abstract class ConstraintSolver implements Serializable {
 	 */
 	protected abstract void removeConstraintsSub(Constraint[] c);
 
-
 	/**
 	 * Create a new {@link Variable} for this {@link ConstraintSolver}, and
 	 * assign it to the given component label.
@@ -304,7 +297,6 @@ public abstract class ConstraintSolver implements Serializable {
 	public final Variable createVariable(String component) {
 		return createVariables(1, component)[0];
 	}
-
 	
 	/**
 	 * Factory method for creating a new {@link Variable} for this {@link ConstraintSolver}.
@@ -377,7 +369,7 @@ public abstract class ConstraintSolver implements Serializable {
 	protected Variable[] createVariablesSub(int num, String component) {
 		Variable[] ret = createVariablesSub(num);
 		if (component != null) {
-			logger.info("**Set component of " + Arrays.toString(ret) + " to " + component);
+			logger.finest("Set component of " + Arrays.toString(ret) + " to " + component);
 			this.setComponent(component, ret);
 		}
 		return ret;
@@ -412,8 +404,6 @@ public abstract class ConstraintSolver implements Serializable {
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Removed variables " + Arrays.toString(v));
 	}
-
-	
 
 	/**
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
@@ -525,23 +515,27 @@ public abstract class ConstraintSolver implements Serializable {
 		for (Class<?> c : this.constraintTypes) ret += c.getSimpleName();
 		return ret + "]]";
 	}
-	/**
-	 * Deplenish the network associated to the ConstraintSolver  
-	 */
 	
-	public void deplenish(){
-		for(Constraint c: this.getConstraints()){
-			this.removeConstraint(c);
-		}
-		for(Variable v: this.getVariables()){
-			this.removeVariable(v);
-		}
+	/**
+	 * Deplenish the network associated to the {@link ConstraintSolver} (remove all constraints and variables).  
+	 */
+	public void deplenish() {
+		this.removeConstraintsSub(this.getConstraints());
+		this.removeVariables(this.getVariables());
 	}
 
+	/**
+	 * Get a {@link HashMap} of all component tags with associated variables. 
+	 * @return A {@link HashMap} whose entries are component tags and the associated variables.
+	 */
 	public HashMap<String, ArrayList<Variable>> getComponents() {
 		return components;
 	}
 
+	/**
+	 * Set the component tags of all variables. 
+	 * @param A {@link HashMap} whose entries are the component tags and the associated variables.
+	 */
 	public void setComponents(HashMap<String, ArrayList<Variable>> components) {
 		this.components = components;
 	}
@@ -556,9 +550,9 @@ public abstract class ConstraintSolver implements Serializable {
 	}
 	
 	/**
-	 * Return if the network of this ConstraintSolver contains a {@link Variable}.  
-	 * @param v The {@link Variable} variable to check
-	 * @return boolean value whether the variable is present in the network
+	 * Return if the network of this {@link ConstraintSolver} contains a {@link Variable}.  
+	 * @param v The {@link Variable} variable to check.
+	 * @return <code>true</code> iff the variable is present in the network.
 	 */
 	public boolean containsVariable(Variable v) {
 		return this.theNetwork.containsVariable(v);
