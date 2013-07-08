@@ -24,7 +24,7 @@ package fuzzyAllenInterval;
 
 import java.util.HashMap;
 
-import spatial.rectangleAlgebra.QualitativeAllenIntervalConstraint;
+import time.qualitative.QualitativeAllenIntervalConstraint;
 import framework.Constraint;
 
 /**

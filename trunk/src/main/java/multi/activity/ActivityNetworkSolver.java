@@ -22,19 +22,13 @@
  ******************************************************************************/
 package multi.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 
-import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalConstraint;
-import multi.allenInterval.AllenIntervalNetwork;
 import multi.allenInterval.AllenIntervalNetworkSolver;
 import symbols.SymbolicValueConstraint;
 import symbols.SymbolicVariableConstraintSolver;
-import time.APSPSolver;
 import utility.UI.PlotActivityNetworkGantt;
-import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;

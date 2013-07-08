@@ -1,13 +1,17 @@
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatioTemporal;
 
-import multi.activity.ActivityNetwork;
-import multi.activity.ActivityNetworkSolver;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
 
 public class SpatialFluentNetwork extends ConstraintNetwork {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5964280041479603125L;
+
 
 	public SpatialFluentNetwork(ConstraintSolver sol) {
 		super(sol);

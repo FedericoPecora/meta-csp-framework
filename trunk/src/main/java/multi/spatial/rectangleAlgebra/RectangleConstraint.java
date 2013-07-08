@@ -20,28 +20,27 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatial.rectangleAlgebra;
 
 
-import cern.colt.Arrays;
+import java.util.Arrays;
+
 import multi.allenInterval.AllenIntervalConstraint;
-
 import spatial.RCC.RCCConstraint;
 import spatial.cardinal.CardinalConstraint;
 import spatial.cardinal.CardinalConstraint.Type;
-import spatial.rectangleAlgebra.TwoDimensionsAllenConstraint;
 import framework.Constraint;
 import framework.Variable;
 import framework.multi.MultiBinaryConstraint;
 import framework.multi.MultiVariable;
 
-public class RectangleConstraint2 extends MultiBinaryConstraint {
+public class RectangleConstraint extends MultiBinaryConstraint {
 
 	private static final long serialVersionUID = 304977081496019725L;
 	private AllenIntervalConstraint xConstraint, yConstraint;
 	private AllenIntervalConstraint.Type[][] types = new AllenIntervalConstraint.Type[2][];
 	
-	public RectangleConstraint2(AllenIntervalConstraint xConstraint, AllenIntervalConstraint yConstraint) {
+	public RectangleConstraint(AllenIntervalConstraint xConstraint, AllenIntervalConstraint yConstraint) {
 		this.xConstraint = xConstraint;
 		this.yConstraint = yConstraint;
 		this.types[0] = xConstraint.getTypes();
@@ -59,7 +58,7 @@ public class RectangleConstraint2 extends MultiBinaryConstraint {
 		return new AllenIntervalConstraint[] {this.xConstraint, this.yConstraint};	
 	}
 	
-	public static CardinalConstraint.Type getCardinalConstraint(RectangleConstraint2 c){
+	public static CardinalConstraint.Type getCardinalConstraint(RectangleConstraint c){
 		
 		if(c.getType()[0][0].compareTo(AllenIntervalConstraint.Type.Equals) == 0 && c.getType()[1][0].compareTo(AllenIntervalConstraint.Type.Equals) == 0)
 			return CardinalConstraint.Type.EQUAL;
@@ -343,10 +342,10 @@ public class RectangleConstraint2 extends MultiBinaryConstraint {
 
 	@Override
 	protected Constraint[] createInternalConstraints(Variable from, Variable to) {
-		this.xConstraint.setFrom(((RectangularRegion2)from).getInternalVariables()[0]);
-		this.xConstraint.setTo(((RectangularRegion2)to).getInternalVariables()[0]);
-		this.yConstraint.setFrom(((RectangularRegion2)from).getInternalVariables()[1]);
-		this.yConstraint.setTo(((RectangularRegion2)to).getInternalVariables()[1]);
+		this.xConstraint.setFrom(((RectangularRegion)from).getInternalVariables()[0]);
+		this.xConstraint.setTo(((RectangularRegion)to).getInternalVariables()[0]);
+		this.yConstraint.setFrom(((RectangularRegion)from).getInternalVariables()[1]);
+		this.yConstraint.setTo(((RectangularRegion)to).getInternalVariables()[1]);
 		//xConstraint should not be processed by Y solver		
 		xConstraint.skipSolver(((MultiVariable)from).getInternalConstraintSolvers()[1]);
 		//yConstraint should not be processed by X solver
@@ -356,12 +355,12 @@ public class RectangleConstraint2 extends MultiBinaryConstraint {
 
 	@Override
 	public boolean isEquivalent(Constraint c) {
-		return xConstraint.isEquivalent(((RectangleConstraint2)c).getInternalConstraints()[0]) && yConstraint.isEquivalent(((RectangleConstraint2)c).getInternalConstraints()[1]);
+		return xConstraint.isEquivalent(((RectangleConstraint)c).getInternalConstraints()[0]) && yConstraint.isEquivalent(((RectangleConstraint)c).getInternalConstraints()[1]);
 	}
 	
 	@Override
 	public Object clone() {
-		RectangleConstraint2 ret = new RectangleConstraint2(xConstraint, yConstraint);
+		RectangleConstraint ret = new RectangleConstraint(xConstraint, yConstraint);
 		return ret;
 	}
 	

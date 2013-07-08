@@ -22,11 +22,7 @@
  ******************************************************************************/
 package multi.allenInterval;
 
-import java.util.Vector;
-
-import time.APSPSolver;
 import time.Bounds;
-import time.SimpleDistanceConstraint;
 import time.TimePoint;
 import framework.Constraint;
 import framework.ConstraintSolver;

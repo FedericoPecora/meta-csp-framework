@@ -20,65 +20,21 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package spatial.cardinal;
+package multi.spatial.rectangleAlgebra;
 
-import framework.BinaryConstraint;
-import framework.Constraint;
+import framework.ConstraintNetwork;
+import framework.ConstraintSolver;
 
-public class CardinalConstraint extends BinaryConstraint{
+public class RectangleConstraintNetwork extends ConstraintNetwork {
 
-	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	protected Type[] types;
-	public static enum Type {
-		
-		North, 
-		West,
-		South,
-		East, 
-		NorthEast,
-		NorthWest,
-		SouthEast,
-		SouthWest,
-		EQUAL,
-		NO
-	};
-	
-	//has to be completed
-	public static Float[] CardinalRelationToMetricOrientation = {
-		
-		(float) -1.57, //North			
-		(float) 0, //West
-		(float) 1.57, //south
-		(float) 3.14, //East
-		(float) 0, //NorthEast
-		(float) 0, //NorthWest
-		(float) 0, //SouthEast
-		(float) 0, //SouthWest
-		(float) 0, //Equal
-		(float) 0, //NO
-	};
+	private static final long serialVersionUID = 4213147784017579610L;
 
-	
-	@Override
-	public String getEdgeLabel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public RectangleConstraintNetwork(ConstraintSolver sol) {
+		super(sol);
 
-	@Override
-	public Object clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isEquivalent(Constraint c) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

@@ -12,12 +12,15 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
+import symbols.SymbolicVariable;
 import throwables.NonInstantiatedDomain;
 import utility.UI.Callback;
 import utility.UI.ConstraintNetworkFrame;
 import utility.logging.MetaCSPLogging;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.ObservableGraph;
+import framework.meta.MetaConstraintSolver;
+import framework.multi.MultiBinaryConstraint;
 
 
 /**

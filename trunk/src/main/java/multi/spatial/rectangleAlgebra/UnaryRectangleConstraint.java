@@ -20,23 +20,19 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatial.rectangleAlgebra;
 
 
-import cern.colt.Arrays;
+import java.util.Arrays;
+
 import multi.allenInterval.AllenIntervalConstraint;
-
-import spatial.RCC.RCCConstraint;
-import spatial.cardinal.CardinalConstraint;
-import spatial.cardinal.CardinalConstraint.Type;
-import spatial.rectangleAlgebra.QualitativeAllenIntervalConstraint;
 import time.Bounds;
 import framework.Constraint;
 import framework.Variable;
 import framework.multi.MultiBinaryConstraint;
 import framework.multi.MultiVariable;
 
-public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
+public class UnaryRectangleConstraint extends MultiBinaryConstraint {
 
 	
 	private static final long serialVersionUID = 304977081496019725L;
@@ -44,7 +40,7 @@ public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
 	public static enum Type {Size, At};
 	private Bounds[] bounds;
 	
-	public UnaryRectangleConstraint2(Type t, Bounds ... bounds) {
+	public UnaryRectangleConstraint(Type t, Bounds ... bounds) {
 		this.type = t;
 		this.bounds = bounds;
 	}
@@ -54,11 +50,11 @@ public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
 		//Do something here!!
 		if (this.type.equals(Type.Size)) {
 			AllenIntervalConstraint durationX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, bounds[0]);
-			durationX.setFrom(((RectangularRegion2)from).getInternalVariables()[0]);
-			durationX.setTo(((RectangularRegion2)from).getInternalVariables()[0]);
+			durationX.setFrom(((RectangularRegion)from).getInternalVariables()[0]);
+			durationX.setTo(((RectangularRegion)from).getInternalVariables()[0]);
 			AllenIntervalConstraint durationY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, bounds[1]);
-			durationY.setFrom(((RectangularRegion2)from).getInternalVariables()[1]);
-			durationY.setTo(((RectangularRegion2)from).getInternalVariables()[1]);
+			durationY.setFrom(((RectangularRegion)from).getInternalVariables()[1]);
+			durationY.setTo(((RectangularRegion)from).getInternalVariables()[1]);
 			//xConstraint should not be processed by Y solver		
 			durationX.skipSolver(((MultiVariable)from).getInternalConstraintSolvers()[1]);
 			//yConstraint should not be processed by X solver
@@ -67,11 +63,11 @@ public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
 		}
 		else if (this.type.equals(Type.At)) {
 			AllenIntervalConstraint atX = new AllenIntervalConstraint(AllenIntervalConstraint.Type.At, bounds[0], bounds[1]);
-			atX.setFrom(((RectangularRegion2)from).getInternalVariables()[0]);
-			atX.setTo(((RectangularRegion2)from).getInternalVariables()[0]);
+			atX.setFrom(((RectangularRegion)from).getInternalVariables()[0]);
+			atX.setTo(((RectangularRegion)from).getInternalVariables()[0]);
 			AllenIntervalConstraint atY = new AllenIntervalConstraint(AllenIntervalConstraint.Type.At, bounds[2], bounds[3]);
-			atY.setFrom(((RectangularRegion2)from).getInternalVariables()[1]);
-			atY.setTo(((RectangularRegion2)from).getInternalVariables()[1]);
+			atY.setFrom(((RectangularRegion)from).getInternalVariables()[1]);
+			atY.setTo(((RectangularRegion)from).getInternalVariables()[1]);
 			//xConstraint should not be processed by Y solver		
 			atX.skipSolver(((MultiVariable)from).getInternalConstraintSolvers()[1]);
 			//yConstraint should not be processed by X solver
@@ -83,7 +79,7 @@ public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
 
 	@Override
 	public Object clone() {
-		return new UnaryRectangleConstraint2(this.type, this.bounds);
+		return new UnaryRectangleConstraint(this.type, this.bounds);
 	}
 
 	@Override
@@ -93,11 +89,11 @@ public class UnaryRectangleConstraint2 extends MultiBinaryConstraint {
 
 	@Override
 	public boolean isEquivalent(Constraint c) {
-		if (!(c instanceof UnaryRectangleConstraint2) || !(((UnaryRectangleConstraint2)c).getType().equals(this.type))) return false;
-		for (int i = 0; i < ((UnaryRectangleConstraint2)c).bounds.length; i++) {
+		if (!(c instanceof UnaryRectangleConstraint) || !(((UnaryRectangleConstraint)c).getType().equals(this.type))) return false;
+		for (int i = 0; i < ((UnaryRectangleConstraint)c).bounds.length; i++) {
 			for (int j = 0; j < this.bounds.length; j++) {
-				if (((UnaryRectangleConstraint2)c).bounds[i].equals(bounds[j])) continue;
-				else if (i == ((UnaryRectangleConstraint2)c).bounds.length-1) return false;
+				if (((UnaryRectangleConstraint)c).bounds[i].equals(bounds[j])) continue;
+				else if (i == ((UnaryRectangleConstraint)c).bounds.length-1) return false;
 			}
 		}
 		return true;

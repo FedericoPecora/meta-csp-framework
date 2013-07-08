@@ -1,18 +1,13 @@
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatioTemporal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import multi.activity.Activity;
-import multi.activity.ActivityNetwork;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import multi.allenInterval.AllenIntervalNetworkSolver;
+import multi.spatial.rectangleAlgebra.RectangleConstraint;
+import multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
+import multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import symbols.SymbolicValueConstraint;
-import symbols.SymbolicVariableConstraintSolver;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
-import framework.Variable;
 import framework.multi.MultiConstraintSolver;
 
 public class SpatialFluentSolver extends MultiConstraintSolver{
@@ -25,7 +20,7 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	protected int IDs = 0;
 	
 	public SpatialFluentSolver(long origin, long horizon) {
-		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
+		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				//new Class[] {RectangularRegion2.class, Activity.class},
 				new Class[] {SpatialFluent.class},
 				createConstraintSolvers(origin, horizon, -1),
@@ -33,7 +28,7 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	}
 
 	public SpatialFluentSolver(long origin, long horizon, int maxFluent) {
-		super(new Class[] {RectangleConstraint2.class, UnaryRectangleConstraint2.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
+		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				//new Class[] {RectangularRegion2.class, Activity.class},
 				new Class[] {SpatialFluent.class},
 				createConstraintSolvers(origin, horizon, maxFluent),
@@ -41,8 +36,8 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	}
 	
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxFluents) {		
-		ConstraintSolver[] ret = maxFluents != -1 ? new ConstraintSolver[] {new RectangleConstraintSolver2(origin, horizon, maxFluents), new ActivityNetworkSolver(origin, horizon, maxFluents)}
-			:new ConstraintSolver[] {new RectangleConstraintSolver2(origin, horizon), new ActivityNetworkSolver(origin, horizon)};	
+		ConstraintSolver[] ret = maxFluents != -1 ? new ConstraintSolver[] {new RectangleConstraintSolver(origin, horizon, maxFluents), new ActivityNetworkSolver(origin, horizon, maxFluents)}
+			:new ConstraintSolver[] {new RectangleConstraintSolver(origin, horizon), new ActivityNetworkSolver(origin, horizon)};	
 		return ret;
 	}
 	

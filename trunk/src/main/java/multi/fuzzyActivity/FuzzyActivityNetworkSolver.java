@@ -29,7 +29,6 @@ import symbols.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
-import framework.Variable;
 import framework.multi.MultiConstraintSolver;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 import fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;

@@ -1,6 +1,7 @@
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatioTemporal;
 
 import multi.activity.Activity;
+import multi.spatial.rectangleAlgebra.RectangularRegion;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;
@@ -67,9 +68,9 @@ public class SpatialFluent extends MultiVariable{
 		return (Activity)this.getInternalVariables()[1];
 	}
 	
-	public RectangularRegion2 getRectangularRegion() {
+	public RectangularRegion getRectangularRegion() {
 		//return rectangularRegion;
-		return (RectangularRegion2)this.getInternalVariables()[0];
+		return (RectangularRegion)this.getInternalVariables()[0];
 	}
 
 }

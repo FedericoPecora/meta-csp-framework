@@ -20,25 +20,22 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package sandbox.examples.multi;
+package examples.multi;
 
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import multi.allenInterval.AllenIntervalConstraint;
+import multi.spatial.rectangleAlgebra.RectangleConstraint;
+import multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
+import multi.spatial.rectangleAlgebra.RectangularRegion;
+import multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
+import time.Bounds;
+import utility.logging.MetaCSPLogging;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 
-import multi.allenInterval.AllenIntervalConstraint;
-import sandbox.spatial.rectangleAlgebra2.RectangleConstraint2;
-import sandbox.spatial.rectangleAlgebra2.RectangleConstraintSolver2;
-import sandbox.spatial.rectangleAlgebra2.RectangularRegion2;
-import sandbox.spatial.rectangleAlgebra2.UnaryRectangleConstraint2;
-import time.APSPSolver;
-import time.Bounds;
-import utility.logging.MetaCSPLogging;
-
-public class TestRectangleConstraintSolver2 {
+public class TestRectangleConstraintSolver {
 
 	/**
 	 * @param args
@@ -46,29 +43,29 @@ public class TestRectangleConstraintSolver2 {
 	
 	public static void main(String[] args) {
 	
-		RectangleConstraintSolver2 solver = new RectangleConstraintSolver2(0,1000);
+		RectangleConstraintSolver solver = new RectangleConstraintSolver(0,1000);
 		Vector<Constraint> allConstraints = new Vector<Constraint>();
 		
 		//..........................................................
 		//T-BOX Variables
-		RectangularRegion2 knife = (RectangularRegion2)solver.createVariable();		
+		RectangularRegion knife = (RectangularRegion)solver.createVariable();		
 		knife.setName("knife");
 		
-		RectangularRegion2 fork = (RectangularRegion2)solver.createVariable();
+		RectangularRegion fork = (RectangularRegion)solver.createVariable();
 		fork.setName("fork");
 		
-		RectangularRegion2 dish = (RectangularRegion2)solver.createVariable();
+		RectangularRegion dish = (RectangularRegion)solver.createVariable();
 		dish.setName("dish");
 		
-		RectangularRegion2 cup = (RectangularRegion2)solver.createVariable();
+		RectangularRegion cup = (RectangularRegion)solver.createVariable();
 		cup.setName("cup");
 		
-		RectangularRegion2 napkin = (RectangularRegion2)solver.createVariable();
+		RectangularRegion napkin = (RectangularRegion)solver.createVariable();
 		napkin.setName("napkin");
 		
 		//..........................................................
 		//A-BOX Variables and constraints
-		RectangularRegion2 napkin1 = (RectangularRegion2)solver.createVariable();
+		RectangularRegion napkin1 = (RectangularRegion)solver.createVariable();
 		napkin1.setName("napkin1");
 		//napkin1.setBoundingBox(new BoundingBox(new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF)));
 		//NO needd for this, the bounds will be [0,infty) anyway:
@@ -76,81 +73,81 @@ public class TestRectangleConstraintSolver2 {
 		//atNapkin1.setFrom(napkin1);
 		//atNapkin1.setTo(napkin1);
 		
-		RectangularRegion2 knife1 = (RectangularRegion2)solver.createVariable();
+		RectangularRegion knife1 = (RectangularRegion)solver.createVariable();
 		knife1.setName("knife1");
 		//knife1.setBoundingBox(new BoundingBox(new Bounds(50, 50), new Bounds(55, 55), new Bounds(12, 12), new Bounds(26, 26)));
-		UnaryRectangleConstraint2 atKnife1 = new UnaryRectangleConstraint2(UnaryRectangleConstraint2.Type.At, new Bounds(50,50), new Bounds(55,55), new Bounds(12,12), new Bounds(26,26));
+		UnaryRectangleConstraint atKnife1 = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, new Bounds(50,50), new Bounds(55,55), new Bounds(12,12), new Bounds(26,26));
 		atKnife1.setFrom(knife1);
 		atKnife1.setTo(knife1);
 		allConstraints.add(atKnife1);
 		
-		RectangularRegion2 fork1 = (RectangularRegion2)solver.createVariable();
+		RectangularRegion fork1 = (RectangularRegion)solver.createVariable();
 		fork1.setName("fork1");
 		//fork1.setBoundingBox(new BoundingBox(new Bounds(5, 5), new Bounds(10, 10), new Bounds(14, 14), new Bounds(24, 24)));
-		UnaryRectangleConstraint2 atFork1 = new UnaryRectangleConstraint2(UnaryRectangleConstraint2.Type.At, new Bounds(5,5), new Bounds(10,10), new Bounds(14,14), new Bounds(24,24));
+		UnaryRectangleConstraint atFork1 = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, new Bounds(5,5), new Bounds(10,10), new Bounds(14,14), new Bounds(24,24));
 		atFork1.setFrom(fork1);
 		atFork1.setTo(fork1);
 		allConstraints.add(atFork1);
 		
-		RectangularRegion2 dish1 = (RectangularRegion2)solver.createVariable();
+		RectangularRegion dish1 = (RectangularRegion)solver.createVariable();
 		dish1.setName("dish1");
 		//dish1.setBoundingBox(new BoundingBox(new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF)));
 		
-		RectangularRegion2 cup1 = (RectangularRegion2)solver.createVariable();
+		RectangularRegion cup1 = (RectangularRegion)solver.createVariable();
 		cup1.setName("cup1");
 		//cup1.setBoundingBox(new BoundingBox(new Bounds(20, 20), new Bounds(28, 28), new Bounds(35, 35), new Bounds(42, 42)));
-		UnaryRectangleConstraint2 atCup1 = new UnaryRectangleConstraint2(UnaryRectangleConstraint2.Type.At, new Bounds(20,20), new Bounds(28,28), new Bounds(35,35), new Bounds(42,42));
+		UnaryRectangleConstraint atCup1 = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, new Bounds(20,20), new Bounds(28,28), new Bounds(35,35), new Bounds(42,42));
 		atCup1.setFrom(cup1);
 		atCup1.setTo(cup1);
 		allConstraints.add(atCup1);
 
 		//..........................................................
 		//T-BOX Constraints
-		UnaryRectangleConstraint2 sizeDish = new UnaryRectangleConstraint2(UnaryRectangleConstraint2.Type.Size, new Bounds(10, 20), new Bounds(10, 20));
+		UnaryRectangleConstraint sizeDish = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, new Bounds(10, 20), new Bounds(10, 20));
 		sizeDish.setFrom(dish1);
 		sizeDish.setTo(dish1);
 		allConstraints.add(sizeDish);
 		
-		RectangleConstraint2 cupToDish = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.OverlappedBy), new AllenIntervalConstraint(AllenIntervalConstraint.Type.After));
+		RectangleConstraint cupToDish = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.OverlappedBy), new AllenIntervalConstraint(AllenIntervalConstraint.Type.After));
 		cupToDish.setFrom(cup);
 		cupToDish.setTo(dish);
 		allConstraints.add(cupToDish);
 
 		
-		RectangleConstraint2 knifetoDish = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, new Bounds(4, 10)), new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()));
+		RectangleConstraint knifetoDish = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, new Bounds(4, 10)), new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()));
 		knifetoDish.setFrom(knife);
 		knifetoDish.setTo(dish);
 		allConstraints.add(knifetoDish);
 		
-		RectangleConstraint2 forktoDish = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before), new AllenIntervalConstraint(AllenIntervalConstraint.Type.During));
+		RectangleConstraint forktoDish = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before), new AllenIntervalConstraint(AllenIntervalConstraint.Type.During));
 		forktoDish.setFrom(fork);
 		forktoDish.setTo(dish);
 		allConstraints.add(forktoDish);
 		
 		//..........................................................
 		//A-BOX to T-BOX Constraints
-		RectangleConstraint2 napkinAssertion = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+		RectangleConstraint napkinAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
 		napkinAssertion.setFrom(napkin1);
 		napkinAssertion.setTo(napkin);
 		allConstraints.add(napkinAssertion);
 
-		RectangleConstraint2 cupAssertion = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+		RectangleConstraint cupAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
 		cupAssertion.setFrom(cup);
 		cupAssertion.setTo(cup1);
 		allConstraints.add(cupAssertion);
 
 		
-		RectangleConstraint2 knifAssertion = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+		RectangleConstraint knifAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
 		knifAssertion.setFrom(knife);
 		knifAssertion.setTo(knife1);
 		allConstraints.add(knifAssertion);
 		
-		RectangleConstraint2 forkAssertion = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+		RectangleConstraint forkAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
 		forkAssertion.setFrom(fork);
 		forkAssertion.setTo(fork1);
 		allConstraints.add(forkAssertion);
 
-		RectangleConstraint2 dishAssertion = new RectangleConstraint2(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+		RectangleConstraint dishAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
 		dishAssertion.setFrom(dish);
 		dishAssertion.setTo(dish1);
 		allConstraints.add(dishAssertion);

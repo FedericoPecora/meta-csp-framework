@@ -48,9 +48,7 @@ public class FuzzyActivityMetaSolver extends MetaConstraintSolver{
 	private double vcTmp = 0;
 	private double tcTmp = 0;
 	public FuzzyActivityMetaSolver(long animationTime) {
-		//super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, animationTime, new Scheduler(origin, horizon, 0));
 		super(new Class[]{FuzzyAllenIntervalConstraint.class, SymbolicValueConstraint.class}, animationTime, new FuzzyActivityNetworkSolver());
-		// TODO Auto-generated constructor stub
 	}
 	
 		

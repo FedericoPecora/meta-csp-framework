@@ -22,18 +22,12 @@
  ******************************************************************************/
 package framework.multi;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Vector;
-import java.util.logging.Logger;
-
-import org.apache.commons.collections15.iterators.EntrySetMapIterator;
 
 import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalConstraint;
 import multi.allenInterval.AllenIntervalNetworkSolver;
 import time.TimePoint;
-import utility.logging.MetaCSPLogging;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;

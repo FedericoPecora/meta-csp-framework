@@ -23,21 +23,14 @@
 package multi.allenInterval;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Vector;
 
-import choco.cp.solver.constraints.integer.bool.sat.Vec;
-
-import multi.activity.ActivityNetwork;
 import time.APSPSolver;
 import time.Bounds;
 import time.TimePoint;
-import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
 import framework.multi.MultiConstraintSolver;
-import framework.multi.MultiVariable;
 
 public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	

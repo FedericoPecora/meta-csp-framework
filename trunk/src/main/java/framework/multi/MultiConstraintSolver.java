@@ -27,15 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 import java.util.Vector;
+import java.util.logging.Logger;
 
-import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
-
-import meta.simplePlanner.SimpleDomain.markings;
-import multi.allenInterval.AllenInterval;
-
-import sandbox.spatial.rectangleAlgebra2.RectangleConstraintSolver2;
 import throwables.ConstraintNotFound;
 import utility.logging.MetaCSPLogging;
 import framework.Constraint;

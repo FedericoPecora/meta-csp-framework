@@ -22,8 +22,8 @@
  ******************************************************************************/
 package throwables.time;
 
-import time.Bounds;
 import multi.allenInterval.AllenIntervalConstraint;
+import time.Bounds;
 
 public class MalformedBoundsException extends Error {
 	private static final long serialVersionUID = -3255990123215211931L;

@@ -28,7 +28,6 @@ import java.util.Vector;
 import throwables.time.MalformedBoundsException;
 import time.APSPSolver;
 import time.Bounds;
-import time.Interval;
 import time.SimpleDistanceConstraint;
 import time.TimePoint;
 import framework.Constraint;

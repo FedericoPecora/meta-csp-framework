@@ -23,9 +23,7 @@
 package time;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
-import framework.Constraint;
 import framework.Domain;
 import framework.Variable;
 

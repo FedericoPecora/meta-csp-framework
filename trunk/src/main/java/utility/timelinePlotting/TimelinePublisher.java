@@ -38,8 +38,6 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import cern.colt.Arrays;
-
 import meta.symbolsAndTime.SymbolicTimeline;
 import multi.activity.ActivityNetworkSolver;
 import time.Bounds;

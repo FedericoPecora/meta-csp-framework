@@ -20,65 +20,26 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package spatial.cardinal;
+package multi.spatial.rectangleAlgebraNew.toRemove;
 
-import framework.BinaryConstraint;
-import framework.Constraint;
-
-public class CardinalConstraint extends BinaryConstraint{
-
+public class OntologicalSpatialProperty {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	protected Type[] types;
-	public static enum Type {
-		
-		North, 
-		West,
-		South,
-		East, 
-		NorthEast,
-		NorthWest,
-		SouthEast,
-		SouthWest,
-		EQUAL,
-		NO
-	};
+	private boolean isGraspable = true;
+	private boolean isMovable = true;
 	
-	//has to be completed
-	public static Float[] CardinalRelationToMetricOrientation = {
-		
-		(float) -1.57, //North			
-		(float) 0, //West
-		(float) 1.57, //south
-		(float) 3.14, //East
-		(float) 0, //NorthEast
-		(float) 0, //NorthWest
-		(float) 0, //SouthEast
-		(float) 0, //SouthWest
-		(float) 0, //Equal
-		(float) 0, //NO
-	};
-
+	public void setGraspable(boolean isGraspable) {
+		this.isGraspable = isGraspable;
+	}
 	
-	@Override
-	public String getEdgeLabel() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setMovable(boolean isMovable) {
+		this.isMovable = isMovable;
 	}
-
-	@Override
-	public Object clone() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public boolean isGraspable() {
+		return isGraspable;
 	}
-
-	@Override
-	public boolean isEquivalent(Constraint c) {
-		// TODO Auto-generated method stub
-		return false;
+	
+	public boolean isMovable() {
+		return isMovable;
 	}
-
 }

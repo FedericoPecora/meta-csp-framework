@@ -25,11 +25,9 @@ package examples.multi;
 import java.util.Calendar;
 import java.util.logging.Level;
 
-import meta.symbolsAndTime.SymbolicTimeline;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import multi.fuzzyActivity.SimpleTimeline;
 import symbols.SymbolicValueConstraint;
 import time.Bounds;
 import utility.logging.MetaCSPLogging;

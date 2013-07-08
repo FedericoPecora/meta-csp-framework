@@ -20,21 +20,35 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package sandbox.spatial.rectangleAlgebra2;
+package multi.spatial.rectangleAlgebra;
 
-import framework.ConstraintNetwork;
-import framework.ConstraintSolver;
-
-public class RectangleConstraintNetwork2 extends ConstraintNetwork {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4213147784017579610L;
-
-	public RectangleConstraintNetwork2(ConstraintSolver sol) {
-		super(sol);
-
+public class Point {
+	public double x, y;
+	public Point(double x, double y) {
+		this.x = x;
+		this.y = y;
 	}
-
+	public int x() {
+		if (Math.abs(new Double(x).intValue()-x) < 0.5)
+			return new Double(x).intValue();
+		return new Double(x).intValue()+1;
+	}
+	public int y() {
+		if (Math.abs(new Double(y).intValue()-y) < 0.5)
+			return new Double(y).intValue();
+		return new Double(y).intValue()+1;
+	}
+	public String toString() {
+		return "(" + x + "," + y + ")";
+	}
+	public double distance(Point p) {		
+		return Math.sqrt(Math.pow(p.x-this.x,2) + Math.pow(p.y-this.y,2));
+	}
+	public double getX() {
+		return x;
+	}
+	public double getY() {
+		return y;
+	}
+	
 }

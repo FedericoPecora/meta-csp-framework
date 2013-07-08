@@ -22,7 +22,6 @@
  ******************************************************************************/
 package framework.multi;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 import multi.allenInterval.AllenIntervalConstraint;

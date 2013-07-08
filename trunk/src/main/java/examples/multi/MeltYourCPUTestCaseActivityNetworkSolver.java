@@ -25,21 +25,13 @@ package examples.multi;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import cern.colt.Arrays;
 
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import symbols.SymbolicValueConstraint;
-import time.APSPSolver;
-import time.Bounds;
 import utility.logging.MetaCSPLogging;
-import utility.timelinePlotting.TimelinePublisher;
 import framework.Constraint;
-import framework.ConstraintNetwork;
 import framework.Variable;
 
 public class MeltYourCPUTestCaseActivityNetworkSolver {

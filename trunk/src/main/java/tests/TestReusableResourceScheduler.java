@@ -2,8 +2,7 @@ package tests;
 
 import java.util.logging.Level;
 
-import javax.swing.JFrame;
-
+import junit.framework.TestCase;
 import meta.symbolsAndTime.ReusableResource;
 import meta.symbolsAndTime.Schedulable.PEAKCOLLECTION;
 import meta.symbolsAndTime.Scheduler;
@@ -12,7 +11,6 @@ import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
 import multi.allenInterval.AllenIntervalConstraint.Type;
 import time.Bounds;
-import utility.UI.Callback;
 import utility.logging.MetaCSPLogging;
 import utility.timelinePlotting.TimelinePublisher;
 import utility.timelinePlotting.TimelineVisualizer;
@@ -20,7 +18,6 @@ import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ValueOrderingH;
 import framework.VariableOrderingH;
-import junit.framework.TestCase;
 
 public class TestReusableResourceScheduler extends TestCase {
 	
