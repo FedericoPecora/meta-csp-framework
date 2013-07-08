@@ -14,10 +14,14 @@ multi.activity
 multi.allenInterval
 multi.fuzzyActivity
 onLineMonitoring
+sandbox.examples.multi
+sandbox.spatial.rectangleAlgebra2
 spatial.RCC
+spatial.cardinal
 spatial.rectangleAlgebra
 symbols
 symbols.fuzzySymbols
+tests
 throwables
 throwables.time
 time
