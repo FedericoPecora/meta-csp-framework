@@ -61,6 +61,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	private HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
 	private long animationTime = 0;
 	private int counterMoves;
+	
+	//private Vector<HashMap<ConstraintSolver,ConstraintNetwork>> statesAlongCurrentBranch = new Vector<HashMap<ConstraintSolver,ConstraintNetwork>>(); 
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
@@ -205,11 +207,20 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		logger.info("... no conflicts found");		
 		return true;
 	}
-	
-	
-	
-	
-	
+		
+//	private boolean repeatedState() {
+//		HashMap<ConstraintSolver,ConstraintNetwork> currentState = new HashMap<ConstraintSolver, ConstraintNetwork>();
+//		for (ConstraintSolver cs : this.getConstraintSolvers()) {
+//			currentState.put(cs, (ConstraintNetwork)cs.getConstraintNetwork().clone());
+//		}
+//		for (HashMap<ConstraintSolver,ConstraintNetwork> oldState : statesAlongCurrentBranch) {
+//			for (ConstraintSolver cs : this.getConstraintSolvers()) {
+//				if (!oldState.get(cs).equals(currentState.get(cs))) return false;
+//			}
+//		}
+//		statesAlongCurrentBranch.add(currentState);
+//		return true;
+//	}
 	
 	private boolean backtrackHelper(MetaVariable metaVariable) {
 		preBacktrack();
@@ -350,7 +361,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	
 
 	private final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {
-		this.addResolverSub(metaVarConstraintNetwork, resolverNetwork);	
+		if (!this.addResolverSub(metaVarConstraintNetwork, resolverNetwork)) return false;	
 		Constraint[] resolverNetworkConstraints = resolverNetwork.getConstraints();
 		HashMap<ConstraintSolver, Vector<Constraint>> solvers2constraints = 
 				new HashMap<ConstraintSolver, Vector<Constraint>>();		
@@ -419,7 +430,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 * @param metaVariable The {@link MetaVariable} over which the search is branching.
 	 * @param metaValue The meta-value that has been selected (the branch). 
 	 */
-	protected abstract void addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue);
+	protected abstract boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue);
 	
 	/**
 	 * Get all the {@link Variable}s of all ground solvers used by this {@link MetaConstraintSolver}. 

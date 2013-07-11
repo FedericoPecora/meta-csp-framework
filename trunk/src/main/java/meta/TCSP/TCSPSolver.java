@@ -53,9 +53,10 @@ public class TCSPSolver extends MetaConstraintSolver {
 	}
 
 	@Override
-	protected void addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
+	protected boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 		MultiConstraint dc = (MultiConstraint)metaValue.getConstraints()[0];
 		dc.setPropagateImmediately();
+		return true;
 	}
 
 	@Override

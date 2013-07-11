@@ -81,7 +81,7 @@ public class SimplePlanner extends MetaConstraintSolver {
 	}
 
 	@Override
-	protected void addResolverSub(ConstraintNetwork currentProblematicConstraintNetwork, ConstraintNetwork possibleOperatorConstraintNetwork) {
+	protected boolean addResolverSub(ConstraintNetwork currentProblematicConstraintNetwork, ConstraintNetwork possibleOperatorConstraintNetwork) {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.getConstraintSolvers()[0];
 
 		//Make real variables from variable prototypes
@@ -119,6 +119,8 @@ public class SimplePlanner extends MetaConstraintSolver {
 				rr.setUsage((Activity)v);
 			}
 		}
+		
+		return true;
 	}
 
 	@Override

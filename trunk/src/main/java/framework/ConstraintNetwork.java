@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ import framework.multi.MultiBinaryConstraint;
  * @author Federico Pecora
  */
 
-public abstract class ConstraintNetwork implements Serializable {
+public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	
 	protected ConstraintSolver solver;
 	protected ObservableGraph<Variable,Constraint> graph;
@@ -40,6 +42,8 @@ public abstract class ConstraintNetwork implements Serializable {
 	protected HashMap<Integer, Variable> variables = new HashMap<Integer, Variable>();
 	protected HashMap<Variable, Integer> variablesR = new HashMap<Variable, Integer>();
 	protected HashMap<VariablePrototype,Variable> substitutions = new HashMap<VariablePrototype, Variable>();
+	
+	public Object annotation;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
@@ -417,6 +421,24 @@ public abstract class ConstraintNetwork implements Serializable {
 	 */
 	public void setWeight(double weight) {
 		this.weight = weight;
+	}
+	
+	public Object clone() {
+
+		try {
+			Constructor c = this.getClass().getConstructor(new Class[] {ConstraintSolver.class});
+			ConstraintNetwork ret = (ConstraintNetwork)c.newInstance(new Object[] {this.solver});
+			for (Variable v : this.getVariables()) ret.addVariable(v);
+			for (Constraint con : this.getConstraints()) ret.addConstraint(con);
+			return ret;
+		}
+		catch (SecurityException e) { e.printStackTrace(); }
+		catch (NoSuchMethodException e) { e.printStackTrace(); }
+		catch (IllegalArgumentException e) { e.printStackTrace(); }
+		catch (InstantiationException e) { e.printStackTrace(); }
+		catch (IllegalAccessException e) { e.printStackTrace(); }
+		catch (InvocationTargetException e) { e.printStackTrace(); }
+		return null;
 	}
 	
 }

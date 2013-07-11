@@ -54,10 +54,12 @@ public class StateVariableScheduler extends MetaConstraintSolver {
 	}
 
 	@Override
-	protected void addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
-		// TODO Auto-generated method stub
+	protected boolean addResolverSub(ConstraintNetwork metaVariable,
+			ConstraintNetwork metaValue) {
+		return true;
 		
 	}
+
 
 	@Override
 	public void postBacktrack(MetaVariable mv) {
