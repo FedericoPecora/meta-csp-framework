@@ -74,9 +74,9 @@ public class FuzzyActivityInferenceSolver extends MetaConstraintSolver {
 
 
 	@Override
-	protected void addResolverSub(ConstraintNetwork metaVariable,
+	protected boolean addResolverSub(ConstraintNetwork metaVariable,
 			ConstraintNetwork metaValue) {
-		// TODO Auto-generated method stub
+		return true;
 		
 	}
 
