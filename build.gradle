@@ -18,13 +18,21 @@ group = 'meta_csp_framework'
 
 repositories {
   //mavenLocal()
-  //maven {
-  //  url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
-  //}
+  maven {
+    url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
+  }
 }
 
 dependencies {
   compile fileTree(dir: 'lib', include: '**/*.jar')
+  compile 'org.ow2.sat4j:org.ow2.sat4j.sat:2.3.4'
+  compile 'net.sf.jung:jung2:2.0.1'
+  compile 'net.sf.jung:jung-graph-impl:2.0.1'
+  compile 'net.sf.jung:jung-algorithms:2.0.1'
+  compile 'net.sf.jung:jung-visualization:2.0.1'
+  compile 'org.prefuse:prefuse:beta-20071021'
+  compile 'jfree:jfreechart:1.0.13'
+  compile 'junit:junit:4.8.1'
 }
 
 defaultTasks 'install'

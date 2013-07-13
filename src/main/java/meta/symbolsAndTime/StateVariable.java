@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import multi.activity.Activity;
-import symbols.SymbolicDomain;
 import time.Interval;
 import framework.Constraint;
 import framework.ConstraintNetwork;
@@ -44,7 +43,7 @@ public class StateVariable extends Schedulable {
 	private String[] states = null;
 	
 	public StateVariable(VariableOrderingH varOH, ValueOrderingH valOH,
-			MetaConstraintSolver metaCS, SymbolicDomain allowedStates) {
+			MetaConstraintSolver metaCS, String[] allowedStates) {
 		super(varOH, valOH);
 		this.setPeakCollectionStrategy(PEAKCOLLECTION.BINARY);
 		//this.setPeakCollectionStrategy(PEAKCOLLECTION.SAMPLING);
@@ -64,8 +63,11 @@ public class StateVariable extends Schedulable {
 	@Override
 	public boolean isConflicting(Activity[] peak) {		
 		if (peak.length != 2) return false;
-		Vector<String> intersection = new Vector<String>(Arrays.asList(((SymbolicDomain)peak[0].getSymbolicVariable().getDomain()).getSymbols()));
-		intersection.retainAll(Arrays.asList(((SymbolicDomain)peak[1].getSymbolicVariable().getDomain()).getSymbols()));
+		peak[0].getSymbolicVariable().getDomain();
+//		Vector<String> intersection = new Vector<String>(Arrays.asList(((SymbolicDomain)peak[0].getSymbolicVariable().getDomain()).getSymbols()));
+//		intersection.retainAll(Arrays.asList(((SymbolicDomain)peak[1].getSymbolicVariable().getDomain()).getSymbols()));
+		Vector<String> intersection = new Vector<String>(Arrays.asList(peak[0].getSymbolicVariable().getSymbols()));
+		intersection.retainAll(Arrays.asList(peak[1].getSymbolicVariable().getSymbols()));
 		return intersection.isEmpty();
 	}
 
@@ -75,8 +77,8 @@ public class StateVariable extends Schedulable {
 
 	}
 	
-	private void setAllowedStates(SymbolicDomain st) {
-		this.states = st.getSymbols();
+	private void setAllowedStates(String[] st) {
+		this.states = st;
 		Arrays.sort(states);
 		reachability = new Interval[states.length][states.length];
 		for (int i = 0; i < states.length; i++) {

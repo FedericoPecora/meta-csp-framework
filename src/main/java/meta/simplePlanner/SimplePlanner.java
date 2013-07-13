@@ -28,7 +28,7 @@ import meta.simplePlanner.SimpleDomain.markings;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.Variable;

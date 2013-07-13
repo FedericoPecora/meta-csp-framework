@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package symbols.fuzzySymbols;
+package fuzzySymbols;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -96,11 +96,6 @@ public class FuzzySymbolicDomain extends Domain implements Cloneable {
 	public String toString() {
 		return theDomain.keySet() + " Poss: " + theDomain.values();
 		//return Arrays.toString(this.symbols) + " Poss: " + Arrays.toString(this.possibilities);
-	}
-
-	@Override
-	protected void registerValueChoiceFunctions() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

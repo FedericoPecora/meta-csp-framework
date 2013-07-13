@@ -24,8 +24,8 @@ package multi.fuzzyActivity;
 
 import java.util.Vector;
 
-import symbols.SymbolicValueConstraint;
-import symbols.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import multi.symbols.SymbolicValueConstraint;
+import fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
@@ -97,5 +97,5 @@ public class FuzzyActivityNetworkSolver extends MultiConstraintSolver {
 		((FuzzyAllenIntervalNetworkSolver)this.constraintSolvers[0]).setCrispCons(crispCons);
 		
 	}
-	
+
 }

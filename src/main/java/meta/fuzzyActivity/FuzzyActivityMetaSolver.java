@@ -25,7 +25,7 @@ package meta.fuzzyActivity;
 import java.util.Vector;
 
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.meta.MetaConstraintSolver;
@@ -167,4 +167,5 @@ public class FuzzyActivityMetaSolver extends MetaConstraintSolver{
 		String str = ((FuzzyActivityDomain)this.metaConstraints.get(0)).getOptimalHypothesis(optCn, valueConsistency, temporalConsistency);	
 		return str;
 	}
+
 }

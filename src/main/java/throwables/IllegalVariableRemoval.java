@@ -22,7 +22,7 @@
  ******************************************************************************/
 package throwables;
 
-import cern.colt.Arrays;
+import java.util.Arrays;
 import framework.Constraint;
 import framework.Variable;
 

@@ -22,7 +22,7 @@
  ******************************************************************************/
 package onLineMonitoring;
 
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 
 public class Requirement {

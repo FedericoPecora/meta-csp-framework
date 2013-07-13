@@ -27,7 +27,6 @@ import meta.symbolsAndTime.StateVariable;
 import multi.activity.Activity;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import symbols.SymbolicDomain;
 import time.Bounds;
 import utility.UI.Callback;
 import utility.timelinePlotting.TimelinePublisher;
@@ -94,7 +93,7 @@ public class TestStateVariableSchedulerSimple {
 			}
 		};
 		
-		StateVariable sv = new StateVariable(varOH, valOH, metaSolver, new SymbolicDomain(null, "A", "B", "C", "D", "E"));
+		StateVariable sv = new StateVariable(varOH, valOH, metaSolver, new String[] {"A", "B", "C", "D", "E"});
 		sv.setUsage(one,two,three);
 		metaSolver.addMetaConstraint(sv);
 		

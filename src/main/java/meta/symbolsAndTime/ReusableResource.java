@@ -23,7 +23,6 @@
 package meta.symbolsAndTime;
 
 import multi.activity.Activity;
-import symbols.SymbolicDomain;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ValueOrderingH;
@@ -46,7 +45,8 @@ public class ReusableResource extends Schedulable {
 	public boolean isConflicting(Activity[] peak) {
 		int sum = 0;
 		for (Activity act : peak) {
-			sum += Integer.parseInt(((SymbolicDomain)act.getSymbolicVariable().getDomain()).getSymbols()[0]);
+			sum += Integer.parseInt(act.getSymbolicVariable().getSymbols()[0]);
+			//sum += Integer.parseInt(((SymbolicDomain2)act.getSymbolicVariable().getDomain()).getSymbols()[0]);
 			if (sum > capacity) return true;
 		}
 		return false;

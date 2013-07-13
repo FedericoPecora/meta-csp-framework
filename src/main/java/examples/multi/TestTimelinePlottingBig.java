@@ -63,15 +63,8 @@ public class TestTimelinePlottingBig {
 			solver.addConstraints(new Constraint[]{dur,release});
 			tp.publish(false, true);
 			oldEnd = act.getTemporalVariable().getEET();
-			System.out.println(release);
-			System.out.println("end = " + oldEnd);
-			System.out.println(++numact);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			try { Thread.sleep(1000); }
+			catch (InterruptedException e) { e.printStackTrace(); }
 		}
 	}
 	

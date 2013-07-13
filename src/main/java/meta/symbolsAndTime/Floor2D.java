@@ -34,7 +34,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import multi.activity.Activity;
-import symbols.SymbolicDomain;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ValueOrderingH;
@@ -57,24 +56,25 @@ public class Floor2D extends Schedulable {
 	@Override
 	public boolean isConflicting(Activity[] peak) {
 		if (peak.length == 1) return false;
-		double[] coords1 = parseCoordinates(((SymbolicDomain)peak[0].getSymbolicVariable().getDomain()).getSymbols()[0]);
-		double[] coords2 = parseCoordinates(((SymbolicDomain)peak[1].getSymbolicVariable().getDomain()).getSymbols()[0]);
+//		double[] coords1 = parseCoordinates(((SymbolicDomain)peak[0].getSymbolicVariable().getDomain()).getSymbols()[0]);
+//		double[] coords2 = parseCoordinates(((SymbolicDomain)peak[1].getSymbolicVariable().getDomain()).getSymbols()[0]);
+		double[] coords1 = parseCoordinates(peak[0].getSymbolicVariable().getSymbols()[0]);
+		double[] coords2 = parseCoordinates(peak[1].getSymbolicVariable().getSymbols()[0]);
+
 		return (eucledianDistance(coords1, coords2) <= distanceThreshold);
 	}
 
 	@Override
 	public void draw(final ConstraintNetwork network) {
-		//Toolkit tk = Toolkit.getDefaultToolkit();
-		//final int xSize = ((int) tk.getScreenSize().getWidth());
-		//final int ySize = ((int) tk.getScreenSize().getHeight());
-		//int ySize = 300;
 		double maxX = -Double.MAX_VALUE;
 		double maxY = -Double.MAX_VALUE;
 		final double scale = 40.0;
 		for (Variable v : network.getVariables()) {
 			Activity a = (Activity)v;
-			SymbolicDomain dom = (SymbolicDomain)a.getSymbolicVariable().getDomain();
-			double[] coords = parseCoordinates(dom.getSymbols()[0]);
+//			SymbolicDomain dom = (SymbolicDomain)a.getSymbolicVariable().getDomain();
+//			double[] coords = parseCoordinates(dom.getSymbols()[0]);
+			double[] coords = parseCoordinates(a.getSymbolicVariable().getSymbols()[0]);
+
 			if (coords[0] > maxX) maxX = coords[0];
 			if (coords[1] > maxY) maxY = coords[1];
 		}
@@ -102,8 +102,9 @@ public class Floor2D extends Schedulable {
 				for (int i = 0; i < vars.length; i++) {
 					g2.setColor(Color.black);
 					Activity a = (Activity)vars[i];
-					SymbolicDomain dom = (SymbolicDomain)a.getSymbolicVariable().getDomain();
-					double[] coords = parseCoordinates(dom.getSymbols()[0]);
+//					SymbolicDomain dom = (SymbolicDomain)a.getSymbolicVariable().getDomain();
+//					double[] coords = parseCoordinates(dom.getSymbols()[0]);
+					double[] coords = parseCoordinates(a.getSymbolicVariable().getSymbols()[0]);
 					double x = scale*coords[0];
 					double y = ((double)ySize-scale*coords[1]);
 					//Ellipse2D.Double circle = new Ellipse2D.Double(((double)xSize-scale*coords[0]), ((double)ySize-scale*coords[1]), dotSize, dotSize);
@@ -115,8 +116,9 @@ public class Floor2D extends Schedulable {
 					///////////////////////
 					for (int j = i+1; j < vars.length; j++) {
 						Activity a1 = (Activity)vars[j];
-						SymbolicDomain dom1 = (SymbolicDomain)a1.getSymbolicVariable().getDomain();
-						double[] coords1 = parseCoordinates(dom1.getSymbols()[0]);
+//						SymbolicDomain dom1 = (SymbolicDomain)a1.getSymbolicVariable().getDomain();
+//						double[] coords1 = parseCoordinates(dom1.getSymbols()[0]);
+						double[] coords1 = parseCoordinates(a1.getSymbolicVariable().getSymbols()[0]);
 						double distance = eucledianDistance(coords, coords1);
 						if (distance < distanceThreshold && temporalOverlap(a, a1)) {
 							g2.setPaint(Color.red);

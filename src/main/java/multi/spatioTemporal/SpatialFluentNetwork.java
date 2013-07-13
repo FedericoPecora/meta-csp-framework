@@ -19,17 +19,18 @@ public class SpatialFluentNetwork extends ConstraintNetwork {
 	}
 	
 	
-	public SpatialFluentNetwork clone() {
-		SpatialFluentNetwork c = new SpatialFluentNetwork(super.solver);
-		
-		for ( Variable v : super.g.getVertices() ) {
-			c.g.addVertex(v);
-		}
-		for ( Constraint e : super.g.getEdges() ) {
-			c.g.addEdge(e, g.getEndpoints(e));
-		}
-		return c;
-	}
+//	public SpatialFluentNetwork clone() {
+//		SpatialFluentNetwork c = new SpatialFluentNetwork(super.solver);
+//		
+//		for ( Variable v : super.g.getVertices() ) {
+//			c.g.addVertex(v);
+//		}
+//		for ( Constraint e : super.g.getEdges() ) {
+//			c.g.addEdge(e, g.getEndpoints(e));
+//		}
+//		return c;
+//	}
+	
 }
 
 

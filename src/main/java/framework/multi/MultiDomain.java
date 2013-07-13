@@ -25,7 +25,7 @@ package framework.multi;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import cern.colt.Arrays;
+import java.util.Arrays;
 import framework.Domain;
 import framework.Variable;
 
@@ -96,9 +96,9 @@ public class MultiDomain extends Domain {
 		return 0;
 	}
 
-	@Override
-	protected void registerValueChoiceFunctions() {
-		// TODO Auto-generated method stub
-	}
+//	@Override
+//	protected void registerValueChoiceFunctions() {
+//		// TODO Auto-generated method stub
+//	}
 
 }

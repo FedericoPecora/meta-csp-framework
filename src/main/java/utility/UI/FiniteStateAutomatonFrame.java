@@ -48,7 +48,6 @@ import javax.swing.JRootPane;
 
 import org.apache.commons.collections15.Transformer;
 
-import symbols.SymbolicDomain;
 import time.Interval;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -82,11 +81,11 @@ public class FiniteStateAutomatonFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = -2198471048277328599L;
 
-	private ObservableGraph<SymbolicDomain,Interval> g = null;
+	private ObservableGraph<String[],Interval> g = null;
 
-    private VisualizationViewer<SymbolicDomain,Interval> vv = null;
+    private VisualizationViewer<String[],Interval> vv = null;
 
-    private AbstractLayout<SymbolicDomain,Interval> layout = null;
+    private AbstractLayout<String[],Interval> layout = null;
 
     Timer timer;
 
@@ -98,13 +97,13 @@ public class FiniteStateAutomatonFrame extends JFrame {
 
     //public static final int EDGE_LENGTH = 100;
     
-    public FiniteStateAutomatonFrame(ObservableGraph<SymbolicDomain,Interval> graph) {
+    public FiniteStateAutomatonFrame(ObservableGraph<String[],Interval> graph) {
     	super("Constraint Network");
 
         g = graph;
-        g.addGraphEventListener(new GraphEventListener<SymbolicDomain,Interval>() {
+        g.addGraphEventListener(new GraphEventListener<String[],Interval>() {
 
-			public void handleGraphEvent(GraphEvent<SymbolicDomain,Interval> evt) {
+			public void handleGraphEvent(GraphEvent<String[],Interval> evt) {
 				System.err.println("got "+evt);
 				/****/
 		    	vv.getRenderContext().getPickedVertexState().clear();
@@ -119,10 +118,10 @@ public class FiniteStateAutomatonFrame extends JFrame {
 		        			relaxer.prerelax();
 		                } catch (java.lang.ClassCastException e) {}
 		                
-		        		StaticLayout<SymbolicDomain,Interval> staticLayout =
-		        			new StaticLayout<SymbolicDomain,Interval>(g, layout);
-						LayoutTransition<SymbolicDomain,Interval> lt =
-							new LayoutTransition<SymbolicDomain,Interval>(vv, vv.getGraphLayout(),
+		        		StaticLayout<String[],Interval> staticLayout =
+		        			new StaticLayout<String[],Interval>(g, layout);
+						LayoutTransition<String[],Interval> lt =
+							new LayoutTransition<String[],Interval>(vv, vv.getGraphLayout(),
 									staticLayout);
 						Animator animator = new Animator(lt);
 						animator.start();
@@ -140,7 +139,7 @@ public class FiniteStateAutomatonFrame extends JFrame {
         //layout = new FRLayout<State,Interval>(g);
         //layout = new SpringLayout<State,Interval>(g);
         //layout = new StaticLayout<State,Interval>(g,new STNTransformer());
-        layout = new FRLayout2<SymbolicDomain,Interval>(g);
+        layout = new FRLayout2<String[],Interval>(g);
         //layout = new CircleLayout<State,Interval>(g);
         //layout = new ISOMLayout<State,Interval>(g);
         //layout = new KKLayout<State,Interval>(g);
@@ -154,10 +153,10 @@ public class FiniteStateAutomatonFrame extends JFrame {
         } catch (java.lang.ClassCastException e) {}
         
         
-        Layout<SymbolicDomain,Interval> staticLayout =
-			new StaticLayout<SymbolicDomain,Interval>(g, layout);
+        Layout<String[],Interval> staticLayout =
+			new StaticLayout<String[],Interval>(g, layout);
 
-        vv = new VisualizationViewer<SymbolicDomain,Interval>(staticLayout, new Dimension(600,600));
+        vv = new VisualizationViewer<String[],Interval>(staticLayout, new Dimension(600,600));
 
         JRootPane rp = this.getRootPane();
         rp.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
@@ -166,10 +165,10 @@ public class FiniteStateAutomatonFrame extends JFrame {
         getContentPane().setBackground(java.awt.Color.lightGray);
         getContentPane().setFont(new Font("Serif", Font.PLAIN, 12));
 
-        vv.setGraphMouse(new DefaultModalGraphMouse<SymbolicDomain,Interval>());
+        vv.setGraphMouse(new DefaultModalGraphMouse<String[],Interval>());
 
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
-        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<SymbolicDomain>());
+        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String[]>());
         vv.setForeground(Color.black);
         
         //draw edge labels
@@ -204,7 +203,7 @@ public class FiniteStateAutomatonFrame extends JFrame {
                 if (switchLayout.getText().indexOf("Spring") > 0) {
                     switchLayout.setText("Switch to FRLayout");
                     //layout = new SpringLayout<State,Interval>(g, new ConstantTransformer(EDGE_LENGTH));
-                    layout = new SpringLayout<SymbolicDomain,Interval>(g);
+                    layout = new SpringLayout<String[],Interval>(g);
                     layout.setSize(d);
                     
                     try {
@@ -213,10 +212,10 @@ public class FiniteStateAutomatonFrame extends JFrame {
             			relaxer.prerelax();
                     } catch (java.lang.ClassCastException e) {}
             		
-            		StaticLayout<SymbolicDomain,Interval> staticLayout =
-            			new StaticLayout<SymbolicDomain,Interval>(g, layout);
-    				LayoutTransition<SymbolicDomain,Interval> lt =
-    					new LayoutTransition<SymbolicDomain,Interval>(vv, vv.getGraphLayout(),
+            		StaticLayout<String[],Interval> staticLayout =
+            			new StaticLayout<String[],Interval>(g, layout);
+    				LayoutTransition<String[],Interval> lt =
+    					new LayoutTransition<String[],Interval>(vv, vv.getGraphLayout(),
     							staticLayout);
     				Animator animator = new Animator(lt);
     				animator.start();
@@ -225,7 +224,7 @@ public class FiniteStateAutomatonFrame extends JFrame {
 
                 } else {
                     switchLayout.setText("Switch to SpringLayout");
-                    layout = new FRLayout<SymbolicDomain,Interval>(g, d);
+                    layout = new FRLayout<String[],Interval>(g, d);
                     layout.setSize(d);
                     
                     try {
@@ -234,10 +233,10 @@ public class FiniteStateAutomatonFrame extends JFrame {
             			relaxer.prerelax();
                     } catch (java.lang.ClassCastException e) {}
                     
-            		StaticLayout<SymbolicDomain,Interval> staticLayout =
-            			new StaticLayout<SymbolicDomain,Interval>(g, layout);
-    				LayoutTransition<SymbolicDomain,Interval> lt =
-    					new LayoutTransition<SymbolicDomain,Interval>(vv, vv.getGraphLayout(),
+            		StaticLayout<String[],Interval> staticLayout =
+            			new StaticLayout<String[],Interval>(g, layout);
+    				LayoutTransition<String[],Interval> lt =
+    					new LayoutTransition<String[],Interval>(vv, vv.getGraphLayout(),
     							staticLayout);
     				Animator animator = new Animator(lt);
     				animator.start();

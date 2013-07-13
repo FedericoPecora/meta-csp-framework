@@ -23,7 +23,7 @@
 package meta.simplePlanner;
 
 import multi.allenInterval.AllenIntervalConstraint;
-import cern.colt.Arrays;
+import java.util.Arrays;
 
 public class SimpleOperator {
 

@@ -22,10 +22,10 @@
  ******************************************************************************/
 package examples;
 
-import symbols.SymbolicValueConstraint;
-import symbols.SymbolicVariableNetwork;
-import symbols.fuzzySymbols.FuzzySymbolicVariable;
-import symbols.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import multi.symbols.SymbolicValueConstraint;
+import fuzzySymbols.FuzzySymbolicVariable;
+import fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import framework.ConstraintNetwork;
 import framework.Variable;
 
 public class TestFuzzySymbolicVariableConstraintSolver {
@@ -43,7 +43,7 @@ public class TestFuzzySymbolicVariableConstraintSolver {
 		FuzzySymbolicVariable var2 = (FuzzySymbolicVariable)vars[2];
 		var2.setDomain(new String[] {"A", "B", "C"}, new double[] {0.9,0.3,0.1});
 
-		SymbolicVariableNetwork.draw(solver.getConstraintNetwork());
+		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);
 		con1.setFrom(var0);

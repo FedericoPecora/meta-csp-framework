@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
-import symbols.SymbolicVariable;
 import throwables.NonInstantiatedDomain;
 import utility.UI.Callback;
 import utility.UI.ConstraintNetworkFrame;
@@ -43,12 +43,14 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	protected HashMap<Variable, Integer> variablesR = new HashMap<Variable, Integer>();
 	protected HashMap<VariablePrototype,Variable> substitutions = new HashMap<VariablePrototype, Variable>();
 	
-	public Object annotation;
+	protected HashMap<Constraint,DummyVariable> hyperEdges = new HashMap<Constraint, DummyVariable>();
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
 	
 	private double weight=-1;
+	
+	public transient Object annotation;
 
 	
 	//This is so that subclasses must invoke 1-arg constructor of ConstraintNetwork (below)
@@ -139,9 +141,20 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	 * {@link BinaryConstraint}s and {@link MultiBinaryConstraint}s in the current implementation. 
 	 */
 	public void addConstraint(Constraint c) {
-		if (c.getScope().length == 2) {
-			for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
+		//if (c.getScope().length == 2) {
+		if (c instanceof BinaryConstraint || c instanceof MultiBinaryConstraint) {
+			//for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
 			this.graph.addEdge(c, c.getScope()[0], c.getScope()[1]);
+			logger.finest("Added binary constraint " + c);
+		}
+		else {
+			DummyVariable dv = new DummyVariable(this.solver, c.getEdgeLabel());
+			hyperEdges.put(c, dv);
+			graph.addVertex(dv);
+			for (Variable var : c.getScope()) {
+				//if (!this.containsVariable(var)) this.addVariable(var);
+				this.graph.addEdge(new DummyConstraint(""), dv, var);
+			}
 			logger.finest("Added constraint " + c);
 		}
 	}
@@ -151,12 +164,22 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	 * @param c The {@link Constraint} to remove from the network.
 	 */
 	public void removeConstraint(Constraint c) {
-		this.graph.removeEdge(c);
-		logger.finest("Removed constraint " + c);
+		//if (c.getScope().length == 2) {
+		if (c instanceof BinaryConstraint || c instanceof MultiBinaryConstraint) {
+			this.graph.removeEdge(c);
+			logger.finest("Removed binary constraint " + c);
+		}
+		else {
+			DummyVariable dv = hyperEdges.get(c);
+			for (Constraint auxCon : graph.getIncidentEdges(dv)) this.graph.removeEdge(auxCon);
+			graph.removeVertex(dv);
+			hyperEdges.remove(c);
+			logger.finest("Removed constraint " + c);
+		}
 	}
 
 	/**
-	 * Gets the source {@link Variable} of a given {@link Constraint}.
+	 * Gets the source {@link Variable} of a given (binary) {@link Constraint}.
 	 * @param c The {@link Constraint} from which to get the source {@link Variable}.
 	 * @return The source {@link Variable} of the given {@link Constraint}.
 	 */
@@ -165,7 +188,7 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Gets the destination {@link Variable} of a given {@link Constraint}.
+	 * Gets the destination {@link Variable} of a given (binary) {@link Constraint}.
 	 * @param c The {@link Constraint} from which to get the destination {@link Variable}.
 	 * @return The destination {@link Variable} of the given {@link Constraint}.
 	 */
@@ -185,7 +208,7 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	/**
 	 * Checks whether the domains of the {@link Variable}s in the {@link ConstraintNetwork} are instantiated.
 	 * This is used by the {@link ConstraintSolver} class to assess whether automatic propagation
-	 * whould occur (in some CSPs, domains of {@link Variable}s cannot be instantiated by the {@link Variable} constructor,
+	 * should occur (in some CSPs, domains of {@link Variable}s cannot be instantiated by the {@link Variable} constructor,
 	 * rather an explicit call to a dedicated method is necessary - see, e.g., {@link SymbolicVariable}s).
 	 * @return <code>null</code> if all domains are instantiated; a {@link Variable} whose domain is not instantiated if one exists. 
 	 */
@@ -305,8 +328,17 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	 * @return All variables in the network.
 	 */
 	public Variable[] getVariables() {
-
-		return this.graph.getVertices().toArray(new Variable[this.graph.getVertexCount()]);
+		HashSet<Variable> ret = new HashSet<Variable>();
+		for (Variable v : this.graph.getVertices()) {
+			if (!hyperEdges.containsValue(v)) ret.add(v);
+		}
+		for (Constraint c : hyperEdges.keySet()) {
+			for (Variable v : c.getScope()) {
+				ret.add(v);
+			}
+		}
+		return ret.toArray(new Variable[ret.size()]);
+		//return this.graph.getVertices().toArray(new Variable[this.graph.getVertexCount()]);
 	}
 
 	/**
@@ -322,7 +354,16 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	 * @return All the {@link Constraint}s in the network.
 	 */
 	public Constraint[] getConstraints() {
-		return this.graph.getEdges().toArray(new Constraint[this.graph.getEdgeCount()]);
+		Vector<Constraint> ret = new Vector<Constraint>();
+		for (Constraint c : this.graph.getEdges()) {
+			//if (c.getScope().length == 2) {
+			if (c instanceof BinaryConstraint || c instanceof MultiBinaryConstraint) {
+				ret.add(c);
+			}
+		}
+		for (Constraint c : hyperEdges.keySet()) ret.add(c);
+		return ret.toArray(new Constraint[ret.size()]);
+		//return this.graph.getEdges().toArray(new Constraint[this.graph.getEdgeCount()]);
 	}
 	
 	/**
@@ -331,7 +372,7 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	 * @return <code>true</code> iff the network contains the given {@link Constraint} 
 	 */
 	public boolean containsConstraint(Constraint c) {
-		return this.graph.containsEdge(c);
+		return (this.graph.containsEdge(c) || this.hyperEdges.containsKey(c));
 	}
 
 	/**
@@ -417,16 +458,20 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 
 	/**
 	 * Weight to associate to the {@link ConstraintNetwork} for some metrics.
-	 * @param weight Weight related to the {@link ConstraintNetwork} 
+	 * @param weight Weight related to the {@link ConstraintNetwork}.
 	 */
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 	
+	/**
+	 * Clone this {@link ConstraintNetwork}.
+	 * @return A new {@link ConstraintNetwork} of the runtime type of the original.
+	 */
 	public Object clone() {
 
 		try {
-			Constructor c = this.getClass().getConstructor(new Class[] {ConstraintSolver.class});
+			Constructor<?> c = this.getClass().getConstructor(new Class[] {ConstraintSolver.class});
 			ConstraintNetwork ret = (ConstraintNetwork)c.newInstance(new Object[] {this.solver});
 			for (Variable v : this.getVariables()) ret.addVariable(v);
 			for (Constraint con : this.getConstraints()) ret.addConstraint(con);
@@ -440,5 +485,6 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 		catch (InvocationTargetException e) { e.printStackTrace(); }
 		return null;
 	}
+
 	
 }

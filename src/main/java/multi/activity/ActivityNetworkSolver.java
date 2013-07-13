@@ -26,8 +26,8 @@ import java.util.Vector;
 
 import multi.allenInterval.AllenIntervalConstraint;
 import multi.allenInterval.AllenIntervalNetworkSolver;
-import symbols.SymbolicValueConstraint;
-import symbols.SymbolicVariableConstraintSolver;
+import multi.symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicVariableConstraintSolver;
 import utility.UI.PlotActivityNetworkGantt;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
@@ -42,6 +42,8 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	private static final long serialVersionUID = 4961558508886363042L;
 	protected int IDs = 0;
 	protected long origin;
+	
+	private static int MAX_ACTIVITIES = 500;
 	
 	/**
 	 * @return the origin
@@ -69,6 +71,20 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,numActivities), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
+		MAX_ACTIVITIES = numActivities;
+	}
+
+	public ActivityNetworkSolver(long origin, long horizon, String[] symbols) {
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,MAX_ACTIVITIES,symbols), new int[] {1,1});
+		this.origin = origin;
+		this.horizon = horizon;
+	}
+	
+	public ActivityNetworkSolver(long origin, long horizon, int numActivities, String[] symbols) {
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,numActivities,symbols), new int[] {1,1});
+		this.origin = origin;
+		this.horizon = horizon;
+		MAX_ACTIVITIES = numActivities;
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int numActivities) {
@@ -76,6 +92,10 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return ret;
 	}
 	
+	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int numActivities, String[] symbols) {
+		ConstraintSolver[] ret = new ConstraintSolver[] {new AllenIntervalNetworkSolver(origin, horizon, numActivities), new SymbolicVariableConstraintSolver(symbols, numActivities)};
+		return ret;
+	}
 	
 	/**
 	 * Get the rigidity number belonging to the  underlaying AllenIntervalNetworkSolver that in turn exploits an APSP solver
@@ -163,4 +183,5 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];
 		return aSolver.numBookmarks();
 	}
+
 }

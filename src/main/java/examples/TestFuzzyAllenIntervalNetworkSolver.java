@@ -25,7 +25,7 @@ package examples;
 import framework.ConstraintNetwork;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 import fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
-import fuzzyAllenInterval.SimpleAllenInterval;
+import time.qualitative.SimpleAllenInterval;
 
 public class TestFuzzyAllenIntervalNetworkSolver {
 	

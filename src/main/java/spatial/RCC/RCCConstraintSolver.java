@@ -347,4 +347,10 @@ public class RCCConstraintSolver extends ConstraintSolver{
 		
 	}
 
+	@Override
+	public void registerValueChoiceFunctions() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

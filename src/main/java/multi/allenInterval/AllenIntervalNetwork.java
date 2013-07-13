@@ -39,15 +39,16 @@ public class AllenIntervalNetwork extends ConstraintNetwork {
 		// TODO Auto-generated constructor stub
 	}
 
-	public AllenIntervalNetwork clone() {
-		AllenIntervalNetwork c = new AllenIntervalNetwork(this.solver);
-		
-		for ( Variable v : super.g.getVertices() ) {
-			c.g.addVertex(v);
-		}
-		for ( Constraint e : super.g.getEdges() ) {
-			c.g.addEdge(e, super.g.getEndpoints(e));
-		}
-		return c;
-	}
+//	public AllenIntervalNetwork clone() {
+//		AllenIntervalNetwork c = new AllenIntervalNetwork(this.solver);
+//		
+//		for ( Variable v : super.g.getVertices() ) {
+//			c.g.addVertex(v);
+//		}
+//		for ( Constraint e : super.g.getEdges() ) {
+//			c.g.addEdge(e, super.g.getEndpoints(e));
+//		}
+//		return c;
+//	}
+	
 }

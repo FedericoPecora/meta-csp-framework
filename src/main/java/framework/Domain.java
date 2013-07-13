@@ -22,9 +22,11 @@
  ******************************************************************************/
 package framework;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import throwables.IllegalValueChoiceFunction;
+import utility.logging.MetaCSPLogging;
 
 /**
  * This class is used to represent domains of variables.  Its main capability is to provide functionality for choosing values
@@ -33,57 +35,74 @@ import throwables.IllegalValueChoiceFunction;
  * @author Federico Pecora
  *
  */
-public abstract class Domain implements Comparable<Object> {
+public abstract class Domain implements Comparable<Object>, Serializable {
 
-	private static HashMap<String,ValueChoiceFunction> valueChoiceFunctions = new HashMap<String,ValueChoiceFunction>();
+	private static HashMap<Class<?>,HashMap<String,ValueChoiceFunction>> valueChoiceFunctions = new HashMap<Class<?>, HashMap<String,ValueChoiceFunction>>();
 
 	protected Variable myVariable;
 	
-	protected String privateValueChoiceFunction;
+	protected String defaultValueChoiceFunction;
 	
-	protected abstract void registerValueChoiceFunctions();
-		
 	//So that extending classes must invoke 2-arg constructor
-	protected Domain() {}
+	@SuppressWarnings("unused")
+	private Domain() {}
 	
-	protected Domain(Variable v) { 
+	protected Domain(Variable v) {
 		this.myVariable = v;
-		registerValueChoiceFunctions();
-		privateValueChoiceFunction = null;
+		//registerValueChoiceFunctions();
+		defaultValueChoiceFunction = null;
 	}
 	
-	protected final void registerValueChoiceFunction(ValueChoiceFunction vcf, String name) {
-		valueChoiceFunctions.put(name, vcf);
-//		logger.finest("Registered value choice function " + name);
+	public static void removeValueChoiceFunctions(Class<?> specificDomain) {
+		valueChoiceFunctions.put(specificDomain, null);
 	}
-	
-	public Object chooseValue(String vcf) throws IllegalValueChoiceFunction {
-		ValueChoiceFunction vcfunc = valueChoiceFunctions.get(vcf);
-		if (vcfunc != null)
-			return vcfunc.getValue(this);
-		throw new IllegalValueChoiceFunction(vcf, this.getClass().getSimpleName());
+	public static void registerValueChoiceFunction(Class<?> specificDomain, ValueChoiceFunction vcf, String name) {
+		HashMap<String,ValueChoiceFunction> oneClassVcfs = valueChoiceFunctions.get(specificDomain);
+		if (oneClassVcfs == null) {
+			oneClassVcfs = new HashMap<String, ValueChoiceFunction>();
+			valueChoiceFunctions.put(specificDomain, oneClassVcfs);
+		}
+		oneClassVcfs.put(name, vcf);
+		MetaCSPLogging.getLogger(Domain.class).finest("Registered value choice function " + name);
 	}
 	
 	/**
-	 * Choose a value from this {@link Domain} according to the private {@link ValueChoiceFunction}.
-	 * @return A value chosen according to the {@link Domain}'s private {@link ValueChoiceFunction}.
+	 * Choose a value from this {@link Domain} according to the given {@link ValueChoiceFunction} identifier.
+	 * @param vcf A {@link ValueChoiceFunction} function identifier.
+	 * @return A value chosen according to the given {@link ValueChoiceFunction}.
+	 * @throws IllegalValueChoiceFunction
+	 */
+	public Object chooseValue(String vcf) throws IllegalValueChoiceFunction {
+		if (!valueChoiceFunctions.containsKey(this.getClass())) throw new Error ("No value choice function defined for domains fo type " + this.getClass().getSimpleName());
+		HashMap<String,ValueChoiceFunction> vcfs = valueChoiceFunctions.get(this.getClass());
+		if (vcfs == null) throw new Error ("No value choice function defined for domains of type " + this.getClass().getSimpleName()); 
+		ValueChoiceFunction vcfunc = vcfs.get(vcf);
+		if (vcfunc == null) throw new IllegalValueChoiceFunction(vcf, this.getClass().getSimpleName());
+		return vcfunc.getValue(this);
+	}
+
+	/**
+	 * Choose a value from this {@link Domain} according to the default {@link ValueChoiceFunction}
+	 * (or the {@link ValueChoiceFunction} which was first registered if no default is set).
+	 * @return A value chosen according to the {@link Domain}'s default {@link ValueChoiceFunction}.
 	 */
 	public Object chooseValue() {
-		if (privateValueChoiceFunction == null)
+		if (!valueChoiceFunctions.containsKey(this.getClass())) throw new Error ("No value choice function defined for domains fo type " + this.getClass().getSimpleName());
+		if (defaultValueChoiceFunction == null)
 			return this.chooseValue((String)valueChoiceFunctions.keySet().toArray()[0]);
-		return this.chooseValue(privateValueChoiceFunction);
+		return this.chooseValue(defaultValueChoiceFunction);
 	}
 	
 	/**
-	 * Set this {@link Domain}'s private {@link ValueChoiceFunction}.
-	 * @param vcf A {@link ValueChoiceFunction}.
+	 * Set this {@link Domain}'s default {@link ValueChoiceFunction}.
+	 * @param vcf A {@link ValueChoiceFunction} identifier.
 	 */
-	public void setPrivateValueChoiceFunction(String vcf) {
-		this.privateValueChoiceFunction = vcf;
+	public void setDefaultValueChoiceFunction(String vcf) {
+		this.defaultValueChoiceFunction = vcf;
 	}
 	
 	/**
-	 * Get a string representaiton of this domain (must be implemented by the {@link Domain} developer.
+	 * Get a string representation of this domain (must be implemented by the {@link Domain} developer.
 	 */
 	public abstract String toString();
 	
@@ -91,7 +110,13 @@ public abstract class Domain implements Comparable<Object> {
 	 * Get all the {@link ValueChoiceFunction}s associated with this {@link Domain}.
 	 * @return The {@link ValueChoiceFunction}s associated with this {@link Domain}.
 	 */
-	public HashMap<String,ValueChoiceFunction> getValueChoiceFunctions() {
-		return valueChoiceFunctions;
+	public HashMap<String,ValueChoiceFunction> getValueChoiceFunctions(Class<?> specifiDomain) {
+		return valueChoiceFunctions.get(specifiDomain);
 	}
+	
+	/**
+	 * Get the {@link Variable} of which this object is the {@link Domain}.
+	 * @return The {@link Variable} of which this object is the {@link Domain}.
+	 */
+	public Variable getVariable() { return myVariable; }
 }

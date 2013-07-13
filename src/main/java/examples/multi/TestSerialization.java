@@ -35,7 +35,7 @@ import multi.activity.ActivityNetwork;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
 import multi.allenInterval.AllenIntervalNetwork;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import time.Bounds;
 import time.SimpleTemporalNetwork;
 import utility.logging.MetaCSPLogging;
@@ -46,7 +46,7 @@ import framework.multi.MultiConstraintSolver;
 public class TestSerialization {
 
 	public static void main(String[] args) {
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,100);
+		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,100, new String[] {"A","B","C","D"});
 		Activity act1 = (Activity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable();

@@ -23,7 +23,7 @@
 package meta.fuzzyActivity;
 
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.ConstraintNetwork;
 import framework.meta.MetaConstraintSolver;
 import framework.meta.MetaVariable;
@@ -125,5 +125,4 @@ public class FuzzyActivityInferenceSolver extends MetaConstraintSolver {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

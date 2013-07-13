@@ -201,7 +201,7 @@ public class SimpleDomain extends MetaConstraint {
 		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
 
 		for (SimpleOperator r : operators) {
-			String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getDomain().toString();
+			String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
 			String operatorHead = r.getHead();
 			String opeatorHeadComponent = operatorHead.substring(0, operatorHead.indexOf("::"));
 			String operatorHeadSymbol = operatorHead.substring(operatorHead.indexOf("::")+2, operatorHead.length());

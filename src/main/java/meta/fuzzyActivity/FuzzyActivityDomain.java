@@ -35,7 +35,7 @@ import onLineMonitoring.Requirement;
 import onLineMonitoring.Rule;
 import onLineMonitoring.Sensor;
 import orbital.algorithm.Combinatorical;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.Variable;

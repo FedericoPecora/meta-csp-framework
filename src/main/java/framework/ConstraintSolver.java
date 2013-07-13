@@ -107,6 +107,7 @@ public abstract class ConstraintSolver implements Serializable {
 		this.theNetwork = this.createConstraintNetwork();
 		this.constraintTypes = constraintTypes;
 		this.variableTypes = variableTypes;
+		this.registerValueChoiceFunctions();
 	}
 	
 	/**
@@ -210,27 +211,34 @@ public abstract class ConstraintSolver implements Serializable {
 		ArrayList<Constraint> toAdd = new ArrayList<Constraint>(c.length);
 
 		for (Constraint con : c) if (!incomp.contains(con)) toAdd.add(con);
-		Constraint[] toAddArray = toAdd.toArray(new Constraint[toAdd.size()]);
 		
-		if (toAddArray.length == 0) return true;
+		//if there is no constraint left to add, just return successfully
+		if (toAdd.size() == 0) return true;
+		
+		Constraint[] toAddArray = toAdd.toArray(new Constraint[toAdd.size()]);
 
-		if (addConstraintsSub(toAddArray)) {			
+		//call solver-specific procedures for adding constraints, then propagate
+		if (addConstraintsSub(toAddArray)) {
+			//NOTE: must add new cons before attempting propagation, because some solvers call
+			//constraint network methods in their implementation of propagate()... 
 			for (Constraint con : toAddArray) this.theNetwork.addConstraint(con);
 			if (autoprop && checkDomainsInstantiated()) { 
 				if (this.propagate()) {
-					logger.finest("Added constraints " + Arrays.toString(toAddArray));
+					logger.finest("Added and propagated constraints " + Arrays.toString(toAddArray));
 					return true;
 				}
+				//... and then remove new cons if propagation not successful...
 				for (Constraint con : toAddArray) {
-					logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
 					this.theNetwork.removeConstraint(con);
 				}
+				logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
 			}
 			else {
+				logger.finest("Added constraints " + Arrays.toString(toAddArray));
 				return true;
 			}
 		}
-
+		//... and finally re-propagate if not successful to put everything back the way it was
 		if (autoprop && checkDomainsInstantiated()) this.propagate();
 		return false;
 	}	
@@ -280,6 +288,7 @@ public abstract class ConstraintSolver implements Serializable {
 			removeConstraintsSub(toRemoveArray);
 			for (Constraint con : toRemove) this.theNetwork.removeConstraint(con);
 			if (autoprop && checkDomainsInstantiated()) this.propagate();
+			logger.finest("Removed constraints " + toRemove);
 		}
 	}
 	
@@ -559,6 +568,7 @@ public abstract class ConstraintSolver implements Serializable {
 	public boolean containsVariable(Variable v) {
 		return this.theNetwork.containsVariable(v);
 	}
-
+	
+	public abstract void registerValueChoiceFunctions();
 	
 }

@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package symbols.fuzzySymbols;
+package fuzzySymbols;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import multi.fuzzyActivity.FuzzyActivity;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
@@ -587,6 +587,11 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 	public void resetFalseClauses() {
 		falseConstraint.clear();
 	}
+
+	@Override
+	public void registerValueChoiceFunctions() {
+		// TODO Auto-generated method stub
+	}
 	
-	
+
 }

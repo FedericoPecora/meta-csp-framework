@@ -53,7 +53,7 @@ public abstract class MultiBinaryConstraint extends MultiConstraint {
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
 		Constraint[] ret = this.createInternalConstraints(variables[0], variables[1]);
-		logger.finest("Created internal constraints for " + this + ": " + Arrays.toString(ret));
+		//logger.finest("Created internal constraints for " + this + ":\n\t" + Arrays.toString(ret));
 		return ret;
 	}
 

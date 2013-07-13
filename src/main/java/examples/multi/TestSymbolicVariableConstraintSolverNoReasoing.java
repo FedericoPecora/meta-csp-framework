@@ -20,21 +20,43 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package symbols;
+package examples.multi;
 
+import java.util.logging.Logger;
+
+import cern.colt.Arrays;
+
+import throwables.NoSymbolsException;
+import utility.logging.MetaCSPLogging;
+import multi.symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicVariable;
+import multi.symbols.SymbolicVariableConstraintSolver;
+import multi.symbols.SymbolicValueConstraint.Type;
 import framework.ConstraintNetwork;
-import framework.ConstraintSolver;
+import framework.Variable;
 
-public class SymbolicVariableNetwork extends ConstraintNetwork {
+public class TestSymbolicVariableConstraintSolverNoReasoing {
+	
+	public static void main(String[] args) {
+		Logger logger = MetaCSPLogging.getLogger(TestSymbolicVariableConstraintSolverNoReasoing.class);
+		
+		SymbolicVariableConstraintSolver solver = new SymbolicVariableConstraintSolver();
+		Variable[] vars = solver.createVariables(2);
+		
+		((SymbolicVariable)vars[0]).setDomain(new String[] {"A","B","C","D"});
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7945034928642575462L;
+		((SymbolicVariable)vars[1]).setDomain(new String[] {"alpha","beta","gamma","delta"});
 
-	public SymbolicVariableNetwork(ConstraintSolver sol) {
-		super(sol);
-		// TODO Auto-generated constructor stub
+		ConstraintNetwork.draw(solver.getConstraintNetwork());
+		
+		SymbolicValueConstraint con = new SymbolicValueConstraint(Type.EQUALS);
+		con.setFrom(vars[0]);
+		con.setTo(vars[1]);
+		
+		try { solver.addConstraint(con); }
+		catch (NoSymbolsException e) { logger.info(e.getMessage()); }
+
+		
 	}
 
 }
