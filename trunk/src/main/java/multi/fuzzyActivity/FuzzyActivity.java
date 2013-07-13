@@ -24,7 +24,7 @@ package multi.fuzzyActivity;
 
 import java.util.Vector;
 
-import symbols.fuzzySymbols.FuzzySymbolicVariable;
+import fuzzySymbols.FuzzySymbolicVariable;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;

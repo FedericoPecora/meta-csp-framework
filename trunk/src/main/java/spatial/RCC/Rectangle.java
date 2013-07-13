@@ -49,12 +49,6 @@ public class Rectangle extends Domain {
 	}
 
 	@Override
-	protected void registerValueChoiceFunctions() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public String toString() {
 		return intervalName[0] +  " " + intervalName[1];
 	}

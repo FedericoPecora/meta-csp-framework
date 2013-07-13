@@ -174,7 +174,6 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
 		return stpSolver.numBookmarks();
 	}
-	
 
 	
 }

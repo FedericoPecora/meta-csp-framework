@@ -26,10 +26,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
+import time.qualitative.SimpleAllenInterval;
+import time.qualitative.SimpleInterval;
+
 import multi.fuzzyActivity.FuzzyActivity;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
+import framework.Domain;
+import framework.ValueChoiceFunction;
 import framework.Variable;
 
 
@@ -566,6 +571,16 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 	 */
 	public void setCrispCons(Constraint[] crispCons) {
 		this.crispCons  = crispCons;
+	}
+
+	@Override
+	public void registerValueChoiceFunctions() {
+		ValueChoiceFunction vcf = new ValueChoiceFunction(){
+			@Override
+			public Object getValue(Domain dom) {
+				return ((SimpleInterval)dom).getIntervalName();
+			}};
+		Domain.registerValueChoiceFunction(SimpleInterval.class, vcf, "ID");		
 	}
 	
 	

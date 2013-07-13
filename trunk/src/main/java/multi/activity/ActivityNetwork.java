@@ -47,15 +47,16 @@ public class ActivityNetwork extends ConstraintNetwork {
 		return ((ActivityNetworkSolver)this.solver).getHorizon();
 	}
 	
-	public ActivityNetwork clone() {
-		ActivityNetwork c = new ActivityNetwork(super.solver);
-		
-		for ( Variable v : super.g.getVertices() ) {
-			c.g.addVertex(v);
-		}
-		for ( Constraint e : super.g.getEdges() ) {
-			c.g.addEdge(e, g.getEndpoints(e));
-		}
-		return c;
-	}
+//	public ActivityNetwork clone() {
+//		ActivityNetwork c = new ActivityNetwork(super.solver);
+//		
+//		for ( Variable v : super.g.getVertices() ) {
+//			c.g.addVertex(v);
+//		}
+//		for ( Constraint e : super.g.getEdges() ) {
+//			c.g.addEdge(e, g.getEndpoints(e));
+//		}
+//		return c;
+//	}
+	
 }

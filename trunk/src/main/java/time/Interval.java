@@ -56,25 +56,11 @@ public class Interval extends Domain {
     	bounds = new Bounds(start, stop);
     }
     
-    private final static ValueChoiceFunction startFunction = new ValueChoiceFunction() {
-		@Override
-		public Object getValue(Domain dom) {
-			return ((Interval)dom).bounds.min;
-		}
-    };
-    
-    private final static ValueChoiceFunction endFunction = new ValueChoiceFunction() {
-		@Override
-		public Object getValue(Domain dom) {
-			return ((Interval)dom).bounds.max;
-		}
-    };
-
-	@Override
-	protected void registerValueChoiceFunctions() {
-		this.registerValueChoiceFunction(startFunction, "ET");
-		this.registerValueChoiceFunction(endFunction, "LT");
-	}
+//	@Override
+//	protected void registerValueChoiceFunctions() {
+//		registerValueChoiceFunction(startFunction, "ET");
+//		registerValueChoiceFunction(endFunction, "LT");
+//	}
 	
 	/**
      * Compares two time intervals, returning true iff their start and end times coincide.

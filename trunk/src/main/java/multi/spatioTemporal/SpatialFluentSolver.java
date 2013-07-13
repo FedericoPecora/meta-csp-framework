@@ -5,7 +5,7 @@ import multi.allenInterval.AllenIntervalConstraint;
 import multi.spatial.rectangleAlgebra.RectangleConstraint;
 import multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
 import multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.multi.MultiConstraintSolver;

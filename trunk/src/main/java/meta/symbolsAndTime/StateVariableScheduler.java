@@ -25,7 +25,7 @@ package meta.symbolsAndTime;
 
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import framework.ConstraintNetwork;
 import framework.meta.MetaConstraintSolver;
 import framework.meta.MetaVariable;

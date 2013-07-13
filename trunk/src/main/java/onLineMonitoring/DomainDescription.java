@@ -32,7 +32,7 @@ import multi.fuzzyActivity.FuzzyActivityNetwork;
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import multi.fuzzyActivity.SimpleTimeline;
 import orbital.algorithm.Combinatorical;
-import symbols.SymbolicValueConstraint;
+import multi.symbols.SymbolicValueConstraint;
 import time.Bounds;
 import framework.Constraint;
 import framework.ConstraintNetwork;

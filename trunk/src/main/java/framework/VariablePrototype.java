@@ -22,7 +22,7 @@
  ******************************************************************************/
 package framework;
 
-import cern.colt.Arrays;
+import java.util.Arrays;
 
 /**
  * Objects of this type can be used to represent prototype variables.  This is useful since the only way to create a {@link Variable} is to

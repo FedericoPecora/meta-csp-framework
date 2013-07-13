@@ -611,5 +611,12 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	public void setResolvers(HashMap<ConstraintNetwork, ConstraintNetwork> resolvers) {
 		this.resolvers = resolvers;
 	}
+	
+
+	@Override
+	public void registerValueChoiceFunctions() {
+		// TODO Auto-generated method stub		
+	}
+
 
 }

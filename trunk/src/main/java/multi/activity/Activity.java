@@ -23,7 +23,7 @@
 package multi.activity;
 
 import multi.allenInterval.AllenInterval;
-import symbols.SymbolicVariable;
+import multi.symbols.SymbolicVariable;
 import framework.Constraint;
 import framework.ConstraintSolver;
 import framework.Domain;

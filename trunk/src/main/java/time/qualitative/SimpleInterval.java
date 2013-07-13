@@ -42,14 +42,14 @@ public class SimpleInterval extends Domain {
     	intervalName = "Interval" + sai.getID();
     }
     
-	@Override
-	protected void registerValueChoiceFunctions() {
-		this.registerValueChoiceFunction(new ValueChoiceFunction(){
-			@Override
-			public Object getValue(Domain dom) {
-				return intervalName;
-			}}, "ID");
-	}
+//	@Override
+//	protected void registerValueChoiceFunctions() {
+//		this.registerValueChoiceFunction(new ValueChoiceFunction(){
+//			@Override
+//			public Object getValue(Domain dom) {
+//				return intervalName;
+//			}}, "ID");
+//	}
 	
 	public String getIntervalName() { return intervalName; }
 	

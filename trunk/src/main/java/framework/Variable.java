@@ -64,7 +64,7 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	protected transient Object attributes;
 
 	/**
-	 * A field to set the visualization color. If further modified, variables will be visualized in red
+	 * A field to set the visualization color. If not modified, the variable will be visualized in red
 	 */
 	private Paint color;
 	
@@ -103,7 +103,7 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	 * @param id The ID of the variable (should be maintained by the ConstraintSolver in some way).
 	 */
 	protected Variable(ConstraintSolver cs, int id) {
-		solver = cs;
+		this.solver = cs;
 		this.id = id;
 		this.color= Color.RED;
 	}
@@ -192,4 +192,5 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	public void setAttributes(Object attributes) {
 		this.attributes = attributes;
 	}
+	
 }

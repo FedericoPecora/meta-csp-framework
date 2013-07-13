@@ -42,6 +42,8 @@ import utility.logging.MetaCSPLogging;
 import framework.Constraint;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
+import framework.Domain;
+import framework.ValueChoiceFunction;
 import framework.Variable;
 
 /**
@@ -1101,5 +1103,23 @@ public class APSPSolver extends ConstraintSolver {
 			}
 		}
 		return s;
+	}
+
+	@Override
+	public void registerValueChoiceFunctions() {
+	    ValueChoiceFunction startFunction = new ValueChoiceFunction() {
+			@Override
+			public Object getValue(Domain dom) {
+				return ((Interval)dom).getBounds().min;
+			}
+	    };
+	    ValueChoiceFunction endFunction = new ValueChoiceFunction() {
+			@Override
+			public Object getValue(Domain dom) {
+				return ((Interval)dom).getBounds().max;
+			}
+	    };
+		Domain.registerValueChoiceFunction(Interval.class, startFunction, "ET");
+		Domain.registerValueChoiceFunction(Interval.class, endFunction, "LT");
 	}
 }

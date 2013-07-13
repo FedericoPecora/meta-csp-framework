@@ -22,8 +22,8 @@
  ******************************************************************************/
 package throwables;
 
-import symbols.fuzzySymbols.FuzzySymbolicDomain;
-import cern.colt.Arrays;
+import fuzzySymbols.FuzzySymbolicDomain;
+import java.util.Arrays;
 
 public class SymbolNotFoundException extends Exception {
 	

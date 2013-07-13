@@ -1,0 +1,82 @@
+/*******************************************************************************
+ * Copyright (c) 2010-2013 Federico Pecora <federico.pecora@oru.se>
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ ******************************************************************************/
+package multi.symbols;
+
+import booleanSAT.BooleanSatisfiabilitySolver;
+import booleanSAT.BooleanVariable;
+
+import framework.ConstraintNetwork;
+import framework.ConstraintSolver;
+import framework.multi.MultiConstraintSolver;
+
+public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4961558508886363042L;
+	protected int IDs = 0;
+	protected String[] symbols;
+	
+	public SymbolicVariableConstraintSolver(String[] symbols, int maxVars) {
+		super(new Class[] {SymbolicValueConstraint.class}, new Class[]{SymbolicVariable.class}, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2)), new int[] {symbols.length});
+		this.symbols = symbols;
+	}
+
+	public SymbolicVariableConstraintSolver() {
+		super(new Class[] {SymbolicValueConstraint.class}, new Class[]{SymbolicVariable.class}, createConstraintSolvers(), new int[] {0});
+		this.symbols = new String[]{};
+	}
+
+	public String[] getSymbols() { return this.symbols; }
+	
+	public String getSymbol(int i) { return this.symbols[i]; }
+	
+	public BooleanVariable getBooleanForSymbol(String symbol) {
+		for (int i = 0; i < symbols.length; i++)
+			if (symbols[i].equals(symbol)) return (BooleanVariable)this.getConstraintSolvers()[0].getConstraintNetwork().getVariable(i);
+		return null;
+	}
+
+	private static ConstraintSolver[] createConstraintSolvers(int maxSATVars, int maxSATClauses) {
+		ConstraintSolver[] ret = new ConstraintSolver[] {new BooleanSatisfiabilitySolver(maxSATVars, maxSATClauses)};
+		return ret;
+	}
+	
+	private static ConstraintSolver[] createConstraintSolvers() {
+		ConstraintSolver[] ret = new ConstraintSolver[] {new BooleanSatisfiabilitySolver(0,0)};
+		return ret;
+	}
+		
+	@Override
+	protected ConstraintNetwork createConstraintNetwork() {
+		return new SymbolicVariableNetwork(this);
+	}
+	
+	@Override
+	public boolean propagate() {
+		//Does nothing.  Propagation is taken care of
+		//by the underlying BooleanSatisfiabilitySolver
+		return true;
+	}
+}

@@ -41,6 +41,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ConcurrentModificationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,6 +60,7 @@ import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
 import edu.uci.ics.jung.algorithms.layout.util.VisRunner;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.ObservableGraph;
 import edu.uci.ics.jung.graph.event.GraphEvent;
 import edu.uci.ics.jung.graph.event.GraphEventListener;
@@ -73,141 +75,114 @@ import framework.Constraint;
 import framework.Variable;
 
 /**
- * A variation of AddNodeDemo that animates transitions between graph states.
+ * Based on variation of AddNodeDemo that animates transitions between graph states, by Tom Nelson.
  *
- * @author Tom Nelson
+ * @author Federico Pecora
  */
 public class ConstraintNetworkFrame extends JFrame {
-	
+
 	private static final Logger logger = Logger.getLogger(ConstraintNetworkFrame.class.getPackage().getName());
-	
 	private static final long serialVersionUID = 3896624751126451811L;
-
 	private ObservableGraph<Variable,Constraint> g = null;
+	private VisualizationViewer<Variable,Constraint> vv = null;
+	private AbstractLayout<Variable,Constraint> layout = null;
 
-    private VisualizationViewer<Variable,Constraint> vv = null;
+	boolean done;
+	protected JButton switchLayout;
+	protected JButton performOperation;
+	private Animator animator = null;
+	private LayoutTransition<Variable,Constraint> lt = null;
+	
+	//An implementation of Animator which ignores ConcurrentModificationExceptions
+	private class MyAnimator extends Animator {
+		public MyAnimator(IterativeContext process) { super(process); }
+		public void run() {
+			try { super.run(); }
+			catch (ConcurrentModificationException e) { /* ignore */ }
+		}
+	}
 
-    private AbstractLayout<Variable,Constraint> layout = null;
-
-    //Timer timer;
-
-    boolean done;
-
-    protected JButton switchLayout;
-    protected JButton performOperation;
-    
-    private Callback cb;
-    
-    //private int layer = 0;
-
-    //public static final int EDGE_LENGTH = 100;
-    
-//	private class STNTransformer implements Transformer<Variable,Point2D> {
-//		@Override
-//		public Point2D transform(Variable arg0) {
-//			Point ret = new Point((int) ((Long)arg0.getDomain().chooseValue("ET")*20), layer);
-//			layer+=100;
-//			return ret;
-//		}
-//	}
-
-    
-    public ConstraintNetworkFrame(ObservableGraph<Variable,Constraint> graph, String title, final Callback cb) {
-    	super(title);
-    	this.cb = cb;
-        g = graph;
-        g.addGraphEventListener(new GraphEventListener<Variable,Constraint>() {
-
+	public ConstraintNetworkFrame(ObservableGraph<Variable,Constraint> graph, String title, final Callback cb) {
+		super(title);
+		this.g = graph;
+		
+		g.addGraphEventListener(new GraphEventListener<Variable,Constraint>() {
 			@Override
 			public void handleGraphEvent(GraphEvent<Variable,Constraint> evt) {
-				logger.log(Level.FINE, "Got " + evt);
-				
-				/****/
-		    	vv.getRenderContext().getPickedVertexState().clear();
-		    	vv.getRenderContext().getPickedEdgeState().clear();
-		        try {
+				vv.getRenderContext().getPickedVertexState().clear();
+				vv.getRenderContext().getPickedEdgeState().clear();
+				try {
+					layout.initialize();
+					try {
+						Relaxer relaxer = new VisRunner((IterativeContext)layout);
+						relaxer.stop();
+						relaxer.prerelax();
+					}
+					catch (java.lang.ClassCastException e) { e.printStackTrace(); }
 
-		                layout.initialize();
+					StaticLayout<Variable,Constraint> staticLayout = new StaticLayout<Variable,Constraint>(g, layout);
+					lt = new LayoutTransition<Variable,Constraint>(vv, vv.getGraphLayout(), staticLayout);
+					animator = new MyAnimator(lt);
+					animator.start();
 
-		                try {
-		        			Relaxer relaxer = new VisRunner((IterativeContext)layout);
-		        			relaxer.stop();
-		        			relaxer.prerelax();
-		                } catch (java.lang.ClassCastException e) {}
-		                
-		        		StaticLayout<Variable,Constraint> staticLayout =
-		        			new StaticLayout<Variable,Constraint>(g, layout);
-						LayoutTransition<Variable,Constraint> lt =
-							new LayoutTransition<Variable,Constraint>(vv, vv.getGraphLayout(),
-									staticLayout);
-						Animator animator = new Animator(lt);
-						animator.start();
-//						vv.getRenderContext().getMultiLayerTransformer().setToIdentity();
-						vv.repaint();
+					//vv.getRenderContext().getMultiLayerTransformer().setToIdentity();
+					vv.repaint();
+				}
+				catch (Exception e) { e.printStackTrace(); }
+			}
+		});
 
-		        } catch (Exception e) {
-		            System.out.println(e);
+		//create a graphdraw
+		//layout = new FRLayout<Variable,Constraint>(g);
+		//layout = new SpringLayout<Variable,Constraint>(g);
+		//layout = new StaticLayout<Variable,Constraint>(g,new STNTransformer());
+		layout = new FRLayout2<Variable,Constraint>(g);
+		//layout = new CircleLayout<Variable,Constraint>(g);
+		//layout = new ISOMLayout<Variable,Constraint>(g);
+		//layout = new KKLayout<Variable,Constraint>(g);
+		layout.setSize(new Dimension(600,600));
 
-		        }				
-				/****/
-			}});
 
-        //create a graphdraw
-        //layout = new FRLayout<Variable,Constraint>(g);
-        //layout = new SpringLayout<Variable,Constraint>(g);
-        //layout = new StaticLayout<Variable,Constraint>(g,new STNTransformer());
-        layout = new FRLayout2<Variable,Constraint>(g);
-        //layout = new CircleLayout<Variable,Constraint>(g);
-        //layout = new ISOMLayout<Variable,Constraint>(g);
-        //layout = new KKLayout<Variable,Constraint>(g);
-        layout.setSize(new Dimension(600,600));
-        
-        
-        try {
+		try {
 			Relaxer relaxer = new VisRunner((IterativeContext)layout);
 			relaxer.stop();
 			relaxer.prerelax();
-        } catch (java.lang.ClassCastException e) {}
-        
-        
-        Layout<Variable,Constraint> staticLayout =
-			new StaticLayout<Variable,Constraint>(g, layout);
+		}
+		catch (java.lang.ClassCastException e) { e.printStackTrace(); }
 
-        vv = new VisualizationViewer<Variable,Constraint>(staticLayout, new Dimension(600,600));
+		Layout<Variable,Constraint> staticLayout = new StaticLayout<Variable,Constraint>(g, layout);
+		vv = new VisualizationViewer<Variable,Constraint>(staticLayout, new Dimension(600,600));
+		JRootPane rp = this.getRootPane();
+		rp.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().setBackground(java.awt.Color.lightGray);
+		getContentPane().setFont(new Font("Serif", Font.PLAIN, 12));
+		vv.setGraphMouse(new DefaultModalGraphMouse<Variable,Constraint>());
+		vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
+		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Variable>());
+		vv.setForeground(Color.black);
 
-        JRootPane rp = this.getRootPane();
-        rp.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
-
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().setBackground(java.awt.Color.lightGray);
-        getContentPane().setFont(new Font("Serif", Font.PLAIN, 12));
-
-        vv.setGraphMouse(new DefaultModalGraphMouse<Variable,Constraint>());
-
-        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
-        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Variable>());
-        vv.setForeground(Color.black);
-        
-        //draw edge labels
-        Transformer<Constraint,String> stringer = new Transformer<Constraint,String>(){
-            @Override
+		//draw edge labels
+		Transformer<Constraint,String> stringer = new Transformer<Constraint,String>(){
+			@Override
 			public String transform(Constraint e) {
-                return e.getEdgeLabel();
-            }
-        };
-        
-        Transformer<Variable,Paint> vertexPaint = new Transformer<Variable,Paint>() {
-            public Paint transform(Variable v) {
-                return v.getColor();
-            }
-        };  
-        
-        vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
-        
-        vv.getRenderContext().setEdgeLabelTransformer(stringer);
-        vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<Constraint>(vv.getPickedEdgeState(), Color.black, Color.cyan));
+				try { return e.getEdgeLabel(); }
+				catch (NullPointerException ex) { return ""; }
+			}
+		};
 
-        vv.addComponentListener(new ComponentAdapter() {
+		Transformer<Variable,Paint> vertexPaint = new Transformer<Variable,Paint>() {
+			public Paint transform(Variable v) {
+				return v.getColor();
+			}
+		};  
+
+		vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+
+		vv.getRenderContext().setEdgeLabelTransformer(stringer);
+		vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<Constraint>(vv.getPickedEdgeState(), Color.black, Color.cyan));
+
+		vv.addComponentListener(new ComponentAdapter() {
 
 			/**
 			 * @see java.awt.event.ComponentAdapter#componentResized(java.awt.event.ComponentEvent)
@@ -215,93 +190,71 @@ public class ConstraintNetworkFrame extends JFrame {
 			@Override
 			public void componentResized(ComponentEvent arg0) {
 				super.componentResized(arg0);
-				System.err.println("resized");
 				layout.setSize(arg0.getComponent().getSize());
 			}});
 
-        getContentPane().add(vv);
-        
-        performOperation = new JButton("Perform operation");
-        performOperation.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent arg0) {
-        		if (cb != null) cb.performOperation();
-        	}
-        });
-        
-        switchLayout = new JButton("Switch to SpringLayout");
-        switchLayout.addActionListener(new ActionListener() {
-        	
-        	@Override
-            public void actionPerformed(ActionEvent ae) {
-            	Dimension d = vv.getSize();//new Dimension(600,600);
-                if (switchLayout.getText().indexOf("Spring") > 0) {
-                    switchLayout.setText("Switch to FRLayout");
-                    //layout = new SpringLayout<Variable,Constraint>(g, new ConstantTransformer(EDGE_LENGTH));
-                    layout = new SpringLayout<Variable,Constraint>(g);
-                    layout.setSize(d);
-                    
-                    try {
-            			Relaxer relaxer = new VisRunner((IterativeContext)layout);
-            			relaxer.stop();
-            			relaxer.prerelax();
-                    } catch (java.lang.ClassCastException e) {}
-            		
-            		StaticLayout<Variable,Constraint> staticLayout =
-            			new StaticLayout<Variable,Constraint>(g, layout);
-    				LayoutTransition<Variable,Constraint> lt =
-    					new LayoutTransition<Variable,Constraint>(vv, vv.getGraphLayout(),
-    							staticLayout);
-    				Animator animator = new Animator(lt);
-    				animator.start();
-    			//	vv.getRenderContext().getMultiLayerTransformer().setToIdentity();
-    				vv.repaint();
+		getContentPane().add(vv);
+		performOperation = new JButton("Perform operation");
+		if (cb == null) performOperation.setEnabled(false);
+		else performOperation.setEnabled(true);
 
-                } else {
-                    switchLayout.setText("Switch to SpringLayout");
-                    layout = new FRLayout<Variable,Constraint>(g, d);
-                    layout.setSize(d);
-                    
-                    try {
-            			Relaxer relaxer = new VisRunner((IterativeContext)layout);
-            			relaxer.stop();
-            			relaxer.prerelax();
-                    } catch (java.lang.ClassCastException e) {}
-                    
-            		StaticLayout<Variable,Constraint> staticLayout =
-            			new StaticLayout<Variable,Constraint>(g, layout);
-    				LayoutTransition<Variable,Constraint> lt =
-    					new LayoutTransition<Variable,Constraint>(vv, vv.getGraphLayout(),
-    							staticLayout);
-    				Animator animator = new Animator(lt);
-    				animator.start();
-    			//	vv.getRenderContext().getMultiLayerTransformer().setToIdentity();
-    				vv.repaint();
+		performOperation.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (cb != null) cb.performOperation();
+			}
+		});
 
-                }
-            }
-        });
+		switchLayout = new JButton("Switch to SpringLayout");
+		switchLayout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				Dimension d = vv.getSize();//new Dimension(600,600);
+				if (switchLayout.getText().indexOf("Spring") > 0) {
+					switchLayout.setText("Switch to FRLayout");
+					//layout = new SpringLayout<Variable,Constraint>(g, new ConstantTransformer(EDGE_LENGTH));
+					layout = new SpringLayout<Variable,Constraint>(g);
+					layout.setSize(d);
 
-        getContentPane().add(performOperation, BorderLayout.SOUTH);
-        //getContentPane().add(switchLayout, BorderLayout.SOUTH);
+					try {
+						Relaxer relaxer = new VisRunner((IterativeContext)layout);
+						relaxer.stop();
+						relaxer.prerelax();
+					} catch (java.lang.ClassCastException e) { e.printStackTrace(); }
 
-    	this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    	this.pack();
-    	this.setVisible(true);
+					StaticLayout<Variable,Constraint> staticLayout = new StaticLayout<Variable,Constraint>(g, layout);
+					lt = new LayoutTransition<Variable,Constraint>(vv, vv.getGraphLayout(), staticLayout);
+					Animator animator = new MyAnimator(lt);
+					animator.start();
+					//	vv.getRenderContext().getMultiLayerTransformer().setToIdentity();
+					vv.repaint();
 
-    }
+				} else {
+					switchLayout.setText("Switch to SpringLayout");
+					layout = new FRLayout<Variable,Constraint>(g, d);
+					layout.setSize(d);
 
-/*
-    public static void main(String[] args) {
-    	AnimatingAddNodeDemo and = new AnimatingAddNodeDemo();
-    	JFrame frame = new JFrame();
-    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	frame.getContentPane().add(and);
+					try {
+						Relaxer relaxer = new VisRunner((IterativeContext)layout);
+						relaxer.stop();
+						relaxer.prerelax();
+					} catch (java.lang.ClassCastException e) {}
 
-    	and.init();
-    	and.start();
-    	frame.pack();
-    	frame.setVisible(true);
-    }
-    */
+					StaticLayout<Variable,Constraint> staticLayout = new StaticLayout<Variable,Constraint>(g, layout);
+					lt = new LayoutTransition<Variable,Constraint>(vv, vv.getGraphLayout(), staticLayout);
+					Animator animator = new MyAnimator(lt);
+					animator.start();
+					//vv.getRenderContext().getMultiLayerTransformer().setToIdentity();
+					vv.repaint();
+
+				}
+			}
+		});
+
+		getContentPane().add(performOperation, BorderLayout.SOUTH);
+		//getContentPane().add(switchLayout, BorderLayout.SOUTH);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.pack();
+		this.setVisible(true);
+	}
 }

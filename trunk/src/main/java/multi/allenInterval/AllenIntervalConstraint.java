@@ -893,7 +893,6 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				return ret;	
 			}
 		}
-
 		return null;
 	}
 
