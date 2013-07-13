@@ -11,9 +11,7 @@ version = '1.0.141'
 group = 'meta-csp-framework'
 
 repositories {
-  maven {
-    url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
-  }
+  mavenCentral()
 }
 
 dependencies {
@@ -59,6 +57,7 @@ task libJar (type : Jar) {
     from lib
 }
 
+//publish bin, source and javaDoc to repo
 publishing {
     publications {
         metaCSPFramework(MavenPublication) {
@@ -77,6 +76,8 @@ publishing {
     repositories {
         maven {
             url "file:/${project.projectDir}/artifacts"
+	    //dependency 'com.google.code.maven-svn-wagon:maven-svn-wagon:1.1'
+	    //url "svn:https://meta-csp-framework.googlecode.com/svn/m2/releases"
         }
     }
 }
