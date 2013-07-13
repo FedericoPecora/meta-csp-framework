@@ -1,23 +1,16 @@
-apply plugin: 'java'
+['java', 'eclipse', 'maven', 'maven-publish', 'application'].each {
+    apply plugin : it
+}
 
-apply plugin: 'eclipse'
-
-// The Maven plugin is only required if your package is used as a library.
-apply plugin: 'maven'
-
-// The Application plugin and mainClassName attribute are only required if
-// your package is used as a binary.
-apply plugin: 'application'
 mainClassName = 'examples.multi.TestTimelinePlotting'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-version = '0.0.0-SNAPSHOT'
-group = 'meta_csp_framework'
+version = '1.0.141'
+group = 'meta-csp-framework'
 
 repositories {
-  //mavenLocal()
   maven {
     url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
   }
@@ -33,6 +26,59 @@ dependencies {
   compile 'org.prefuse:prefuse:beta-20071021'
   compile 'jfree:jfreechart:1.0.13'
   compile 'junit:junit:4.8.1'
+}
+
+processResources { 
+     from(projectDir) { 
+         include 'license.txt'
+     } 
+} 
+
+//create javaDoc jar
+task javadocJar (type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+    from(projectDir) {
+       include 'license.txt'
+    }
+}
+
+//create sources jar
+task sourceJar (type : Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+    from(projectDir) {
+       include 'license.txt'
+    }
+}
+
+//create extra lib jar
+task libJar (type : Jar) {
+    def lib = file("lib")
+    classifier = 'libs'
+    from lib
+}
+
+publishing {
+    publications {
+        metaCSPFramework(MavenPublication) {
+            from components.java
+ 	    artifact (javadocJar) {
+                classifier = 'javadoc'
+            }
+	    artifact (sourceJar) {
+                classifier = 'sources'
+            }
+	    artifact (libJar) {
+                classifier = 'libs'
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "file:/${project.projectDir}/artifacts"
+        }
+    }
 }
 
 defaultTasks 'install'
