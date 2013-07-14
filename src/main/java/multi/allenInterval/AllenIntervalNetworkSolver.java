@@ -87,11 +87,6 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	}
 	
 	/********************/
-
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new AllenIntervalNetwork(this);
-	}
 	
 
 //	@Override
@@ -133,11 +128,11 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		return true;
 	}
 	
-	private ArrayList<AllenIntervalNetwork> activityNetworkRollback = new ArrayList<AllenIntervalNetwork>();
+	private ArrayList<ConstraintNetwork> activityNetworkRollback = new ArrayList<ConstraintNetwork>();
 	
 	
 	public int bookmark() {
-		AllenIntervalNetwork aNet = (AllenIntervalNetwork) ((AllenIntervalNetwork)this.getConstraintNetwork()).clone();
+		ConstraintNetwork aNet = (ConstraintNetwork) this.getConstraintNetwork().clone();
 		activityNetworkRollback.add(aNet);
 		
 		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
@@ -161,7 +156,7 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		APSPSolver stpSolver = (APSPSolver) constraintSolvers[0];
 		stpSolver.revert(i);
 		
-		AllenIntervalNetwork aNet = ((AllenIntervalNetwork)this.theNetwork);		
+		ConstraintNetwork aNet = this.theNetwork;		
 		for ( Variable v : aNet.getVariables() ) {
 			AllenInterval vAI = (AllenInterval)v;
 			

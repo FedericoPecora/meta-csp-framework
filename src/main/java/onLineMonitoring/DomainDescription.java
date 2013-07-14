@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import multi.fuzzyActivity.FuzzyActivity;
-import multi.fuzzyActivity.FuzzyActivityNetwork;
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import multi.fuzzyActivity.SimpleTimeline;
 import orbital.algorithm.Combinatorical;
@@ -50,7 +49,7 @@ public class DomainDescription {
 	private boolean fastForward = true;
 	private HashMap<String,SimpleTimeline> timelines = new HashMap<String,SimpleTimeline>();
 	private Vector<Hypothesis> fixedHypotheses = new Vector<Hypothesis>();
-	private Vector<FuzzyActivityNetwork> fixedNetworks = new Vector<FuzzyActivityNetwork>();
+	private Vector<ConstraintNetwork> fixedNetworks = new Vector<ConstraintNetwork>();
 //	private Vector<String> sensorsNames = new Vector<String>();
 //	private Vector<Sensor> sensors = new Vector<Sensor>();
 	private HashMap<String,Sensor> sensors = new HashMap<String,Sensor>();
@@ -58,7 +57,7 @@ public class DomainDescription {
 	private Vector<Rule> toSkip = new Vector<Rule>();
 	
 	//FIXME: Uninitialized read of solver in new onLineMonitoring.DomainDescription(Rule[])	DomainDescription.java	/MetaCSPFramework/src/onLineMonitoring	line 47	FindBugs Problem (Scariest)
-	private FuzzyActivityNetwork inferredHypotheses = new FuzzyActivityNetwork(this.solver);
+	private ConstraintNetwork inferredHypotheses = new ConstraintNetwork(this.solver);
 	
 	private HypothesisListener hl = null;
 	private double threshold = -1.0;
@@ -463,7 +462,7 @@ public class DomainDescription {
 			Variable[] vars = inferredHypotheses.getVariables();
 			this.solver.removeConstraints(cons);
 			this.solver.removeVariables(vars);
-			inferredHypotheses = new FuzzyActivityNetwork(this.solver);
+			inferredHypotheses = new ConstraintNetwork(this.solver);
 		}
 		
 		if (!fastForward) for (FuzzySensorEvent e : events) new SensorWaitingThread(e).start(); 
@@ -653,7 +652,7 @@ public class DomainDescription {
 				Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
 				for (Variable sensVar : sensVars) {
 					FuzzyActivity sensAct = (FuzzyActivity)sensVar;
-					FuzzyActivityNetwork oneUnification = new FuzzyActivityNetwork(null);
+					ConstraintNetwork oneUnification = new ConstraintNetwork(null);
 
 					//make temporal constraint (from: head, to: sensAct)
 					//of type req.gettCons()
@@ -694,8 +693,8 @@ public class DomainDescription {
 			}
 			
 			//OPT
-			Vector<FuzzyActivityNetwork> newFixedNetworks = null;
-			if (optimize) newFixedNetworks = new Vector<FuzzyActivityNetwork>();
+			Vector<ConstraintNetwork> newFixedNetworks = null;
+			if (optimize) newFixedNetworks = new Vector<ConstraintNetwork>();
 			
 			if (!impossibleReq) {
 				Vector<ConstraintNetwork> toAttempt = new Vector<ConstraintNetwork>();
@@ -717,7 +716,7 @@ public class DomainDescription {
 						}
 					}
 					if (!skip) {
-						FuzzyActivityNetwork oneAttempt = new FuzzyActivityNetwork(null);
+						ConstraintNetwork oneAttempt = new ConstraintNetwork(null);
 						for (int i = 0; i < combination.length; i++) {
 							Vector<ConstraintNetwork> unifs = constraints.elementAt(i);
 							oneAttempt.join(unifs.elementAt(combination[i]));
@@ -725,7 +724,7 @@ public class DomainDescription {
 						
 						//OPT
 						if (optimize) {
-							FuzzyActivityNetwork filtered = new FuzzyActivityNetwork(null);
+							ConstraintNetwork filtered = new ConstraintNetwork(null);
 							for (Variable v : oneAttempt.getVariables()) {
 								if (sensors.keySet().contains(solver.getComponent(v)) && !cleanupActs.contains(v)) filtered.addVariable(v);
 							}

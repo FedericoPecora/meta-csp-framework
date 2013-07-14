@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import multi.fuzzyActivity.FuzzyActivity;
-import multi.fuzzyActivity.FuzzyActivityNetwork;
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import multi.fuzzyActivity.SimpleTimeline;
 import onLineMonitoring.FuzzySensorEvent;
@@ -167,7 +166,7 @@ public class FuzzyActivityDomain extends MetaConstraint {
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		for (FuzzyActivity f : fas) {
 			if (f.getMarking().equals(markings.UNJUSTIFIED)) {
-				FuzzyActivityNetwork fan = new FuzzyActivityNetwork(null);
+				ConstraintNetwork fan = new ConstraintNetwork(null);
 				fan.addVariable(f);
 				ret.add(fan);
 			}
@@ -227,8 +226,7 @@ public class FuzzyActivityDomain extends MetaConstraint {
 			Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
 			for (Variable sensVar : sensVars) {
 				FuzzyActivity sensAct = (FuzzyActivity) sensVar;
-				FuzzyActivityNetwork oneUnification = new FuzzyActivityNetwork(
-						null);
+				ConstraintNetwork oneUnification = new ConstraintNetwork(null);
 
 				// make temporal constraint (from: head, to: sensAct)
 				// of type req.gettCons()
@@ -289,7 +287,7 @@ public class FuzzyActivityDomain extends MetaConstraint {
 				}
 			}
 			if (!skip) {
-				FuzzyActivityNetwork oneAttempt = new FuzzyActivityNetwork(null);
+				ConstraintNetwork oneAttempt = new ConstraintNetwork(null);
 				for (int i = 0; i < combination.length; i++) {
 					Vector<ConstraintNetwork> unifs = constraints.elementAt(i);
 					oneAttempt.join(unifs.elementAt(combination[i]));

@@ -93,7 +93,7 @@ public class APSPSolver extends ConstraintSolver {
 	private ArrayList<TimePoint[]> tPointsRollback = new ArrayList<TimePoint[]>();
 	private ArrayList<long[][]> distanceRollback = new ArrayList<long[][]>();	
 	private ArrayList<Integer> maxUsedRollback = new ArrayList<Integer>();
-	private ArrayList<SimpleTemporalNetwork> networkRollback = new ArrayList<SimpleTemporalNetwork>();
+	private ArrayList<ConstraintNetwork> networkRollback = new ArrayList<ConstraintNetwork>();
 
 	//Temporal Horizon
 	private long H;
@@ -110,11 +110,6 @@ public class APSPSolver extends ConstraintSolver {
 
 	//rigidity matrix
 	private double[] rigidity;
-
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new SimpleTemporalNetwork(this);
-	}
 
 	/**
 	 * Create a new APSPSolver with given temporal horizon.

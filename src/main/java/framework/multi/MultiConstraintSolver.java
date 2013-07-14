@@ -295,10 +295,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			cs.removeVariables(solvers.get(cs).toArray(new Variable[solvers.get(cs).size()]));
 		}
 	}
-	
-	@Override
-	protected abstract ConstraintNetwork createConstraintNetwork();
-	
+		
 	private Variable[][] createInternalVariables(int[] ingredients, int num) {
 		Vector<Vector<Variable>> ret = new Vector<Vector<Variable>>();
 		for (int k = 0; k < this.getConstraintSolvers().length; k++) {

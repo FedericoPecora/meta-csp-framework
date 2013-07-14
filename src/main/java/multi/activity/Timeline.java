@@ -34,18 +34,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import utility.UI.PlotBoxTLSmall;
+import framework.ConstraintNetwork;
 import framework.Variable;
 
 public abstract class Timeline {
 	
-	private ActivityNetwork an;
+	private ConstraintNetwork an;
 
 	private Long[] pulses = null;
 	private Long[] durations = null;
 	protected String component;
 	
 	public Timeline(ActivityNetworkSolver ans, String component) {
-		this.an = (ActivityNetwork)ans.getConstraintNetwork();
+		this.an = ans.getConstraintNetwork();
 		this.component = component;
 		this.pulses = null;
 		this.durations = null;
@@ -119,7 +120,7 @@ public abstract class Timeline {
 		profileFrame.setVisible(true);
 	}
 	
-	public ActivityNetwork getAn() {
+	public ConstraintNetwork getConstraintNetwork() {
 		return an;
 	}
 	

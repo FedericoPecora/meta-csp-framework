@@ -25,7 +25,6 @@ package meta.TCSP;
 import java.util.Vector;
 
 import multi.TCSP.DistanceConstraint;
-import multi.TCSP.DistanceConstraintNetwork;
 import time.Bounds;
 import time.SimpleDistanceConstraint;
 import framework.Constraint;
@@ -52,7 +51,7 @@ public class TCSPLabeling extends MetaConstraint {
 
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-		DistanceConstraintNetwork dcn = (DistanceConstraintNetwork)metaCS.getConstraintSolvers()[0].getConstraintNetwork();
+		ConstraintNetwork dcn = (ConstraintNetwork)metaCS.getConstraintSolvers()[0].getConstraintNetwork();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		//ConstraintNetwork[] ret = new ConstraintNetwork[dcn.getConstraints().length];
 		for (Constraint con : dcn.getConstraints()) {
@@ -60,7 +59,7 @@ public class TCSPLabeling extends MetaConstraint {
 			DistanceConstraint dc = (DistanceConstraint)con;
 			//if (dc.getInternalConstraints().length > 1 && !dc.isPropagated()) {
 			if (!dc.propagateImmediately()) {
-				DistanceConstraintNetwork oneEdge = new DistanceConstraintNetwork(dc.getFrom().getConstraintSolver());
+				ConstraintNetwork oneEdge = new ConstraintNetwork(dc.getFrom().getConstraintSolver());
 				oneEdge.addVariable(dc.getFrom());
 				oneEdge.addVariable(dc.getTo());
 				oneEdge.addConstraint(dc);
@@ -91,7 +90,7 @@ public class TCSPLabeling extends MetaConstraint {
 			DistanceConstraint dc = new DistanceConstraint(interval);
 			dc.setFrom(from);
 			dc.setTo(to);
-			DistanceConstraintNetwork dcn = new DistanceConstraintNetwork(groundSolver);
+			ConstraintNetwork dcn = new ConstraintNetwork(groundSolver);
 			dcn.addVariable(from);
 			dcn.addVariable(to);
 			dcn.addConstraint(dc);

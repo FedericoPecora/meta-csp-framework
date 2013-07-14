@@ -53,11 +53,6 @@ public class RCCConstraintSolver extends ConstraintSolver{
 	}
 
 	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new SpatialNetwork(this);
-	}
-
-	@Override
 	public boolean propagate() {
 		
 		if(this.getConstraints().length == 0) return true;

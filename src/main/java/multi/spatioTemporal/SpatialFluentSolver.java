@@ -39,12 +39,6 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 		return ret;
 	}
 	
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new SpatialFluentNetwork(this);
-	}
-
-	
 //	@Override
 //	protected Variable[] createVariablesSub(int num) {
 //		Variable[] ret = new Variable[num];

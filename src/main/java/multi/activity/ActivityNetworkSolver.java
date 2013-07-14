@@ -133,12 +133,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		}
 		new PlotActivityNetworkGantt(this, selectedVariables, "Activity Network Gantt");
 	}
-	
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new ActivityNetwork(this);
-	}
-	
+		
 //	@Override
 //	protected Variable[] createVariablesSub(int num) {
 //		Variable[] ret = new Variable[num];

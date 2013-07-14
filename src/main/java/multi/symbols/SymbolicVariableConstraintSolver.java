@@ -69,11 +69,6 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	}
 		
 	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new SymbolicVariableNetwork(this);
-	}
-	
-	@Override
 	public boolean propagate() {
 		//Does nothing.  Propagation is taken care of
 		//by the underlying BooleanSatisfiabilitySolver

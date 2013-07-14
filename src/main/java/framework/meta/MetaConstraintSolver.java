@@ -404,11 +404,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}
 		this.retractResolverSub(metaVar, res);
 	}
-
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new MetaVariableConstraintNetwork(this);
-	}
 	
 	@Override
 	public boolean propagate() {

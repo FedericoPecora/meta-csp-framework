@@ -54,11 +54,6 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 		return new ConstraintSolver[] {stpSolver};
 	}
 	
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new DistanceConstraintNetwork(this);
-	}
-	
 //	@Override
 //	protected Variable[] createVariablesSub(int num) {
 //		MultiTimePoint[] ret = new MultiTimePoint[num];

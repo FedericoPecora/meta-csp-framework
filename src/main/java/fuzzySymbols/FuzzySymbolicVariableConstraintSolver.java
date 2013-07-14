@@ -551,11 +551,6 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 //	}
 
 	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new FuzzySymbolicVariableNetwork(this);
-	}
-
-	@Override
 	public boolean propagate() {
 		resetDomains();
 		Constraint[] cons = this.getConstraints();
