@@ -65,7 +65,7 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 	 * Creates a new {@link FuzzyAllenIntervalNetworkSolver}.
 	 */
 	public FuzzyAllenIntervalNetworkSolver() {
-		super(new Class[]{FuzzyAllenIntervalConstraint.class}, new Class[]{SimpleAllenInterval.class});
+		super(new Class[]{FuzzyAllenIntervalConstraint.class}, SimpleAllenInterval.class);
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
 	}
 
@@ -96,7 +96,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 		return globalPossibilityDegree;
 	}
 	
-	
 	@Override
 	public boolean propagate() {
 		isSubGraph = false;
@@ -109,8 +108,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 		updateGlobalPossibilityDegree(frelations);
 		return true;
 	}
-	
-	
 
 //	private HashMap<FuzzyAllenIntervalConstraint.Type, Double> movaghati(FuzzyAllenIntervalConstraint.Type type) { 
 //		HashMap<FuzzyAllenIntervalConstraint.Type, Double> fr = new HashMap<FuzzyAllenIntervalConstraint.Type, Double>();
@@ -138,7 +135,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 //		}
 //		return ret;
 //	}
-
 	
 	private boolean isInTheSubGraph(Variable varTmp) {	
 		for (int i = 0; i < subs.size(); i++) {
@@ -147,9 +143,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 		return false;
 	}
 
-	
-
-	
 	private Constraint[] extractSubGraphCons(Constraint[] c) {
 		
 		if(!isSubGraph) return c;
@@ -162,7 +155,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 		Constraint[] ret = ctmp.toArray(new Constraint[ctmp.size()]);
 		return ret;
 	}
-
 
 	//Return value contains possibilities of all 13 relations between all intervals 
 	// -- each hashmap is the possibility degree of the relation (i,j), and
@@ -210,10 +202,7 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 		
 		HashMap<Coord, Vector<FuzzyAllenIntervalConstraint>> multiple = new HashMap<Coord, Vector<FuzzyAllenIntervalConstraint>>();
 		
-		
 		FuzzyAllenIntervalConstraint[][] tmp = new FuzzyAllenIntervalConstraint[getNumVars()][getNumVars()];
-		
-	
 		
 		int row = 0 , col = 0;
 		for(int i = 0; i < c.length; i++){
@@ -320,12 +309,7 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 		return frelations;
 	}
 	
-
-		
-	
-
-	private boolean isACrispConstrint(
-			FuzzyAllenIntervalConstraint fc) {
+	private boolean isACrispConstrint(	FuzzyAllenIntervalConstraint fc) {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < crispCons.length; i++) {
 			if (((fc.getFrom().getID() == (crispCons[i].getScope()[0].getID())) && (fc.getTo().getID() == (crispCons[i].getScope()[1].getID()))))
@@ -414,6 +398,7 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 	}
 	*/
 	
+	@SuppressWarnings("unchecked")
 	private Vector<Vector<HashMap<FuzzyAllenIntervalConstraint.Type, Double>>> fuzzyPathConsistency(Vector<Vector<HashMap<FuzzyAllenIntervalConstraint.Type, Double>>> frelations) {
 		int numVars = getNumVars();
 		//need to cycle at least (numVars^2 - numVars) times

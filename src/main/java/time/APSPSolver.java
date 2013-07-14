@@ -47,8 +47,9 @@ import framework.ValueChoiceFunction;
 import framework.Variable;
 
 /**
- * Simple Temporal Reasoning Problem solver consisting in Floyd-Warshall
- * all-pairs shortest-path algorithm.  Derived from original implementation by
+ * Simple Temporal Problem solver which uses the Floyd-Warshall
+ * all-pairs shortest-path algorithm for constraint propagation.
+ * Derived from original implementation by
  * the Planning and Scheduling Team (ISTC-CNR) under project APSI.
  * 
  * @author Federico Pecora and Planning and Scheduling Team
@@ -134,7 +135,7 @@ public class APSPSolver extends ConstraintSolver {
 	 * (propagation is O((maxTPs+2)^3)). 
 	 */
 	public APSPSolver (long origin, long horizon, int maxTPs) {
-		super(new Class[]{SimpleDistanceConstraint.class}, new Class[]{TimePoint.class});
+		super(new Class[]{SimpleDistanceConstraint.class}, TimePoint.class);
 		this.setOptions(OPTIONS.MANUAL_PROPAGATE);
 		this.MAX_TPS = maxTPs+2; //+2 To account for O and H
 		tPoints = new TimePoint[MAX_TPS];

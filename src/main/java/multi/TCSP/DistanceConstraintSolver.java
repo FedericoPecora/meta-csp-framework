@@ -39,7 +39,7 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 	private MultiTimePoint sink = null;
 	
 	public DistanceConstraintSolver(long origin, long horizon) {
-		super(new Class[]{DistanceConstraint.class}, new Class[]{MultiTimePoint.class}, createConstraintSolvers(origin, horizon), new int[] {1});	
+		super(new Class[]{DistanceConstraint.class}, MultiTimePoint.class, createConstraintSolvers(origin, horizon), new int[] {1});	
 		//Create source and sink as wrappers of APSPSolver's source and sink
 		APSPSolver internalSolver = (APSPSolver)this.constraintSolvers[0];
 		source = new MultiTimePoint(this, IDs++, constraintSolvers, new Variable[] {internalSolver.getSource()});

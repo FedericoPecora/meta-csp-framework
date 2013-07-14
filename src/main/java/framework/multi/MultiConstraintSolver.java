@@ -80,8 +80,8 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	 * @param constraintTypes
 	 * @param internalSolvers
 	 */
-	protected MultiConstraintSolver(Class<?>[] constraintTypes, Class<?>[] variableTypes, ConstraintSolver[] internalSolvers, int[] ingredients) {
-		super(constraintTypes, variableTypes);
+	protected MultiConstraintSolver(Class<?>[] constraintTypes, Class<?> variableType, ConstraintSolver[] internalSolvers, int[] ingredients) {
+		super(constraintTypes, variableType);
 		this.constraintSolvers = internalSolvers;
 		this.ingredients = ingredients;
 	}
@@ -333,11 +333,11 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	 */
 	protected Variable[] createVariablesSub(int[] ingredients, int num, String component) {
 		Variable[][] internalVars = createInternalVariables(ingredients, num);
-		Variable[] ret = (Variable[]) java.lang.reflect.Array.newInstance(this.variableTypes[0], num);
+		Variable[] ret = (Variable[]) java.lang.reflect.Array.newInstance(this.variableType, num);
 		HashMap<ConstraintSolver,Vector<Constraint>> solvers2Constraints = new HashMap<ConstraintSolver, Vector<Constraint>>();
 		for (int i = 0; i < num; i++) {
 			try {
-				ret[i] = (Variable) this.variableTypes[0].getConstructor(new Class[] {ConstraintSolver.class, int.class, ConstraintSolver[].class, Variable[].class}).newInstance(new Object[] {this, this.IDs++, this.constraintSolvers, internalVars[i]});
+				ret[i] = (Variable) this.variableType.getConstructor(new Class[] {ConstraintSolver.class, int.class, ConstraintSolver[].class, Variable[].class}).newInstance(new Object[] {this, this.IDs++, this.constraintSolvers, internalVars[i]});
 				if (component != null) {
 					ret[i].getConstraintSolver().setComponent(component, ret[i]);
 					logger.finest("Set component of " + ret[i] + " to " + component);
@@ -468,10 +468,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		String spacer = "";
 		for (int i = 0; i < nesting; i++) spacer += spacing;
 		String ret = spacer + "[" + this.getClass().getSimpleName() + " vars: [";
-		for (int i = 0; i < this.variableTypes.length; i++) {
-			ret += this.variableTypes[i].getSimpleName();
-			if (i != this.variableTypes.length-1) ret += ",";
-		}
+		ret += this.variableType.getSimpleName();
 		ret += "] constraints: [";
 		for (int i = 0; i < this.constraintTypes.length; i++) {
 			ret += this.constraintTypes[i].getSimpleName();

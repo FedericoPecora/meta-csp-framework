@@ -55,7 +55,7 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 	//private LinkedHashMap<SymbolicDomain[], Double> sdTuples = new LinkedHashMap<SymbolicDomain[], Double>();
 	//private LinkedHashMap<FuzzySymbolicDomain[], Double> sdTuples = new LinkedHashMap<FuzzySymbolicDomain[], Double>();
 	public FuzzySymbolicVariableConstraintSolver() {
-		super(new Class[]{SymbolicValueConstraint.class}, new Class[]{FuzzySymbolicVariable.class});
+		super(new Class[]{SymbolicValueConstraint.class}, FuzzySymbolicVariable.class);
 		//this.setOptions(OPTIONS.MANUAL_PROPAGATE);
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
 		this.setOptions(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED);

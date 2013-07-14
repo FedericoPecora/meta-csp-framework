@@ -79,7 +79,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 	 * {@link BooleanVariable}s and <code>MAX_SAT_CLAUSES</code> {@link BooleanConstraint}s.
 	 */
 	public BooleanSatisfiabilitySolver() {
-		super(new Class[] {BooleanConstraint.class}, new Class[] {BooleanVariable.class});
+		super(new Class[] {BooleanConstraint.class}, BooleanVariable.class);
 		this.maxVars = MAX_SAT_VARS;
 		this.maxClauses = MAX_SAT_CLAUSES;
 		initSat4JSolver();
@@ -94,7 +94,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 	 * @param maxClauses
 	 */
 	public BooleanSatisfiabilitySolver(int maxVars, int maxClauses) {
-		super(new Class[] {BooleanConstraint.class}, new Class[] {BooleanVariable.class});
+		super(new Class[] {BooleanConstraint.class}, BooleanVariable.class);
 		this.maxVars = maxVars;
 		this.maxClauses = maxClauses;
 		initSat4JSolver();

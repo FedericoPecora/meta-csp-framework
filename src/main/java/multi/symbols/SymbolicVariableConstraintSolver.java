@@ -39,12 +39,12 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	protected String[] symbols;
 	
 	public SymbolicVariableConstraintSolver(String[] symbols, int maxVars) {
-		super(new Class[] {SymbolicValueConstraint.class}, new Class[]{SymbolicVariable.class}, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2)), new int[] {symbols.length});
+		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2)), new int[] {symbols.length});
 		this.symbols = symbols;
 	}
 
 	public SymbolicVariableConstraintSolver() {
-		super(new Class[] {SymbolicValueConstraint.class}, new Class[]{SymbolicVariable.class}, createConstraintSolvers(), new int[] {0});
+		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(), new int[] {0});
 		this.symbols = new String[]{};
 	}
 

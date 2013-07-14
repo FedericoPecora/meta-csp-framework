@@ -141,9 +141,7 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 	 * {@link BinaryConstraint}s and {@link MultiBinaryConstraint}s in the current implementation. 
 	 */
 	public void addConstraint(Constraint c) {
-		//if (c.getScope().length == 2) {
 		if (c instanceof BinaryConstraint || c instanceof MultiBinaryConstraint) {
-			//for (Variable v : c.getScope()) if (!this.containsVariable(v)) this.addVariable(v);
 			this.graph.addEdge(c, c.getScope()[0], c.getScope()[1]);
 			logger.finest("Added binary constraint " + c);
 		}
@@ -152,7 +150,6 @@ public abstract class ConstraintNetwork implements Cloneable, Serializable {
 			hyperEdges.put(c, dv);
 			graph.addVertex(dv);
 			for (Variable var : c.getScope()) {
-				//if (!this.containsVariable(var)) this.addVariable(var);
 				this.graph.addEdge(new DummyConstraint(""), dv, var);
 			}
 			logger.finest("Added constraint " + c);
