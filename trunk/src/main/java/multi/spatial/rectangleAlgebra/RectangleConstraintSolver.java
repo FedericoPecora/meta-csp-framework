@@ -52,11 +52,11 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	public enum Dimension  {X, Y};
 
 	public RectangleConstraintSolver(long origin, long horizon) {
-		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, new Class[] {RectangularRegion.class}, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
+		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
 	}
 
 	public RectangleConstraintSolver(long origin, long horizon, int maxRectangles) {
-		super(new Class[] {RectangleConstraint.class}, new Class[] {RectangularRegion.class}, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
+		super(new Class[] {RectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxRectangles) {

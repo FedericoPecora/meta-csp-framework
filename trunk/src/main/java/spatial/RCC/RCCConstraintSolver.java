@@ -47,7 +47,7 @@ public class RCCConstraintSolver extends ConstraintSolver{
 	private HashMap<Integer, Variable> getVaribaleById = new HashMap<Integer, Variable>();
 	
 	public RCCConstraintSolver() {
-		super(new Class[]{RCCConstraint.class}, new Class[]{Region.class});
+		super(new Class[]{RCCConstraint.class}, Region.class);
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
 		// TODO Auto-generated constructor stub
 	}

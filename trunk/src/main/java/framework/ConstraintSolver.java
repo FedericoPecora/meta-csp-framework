@@ -57,7 +57,7 @@ public abstract class ConstraintSolver implements Serializable {
 	
 	public static int numcalls = 0;
 	protected Class<?>[] constraintTypes = {};
-	protected Class<?>[] variableTypes = {};
+	protected Class<?> variableType = null;
 	protected static int nesting = 0;
 	protected static String spacing = "  ";
 	private static final long serialVersionUID = 7526472295622776147L;
@@ -103,10 +103,10 @@ public abstract class ConstraintSolver implements Serializable {
 	 * Default constructor for this class.  Calls to subclass constructors will
 	 * call this by default.
 	 */
-	protected ConstraintSolver(Class<?>[] constraintTypes, Class<?>[] variableTypes) {
+	protected ConstraintSolver(Class<?>[] constraintTypes, Class<?> variableType) {
 		this.theNetwork = this.createConstraintNetwork();
 		this.constraintTypes = constraintTypes;
-		this.variableTypes = variableTypes;
+		this.variableType = variableType;
 		this.registerValueChoiceFunctions();
 	}
 	
@@ -521,7 +521,7 @@ public abstract class ConstraintSolver implements Serializable {
 		String spacer = "";
 		for (int i = 0; i < nesting; i++) spacer += spacing;
 		String ret = spacer + "[" + this.getClass().getSimpleName() + " vars: [";
-		for (Class<?> c : this.variableTypes) ret += c.getSimpleName();
+		ret += variableType.getSimpleName();
 		ret += "] constraints: [";
 		for (Class<?> c : this.constraintTypes) ret += c.getSimpleName();
 		return ret + "]]";

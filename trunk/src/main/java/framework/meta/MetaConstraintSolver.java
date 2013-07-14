@@ -105,7 +105,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 	
 	protected MetaConstraintSolver(Class<?>[] constraintTypes, long animationTime, ConstraintSolver ... internalSolvers) {
-		super(constraintTypes, new Class[]{MetaVariable.class}, internalSolvers, null);
+		super(constraintTypes, MetaVariable.class, internalSolvers, null);
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.animationTime = animationTime;
 		this.resolvers = new HashMap<ConstraintNetwork,ConstraintNetwork>();
@@ -570,10 +570,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		String spacer = "";
 		for (int i = 0; i < nesting; i++) spacer += spacing;
 		String ret = spacer + "[" + this.getClass().getSimpleName() + " vars: [";
-		for (int i = 0; i < this.variableTypes.length; i++) {
-			ret += this.variableTypes[i].getSimpleName();
-			if (i != this.variableTypes.length-1) ret += ",";
-		}
+		ret += this.variableType.getSimpleName();
 		ret += "] constraints: [";
 		for (int i = 0; i < this.constraintTypes.length; i++) {
 			ret += this.constraintTypes[i].getSimpleName();

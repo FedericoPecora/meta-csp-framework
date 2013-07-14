@@ -42,7 +42,7 @@ public class FuzzyActivityNetworkSolver extends MultiConstraintSolver {
 	private int IDs = 0;
 	
 	public FuzzyActivityNetworkSolver() {
-		super(new Class[] {FuzzyAllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{FuzzyActivity.class}, createConstraintSolvers(), new int[] {1,1});
+		super(new Class[] {FuzzyAllenIntervalConstraint.class, SymbolicValueConstraint.class}, FuzzyActivity.class, createConstraintSolvers(), new int[] {1,1});
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers() {

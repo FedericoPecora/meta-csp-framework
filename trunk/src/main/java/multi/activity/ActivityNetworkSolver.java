@@ -62,26 +62,26 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	private long horizon;
 	
 	public ActivityNetworkSolver(long origin, long horizon) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 	}
 	
 	public ActivityNetworkSolver(long origin, long horizon, int numActivities) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,numActivities), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,numActivities), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 		MAX_ACTIVITIES = numActivities;
 	}
 
 	public ActivityNetworkSolver(long origin, long horizon, String[] symbols) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,MAX_ACTIVITIES,symbols), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,MAX_ACTIVITIES,symbols), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 	}
 	
 	public ActivityNetworkSolver(long origin, long horizon, int numActivities, String[] symbols) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, new Class[]{Activity.class}, createConstraintSolvers(origin,horizon,numActivities,symbols), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,numActivities,symbols), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 		MAX_ACTIVITIES = numActivities;

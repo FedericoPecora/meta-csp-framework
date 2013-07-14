@@ -21,16 +21,14 @@ public class SpatialFluentSolver extends MultiConstraintSolver{
 	
 	public SpatialFluentSolver(long origin, long horizon) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
-				//new Class[] {RectangularRegion2.class, Activity.class},
-				new Class[] {SpatialFluent.class},
+				SpatialFluent.class,
 				createConstraintSolvers(origin, horizon, -1),
 				new int[] {1,1});
 	}
 
 	public SpatialFluentSolver(long origin, long horizon, int maxFluent) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
-				//new Class[] {RectangularRegion2.class, Activity.class},
-				new Class[] {SpatialFluent.class},
+				SpatialFluent.class,
 				createConstraintSolvers(origin, horizon, maxFluent),
 				new int[] {1,1});
 	}
