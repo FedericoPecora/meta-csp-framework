@@ -68,11 +68,6 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 		return ret;
 	}
 	
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new RectangleConstraintNetwork(this);
-	}
-
 //	@Override
 //	protected Variable[] createVariablesSub(int num) {
 //		Variable[] ret = new Variable[num];

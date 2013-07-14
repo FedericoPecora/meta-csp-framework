@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import multi.activity.Activity;
 import multi.activity.ActivityComparator;
-import multi.activity.ActivityNetwork;
 import multi.allenInterval.AllenIntervalConstraint;
 import time.APSPSolver;
 import time.Bounds;
@@ -112,14 +111,14 @@ public abstract class Schedulable extends MetaConstraint {
 			
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			
-			HashMap<Activity,ActivityNetwork> usages = new HashMap<Activity,ActivityNetwork>();
+			HashMap<Activity,ConstraintNetwork> usages = new HashMap<Activity,ConstraintNetwork>();
 			
 			Vector<Vector<Activity>> overlappingAll = new Vector<Vector<Activity>>();
 			
 			
 			for (Activity act : activities) {
 				if (isConflicting(new Activity[] {act})) {
-					ActivityNetwork temp = new ActivityNetwork(null);
+					ConstraintNetwork temp = new ConstraintNetwork(null);
 					temp.addVariable(act);
 					ret.add(temp);
 				}
@@ -161,7 +160,7 @@ public abstract class Schedulable extends MetaConstraint {
 			for (Vector<Activity> overlapping : overlappingAll) {
 				if (overlapping.size() > 1) {
 					Activity first = overlapping.get(0);
-					ActivityNetwork temp = new ActivityNetwork(null);
+					ConstraintNetwork temp = new ConstraintNetwork(null);
 					for (Activity act : overlapping) temp.addVariable(act);
 					usages.put(first, temp);
 				}
@@ -211,7 +210,7 @@ public abstract class Schedulable extends MetaConstraint {
 			for (HashSet<Activity> superSet : superPeaks) {
 				for (Set<Activity> s : powerSet(superSet)) {
 					if (!s.isEmpty()) {
-						ActivityNetwork cn = new ActivityNetwork(null);
+						ConstraintNetwork cn = new ConstraintNetwork(null);
 						for (Activity a : s) cn.addVariable(a); 
 						if (!ret.contains(cn) && isConflicting(s.toArray(new Activity[s.size()]))) ret.add(cn);
 					}
@@ -232,7 +231,7 @@ public abstract class Schedulable extends MetaConstraint {
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
 			for (Activity a : groundVars) {
 				if (isConflicting(new Activity[] {a})) {
-					ActivityNetwork cn = new ActivityNetwork(null);
+					ConstraintNetwork cn = new ConstraintNetwork(null);
 					cn.addVariable(a);
 					ret.add(cn);
 				}
@@ -245,7 +244,7 @@ public abstract class Schedulable extends MetaConstraint {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
 					if (bi.intersectStrict(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
-						ActivityNetwork cn = new ActivityNetwork(null);
+						ConstraintNetwork cn = new ConstraintNetwork(null);
 						cn.addVariable(groundVars[i]);
 						cn.addVariable(groundVars[j]);
 						ret.add(cn);
@@ -306,7 +305,7 @@ public abstract class Schedulable extends MetaConstraint {
 			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(this.beforeParameter, APSPSolver.INF));
 			before.setFrom(mcs.mcsActFrom);			
 			before.setTo(mcs.mcsActTo);
-			ActivityNetwork resolver = new ActivityNetwork(mcs.mcsActFrom.getConstraintSolver());
+			ConstraintNetwork resolver = new ConstraintNetwork(mcs.mcsActFrom.getConstraintSolver());
 			resolver.addVariable(mcs.mcsActFrom);
 			resolver.addVariable(mcs.mcsActTo);
 			resolver.addConstraint(before);

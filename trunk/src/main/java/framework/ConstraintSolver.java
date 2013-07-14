@@ -104,7 +104,7 @@ public abstract class ConstraintSolver implements Serializable {
 	 * call this by default.
 	 */
 	protected ConstraintSolver(Class<?>[] constraintTypes, Class<?> variableType) {
-		this.theNetwork = this.createConstraintNetwork();
+		this.theNetwork = new ConstraintNetwork(this);
 		this.constraintTypes = constraintTypes;
 		this.variableType = variableType;
 		this.registerValueChoiceFunctions();
@@ -145,16 +145,7 @@ public abstract class ConstraintSolver implements Serializable {
 		for (Class<?> conType : constraintTypes) if (conType.isInstance(c)) return true;
 		return false;
 	}
-	
-	/**
-	 * Method to create a {@link ConstraintNetwork} for this {@link ConstraintSolver}.
-	 * This method must be implemented by the developer of the 
-	 * specific {@link ConstraintSolver} implementation.  It is called by the
-	 * default constructor upon class instantiation. 
-	 * @return The {@link ConstraintNetwork} that will be used by this {@link ConstraintSolver}.
-	 */
-	protected abstract ConstraintNetwork createConstraintNetwork();
-	
+		
 	/**
 	 * Propagate the constraint network.
 	 * @return A boolean value indicating the results of the propagation.

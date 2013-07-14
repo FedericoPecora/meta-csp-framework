@@ -29,12 +29,11 @@ import framework.multi.MultiBinaryConstraint;
  * This class implements the necessary functionality to maintain networks of {@link Constraint}s.  It is used by all
  * {@link ConstraintSolver}s and provides methods to add and remove {@link Variable}s, {@link Constraint}s, querying the
  * network for constraints, incident edges, etc.  It also provide basic graphical rendering functions.
- * Note that all implementing classes must call the one argument constructor.  
  * 
  * @author Federico Pecora
  */
 
-public abstract class ConstraintNetwork implements Cloneable, Serializable {
+public class ConstraintNetwork implements Cloneable, Serializable {
 	
 	protected ConstraintSolver solver;
 	protected ObservableGraph<Variable,Constraint> graph;

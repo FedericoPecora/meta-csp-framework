@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import meta.symbolsAndTime.Schedulable;
 import multi.activity.Activity;
-import multi.activity.ActivityNetwork;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
 import framework.Constraint;
@@ -101,7 +100,7 @@ public class SimpleDomain extends MetaConstraint {
 		// this becomes a task
 		for (Variable task : groundSolver.getVariables()) {
 			if (task.getMarking().equals(markings.UNJUSTIFIED)) {
-				ActivityNetwork nw = new ActivityNetwork(null);
+				ConstraintNetwork nw = new ConstraintNetwork(null);
 				nw.addVariable(task);
 				ret.add(nw);
 			}
@@ -110,7 +109,7 @@ public class SimpleDomain extends MetaConstraint {
 	}
 
 	private ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {		
-		ActivityNetwork activityNetworkToReturn = new ActivityNetwork(null);
+		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		
 		String possibleOperatorHead = possibleOperator.getHead();
@@ -214,7 +213,7 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
-		ActivityNetwork nullActivityNetwork = new ActivityNetwork(null);
+		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
 		return new ConstraintNetwork[] {nullActivityNetwork};
 	}
 

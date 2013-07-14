@@ -73,7 +73,7 @@ public class SymbolicTimeline extends Timeline {
 	private void cacheValues() {
 		ArrayOfStrings[] ret = new ArrayOfStrings[getPulses().length];
 		for (int i = 0; i < getPulses().length-1; i++) {
-			for (Variable var : getAn().getVariables(component)) {
+			for (Variable var : getConstraintNetwork().getVariables(component)) {
 				Activity act = (Activity)var;
 				if (act.getTemporalVariable().getEST() <= getPulses()[i] && act.getTemporalVariable().getEET() >= getPulses()[i+1]) {
 					String[] dom = act.getSymbolicVariable().getSymbols();

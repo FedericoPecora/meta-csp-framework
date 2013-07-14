@@ -75,11 +75,6 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 	}
 
 	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new FuzzyAllenIntervalNetwork(this);
-	}
-
-	@Override
 	protected Variable[] createVariablesSub(int num) {
 		SimpleAllenInterval[] ret = new SimpleAllenInterval[num];
 		for (int i = 0; i < num; i++) {

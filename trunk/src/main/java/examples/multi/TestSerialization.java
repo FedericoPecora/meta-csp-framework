@@ -31,13 +31,10 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 
 import multi.activity.Activity;
-import multi.activity.ActivityNetwork;
 import multi.activity.ActivityNetworkSolver;
 import multi.allenInterval.AllenIntervalConstraint;
-import multi.allenInterval.AllenIntervalNetwork;
 import multi.symbols.SymbolicValueConstraint;
 import time.Bounds;
-import time.SimpleTemporalNetwork;
 import utility.logging.MetaCSPLogging;
 import framework.Constraint;
 import framework.ConstraintNetwork;
@@ -81,11 +78,11 @@ public class TestSerialization {
 		catch (IOException e) { e.printStackTrace(); }
 		
 		//Read ActivityNetwork from file
-		ActivityNetwork an = null;
+		ConstraintNetwork an = null;
 		try {
 			FileInputStream fis = new FileInputStream("ActivityNetwork.out");
 			ObjectInputStream in = new ObjectInputStream(fis);
-			an = (ActivityNetwork)in.readObject();
+			an = (ConstraintNetwork)in.readObject();
 			in.close();
 			fis.close();
 		}
@@ -108,11 +105,11 @@ public class TestSerialization {
 		catch (IOException e) { e.printStackTrace(); }
 		
 		//Read AllenIntervalNetwork from file
-		AllenIntervalNetwork ain = null;
+		ConstraintNetwork ain = null;
 		try {
 			FileInputStream fis = new FileInputStream("AllenIntervalNetwork.out");
 			ObjectInputStream in = new ObjectInputStream(fis);
-			ain = (AllenIntervalNetwork)in.readObject();
+			ain = (ConstraintNetwork)in.readObject();
 			in.close();
 			fis.close();
 		}
@@ -135,11 +132,11 @@ public class TestSerialization {
 		catch (IOException e) { e.printStackTrace(); }
 		
 		//Read APSPNetwork from file
-		SimpleTemporalNetwork apspn = null;
+		ConstraintNetwork apspn = null;
 		try {
 			FileInputStream fis = new FileInputStream("SimpleTemporalNetwork.out");
 			ObjectInputStream in = new ObjectInputStream(fis);
-			apspn = (SimpleTemporalNetwork)in.readObject();
+			apspn = (ConstraintNetwork)in.readObject();
 			in.close();
 			fis.close();
 		}

@@ -129,11 +129,6 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		logger.finest("Updated current models");
 	}
 	
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new BooleanConstraintNetwork(this);
-	}
-
 //	private void resetSat4JSolver() {
 //		sat4JSolver.reset();
 //		

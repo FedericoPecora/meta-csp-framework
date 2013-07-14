@@ -49,12 +49,6 @@ public class FuzzyActivityNetworkSolver extends MultiConstraintSolver {
 		ConstraintSolver[] ret = new ConstraintSolver[] {new FuzzyAllenIntervalNetworkSolver(), new FuzzySymbolicVariableConstraintSolver()};
 		return ret;
 	}
-
-	@Override
-	protected ConstraintNetwork createConstraintNetwork() {
-		return new FuzzyActivityNetwork(this);
-	}
-
 	
 //	@Override
 //	protected Variable[] createVariablesSub(int num) {
