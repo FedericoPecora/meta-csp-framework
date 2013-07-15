@@ -23,6 +23,7 @@
 package multi.spatial.rectangleAlgebra;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 import multi.allenInterval.AllenInterval;
 import multi.allenInterval.AllenIntervalNetworkSolver;
@@ -137,6 +138,20 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 			}
 		}
 		return null;
+	}
+	
+	public BoundingBox[] extractAllBoundingBoxesFromSTPs(){
+		
+		Vector<BoundingBox> bbs = new Vector<BoundingBox>();
+		Bounds xLB, xUB, yLB, yUB;
+		for (int i = 0; i < this.getConstraintSolvers()[0].getVariables().length; i++) {
+			xLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getLST());
+			xUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getLET());
+			yLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getLST());
+			yUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getLET());
+			bbs.add(new BoundingBox(xLB, xUB, yLB, yUB));
+		}
+		return bbs.toArray(new BoundingBox[bbs.size()]);
 	}
 	
 
