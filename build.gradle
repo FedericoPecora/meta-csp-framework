@@ -17,8 +17,8 @@ mainClassName = 'examples.multi.TestTimelinePlotting'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-version = '1.0.141'
-group = 'meta-csp-framework'
+version = '0.0.0-SNAPSHOT'
+group = 'meta_csp_framework'
 
 repositories {
   mavenCentral()
