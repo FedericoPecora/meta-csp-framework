@@ -27,6 +27,13 @@ import framework.ConstraintSolver;
 import framework.Domain;
 import framework.Variable;
 
+/**
+ * Class for representing Boolean variables (whose domain is {T,F}) for use with the
+ * {@link BooleanSatisfiabilitySolver} and {@link BooleanConstraint}s.
+ * 
+ * @author Federico Pecora
+ *
+ */
 public class BooleanVariable extends Variable {
 
 	/**

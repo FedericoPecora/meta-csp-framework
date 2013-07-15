@@ -28,6 +28,7 @@ import multi.allenInterval.AllenIntervalConstraint;
 import multi.allenInterval.AllenIntervalNetworkSolver;
 import multi.symbols.SymbolicValueConstraint;
 import multi.symbols.SymbolicVariableConstraintSolver;
+import time.APSPSolver;
 import utility.UI.PlotActivityNetworkGantt;
 import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
@@ -98,8 +99,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	}
 	
 	/**
-	 * Get the rigidity number belonging to the  underlaying AllenIntervalNetworkSolver that in turn exploits an APSP solver
-	 * @param selectedVariableNames Only variable/components in this {@link Vector} will be plotted 
+	 * Get the rigidity number of the underlying {@link APSPSolver}'s {@link ConstraintNetwork}. 
 	 */
 	public double getRigidityNumber(){
 		return (((AllenIntervalNetworkSolver) (this.constraintSolvers[0]))).getRigidityNumber();

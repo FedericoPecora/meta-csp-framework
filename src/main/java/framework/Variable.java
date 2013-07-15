@@ -27,11 +27,13 @@ import java.awt.Paint;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import framework.multi.MultiVariable;
+
 import utility.logging.MetaCSPLogging;
 
 /**
  * Class representing the decision variables in a Constraint Problem.
- * This class is extended by the another abstract class MultiVariab
+ * This class is extended by abstract class {@link MultiVariable}
  * to accommodate variables which are themselves constraint networks
  * (essential for the Meta-CSP approach).
  * 

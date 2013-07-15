@@ -38,6 +38,14 @@ import framework.ConstraintNetwork;
 import framework.ConstraintSolver;
 import framework.Variable;
 
+/**
+ * This {@link ConstraintSolver} solves CSPs where variables are fuzzy sets (see
+ * {@link FuzzySymbolicVariable}) and constraints are equality or inequalities
+ * among fuzzy sets.  Constraints are crisp, and represented by {@link SymbolicValueConstraint}s.   
+ * 
+ * @author Masoumeh Mansouri
+ *
+ */
 public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 
 	/**

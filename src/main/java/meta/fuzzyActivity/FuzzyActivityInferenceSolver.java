@@ -22,13 +22,28 @@
  ******************************************************************************/
 package meta.fuzzyActivity;
 
+import multi.fuzzyActivity.FuzzyActivity;
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import multi.symbols.SymbolicValueConstraint;
 import framework.ConstraintNetwork;
 import framework.meta.MetaConstraintSolver;
 import framework.meta.MetaVariable;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
+import fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
+import fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 
+/**
+ * Provides a meta-CSP implementation of fuzzy context inference.  The solver
+ * combines fuzzy symbolic inference and fuzzy temporal inference.  The former
+ * is provided by a {@link FuzzySymbolicVariableConstraintSolver}, while the latter is
+ * provided by a {@link FuzzyAllenIntervalNetworkSolver} (see {@link FuzzyActivityNetworkSolver}).
+ * 
+ * <br>
+ * This solver uses backtracking search to find a possible unification of
+ * rules to existing {@link FuzzyActivity} variables (see {@link FuzzyActivityDomain}).
+ * 
+ * @author Federico Pecora, Masoumeh Mansouri
+ */
 public class FuzzyActivityInferenceSolver extends MetaConstraintSolver {
 
 	/**
@@ -40,9 +55,7 @@ public class FuzzyActivityInferenceSolver extends MetaConstraintSolver {
 	private double tmpLoweBound = -1;
 	
 	public FuzzyActivityInferenceSolver(long animationTime) {
-		//super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, animationTime, new Scheduler(origin, horizon, 0));
 		super(new Class[]{FuzzyAllenIntervalConstraint.class, SymbolicValueConstraint.class}, animationTime, new FuzzyActivityNetworkSolver());
-		// TODO Auto-generated constructor stub
 	}
 	
 		

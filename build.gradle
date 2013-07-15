@@ -1,5 +1,15 @@
-['java', 'eclipse', 'maven', 'maven-publish', 'application'].each {
+['java', 'eclipse', 'maven', 'application'].each {
     apply plugin : it
+}
+
+println ("Using Gradle version: "+Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)))
+
+//if (false) {
+if (Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)) >= 1.6) {
+   apply plugin : 'maven-publish'
+}
+else {
+     println "Note: you need Gradle version >= 1.6 to publish to a Maven repo"
 }
 
 mainClassName = 'examples.multi.TestTimelinePlotting'
@@ -26,11 +36,23 @@ dependencies {
   compile 'junit:junit:4.8.1'
 }
 
-processResources { 
-     from(projectDir) { 
-         include 'license.txt'
-     } 
-} 
+//processResources { 
+//     from(projectDir) { 
+//	 include 'license.txt'
+//     } 
+//}
+
+javadoc {
+    options.header = "Meta-CSP Framework API"
+    options.author = 'true'
+    title = "<table><tr><td align=left><a href=\"http://meta-csp-framework.googlecode.com\" target=_blank><img src=img/meta-csp-logo-small.png></a></td><td>&nbsp;&nbsp;&nbsp;</td><td align=left>The Meta-CSP Framework<br><small><i>A Java API for Meta-CSP based reasoning</i></small></td></tr></table>"
+    copy {
+         from(projectDir) { 
+	 	include 'img/*.png'
+	}
+	into javadoc.destinationDir
+    } 
+}
 
 //create javaDoc jar
 task javadocJar (type: Jar, dependsOn: javadoc) {
@@ -58,6 +80,8 @@ task libJar (type : Jar) {
 }
 
 //publish bin, source and javaDoc to repo
+//if (false) {
+if (Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)) >= 1.6) {
 publishing {
     publications {
         metaCSPFramework(MavenPublication) {
@@ -80,6 +104,7 @@ publishing {
 	    //url "svn:https://meta-csp-framework.googlecode.com/svn/m2/releases"
         }
     }
+}
 }
 
 defaultTasks 'install'

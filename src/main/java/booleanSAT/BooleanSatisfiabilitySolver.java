@@ -45,10 +45,10 @@ import framework.Variable;
 
 /**
  * The {@link BooleanSatisfiabilitySolver} provides a means to reason upon Boolean Satisfiability
- * constraint problems.  It is based on the off the shelf SAT4J solver, available at {@link http://www.sat4j.org/}.
+ * constraint problems.  It is based on the off the shelf SAT4J solver, available at <a href="http://www.sat4j.org/">www.sat4j.org</a>.
  * The solver's variables are {@link BooleanVariable}s, which can be bound by {@link BooleanConstraint}s.
  * The latter are disjunctive Boolean clauses, thus the collection of all {@link BooleanConstraint}s in
- * a {@link BooleanConstraintNetwork} represents a well-formed-formula (wff) in Conjunctive Normal Form (CNF).
+ * a {@link ConstraintNetwork} represents a well-formed-formula (wff) in Conjunctive Normal Form (CNF).
  * Note that {@link BooleanConstraint}s can be instantiated with a factory method from non-CNF formulas
  * (see {@link BooleanConstraint#createBooleanConstraints(BooleanVariable[], String)}.
  * 

@@ -28,7 +28,18 @@ import java.util.Vector;
 import throwables.PossibilityDegreeMismathcException;
 import framework.Domain;
 
+/**
+ * Class for representing fuzzy sets (domains of {@link FuzzySymbolicVariable}s).
+ * 
+ * @author Masoumeh Mansouri
+ *
+ */
 public class FuzzySymbolicDomain extends Domain implements Cloneable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4160885840955905514L;
 	
 	private HashMap<String, Double> theDomain = new HashMap<String, Double>();
 	//private String[] symbols;

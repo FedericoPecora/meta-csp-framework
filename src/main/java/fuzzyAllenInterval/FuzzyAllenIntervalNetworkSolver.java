@@ -43,7 +43,7 @@ import framework.Variable;
  * algorithm, as well as search procedure to extract the optimal solution of a fuzzy temporal
  * CSP.
  * 
- * @author Federico Pecora
+ * @author Masoumeh Mansouri
  *
  */
 public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
@@ -84,8 +84,8 @@ public class FuzzyAllenIntervalNetworkSolver extends ConstraintSolver {
 	}
 	
 	/**
-	 * Get the upper bound of the possibility degree of this solver's {@link FuzzyAllenIntervalNetwork}. 
-	 * @return The upper bound of the possibility degree of this solver's {@link FuzzyAllenIntervalNetwork}.
+	 * Get the upper bound of the possibility degree of this solver's {@link ConstraintNetwork}. 
+	 * @return The upper bound of the possibility degree of this solver's {@link ConstraintNetwork}.
 	 */
 	public double getPosibilityDegree() {
 		return globalPossibilityDegree;
