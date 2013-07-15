@@ -28,6 +28,12 @@ import framework.ConstraintSolver;
 import framework.Domain;
 import framework.Variable;
 
+/**
+ * A {@link FuzzySymbolicVariable} represents a fuzzy set (see {@link FuzzySymbolicDomain}).
+ * 
+ * @author Masoumeh Mansouri
+ *
+ */
 public class FuzzySymbolicVariable extends Variable {
 
 	/**

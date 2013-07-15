@@ -49,7 +49,7 @@ import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
  * the meta-CSP are rules in a so-called "domain" (this class), and values are unifications of the
  * requirements prescribed by these rules with existing {@link FuzzyActivity} variables.
  * 
- * @author Federico Pecora
+ * @author Federico Pecora, Masoumeh Mansouri
  *
  */
 public class FuzzyActivityDomain extends MetaConstraint {
@@ -465,9 +465,9 @@ public class FuzzyActivityDomain extends MetaConstraint {
 
 	/**
 	 * Get the upper bound on the overall (temporal + value) consistency of
-	 * the {@link FuzzyActivityNetwork}.
+	 * the {@link ConstraintNetwork}.
 	 * @return Upper bound on the overall (temporal + value) consistency of
-	 * the {@link FuzzyActivityNetwork}.
+	 * the {@link ConstraintNetwork}.
 	 */
 	public double getConsitency() {
 		return Math.min(solver.getTemporalConsistency(),
@@ -477,15 +477,12 @@ public class FuzzyActivityDomain extends MetaConstraint {
 	/**
 	 * Get the {@link ConstraintNetwork} used by the meta-CSP's
 	 * {@link FuzzyActivityNetworkSolver}.
-	 * @return The {@link FuzzyActivityNetwork} used by the meta-CSP.
+	 * @return The {@link ConstraintNetwork} used by the meta-CSP.
 	 */
 	public ConstraintNetwork getConstraintNetwork() {
 		return solver.getConstraintNetwork();
 	}
 
-	
-	
-	
 	/**
 	 * IRAN: please comment this.
 	 * @return IRAN: please comment this.

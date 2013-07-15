@@ -365,8 +365,9 @@ public abstract class ConstraintSolver implements Serializable {
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
 	 * class.  It should implement all operations necessary to create a batch of variable for the specific
 	 * type of {@link ConstraintSolver}. 
-	 * @param The component label to associate to the new {@link Variable}s.
-	 * @return  A batch of new {@link Variable} for this {@link ConstraintSolver}.
+	 * @param component The component label to associate to the new {@link Variable}s.
+	 * @param num The number of {@link Variable}s to create.
+	 * @return A batch of new {@link Variable} for this {@link ConstraintSolver}.
 	 */
 	protected Variable[] createVariablesSub(int num, String component) {
 		Variable[] ret = createVariablesSub(num);
@@ -536,7 +537,7 @@ public abstract class ConstraintSolver implements Serializable {
 
 	/**
 	 * Set the component tags of all variables. 
-	 * @param A {@link HashMap} whose entries are the component tags and the associated variables.
+	 * @param components A {@link HashMap} whose entries are the component tags and the associated variables.
 	 */
 	public void setComponents(HashMap<String, ArrayList<Variable>> components) {
 		this.components = components;

@@ -82,8 +82,12 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	}
 
 	/**
-	 * make script readable for gnuplot
-	 * @param st
+	 * Output a Gnuplot-readable script that draws, for each given 
+	 * {@link RectangularRegion}, a rectangle which is close to the
+	 * "center" of the {@link RectangularRegion}'s domain. 
+	 * @param horizon The maximum X and Y coordinate to be used in the plot.
+	 * @param rect The set of {@link RectangularRegion}s to draw.
+	 * @return A Gnuplot script.
 	 */
 	public String drawAlmostCentreRectangle(long horizon, RectangularRegion ... rect){
 		String ret = "";
@@ -107,9 +111,9 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	}
 
 	/**
-	 *  it computes a bounding box which with two bounds on both sides resulted from 2 extreme bounded 2D STP solution 
-	 * @param name of the rectangle region
-	 * @return a bounding box 
+	 *  Extracts a specific {@link BoundingBox} from the domain of a {@link RectangularRegion}. 
+	 * @param rect The {@link RectangularRegion} from to extract the {@link BoundingBox}.
+	 * @return A specific {@link BoundingBox} from the domain of a {@link RectangularRegion}.
 	 */
 	public BoundingBox extractBoundingBoxesFromSTPs(RectangularRegion rect){
 		Bounds xLB, xUB, yLB, yUB;

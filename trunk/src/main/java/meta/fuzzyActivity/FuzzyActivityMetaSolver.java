@@ -24,6 +24,7 @@ package meta.fuzzyActivity;
 
 import java.util.Vector;
 
+import multi.fuzzyActivity.FuzzyActivity;
 import multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import multi.symbols.SymbolicValueConstraint;
 import framework.Constraint;
@@ -31,12 +32,24 @@ import framework.ConstraintNetwork;
 import framework.meta.MetaConstraintSolver;
 import framework.meta.MetaVariable;
 import fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
+import fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
+import fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 
-public class FuzzyActivityMetaSolver extends MetaConstraintSolver{
+/**
+ * Provides a meta-CSP implementation of fuzzy context inference.  The solver
+ * combines fuzzy symbolic inference and fuzzy temporal inference.  The former
+ * is provided by a {@link FuzzySymbolicVariableConstraintSolver}, while the latter is
+ * provided by a {@link FuzzyAllenIntervalNetworkSolver} (see {@link FuzzyActivityNetworkSolver}).
+ * 
+ * <br>
+ * This solver uses Branch-and-Bound search to find the optimal unifications of
+ * rules to existing {@link FuzzyActivity} variables (see {@link FuzzyActivityDomain}).
+ * 
+ * @author Federico Pecora, Masoumeh Mansouri
+ */
 
-	/**
-	 * 
-	 */
+public class FuzzyActivityMetaSolver extends MetaConstraintSolver {
+
 	private static final long serialVersionUID = -3342951089757068845L;
 	private double upperBound = 0;
 	private double lowerBound = 0;

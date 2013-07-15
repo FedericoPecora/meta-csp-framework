@@ -213,7 +213,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	
 
 	/**
-	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint#AllenIntervalConstraint(Type, Bounds[])} constructor).
 	 * @param type The type of the constraint.
 	 * @param bounds The one and only upper-lower bound pair for the constraint.
 	 */
@@ -222,27 +222,33 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	}
 
 	/**
-	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint#AllenIntervalConstraint(Type, Bounds[])} constructor).
 	 * @param type The type of the constraint.
-	 * @param bounds The two upper-lower bound pairs for the constraint.
+	 * @param bounds1 The first upper-lower bound pair for the constraint.
+	 * @param bounds2 The second upper-lower bound pair for the constraint.
 	 */
 	public AllenIntervalConstraint(Type type, Bounds bounds1, Bounds bounds2) {
 		this(type, new Bounds[] {bounds1, bounds2});
 	}
 
 	/**
-	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint#AllenIntervalConstraint(Type, Bounds[])} constructor).
 	 * @param type The type of the constraint.
-	 * @param bounds The three upper-lower bound pairs for the constraint.
+	 * @param bounds1 The first upper-lower bound pair for the constraint.
+	 * @param bounds2 The second upper-lower bound pair for the constraint.
+	 * @param bounds3 The third upper-lower bound pair for the constraint.
 	 */
 	public AllenIntervalConstraint(Type type, Bounds bounds1, Bounds bounds2, Bounds bounds3) {
 		this(type, new Bounds[] {bounds1, bounds2, bounds3});
 	}
 	
 	/**
-	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint(Type, Bounds[]) AllenIntervalConstraint} constructor).
+	 * Convenience constructor for not casting bounds into an array (see {@link AllenIntervalConstraint#AllenIntervalConstraint(Type, Bounds[])} constructor).
 	 * @param type The type of the constraint.
-	 * @param bounds The four upper-lower bound pairs for the constraint.
+	 * @param bounds1 The first upper-lower bound pair for the constraint.
+	 * @param bounds2 The second upper-lower bound pair for the constraint.
+	 * @param bounds3 The third upper-lower bound pair for the constraint.
+	 * @param bounds4 The fourth upper-lower bound pair for the constraint.
 	 */
 	public AllenIntervalConstraint(Type type, Bounds bounds1, Bounds bounds2, Bounds bounds3, Bounds bounds4) {
 		this(type, new Bounds[] {bounds1, bounds2, bounds3, bounds4});
@@ -261,7 +267,6 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			throw new IllegalArgumentException("Invalid numer of parameters for constraint " + type + ", expected: " + type.numParams + " got "+ bounds.length );
 		}
 	}
-	
 	
 	/**
 	 * Creates an {@link AllenIntervalConstraint} of a given (disjunctive) type with default bounds.

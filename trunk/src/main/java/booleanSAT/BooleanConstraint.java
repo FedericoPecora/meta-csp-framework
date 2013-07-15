@@ -23,7 +23,6 @@
 
 package booleanSAT;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -49,7 +48,7 @@ import framework.Constraint;
  * Class for representing disjunctive Boolean clauses, e.g., (x1 v x2 v ~x3).
  * Note that {@link BooleanConstraint}s can be instantiated with a factory method from non-CNF formulas
  * (see {@link #createBooleanConstraints(BooleanVariable[], String)}.
-
+ * 
  * @author Federico Pecora
  *
  */
@@ -67,7 +66,7 @@ public class BooleanConstraint extends Constraint {
 	 * of the formula must contain all and only the variables in the scope.
 	 * 
 	 * The conversion to CNF is provided by a clause translation algorithm
-	 * implemented in the Orbital library (see {@link http://symbolaris.com/orbital/})
+	 * implemented in the Orbital library (see <a href="http://symbolaris.com/orbital/">symbolaris.com/orbital</a>)
 	 * ["David A. Plaisted & Steven Greenbaum. A structure-preserving clause form translation. J. Symb. Comput., Academic Press, Inc., 1986, 2, 293-304.", "Rolf Socher-Ambrosius. Boolean algebra admits no convergent term rewriting system, Springer Lecture Notes in Computer Science 488, RTA '91."].
 	 * @param scope The {@link BooleanVariable}s referred to in the formula.
 	 * @param wff An arbitrary propositional logic formula.

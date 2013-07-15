@@ -25,12 +25,13 @@ package booleanSAT;
 
 import framework.Domain;
 import framework.ValueChoiceFunction;
+import framework.ConstraintNetwork;
 
 /**
  * Represents domains for {@link BooleanVariable}s, namely the set {T,F}.  {@link ValueChoiceFunction}s
  * for this domain are dynamically managed by the {@link BooleanSatisfiabilitySolver}, which
  * guarantees the existence of a {@link ValueChoiceFunction} named "modelX" for each model X
- * in {0 ... maxModels-1} of the current {@link BooleanConstraintNetwork}.  Note that a {@link BooleanConstraintNetwork}
+ * in {0 ... maxModels-1} of the current {@link ConstraintNetwork}.  Note that the {@link ConstraintNetwork}
  * is never left in an inconsistent state, therefore the {@link ValueChoiceFunction}
  * called "model0" is always defined.  
  * 

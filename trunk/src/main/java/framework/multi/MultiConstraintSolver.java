@@ -319,9 +319,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	}
 	
 	/**
-	 * This method creates {@code num} {@link MultiVariable}s.  It must be called within the
-	 * (user-implemented) method {@link MultiConstraintSolver.createVariablesSub(int num)} of the
-	 * concrete {@link MultiVariable} implementation.  The creation of internal variables is
+	 * This method creates {@code num} {@link MultiVariable}s. The creation of internal variables is
 	 * taken care of automatically, given a specification of the number of internal variables to create
 	 * for each internal solver.
 	 * @param ingredients The number of internal variables to create for each internal solver.   

@@ -35,7 +35,7 @@ import framework.Constraint;
  * of all other relations is calculated according to Freksa's conceptual neighborhood (see
  * the DELTAS enum for alpha-cuts defining how possibility is assigned to neighbors). 
  * 
- * @author Federico Pecora
+ * @author Masoumeh Mansouri
  *
  */
 public class FuzzyAllenIntervalConstraint extends QualitativeAllenIntervalConstraint {

@@ -949,7 +949,7 @@ public class APSPSolver extends ConstraintSolver {
 	}
 
 	/**
-	 * Draw a graph representing this STPTemporalModule.  This method depends on the Prefuse library.
+	 * Draw a graph representing this {@link APSPSolver}'s {@link ConstraintNetwork}.  This method depends on the Prefuse library.
 	 */
 	public void draw() {
 		//=================================================================

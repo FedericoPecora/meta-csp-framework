@@ -205,7 +205,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	 * Checks whether the domains of the {@link Variable}s in the {@link ConstraintNetwork} are instantiated.
 	 * This is used by the {@link ConstraintSolver} class to assess whether automatic propagation
 	 * should occur (in some CSPs, domains of {@link Variable}s cannot be instantiated by the {@link Variable} constructor,
-	 * rather an explicit call to a dedicated method is necessary - see, e.g., {@link SymbolicVariable}s).
+	 * rather an explicit call to a dedicated method is necessary).
 	 * @return <code>null</code> if all domains are instantiated; a {@link Variable} whose domain is not instantiated if one exists. 
 	 */
 	public Variable checkDomainsInstantiated() {
