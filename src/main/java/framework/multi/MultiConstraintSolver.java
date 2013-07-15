@@ -300,7 +300,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		Vector<Vector<Variable>> ret = new Vector<Vector<Variable>>();
 		for (int k = 0; k < this.getConstraintSolvers().length; k++) {
 			Variable[] oneType = this.getConstraintSolvers()[k].createVariables(ingredients[k]*num);
-			logger.info("Created " + ingredients[k]*num + " internal variables for " + this.getConstraintSolvers()[k].getClass().getSimpleName());
+			logger.finest("Created " + ingredients[k]*num + " internal variables for " + this.getConstraintSolvers()[k].getClass().getSimpleName());
 			for (int i = 0; i < num; i++) {
 				Vector<Variable> oneVar = null;
 				if (ret.size() > i) oneVar = ret.elementAt(i);
