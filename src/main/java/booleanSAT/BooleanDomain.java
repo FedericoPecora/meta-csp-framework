@@ -112,7 +112,7 @@ public class BooleanDomain extends Domain {
 		int counterThat = 0;
 		if (this.domain[0]) counterThis++;
 		if (this.domain[1]) counterThis++;
-		if (this.domain[0]) counterThat++;
+		if (that.domain[0]) counterThat++;
 		if (that.domain[1]) counterThat++;
 		return counterThat - counterThis;
 	}
