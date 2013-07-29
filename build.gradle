@@ -1,31 +1,38 @@
-['java', 'eclipse', 'maven', 'application'].each {
+['java', 'eclipse', 'maven', 'application', 'signing'].each {
     apply plugin : it
 }
 
-println ("Using Gradle version: "+Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)))
+set("myGradleVersion", GradleVersion.current().getVersion().substring(0,3))
 
-//if (false) {
-if (Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)) >= 1.6) {
+println ("Using Gradle version: " + myGradleVersion)
+
+if (Double.parseDouble(myGradleVersion) >= 1.6) {
    apply plugin : 'maven-publish'
 }
 else {
      println "Note: you need Gradle version >= 1.6 to publish to a Maven repo"
 }
 
-mainClassName = 'examples.multi.TestTimelinePlotting'
+//Main class for 'gradle run'
+mainClassName = 'org.metacsp.examples.multi.TestTimelinePlotting'
 
+//JDK version
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+//MetaCSP version
 version = '0.0.0-SNAPSHOT'
-group = 'meta_csp_framework'
+group = 'org.metacsp'
 
+//Repos for dependencies (all but Orbital)
 repositories {
   mavenCentral()
 }
 
 dependencies {
+  //Orbital needs its own jars...
   compile fileTree(dir: 'lib', include: '**/*.jar')
+  //... the rest is in Maven Central
   compile 'org.ow2.sat4j:org.ow2.sat4j.sat:2.3.4'
   compile 'net.sf.jung:jung2:2.0.1'
   compile 'net.sf.jung:jung-graph-impl:2.0.1'
@@ -36,16 +43,11 @@ dependencies {
   compile 'junit:junit:4.8.1'
 }
 
-//processResources { 
-//     from(projectDir) { 
-//	 include 'license.txt'
-//     } 
-//}
-
 javadoc {
+    destinationDir = file(projectDir.toString() + "/../javadoc")
     options.header = "Meta-CSP Framework API"
     options.author = 'true'
-    title = "<table><tr><td align=left><a href=\"http://meta-csp-framework.googlecode.com\" target=_blank><img src=img/meta-csp-logo-small.png></a></td><td>&nbsp;&nbsp;&nbsp;</td><td align=left>The Meta-CSP Framework<br><small><i>A Java API for Meta-CSP based reasoning</i></small></td></tr></table>"
+    title = "<table><tr><td align=left><a href=\"http://metacsp.org\" target=_blank><img src=img/meta-csp-logo-small.png></a></td><td>&nbsp;&nbsp;&nbsp;</td><td align=left>The Meta-CSP Framework<br><small><i>A Java API for Meta-CSP based reasoning</i></small></td></tr></table>"
     copy {
          from(projectDir) { 
 	 	include 'img/*.png'
@@ -72,7 +74,7 @@ task sourceJar (type : Jar) {
     }
 }
 
-//create extra lib jar
+//create extra lib jar (Orbital)
 task libJar (type : Jar) {
     def lib = file("lib")
     classifier = 'libs'
@@ -80,12 +82,46 @@ task libJar (type : Jar) {
 }
 
 //publish bin, source and javaDoc to repo
-//if (false) {
 if (Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)) >= 1.6) {
 publishing {
     publications {
         metaCSPFramework(MavenPublication) {
             from components.java
+
+	    //================
+	    //== Modify POM ==
+	    //================
+	    pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'The MetaCSP Framework'
+                    description 'A Java API for Meta-CSP based reasoning'
+                    url 'http://metacsp.org'
+                    scm {
+                        url 'http://metacsp.org'
+                        connection 'scm:svn:http://meta-csp-framework.googlecode.com/svn/trunk'
+                        developerConnection 'scm:svn:https://meta-csp-framework.googlecode.com/svn/trunk'
+                    }
+                    licenses {
+                        license {
+                            name 'The MIT License'
+                            url 'http://opensource.org/licenses/mit-license.php'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'federico.pecora'
+                            name 'Federico Pecora'
+                            email 'federico.pecora@gmail.com'
+                        }
+                    }
+                }
+            }
+	    //====================
+	    //== end Modify POM ==
+	    //====================
+
  	    artifact (javadocJar) {
                 classifier = 'javadoc'
             }
@@ -100,8 +136,6 @@ publishing {
     repositories {
         maven {
             url "file:/${project.projectDir}/artifacts"
-	    //dependency 'com.google.code.maven-svn-wagon:maven-svn-wagon:1.1'
-	    //url "svn:https://meta-csp-framework.googlecode.com/svn/m2/releases"
         }
     }
 }
