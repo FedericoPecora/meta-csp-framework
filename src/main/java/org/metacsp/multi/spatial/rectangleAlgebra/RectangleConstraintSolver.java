@@ -154,6 +154,22 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 		return bbs.toArray(new BoundingBox[bbs.size()]);
 	}
 	
+	public Vector<BoundingBox> extractBoundingBoxesFromSTPsByName(String name){
+		
+		Vector<BoundingBox> ret = new Vector<BoundingBox>();
+		for (int i = 0; i < this.getConstraintSolvers()[0].getVariables().length; i++) {
+			Bounds xLB, xUB, yLB, yUB;
+			if(((RectangularRegion)this.getConstraintNetwork().getVariables()[i]).getName().compareTo(name) == 0){
+				xLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getLST());
+				xUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[0].getVariables()[i]).getLET());
+				yLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getLST());
+				yUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getLET());
+				ret.add(new BoundingBox(xLB, xUB, yLB, yUB));
+			}
+		}
+		return ret;
+	}
+
 
 }
 	
