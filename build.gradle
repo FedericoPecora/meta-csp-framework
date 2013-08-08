@@ -24,15 +24,13 @@ targetCompatibility = 1.6
 version = '0.0.0-SNAPSHOT'
 group = 'org.metacsp'
 
-//Repos for dependencies (all but Orbital)
+//Repos for dependencies
 repositories {
   mavenCentral()
 }
 
 dependencies {
-  //Orbital needs its own jars...
-  compile fileTree(dir: 'lib', include: '**/*.jar')
-  //... the rest is in Maven Central
+  //It's all in Maven Central
   compile 'org.ow2.sat4j:org.ow2.sat4j.sat:2.3.4'
   compile 'net.sf.jung:jung2:2.0.1'
   compile 'net.sf.jung:jung-graph-impl:2.0.1'
@@ -41,6 +39,7 @@ dependencies {
   compile 'org.prefuse:prefuse:beta-20071021'
   compile 'jfree:jfreechart:1.0.13'
   compile 'junit:junit:4.8.1'
+  compile 'com.googlecode.aima-java:aima-core:0.10.5'
 }
 
 javadoc {

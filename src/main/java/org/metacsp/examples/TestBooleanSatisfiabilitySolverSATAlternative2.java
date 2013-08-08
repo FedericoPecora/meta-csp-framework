@@ -4,12 +4,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestBooleanSatisfiabilitySolverSATAlternative2 {
 	
@@ -25,7 +24,7 @@ public class TestBooleanSatisfiabilitySolverSATAlternative2 {
 		//(x1 v x2 v ~x3 v x4) ^ (x1 v ~x2 v ~x3 v x4) ^ (x1 v ~x2 v ~x3 v ~x4) ^
 		//(~x1 v ~x2 v ~x3 v x4) ^ (~x1 v x2 v ~x3 v ~x4) ^ (~x1 v ~x2 v ~x3 v ~x4)
 		BooleanVariable[] vars = (BooleanVariable[])solver.createVariables(4);
-		String cnf = "(~x1 v x2 v x4) ^ (x1 v ~x2 v x3) ^ (x1 v x2 v ~x4) ^ (x2 v x3) ^ (x1 v x2 v ~x3 v x4) ^ (x1 v ~x2 v ~x3 v x4) ^ (x1 v ~x2 v ~x3 v ~x4) ^ (~x1 v ~x2 v ~x3 v x4) ^ (~x1 v x2 v ~x3 v ~x4) ^ (~x1 v ~x2 v ~x3 v ~x4)";
+		String cnf = "((((((((((~x1 v (x2 v x4)) ^ (x1 v (~x2 v x3))) ^ (x1 v (x2 v ~x4))) ^ (x2 v x3)) ^ (x1 v (x2 v (~x3 v x4)))) ^ (x1 v (~x2 v (~x3 v x4)))) ^ (x1 v (~x2 v (~x3 v ~x4)))) ^ (~x1 v (~x2 v (~x3 v x4)))) ^ (~x1 v (x2 v (~x3 v ~x4)))) ^ (~x1 v (~x2 v (~x3 v ~x4))))";
 		BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(vars, cnf);
 		logger.info("SAT? "+solver.addConstraints(cons));
 		logger.info(Arrays.toString(vars));

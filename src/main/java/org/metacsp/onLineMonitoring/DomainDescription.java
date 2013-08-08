@@ -30,9 +30,9 @@ import java.util.Vector;
 import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
 import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import org.metacsp.multi.fuzzyActivity.SimpleTimeline;
-import orbital.algorithm.Combinatorical;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.PermutationsWithRepetition;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
@@ -102,7 +102,7 @@ public class DomainDescription {
 				catch (InterruptedException e) { e.printStackTrace(); }
 			}
 			if (!stopped) {
-				System.out.println("Fired event: " + event);
+				//System.out.println("Fired event: " + event);
 				updateSensorData(event);
 				triggerHypothesisListener();
 			}
@@ -223,7 +223,7 @@ public class DomainDescription {
 		Vector<Hypothesis> bestSet = new Vector<Hypothesis>();
 		for (Rule r : this.rules) {
 			if (!toSkip.contains(r)) {
-				System.out.println("rule: " + r);
+				//System.out.println("rule: " + r);
 				Hypothesis[] oneRule = getConsistency(r);
 				if (oneRule != null) {
 					Arrays.sort(oneRule);
@@ -703,10 +703,12 @@ public class DomainDescription {
 					if (vcn.size() > max) max = vcn.size();
 				}
 				
-				Combinatorical c = Combinatorical.getPermutations(constraints.size(), max, true);
-		
-				while (c.hasNext()) {
-					int[] combination = c.next();
+				//Combinatorical c = Combinatorical.getPermutations(constraints.size(), max, true);
+				PermutationsWithRepetition gen = new PermutationsWithRepetition(max, constraints.size());
+				
+				for (int[] combination : gen.getVariations()) {
+				//while (c.hasNext()) {
+					//int[] combination = c.next();
 					//System.out.println("Doing " + Arrays.toString(combination));
 					boolean skip = false;
 					for (int i = 0; i < combination.length; i++) {
@@ -792,13 +794,12 @@ public class DomainDescription {
 					double vc = solver.getValueConsistency();
 					Hypothesis h = new Hypothesis(tc, vc, cn, r, head, currentPass);
 					
-					System.out.println("hypothesis: " + h);
-					String outS = " (pass " + h.getPass() + "): " +
-							"\n\tminInterval = " + this.getMinInterval(h); 
-					System.out.println(outS);
+					//System.out.println("hypothesis: " + h);
+					//String outS = " (pass " + h.getPass() + "): " + "\n\tminInterval = " + this.getMinInterval(h); 
+					//System.out.println(outS);
 										
 					
-					System.out.println("..........................................................");
+					//System.out.println("..........................................................");
 					ret.add(h);
 					
 					//OPT
@@ -817,7 +818,7 @@ public class DomainDescription {
 					
 			if (impossibleReq) return null;
 			
-			System.out.println("=====================================================");//iran
+			//System.out.println("=====================================================");//iran
 			return ret.toArray(new Hypothesis[ret.size()]);
 			
 		}

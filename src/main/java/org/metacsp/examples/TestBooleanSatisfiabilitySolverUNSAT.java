@@ -1,15 +1,14 @@
 package org.metacsp.examples;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
-import java.util.Arrays;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestBooleanSatisfiabilitySolverUNSAT {
 	

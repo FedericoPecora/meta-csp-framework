@@ -26,15 +26,7 @@ package org.metacsp.booleanSAT;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Vector;
-
-import org.sat4j.core.VecInt;
-import org.sat4j.minisat.SolverFactory;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IConstr;
-import org.sat4j.specs.ISolver;
-import org.sat4j.specs.TimeoutException;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
@@ -42,6 +34,11 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.ValueChoiceFunction;
 import org.metacsp.framework.Variable;
+import org.sat4j.core.VecInt;
+import org.sat4j.minisat.SolverFactory;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.ISolver;
+import org.sat4j.specs.TimeoutException;
 
 /**
  * The {@link BooleanSatisfiabilitySolver} provides a means to reason upon Boolean Satisfiability
@@ -238,7 +235,9 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		}
 		
 		Vector<int[]> allModels = new Vector<int[]>();
+		
 		try {
+			if (!sat4JSolver.isSatisfiable()) return false;
 			while (sat4JSolver.isSatisfiable()) {
 				int[] oneModel = sat4JSolver.model();
 				if (oneModel.length == 0) break;
