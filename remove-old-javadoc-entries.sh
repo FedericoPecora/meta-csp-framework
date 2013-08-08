@@ -7,8 +7,7 @@ do
     if [ ! -f $srcName ]; then
 	num=`echo "$srcName" | grep -o "\." | wc -l`
 	if [ $num == 1 ]; then
-	    echo $srcName" not found!"
-	    echo "Removing "$filename
+	    echo $srcName" not found, removing javadoc entry."
 	    rm $filename
 	fi
     fi
