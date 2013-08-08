@@ -68,7 +68,6 @@ public class SymbolicVariable extends MultiVariable {
 			equalsCon.setFrom(this);
 			equalsCon.setTo(this);
 			equalsCon.setAutoRemovable(true);
-			System.out.println("ADDING: " + equalsCon);
 			this.solver.addConstraint(equalsCon);
 		}
 		

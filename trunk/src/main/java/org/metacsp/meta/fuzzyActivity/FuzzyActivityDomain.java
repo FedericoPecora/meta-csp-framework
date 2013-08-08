@@ -33,7 +33,8 @@ import org.metacsp.onLineMonitoring.PhysicalSensor;
 import org.metacsp.onLineMonitoring.Requirement;
 import org.metacsp.onLineMonitoring.Rule;
 import org.metacsp.onLineMonitoring.Sensor;
-import orbital.algorithm.Combinatorical;
+import org.metacsp.utility.PermutationsWithRepetition;
+
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
@@ -273,12 +274,12 @@ public class FuzzyActivityDomain extends MetaConstraint {
 				max = vcn.size();
 		}
 
-		Combinatorical c = Combinatorical.getPermutations(constraints.size(),
-				max, true);
+		//Combinatorical c = Combinatorical.getPermutations(constraints.size(), max, true);
+		PermutationsWithRepetition gen = new PermutationsWithRepetition(max, constraints.size());
 
-		while (c.hasNext()) {
-			int[] combination = c.next();
-
+		//while (c.hasNext()) {
+		for (int[] combination : gen.getVariations()) {
+			//int[] combination = c.next();
 			boolean skip = false;
 			for (int i = 0; i < combination.length; i++) {
 				if (constraints.elementAt(i).size() <= combination[i]) {

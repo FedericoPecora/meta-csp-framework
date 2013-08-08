@@ -1,15 +1,14 @@
 package org.metacsp.examples;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
-import java.util.Arrays;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestBooleanSatisfiabilitySolverUNSATNonCNF {
 	
@@ -22,8 +21,8 @@ public class TestBooleanSatisfiabilitySolverUNSATNonCNF {
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 
-		BooleanVariable[] vars = (BooleanVariable[])solver.createVariables(4);
-		String wff = "(x1 <-> ((x2 v ~x3) ^ ~(x2 v ~x3))) ^ (x3 v ~x4) ^ (~x2)";
+		BooleanVariable[] vars = (BooleanVariable[])solver.createVariables(3);
+		String wff = "((x1 <-> ((x2 v ~x3) ^ ~(x2 v ~x3))) ^ (x1))";
 		BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(vars, wff);
 
 		logger.info("SAT? "+solver.addConstraints(cons));

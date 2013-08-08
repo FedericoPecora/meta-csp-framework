@@ -23,9 +23,9 @@
 
 package org.metacsp.booleanSAT;
 
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.ValueChoiceFunction;
-import org.metacsp.framework.ConstraintNetwork;
 
 /**
  * Represents domains for {@link BooleanVariable}s, namely the set {T,F}.  {@link ValueChoiceFunction}s

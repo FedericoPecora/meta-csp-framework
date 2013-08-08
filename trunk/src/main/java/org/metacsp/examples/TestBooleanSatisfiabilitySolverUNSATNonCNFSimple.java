@@ -1,15 +1,14 @@
 package org.metacsp.examples;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
-import java.util.Arrays;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestBooleanSatisfiabilitySolverUNSATNonCNFSimple {
 	
@@ -23,9 +22,6 @@ public class TestBooleanSatisfiabilitySolverUNSATNonCNFSimple {
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 
 		BooleanVariable[] vars = (BooleanVariable[])solver.createVariables(1);
-		//String wff = "(x4) ^ ((x1 ^ x2) v (x2 v !x3 ^ x4)) ^ ((~x1 v x3) v (x2 ^ ~x3 ^ ~x4))";
-		//String wff = "(x1 ^ x2) ^ (x2 v !x3 ^ x4) ^ (~x1 v x3) ^ (x2 v ~x3 ^ ~x4)";
-		//String wff = "(x1 <-> ((x2 v ~x3) ^ ~(x2 v ~x3))) ^ (x4 v ~x4)";
 		String wff = "(x1 ^ ~x1)";
 		BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(vars, wff);
 

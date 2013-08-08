@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestBooleanSatisfiabilitySolverSATNonCNFSimple {
 	
@@ -22,7 +22,13 @@ public class TestBooleanSatisfiabilitySolverSATNonCNFSimple {
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 
 		BooleanVariable[] vars = (BooleanVariable[])solver.createVariables(4);
-		String wff = "(x1 ^ x2) ^ (x2 v ~x3 ^ x4) ^ (~x1 v x3) ^ (x2 v ~x3 ^ ~x4)";
+		//NOTE: All parentheses need to be explicit (every binary connective must be parenthesized)
+		//... therefore the following is not OK:
+		//String wff = "(x1 ^ x2) ^ (x2 v ~x3 ^ x4) ^ (~x1 v x3) ^ (x2 v ~x3 ^ ~x4)";
+		//... but the following is OK:
+		//String wff = "((((x1 ^ x2) ^ (x2 v (~x3 ^ x4))) ^ (~x1 v x3)) ^ (x2 v (~x3 ^ ~x4)))";
+		//... as well as the following:
+		String wff = "(((x1 ^ x2) ^ (x2 v (~x3 ^ x4))) ^ ((~x1 v x3) ^ (x2 v (~x3 ^ ~x4))))";
 		BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(vars, wff);
 
 		logger.info("SAT? "+solver.addConstraints(cons));
