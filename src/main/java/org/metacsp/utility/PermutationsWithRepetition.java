@@ -29,7 +29,8 @@ Retrieved from: http://en.literateprograms.org/Permutations_with_repetition_(Jav
  */
 
 /**
- * Generates r-permutations of n with repetition. 
+ * Generates r-permutations of n with repetition.
+ *  
  * @author Federico Pecora and authors listed at <a href="http://en.literateprograms.org/Permutations_with_repetition_(Java)?action=history&offset=20080109002711">en.literateprograms.org</a>
  */
 public class PermutationsWithRepetition {
