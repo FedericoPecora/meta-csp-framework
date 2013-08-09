@@ -74,11 +74,11 @@ task sourceJar (type : Jar) {
 }
 
 //create extra lib jar (Orbital)
-task libJar (type : Jar) {
-    def lib = file("lib")
-    classifier = 'libs'
-    from lib
-}
+//task libJar (type : Jar) {
+//    def lib = file("lib")
+//    classifier = 'libs'
+//    from lib
+//}
 
 //publish bin, source and javaDoc to repo
 if (Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)) >= 1.6) {
@@ -127,9 +127,9 @@ publishing {
 	    artifact (sourceJar) {
                 classifier = 'sources'
             }
-	    artifact (libJar) {
-                classifier = 'libs'
-            }
+	    //artifact (libJar) {
+            //    classifier = 'libs'
+            //}
         }
     }
     repositories {
