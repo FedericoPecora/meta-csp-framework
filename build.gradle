@@ -59,7 +59,7 @@ dependencies {
 }
 
 javadoc {
-    destinationDir = file(projectDir.toString() + "/../javadoc")
+    //destinationDir = file(projectDir.toString() + "/../javadoc")
     options.header = "Meta-CSP Framework API"
     options.author = 'true'
     title = "<table><tr><td align=left><a href=\"http://metacsp.org\" target=_blank><img src=img/meta-csp-logo-small.png></a></td><td>&nbsp;&nbsp;&nbsp;</td><td align=left>The Meta-CSP Framework<br><small><i>A Java API for Meta-CSP based reasoning</i></small></td></tr></table>"
