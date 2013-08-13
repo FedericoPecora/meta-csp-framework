@@ -225,7 +225,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		
 		sat4JSolver.reset();
 		
-		logger.info("Solving SAT problem...");
+//		logger.info("Solving SAT problem...");
 		Constraint[] cons = this.getConstraintNetwork().getConstraints();
 		
 		for (Constraint con : cons) {
