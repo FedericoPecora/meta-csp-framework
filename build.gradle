@@ -20,7 +20,23 @@ mainClassName = 'org.metacsp.examples.multi.TestTimelinePlotting'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+def getSvnRevision() {
+    new ByteArrayOutputStream().withStream { os ->
+        def result = exec {
+            executable = 'svn'
+            args = ['info']
+            standardOutput = os
+        }
+        def outputAsString = os.toString()
+        def matchLastChangedRev = outputAsString =~ /Last Changed Rev: (\d+)/
+ 
+        ext.svnRev = "${matchLastChangedRev[0][1]}".toInteger()
+    }
+    return svnRev
+}
+
 //MetaCSP version
+//version = '1.0.' + getSvnRevision()
 version = '0.0.0-SNAPSHOT'
 group = 'org.metacsp'
 
@@ -96,6 +112,11 @@ publishing {
                     name 'The MetaCSP Framework'
                     description 'A Java API for Meta-CSP based reasoning'
                     url 'http://metacsp.org'
+		    parent {
+		    	groupId 'org.sonatype.oss'
+			artifactId 'oss-parent'
+    			version '7'
+		    }
                     scm {
                         url 'http://metacsp.org'
                         connection 'scm:svn:http://meta-csp-framework.googlecode.com/svn/trunk'
