@@ -1,4 +1,4 @@
-package org.metacsp.tests;
+package org.metacsp.tests.multi;
 
 import java.util.logging.Level;
 
@@ -18,7 +18,7 @@ public class TestAllenInterval extends TestCase {
 	
 	@Override
 	public void setUp() throws Exception {
-		MetaCSPLogging.setLevel(Scheduler.class, Level.OFF);
+		MetaCSPLogging.setLevel(Level.OFF);
 	}
 
 	@Override

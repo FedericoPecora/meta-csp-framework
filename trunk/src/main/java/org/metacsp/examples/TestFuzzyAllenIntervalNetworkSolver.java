@@ -61,8 +61,6 @@ public class TestFuzzyAllenIntervalNetworkSolver {
 		
 		System.out.println(solver.getPosibilityDegree());
 		
-		
-		
 	}
 	
 

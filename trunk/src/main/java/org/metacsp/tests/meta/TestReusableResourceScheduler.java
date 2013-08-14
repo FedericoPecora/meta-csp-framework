@@ -1,4 +1,4 @@
-package org.metacsp.tests;
+package org.metacsp.tests.meta;
 
 import java.util.logging.Level;
 
@@ -23,7 +23,7 @@ public class TestReusableResourceScheduler extends TestCase {
 	
 	@Override
 	public void setUp() throws Exception {
-		MetaCSPLogging.setLevel(Scheduler.class, Level.OFF);
+		MetaCSPLogging.setLevel(Level.OFF);
 	}
 
 	@Override
