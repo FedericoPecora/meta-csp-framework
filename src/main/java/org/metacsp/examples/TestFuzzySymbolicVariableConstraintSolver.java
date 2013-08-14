@@ -57,6 +57,12 @@ public class TestFuzzySymbolicVariableConstraintSolver {
 
 		SymbolicValueConstraint[] cons = new SymbolicValueConstraint[] {con1,con2};
 		
+		/*
+Value Possibility: 0.2
+Value Possibility: 0.1
+Value Possibility: 0.5
+Value Possibility: 1.0
+		 */
 		while (true) {
 			for (SymbolicValueConstraint con : cons) {
 				solver.addConstraint(con);

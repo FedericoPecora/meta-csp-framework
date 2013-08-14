@@ -11,7 +11,7 @@ public class TestBounds extends TestCase {
 	
 	@Override
 	public void setUp() throws Exception {
-		MetaCSPLogging.setLevel(Scheduler.class, Level.OFF);
+		MetaCSPLogging.setLevel(Level.OFF);
 	}
 
 	@Override

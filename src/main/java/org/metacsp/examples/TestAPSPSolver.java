@@ -86,6 +86,7 @@ public class TestAPSPSolver {
 		con5.setTo(three);
 		con5.setMinimum(70);
 		con5.setMaximum(100);
+		solver.addConstraint(con5);
 		
 		while (true) {
 			solver.addConstraint(con5);
