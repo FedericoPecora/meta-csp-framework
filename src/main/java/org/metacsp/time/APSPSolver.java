@@ -726,12 +726,12 @@ public class APSPSolver extends ConstraintSolver {
 						long sum4 = sum(sum3,distance[to][v]);
 						long temp = Math.min(sum2,sum4);
 						if (distance[u][v] > temp) {
-							long oldD = distance[u][v];
+							//long oldD = distance[u][v];
 							distance[u][v] = temp;
 							if (u == v && distance[u][v] != 0) {
-								logger.info("==================> Updated distance[" + u + "][" + v + "] from " + oldD + " to " + temp);
-								//return false;
-								throw new Error("Found negative cycle in incremental propagation while adding (from,to,i) (" + from + "," + to + "," + i + ")");
+								//logger.info("==================> Updated distance[" + u + "][" + v + "] from " + oldD + " to " + temp);
+								//throw new Error("Found negative cycle in incremental propagation while adding (from,to,i) (" + from + "," + to + "," + i + ")");
+								return false;
 							}
 						}
 					}
