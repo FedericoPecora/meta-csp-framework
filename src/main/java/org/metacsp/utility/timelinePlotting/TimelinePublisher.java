@@ -223,7 +223,7 @@ public final class TimelinePublisher
 			this.imageWidth = imageWidth;
 			this.subImageHeight = subImageHeight;
 			this.imageType = imageType;
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 			Date date = new Date(Calendar.getInstance().getTimeInMillis());
 			String time = sdf.format(date);
 			this.filePath = filePath+"-"+time;
@@ -277,7 +277,7 @@ public final class TimelinePublisher
 					
 					try
 					{
-						String fileName = String.format("%s/TL_#%04d.%s", filePath, numTimeLinesPublished++, imageType);						
+						String fileName = String.format("%s" + File.separator + "TL_#%04d.%s", filePath, numTimeLinesPublished++, imageType);						
 						FileOutputStream fos = new FileOutputStream(fileName);
 						fos.write(baos.toByteArray());
 						fos.close();

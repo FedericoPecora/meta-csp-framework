@@ -77,7 +77,7 @@ public class TestActivityNetworkSolver {
 		solver.addConstraints(cons);
 				
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,7 +86,7 @@ public class TestActivityNetworkSolver {
 		solver.removeConstraints(new Constraint[] {con1,con2,con3,con4,con5,con5a});
 
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
