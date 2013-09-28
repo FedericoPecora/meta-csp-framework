@@ -24,11 +24,12 @@ package org.metacsp.multi.spatial.rectangleAlgebra;
 
 import java.awt.Rectangle;
 
+import org.metacsp.multi.spatial.blockAlgebra.RectangularCuboid;
 import org.metacsp.time.Bounds;
 
 public class BoundingBox {
 
-	private Bounds xLB, xUB, yLB, yUB;
+	private Bounds xLB, xUB, yLB, yUB, zLB, zUB;
 	private String name = "";
 	
 	/**
@@ -47,6 +48,16 @@ public class BoundingBox {
 		
 	}
 	
+	public BoundingBox(Bounds xLB, Bounds xUB, Bounds yLB, Bounds yUB, Bounds zLB, Bounds zUB){
+		
+		this.xLB = xLB;
+		this.xUB = xUB;
+		this.yLB = yLB;
+		this.yUB = yUB;
+		this.zLB = zLB;
+		this.zUB = zUB;		
+	}
+	
 	public Bounds getxLB() {
 		return xLB;
 	}
@@ -61,6 +72,14 @@ public class BoundingBox {
 	
 	public Bounds getyUB() {
 		return yUB;
+	}
+	
+	public Bounds getzUB() {
+		return zUB;
+	}
+	
+	public Bounds getzLB() {
+		return zLB;
 	}
 	
 	public void setName(String name) {
@@ -109,6 +128,17 @@ public class BoundingBox {
 				(int)((xUB.min + ((xUB.max - xUB.min)/2)) - (xLB.min + ((xLB.max - xLB.min)/2))),
 				(int)((yUB.min + ((yUB.max - yUB.min)/2)) - (yLB.min + ((yLB.max - yLB.min)/2)))
 				);
+	}
+	
+	public RectangularCuboid getAlmostCentreRecCuboid(){	
+		
+		
+		return new RectangularCuboid(new Point((int)(xLB.min + ((xLB.max - xLB.min)/2)), (int)(yLB.min + ((yLB.max - yLB.min)/2)), (int)(zLB.min + ((zLB.max - zLB.min)/2))), 
+				(int)((xUB.min + ((xUB.max - xUB.min)/2)) - (xLB.min + ((xLB.max - xLB.min)/2))),
+				(int)((yUB.min + ((yUB.max - yUB.min)/2)) - (yLB.min + ((yLB.max - yLB.min)/2))), 
+				(int)((zUB.min + ((zUB.max - zUB.min)/2)) - (zLB.min + ((zLB.max - zLB.min)/2))));
+		
+		
 	}
 	
 	
