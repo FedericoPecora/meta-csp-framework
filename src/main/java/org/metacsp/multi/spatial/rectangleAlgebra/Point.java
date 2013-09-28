@@ -23,11 +23,22 @@
 package org.metacsp.multi.spatial.rectangleAlgebra;
 
 public class Point {
-	public double x, y;
+	public double x, y, z;
+	private boolean is3D = false;
+	
 	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
+
+	public Point(double x, double y, double z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		is3D = true;
+		
+	}
+
 	public int x() {
 		if (Math.abs(new Double(x).intValue()-x) < 0.5)
 			return new Double(x).intValue();
@@ -38,7 +49,14 @@ public class Point {
 			return new Double(y).intValue();
 		return new Double(y).intValue()+1;
 	}
+	public int z() {
+		if (Math.abs(new Double(z).intValue()-z) < 0.5)
+			return new Double(z).intValue();
+		return new Double(z).intValue()+1;
+	}
 	public String toString() {
+		if(is3D)
+			return "(" + x + "," + y + "," + z + ")";
 		return "(" + x + "," + y + ")";
 	}
 	public double distance(Point p) {		
@@ -50,5 +68,9 @@ public class Point {
 	public double getY() {
 		return y;
 	}
+	public double getZ() {
+		return z;
+	}
+	
 	
 }
