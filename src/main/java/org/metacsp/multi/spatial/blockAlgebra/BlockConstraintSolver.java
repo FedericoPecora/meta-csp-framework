@@ -96,8 +96,9 @@ public class BlockConstraintSolver extends MultiConstraintSolver {
 		return null;
 	}
 	
-	public BoundingBox[] extractAllBoundingBoxesFromSTPs(){
+	public HashMap<String, BoundingBox> extractAllBoundingBoxesFromSTPs(){
 		
+		HashMap<String, BoundingBox> ret = new HashMap<String, BoundingBox>();
 		Vector<BoundingBox> bbs = new Vector<BoundingBox>();
 		Bounds xLB, xUB, yLB, yUB, zLB, zUB;
 		for (int i = 0; i < this.getConstraintSolvers()[0].getVariables().length; i++) {
@@ -107,9 +108,10 @@ public class BlockConstraintSolver extends MultiConstraintSolver {
 			yUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[1].getVariables()[i]).getLET());
 			zLB = new Bounds(((AllenInterval)this.getConstraintSolvers()[2].getVariables()[i]).getEST(), ((AllenInterval)this.getConstraintSolvers()[2].getVariables()[i]).getLST());
 			zUB = new Bounds(((AllenInterval)this.getConstraintSolvers()[2].getVariables()[i]).getEET(), ((AllenInterval)this.getConstraintSolvers()[2].getVariables()[i]).getLET());
-			bbs.add(new BoundingBox(xLB, xUB, yLB, yUB, zLB, zUB));
+			
+			ret.put(((RectangularCuboidRegion)this.getConstraintNetwork().getVariables()[i]).getName(), new BoundingBox(xLB, xUB, yLB, yUB, zLB, zUB));
 		}
-		return bbs.toArray(new BoundingBox[bbs.size()]);
+		return ret;
 	}
 	
 	public Vector<BoundingBox> extractBoundingBoxesFromSTPsByName(String name){
