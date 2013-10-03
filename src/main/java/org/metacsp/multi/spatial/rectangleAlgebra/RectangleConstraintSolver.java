@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.metacsp.multi.spatial.rectangleAlgebra;
 
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -110,6 +111,40 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 		return ret;
 	}
 
+	
+	/**
+	 * Output a Gnuplot-readable script that draws, for each given 
+	 * {@link RectangularRegion}, a rectangle which is close to the
+	 * "center" of the {@link RectangularRegion}'s domain. 
+	 * @param horizon The maximum X and Y coordinate to be used in the plot.
+	 * @param rect The set of {@link RectangularRegion}s to draw.
+	 * @return A Gnuplot script.
+	 */
+	public String drawAlmostCentreRectangle(long horizon, HashMap<String, Rectangle> rect){
+		String ret = "";
+		int j = 1;
+		ret = "set xrange [0:" + horizon +"]"+ "\n";
+		ret += "set yrange [0:" + horizon +"]" + "\n";
+
+		int i = 0;
+		for (String str : rect.keySet()) {
+			//rec 
+			ret += "set obj " + j + " rect from " + rect.get(str).getMinX() + "," + rect.get(str).getMinY() 
+					+" to " + rect.get(str).getMaxX() + "," + rect.get(str).getMaxY() + 
+					" front fs transparent solid 0.0 border " + (i+1) +" lw 0.5" + "\n";
+			j++;
+			//label of centre Rec
+			ret += "set label " + "\""+ str +"\""+" at "+ rect.get(str).getCenterX() +"," 
+					+ rect.get(str).getCenterY() + " textcolor lt " + (i+1) + " font \"9\"" + "\n";
+			j++;
+			i++;
+		}		
+		ret += "plot NaN" + "\n";
+		ret += "pause -1";
+		return ret;
+	}
+
+	
 	/**
 	 *  Extracts a specific {@link BoundingBox} from the domain of a {@link RectangularRegion}. 
 	 * @param rect The {@link RectangularRegion} from to extract the {@link BoundingBox}.
