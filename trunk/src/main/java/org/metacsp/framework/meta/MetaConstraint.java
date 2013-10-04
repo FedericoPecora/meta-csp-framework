@@ -103,6 +103,8 @@ public abstract class MetaConstraint extends Constraint {
 	 */
 	public abstract ConstraintNetwork[] getMetaVariables();
 	
+	//public abstract boolean metaPropagation(ConstraintNetwork metaValue);
+	
 	/**
 	 * Get one meta value for a given {@link MetaVariable}. Note that this calls
 	 * the getMetaValues method (which must be implemented in the specific

@@ -240,7 +240,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					catch (InterruptedException e) { e.printStackTrace(); }
 				}
 				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
-				
+				//for (MetaConstraint df : this.metaConstraints) {
+				//	if (!df.metaPropagation(value)) {
+				//		break;
+				//	}
+				//}
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
