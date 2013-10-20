@@ -131,7 +131,7 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 			//rec 
 			ret += "set obj " + j + " rect from " + rect.get(str).getMinX() + "," + rect.get(str).getMinY() 
 					+" to " + rect.get(str).getMaxX() + "," + rect.get(str).getMaxY() + 
-					" front fs transparent solid 0.0 border " + (i+1) +" lw 0.5" + "\n";
+					" front fs transparent solid 0.0 border " + (i+1) +" lw 2" + "\n";
 			j++;
 			//label of centre Rec
 			ret += "set label " + "\""+ str +"\""+" at "+ rect.get(str).getCenterX() +"," 
@@ -139,7 +139,7 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 			j++;
 			i++;
 		}		
-		ret += "plot NaN" + "\n";
+		ret += "plot " + "\"test \"" + "\n";
 		ret += "pause -1";
 		return ret;
 	}
