@@ -139,7 +139,7 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 			j++;
 			i++;
 		}		
-		ret += "plot " + "\"test \"" + "\n";
+		ret += "plot " + "NaN" + "\n";
 		ret += "pause -1";
 		return ret;
 	}
