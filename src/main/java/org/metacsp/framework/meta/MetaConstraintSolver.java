@@ -1,6 +1,7 @@
 package org.metacsp.framework.meta;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -221,8 +222,12 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 //		statesAlongCurrentBranch.add(currentState);
 //		return true;
 //	}
-	
+	private boolean timeout = false;
+	public boolean getTimeOut(){
+		return timeout;
+	}
 	private boolean backtrackHelper(MetaVariable metaVariable) {
+		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
@@ -245,6 +250,12 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				//		break;
 				//	}
 				//}
+				//******************************************************************
+//				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
+//					timeout = true;
+//					return false;
+//				}
+				//******************************************************************
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;
