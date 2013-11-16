@@ -4,6 +4,7 @@
 #                                                               #
 #   Head                                                        #
 #   Resource                                                    #
+#   Sensor                                                      #
 #   SimpleOperator                                              #
 #   SimpleDomain                                                #
 #   Constraint                                                  #
@@ -14,46 +15,67 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestDomain)
+(SimpleDomain TestContextInference)
+
+(Sensor Location)
+(Sensor Stove)
 
 (Resource power 6)
 (Resource usbport 6)
 (Resource serialport 6)
 
 (SimpleOperator
- (Head Robot1::MoveTo())
+ (Head Human::Cooking())
+ (Requirement req1 Location::Kitchen())
+ (Requirement req2 Stove::On())
+ (Requirement req3 Robot::SayWarning())
+ (Constraint During(Head,req1))
+ (Constraint Contains(Head,req2))
+ (Constraint Overlaps(Head,req3))
+)
+
+(SimpleOperator
+ (Head Human::Eating())
+ (Requirement req1 Location::DiningRoom())
+ (Requirement req2 Human::Cooking())
+ (Constraint During(Head,req1))
+ (Constraint After(Head,req2))
+)
+
+(SimpleOperator
+ (Head Robot::SayWarning())
+ (Requirement req1 Robot::MoveTo())
+ (Constraint MetBy(Head,req1))
+ (Constraint Duration[5,INF](Head))
+)
+
+(SimpleOperator
+ (Head Robot::MoveTo())
  (Requirement req1 LocalizationService::Localization())
  (Constraint During(Head,req1))
  (Constraint Duration[5,INF](Head))
 )
 
 (SimpleOperator
- (Head Robot2::MoveTo())
- (Requirement req1 LocalizationService::Localization())
- (Constraint Duration[5,INF](Head))
- (Constraint During(Head,req1))
-)
-
-(SimpleOperator
  (Head LocalizationService::Localization())
- (Requirement req1 RFIDReader1::On(power,usbport))
+ (Requirement req1 RFIDReader::On(power,usbport))
  (Constraint During(Head,req1)) 
 )
 
 (SimpleOperator
  (Head LocalizationService::Localization())
- (Requirement req1 LaserScanner1::On(power,serialport))
+ (Requirement req1 LaserScanner::On(power,serialport))
  (Constraint During(Head,req1)) 
 )
 
 (SimpleOperator
- (Head RFIDReader1::On(power,usbport))
+ (Head RFIDReader::On(power,usbport))
  (Requirement power(5))
  (Requirement usbport(7))
 )
 
 (SimpleOperator
- (Head LaserScanner1::On(power,serialport))
+ (Head LaserScanner::On(power,serialport))
  (Requirement serialport(1))
  (Requirement power(5))
 )

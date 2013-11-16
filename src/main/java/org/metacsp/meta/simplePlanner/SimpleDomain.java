@@ -53,6 +53,8 @@ public class SimpleDomain extends MetaConstraint {
 
 	private String name;
 	
+	private Vector<String> sensors = new Vector<String>();
+	
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT};
 	
 	public Schedulable[] getSchedulingMetaConstraints() {
@@ -100,8 +102,7 @@ public class SimpleDomain extends MetaConstraint {
 	public ConstraintNetwork[] getMetaVariables() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-		// for every variable that is marked as UNJUSTIFIED an ActivityNetwork is built
-		// this becomes a task
+		// for every variable that is marked as UNJUSTIFIED a ConstraintNetwork is built
 		for (Variable task : groundSolver.getVariables()) {
 			if (task.getMarking().equals(markings.UNJUSTIFIED)) {
 				ConstraintNetwork nw = new ConstraintNetwork(null);
@@ -196,6 +197,15 @@ public class SimpleDomain extends MetaConstraint {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initialTime) {
 		return getMetaValues(metaVariable);
 	}
+
+	public void addSensor(String sensor) {
+		this.sensors.add(sensor);
+	}
+	
+	private boolean isSensor(String component) {
+		if (sensors.contains(component)) return true;
+		return false;
+	}
 	
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
@@ -203,6 +213,42 @@ public class SimpleDomain extends MetaConstraint {
 		ConstraintNetwork problematicNetwork = metaVariable.getConstraintNetwork();
 		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
 
+		if (isSensor(problematicActivity.getComponent())) {
+			ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+			Variable[] acts = groundSolver.getVariables();
+			Vector<Activity> possibleUnifications = new Vector<Activity>();
+			Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
+			for (Variable var : acts) {
+				if (!var.equals(problematicActivity)) {
+					Activity act = (Activity)var;
+					String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
+					if (act.getComponent().equals(problematicActivity.getComponent())) {
+						String[] actSymbols = act.getSymbolicVariable().getSymbols();
+						for (String symbol : actSymbols) {
+							if (problematicActivitySymbolicDomain.contains(symbol)) {
+								if (act.getMarking().equals(markings.JUSTIFIED)) {
+									possibleUnifications.add(act);
+									System.out.println("POSSIBLE: " + act);
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			for (Activity act : possibleUnifications) {
+				AllenIntervalConstraint equals = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals);
+				equals.setFrom(problematicActivity);
+				equals.setTo(act);
+				ConstraintNetwork oneUnification = new ConstraintNetwork(null);
+				oneUnification.addConstraint(equals);
+				unifications.add(oneUnification);
+			}
+			if (unifications.isEmpty()) return null;
+			System.out.println("Unifications: " + unifications);
+			return unifications.toArray(new ConstraintNetwork[unifications.size()]);
+		}
+		
 		for (SimpleOperator r : operators) {
 			String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
 			String operatorHead = r.getHead();
@@ -217,6 +263,11 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
+//		if (!isSensor(problematicActivity.getComponent())) {
+//			ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
+//			return new ConstraintNetwork[] {nullActivityNetwork};
+//		}
+//		return null;
 		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
 		return new ConstraintNetwork[] {nullActivityNetwork};
 	}
@@ -277,6 +328,28 @@ public class SimpleDomain extends MetaConstraint {
 	public boolean isEquivalent(Constraint c) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private static String[] parseSensors(String everything) {
+		Vector<String> sensors = new Vector<String>();
+		int lastSensor = everything.lastIndexOf("Sensor");
+		while (lastSensor != -1) {
+			int bw = lastSensor;
+			int fw = lastSensor;
+			while (everything.charAt(--bw) != '(') { }
+			int parcounter = 1;
+			while (parcounter != 0) {
+				if (everything.charAt(fw) == '(') parcounter++;
+				else if (everything.charAt(fw) == ')') parcounter--;
+				fw++;
+			}
+			String sensor = everything.substring(bw,fw).trim();
+			sensor = sensor.substring(sensor.indexOf("Sensor")+6,sensor.indexOf(")")).trim();
+			sensors.add(sensor);
+			everything = everything.substring(0,bw);
+			lastSensor = everything.lastIndexOf("Sensor");
+		}
+		return sensors.toArray(new String[sensors.size()]);		
 	}
 	
 	private static String[] parseOperators(String everything) {
@@ -354,6 +427,7 @@ public class SimpleDomain extends MetaConstraint {
 				String name = parseName(everything);
 				HashMap<String,Integer> resources = parseResources(everything);
 				String[] operators = parseOperators(everything);
+				String[] sensors = parseSensors(everything);
 				
 				//SimpleDomain rd = new SimpleDomain(
 				//  new int[] {6,6,6},
@@ -369,6 +443,7 @@ public class SimpleDomain extends MetaConstraint {
 					resourceCounter++;
 				}
 				SimpleDomain dom = new SimpleDomain(resourceCaps, resourceNames, name);
+				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String operator : operators) {
 					dom.addOperator(SimpleOperator.parseSimpleOperator(operator));
 				}
@@ -376,6 +451,7 @@ public class SimpleDomain extends MetaConstraint {
 				sp.addMetaConstraint(dom);
 				//... and we also add all its resources as separate meta-constraints
 				for (Schedulable sch : dom.getSchedulingMetaConstraints()) sp.addMetaConstraint(sch);
+				System.out.println(dom);
 			}
 			finally { br.close(); }
 		}
