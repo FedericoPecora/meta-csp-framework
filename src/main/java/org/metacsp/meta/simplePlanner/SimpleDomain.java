@@ -22,6 +22,10 @@
  ******************************************************************************/
 package org.metacsp.meta.simplePlanner;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -80,7 +84,7 @@ public class SimpleDomain extends MetaConstraint {
 			resourcesMap.put(resourceNames[i], new SimpleReusableResource(varOH, valOH, capacities[i], this, resourceNames[i]));
 		}
 		
-		// for every RRS just created, put it coupled with a vector of variables
+		// for every RRS just created, couple it with a vector of variables
 		for (SimpleReusableResource rr : resourcesMap.values()) currentResourceUtilizers.put(rr,new HashMap<Activity, Integer>());
 	}
 	
@@ -246,8 +250,15 @@ public class SimpleDomain extends MetaConstraint {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return "SimpleDomain " + this.name;
+		String ret = "SimpleDomain " + this.name + "\n";
+		ret += "Resources:\n";
+		for (SimpleReusableResource rr : resourcesMap.values())
+			ret += "  " + rr + "\n";
+		for (SimpleOperator op : operators) {
+			ret += "--- Operator:\n";
+			ret += op + "\n";
+		}
+		return ret;
 	}
 
 	@Override
@@ -266,6 +277,110 @@ public class SimpleDomain extends MetaConstraint {
 	public boolean isEquivalent(Constraint c) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private static String[] parseOperators(String everything) {
+		Vector<String> operators = new Vector<String>();
+		int lastOp = everything.lastIndexOf("SimpleOperator");
+		while (lastOp != -1) {
+			int bw = lastOp;
+			int fw = lastOp;
+			while (everything.charAt(--bw) != '(') { }
+			int parcounter = 1;
+			while (parcounter != 0) {
+				if (everything.charAt(fw) == '(') parcounter++;
+				else if (everything.charAt(fw) == ')') parcounter--;
+				fw++;
+			}
+			operators.add(everything.substring(bw,fw));
+			everything = everything.substring(0,bw);
+			lastOp = everything.lastIndexOf("SimpleOperator");
+		}
+		return operators.toArray(new String[operators.size()]);
+	}
+	
+	private static HashMap<String,Integer> parseResources(String everything) {
+		HashMap<String, Integer> ret = new HashMap<String, Integer>();
+		int lastRes = everything.lastIndexOf("Resource");
+		while (lastRes != -1) {
+			int bw = lastRes;
+			int fw = lastRes;
+			while (everything.charAt(--bw) != '(') { }
+			int parcounter = 1;
+			while (parcounter != 0) {
+				if (everything.charAt(fw) == '(') parcounter++;
+				else if (everything.charAt(fw) == ')') parcounter--;
+				fw++;
+			}
+			String resourceElement = everything.substring(bw,fw);
+			String resourceName = resourceElement.substring(resourceElement.indexOf("Resource")+8).trim();
+			int resourceCap = Integer.parseInt(resourceName.substring(resourceName.indexOf(" "),resourceName.indexOf(")")).trim());
+			resourceName = resourceName.substring(0,resourceName.indexOf(" ")).trim();
+			ret.put(resourceName, resourceCap);
+			everything = everything.substring(0,bw);
+			lastRes = everything.lastIndexOf("Resource");
+		}
+		return ret;
+	}
+	
+	
+	private static String parseName(String everything) {
+		String ret = everything.substring(everything.indexOf("SimpleDomain")+12);
+		ret = ret.substring(0,ret.indexOf(")")).trim();
+		return ret;
+	}
+	
+	/**
+	 * Parses a domain file (see domains/testDomain.ddl for an example), instantiates
+	 * the necessary {@link MetaConstraint}s and adds them to the provided {@link SimplePlanner}.
+	 * @param sp The {@link SimplePlanner} that will use this domain.
+	 * @param filename Text file containing the domain definition. 
+	 */
+	public static void parseDomain(SimplePlanner sp, String filename) {
+		String everything = null;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			try {
+				StringBuilder sb = new StringBuilder();
+				String line = br.readLine();
+				while (line != null) {
+					if (!line.startsWith("#")) {
+						sb.append(line);
+						sb.append('\n');
+					}
+					line = br.readLine();
+				}
+				everything = sb.toString();
+				String name = parseName(everything);
+				HashMap<String,Integer> resources = parseResources(everything);
+				String[] operators = parseOperators(everything);
+				
+				//SimpleDomain rd = new SimpleDomain(
+				//  new int[] {6,6,6},
+				//  new String[] {"power", "usbport", "serialport"},
+				//  "TestDomain"
+				//);
+				int[] resourceCaps = new int[resources.keySet().size()];
+				String[] resourceNames = new String[resources.keySet().size()];
+				int resourceCounter = 0;
+				for (String rname : resources.keySet()) {
+					resourceNames[resourceCounter] = rname;
+					resourceCaps[resourceCounter] = resources.get(rname);
+					resourceCounter++;
+				}
+				SimpleDomain dom = new SimpleDomain(resourceCaps, resourceNames, name);
+				for (String operator : operators) {
+					dom.addOperator(SimpleOperator.parseSimpleOperator(operator));
+				}
+				//This adds the domain as a meta-constraint of the SimplePlanner
+				sp.addMetaConstraint(dom);
+				//... and we also add all its resources as separate meta-constraints
+				for (Schedulable sch : dom.getSchedulingMetaConstraints()) sp.addMetaConstraint(sch);
+			}
+			finally { br.close(); }
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }
 	}
 
 }
