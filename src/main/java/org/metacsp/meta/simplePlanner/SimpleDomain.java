@@ -54,6 +54,7 @@ public class SimpleDomain extends MetaConstraint {
 	private String name;
 	
 	private Vector<String> sensors = new Vector<String>();
+	private Vector<String> contextVars = new Vector<String>();
 	
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT};
 	
@@ -201,12 +202,21 @@ public class SimpleDomain extends MetaConstraint {
 	public void addSensor(String sensor) {
 		this.sensors.add(sensor);
 	}
-	
-	private boolean isSensor(String component) {
+
+	public void addContextVar(String cv) {
+		this.contextVars.add(cv);
+	}
+
+	public boolean isSensor(String component) {
 		if (sensors.contains(component)) return true;
 		return false;
 	}
-	
+
+	public boolean isContextVar(String component) {
+		if (contextVars.contains(component)) return true;
+		return false;
+	}
+
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		Vector<ConstraintNetwork> retPossibleConstraintNetworks = new Vector<ConstraintNetwork>();
@@ -228,7 +238,6 @@ public class SimpleDomain extends MetaConstraint {
 							if (problematicActivitySymbolicDomain.contains(symbol)) {
 								if (act.getMarking().equals(markings.JUSTIFIED)) {
 									possibleUnifications.add(act);
-									System.out.println("POSSIBLE: " + act);
 								}
 								break;
 							}
@@ -245,7 +254,6 @@ public class SimpleDomain extends MetaConstraint {
 				unifications.add(oneUnification);
 			}
 			if (unifications.isEmpty()) return null;
-			System.out.println("Unifications: " + unifications);
 			return unifications.toArray(new ConstraintNetwork[unifications.size()]);
 		}
 		
@@ -263,18 +271,14 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
-//		if (!isSensor(problematicActivity.getComponent())) {
-//			ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
-//			return new ConstraintNetwork[] {nullActivityNetwork};
-//		}
-//		return null;
 		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
 		return new ConstraintNetwork[] {nullActivityNetwork};
 	}
 
 	@Override
 	public void markResolvedSub(MetaVariable con, ConstraintNetwork metaValue) {
-		con.getConstraintNetwork().getVariables()[0].setMarking(markings.JUSTIFIED);
+		if (con.getConstraintNetwork().getVariables().length != 0)
+			con.getConstraintNetwork().getVariables()[0].setMarking(markings.JUSTIFIED);
 	}
 
 	@Override
@@ -285,7 +289,8 @@ public class SimpleDomain extends MetaConstraint {
 	public HashMap<String, SimpleReusableResource> getResources() {
 		return resourcesMap;
 	}
-	// Given a variable act, it returns all the RubReusRes that are currently exploited by the variable
+
+	// Given a variable act, it returns all the resources that are currently exploited by the variable
 	public SimpleReusableResource[] getCurrentReusableResourcesUsedByActivity(Variable act) {
 		Vector<SimpleReusableResource> ret = new Vector<SimpleReusableResource>();
 		for (SimpleReusableResource rr : currentResourceUtilizers.keySet()) {
@@ -301,14 +306,14 @@ public class SimpleDomain extends MetaConstraint {
 
 	@Override
 	public String toString() {
-		String ret = "SimpleDomain " + this.name + "\n";
-		ret += "Resources:\n";
-		for (SimpleReusableResource rr : resourcesMap.values())
-			ret += "  " + rr + "\n";
-		for (SimpleOperator op : operators) {
-			ret += "--- Operator:\n";
-			ret += op + "\n";
-		}
+		String ret = this.getClass().getSimpleName() + " " + this.name;
+//		ret += "\nResources:\n";
+//		for (SimpleReusableResource rr : resourcesMap.values())
+//			ret += "  " + rr + "\n";
+//		for (SimpleOperator op : operators) {
+//			ret += "--- Operator:\n";
+//			ret += op + "\n";
+//		}
 		return ret;
 	}
 
@@ -330,7 +335,7 @@ public class SimpleDomain extends MetaConstraint {
 		return false;
 	}
 	
-	private static String[] parseSensors(String everything) {
+	protected static String[] parseSensors(String everything) {
 		Vector<String> sensors = new Vector<String>();
 		int lastSensor = everything.lastIndexOf("Sensor");
 		while (lastSensor != -1) {
@@ -351,8 +356,30 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		return sensors.toArray(new String[sensors.size()]);		
 	}
-	
-	private static String[] parseOperators(String everything) {
+
+	protected static String[] parseContextVars(String everything) {
+		Vector<String> contexts = new Vector<String>();
+		int lastContext = everything.lastIndexOf("ContextVariable");
+		while (lastContext != -1) {
+			int bw = lastContext;
+			int fw = lastContext;
+			while (everything.charAt(--bw) != '(') { }
+			int parcounter = 1;
+			while (parcounter != 0) {
+				if (everything.charAt(fw) == '(') parcounter++;
+				else if (everything.charAt(fw) == ')') parcounter--;
+				fw++;
+			}
+			String context = everything.substring(bw,fw).trim();
+			context = context.substring(context.indexOf("ContextVariable")+15,context.indexOf(")")).trim();
+			contexts.add(context);
+			everything = everything.substring(0,bw);
+			lastContext = everything.lastIndexOf("ContextVariable");
+		}
+		return contexts.toArray(new String[contexts.size()]);		
+	}
+
+	protected static String[] parseOperators(String everything) {
 		Vector<String> operators = new Vector<String>();
 		int lastOp = everything.lastIndexOf("SimpleOperator");
 		while (lastOp != -1) {
@@ -372,7 +399,7 @@ public class SimpleDomain extends MetaConstraint {
 		return operators.toArray(new String[operators.size()]);
 	}
 	
-	private static HashMap<String,Integer> parseResources(String everything) {
+	protected static HashMap<String,Integer> parseResources(String everything) {
 		HashMap<String, Integer> ret = new HashMap<String, Integer>();
 		int lastRes = everything.lastIndexOf("Resource");
 		while (lastRes != -1) {
@@ -397,7 +424,7 @@ public class SimpleDomain extends MetaConstraint {
 	}
 	
 	
-	private static String parseName(String everything) {
+	protected static String parseName(String everything) {
 		String ret = everything.substring(everything.indexOf("SimpleDomain")+12);
 		ret = ret.substring(0,ret.indexOf(")")).trim();
 		return ret;
@@ -428,6 +455,7 @@ public class SimpleDomain extends MetaConstraint {
 				HashMap<String,Integer> resources = parseResources(everything);
 				String[] operators = parseOperators(everything);
 				String[] sensors = parseSensors(everything);
+				String[] contextVars = parseContextVars(everything);
 				
 				//SimpleDomain rd = new SimpleDomain(
 				//  new int[] {6,6,6},
@@ -444,6 +472,7 @@ public class SimpleDomain extends MetaConstraint {
 				}
 				SimpleDomain dom = new SimpleDomain(resourceCaps, resourceNames, name);
 				for (String sensor : sensors) dom.addSensor(sensor);
+				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : operators) {
 					dom.addOperator(SimpleOperator.parseSimpleOperator(operator));
 				}
@@ -451,7 +480,6 @@ public class SimpleDomain extends MetaConstraint {
 				sp.addMetaConstraint(dom);
 				//... and we also add all its resources as separate meta-constraints
 				for (Schedulable sch : dom.getSchedulingMetaConstraints()) sp.addMetaConstraint(sch);
-				System.out.println(dom);
 			}
 			finally { br.close(); }
 		}

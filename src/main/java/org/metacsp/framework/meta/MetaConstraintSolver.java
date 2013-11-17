@@ -244,7 +244,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					try { Thread.sleep(animationTime); }
 					catch (InterruptedException e) { e.printStackTrace(); }
 				}
-				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
+				String valString = "";
+				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
+				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
+				logger.fine("Trying value: " + valString);		
 				//for (MetaConstraint df : this.metaConstraints) {
 				//	if (!df.metaPropagation(value)) {
 				//		break;

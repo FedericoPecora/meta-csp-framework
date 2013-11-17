@@ -47,10 +47,8 @@ public class SimplePlanner extends MetaConstraintSolver {
 	public SimplePlanner(long origin, long horizon, long animationTime) {
 		// Through the constructor, the Scheduler is put in the "InternalSolver variable"
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, animationTime, new ActivityNetworkSolver(origin, horizon, 500));
-		// Through the following line, the Scheduler is put in the "nextMetaConstraintSolver" belongin
-		// to the MetaConstraintSolver class
 	}
-	
+
 	@Override
 	public void preBacktrack() { }
 
