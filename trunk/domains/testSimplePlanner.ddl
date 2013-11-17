@@ -4,6 +4,8 @@
 #                                                               #
 #   Head                                                        #
 #   Resource                                                    #
+#   Sensor                                                      #
+#   ContextVariable                                             #
 #   SimpleOperator                                              #
 #   SimpleDomain                                                #
 #   Constraint                                                  #

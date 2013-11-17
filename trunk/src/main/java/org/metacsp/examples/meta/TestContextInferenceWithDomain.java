@@ -44,16 +44,15 @@ public class TestContextInferenceWithDomain {
 
 		//Create planner
 		SimplePlanner planner = new SimplePlanner(0,600,0);
+		
+		SimpleDomain.parseDomain(planner, "domains/testContextInference.ddl");
 
 		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 		
 		// This is a pointer toward the ground constraint network of the planner
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
 
-		//Parse the domain
-		SimpleDomain.parseDomain(planner, "domains/testContextInference.ddl");
-
-		// GOAL: infer coking
+		// GOAL: infer cooking
 		Activity one = (Activity)groundSolver.createVariable("Human");
 		one.setSymbolicDomain("Cooking()");
 		// ... this is a goal (i.e., an activity to justify through the meta-constraint)

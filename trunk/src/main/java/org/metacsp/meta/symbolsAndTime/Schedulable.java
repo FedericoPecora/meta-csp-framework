@@ -22,11 +22,9 @@
  ******************************************************************************/
 package org.metacsp.meta.symbolsAndTime;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -36,6 +34,7 @@ import org.metacsp.multi.activity.ActivityComparator;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.PowerSet;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ValueOrderingH;
@@ -75,25 +74,6 @@ public abstract class Schedulable extends MetaConstraint {
 	public static enum PEAKCOLLECTION {SAMPLING, COMPLETE, BINARY};
 	
 	protected PEAKCOLLECTION peakCollectionStrategy = PEAKCOLLECTION.SAMPLING;
-
-	public static <T> Set<Set<T>> powerSet(Set<T> originalSet) {
-	    Set<Set<T>> sets = new HashSet<Set<T>>();
-	    if (originalSet.isEmpty()) {
-	        sets.add(new HashSet<T>());
-	        return sets;
-	    }
-	    List<T> list = new ArrayList<T>(originalSet);
-	    T head = list.get(0);
-	    Set<T> rest = new HashSet<T>(list.subList(1, list.size())); 
-	    for (Set<T> set : powerSet(rest)) {
-	    	Set<T> newSet = new HashSet<T>();
-	        newSet.add(head);
-	        newSet.addAll(set);
-	        sets.add(newSet);
-	        sets.add(set);
-	    }           
-	    return sets;
-	}
 	
 	public Schedulable(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
@@ -208,7 +188,7 @@ public abstract class Schedulable extends MetaConstraint {
 
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			for (HashSet<Activity> superSet : superPeaks) {
-				for (Set<Activity> s : powerSet(superSet)) {
+				for (Set<Activity> s : PowerSet.powerSet(superSet)) {
 					if (!s.isEmpty()) {
 						ConstraintNetwork cn = new ConstraintNetwork(null);
 						for (Activity a : s) cn.addVariable(a); 

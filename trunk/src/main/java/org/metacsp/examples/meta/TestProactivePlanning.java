@@ -22,8 +22,11 @@
  ******************************************************************************/
 package org.metacsp.examples.meta;
 
+import java.util.logging.Level;
+
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
@@ -32,55 +35,61 @@ import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-public class TestSimplePlannerWithDomain {	
+public class TestProactivePlanning {	
 	
 	public static void main(String[] args) {
 
 		//Create planner
 		SimplePlanner planner = new SimplePlanner(0,600,0);
+
+		ProactivePlanningDomain.parseDomain(planner, "domains/testContextInference.ddl");
 		
-		SimpleDomain.parseDomain(planner, "domains/testSimplePlanner.ddl");
-		
+		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
+
 		// This is a pointer toward the ground constraint network of the planner
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
-
-		// INITIAL AND GOAL STATE DEFS
-		Activity one = (Activity)groundSolver.createVariable("Robot1");
-		one.setSymbolicDomain("MoveTo()");
-		// ... this is a goal (i.e., an activity to justify through the meta-constraint)
-		one.setMarking(markings.UNJUSTIFIED);
+		
+		// SENSORS: user in kitchen from 1 until at least 20
+		Activity s1 = (Activity)groundSolver.createVariable("Location");
+		s1.setSymbolicDomain("Kitchen()");
+		// ... this is a sensor value (i.e., an activity that is already justified)
+		s1.setMarking(markings.JUSTIFIED);
 		//.. let's also give it a minimum duration
-		AllenIntervalConstraint durationOne = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(7,APSPSolver.INF));
-		durationOne.setFrom(one);
-		durationOne.setTo(one);
-
-		Activity two = (Activity)groundSolver.createVariable("Robot2");
-		two.setSymbolicDomain("MoveTo()");
-		two.setMarking(markings.UNJUSTIFIED);
-		AllenIntervalConstraint durationTwo = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(7,APSPSolver.INF));
-		durationTwo.setFrom(two);
-		durationTwo.setTo(two);
-
-		groundSolver.addConstraints(new Constraint[] {durationOne, durationTwo});
+		AllenIntervalConstraint durationS1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(20,APSPSolver.INF));
+		durationS1.setFrom(s1);
+		durationS1.setTo(s1);
+		//Let's release it 
+		AllenIntervalConstraint relS1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1,1));
+		relS1.setFrom(s1);
+		relS1.setTo(s1);
 		
-		// We can also specify that goals should be related in time somehow...		
-		AllenIntervalConstraint after = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, AllenIntervalConstraint.Type.After.getDefaultBounds());
-		after.setFrom(one);
-		after.setTo(two);
-		groundSolver.addConstraint(after);
+		// SENSORS: stove is on from 4 and lasts 10
+		Activity s2 = (Activity)groundSolver.createVariable("Stove");
+		s2.setSymbolicDomain("On()");
+		// ... this is a sensor value (i.e., an activity that is already justified)
+		s2.setMarking(markings.JUSTIFIED);
+		//.. let's also give it a minimum duration
+		AllenIntervalConstraint durationS2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(10,10));
+		durationS2.setFrom(s2);
+		durationS2.setTo(s2);
+		//Let's release it 
+		AllenIntervalConstraint relS2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(4,4));
+		relS2.setFrom(s2);
+		relS2.setTo(s2);
 
-		TimelinePublisher tp = new TimelinePublisher(groundSolver, "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
-		TimelineVisualizer viz = new TimelineVisualizer(tp);
-		tp.publish(false, false);
-		
+		groundSolver.addConstraints(new Constraint[] {durationS1,durationS2,relS1,relS2});
+
 		planner.backtrack();
 		
 		ConstraintNetwork.draw(groundSolver.getConstraintNetwork(), "Constraint Network");
 		
 		planner.draw();
+		TimelinePublisher tp = new TimelinePublisher(groundSolver, "Human", "Location", "Stove", "Robot", "LocalizationService", "LaserScanner", "RFIDReader");
+		TimelineVisualizer viz = new TimelineVisualizer(tp);
 		tp.publish(true, false);
 
 	}

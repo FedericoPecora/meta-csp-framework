@@ -5,6 +5,7 @@
 #   Head                                                        #
 #   Resource                                                    #
 #   Sensor                                                      #
+#   ContextVariable                                             #
 #   SimpleOperator                                              #
 #   SimpleDomain                                                #
 #   Constraint                                                  #
@@ -19,6 +20,8 @@
 
 (Sensor Location)
 (Sensor Stove)
+
+(ContextVariable Human)
 
 (Resource power 6)
 (Resource usbport 6)
