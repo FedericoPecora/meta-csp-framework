@@ -46,7 +46,7 @@ public class TestProactivePlanning {
 		//Create planner
 		SimplePlanner planner = new SimplePlanner(0,600,0);
 
-		ProactivePlanningDomain.parseDomain(planner, "domains/testContextInference.ddl");
+		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanning.ddl");
 		
 		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
