@@ -16,7 +16,7 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestContextInference)
+(SimpleDomain TestProactivePlanning)
 
 (Sensor Location)
 (Sensor Stove)

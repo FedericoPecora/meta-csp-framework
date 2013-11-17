@@ -38,14 +38,14 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-public class TestContextInferenceWithDomain {	
+public class TestContextInferenceWithSimplePlanner {	
 	
 	public static void main(String[] args) {
 
 		//Create planner
 		SimplePlanner planner = new SimplePlanner(0,600,0);
 		
-		SimpleDomain.parseDomain(planner, "domains/testContextInference.ddl");
+		SimpleDomain.parseDomain(planner, "domains/testProactivePlanning.ddl");
 
 		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 		
