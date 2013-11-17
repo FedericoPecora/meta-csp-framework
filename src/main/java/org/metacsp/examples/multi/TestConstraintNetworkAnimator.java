@@ -1,0 +1,40 @@
+package org.metacsp.examples.multi;
+
+import java.util.Calendar;
+
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.sensing.ConstraintNetworkAnimator;
+import org.metacsp.sensing.Sensor;
+import org.metacsp.time.Bounds;
+import org.metacsp.utility.timelinePlotting.TimelinePublisher;
+import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
+
+public class TestConstraintNetworkAnimator {
+		
+	public static void main(String[] args) {
+		ActivityNetworkSolver ans = new ActivityNetworkSolver(0, 100000);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, false, 1000);
+		
+		Sensor sensorA = new Sensor("SensorA", animator);
+		Sensor sensorB = new Sensor("SensorB", animator);
+		
+		sensorA.registerSensorTrace("sensorTraces/sensorA.st", animator);
+		sensorB.registerSensorTrace("sensorTraces/sensorB.st", animator);
+
+		final TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "SensorA", "SensorB");
+		tp.setTemporalResolution(1);
+		TimelineVisualizer tv = new TimelineVisualizer(tp);
+		
+		Thread t = new Thread() {
+			public void run() {
+				while (true) {
+					try { Thread.sleep(1000); }
+					catch (InterruptedException e) { e.printStackTrace(); }			
+					tp.publish(false, true);
+				}		
+			}
+		};
+		t.start();
+	}
+
+}
