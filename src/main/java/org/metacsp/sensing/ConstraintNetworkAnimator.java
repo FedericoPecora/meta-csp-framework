@@ -6,10 +6,17 @@ import java.util.Vector;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.framework.VariablePrototype;
+import org.metacsp.framework.meta.MetaConstraint;
+import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
+import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
+import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
+
+import cern.colt.Arrays;
 
 public class ConstraintNetworkAnimator extends Thread {
 	
@@ -20,6 +27,20 @@ public class ConstraintNetworkAnimator extends Thread {
 	private long period;
 	private AllenIntervalConstraint currentReleaseFuture = null;
 	private HashMap<Sensor,HashMap<Long,String>> sensorValues = new HashMap<Sensor, HashMap<Long,String>>();
+	private SimplePlanner planner = null;
+	private ProactivePlanningDomain domain = null;
+	
+	public ConstraintNetworkAnimator(SimplePlanner planner, boolean realClock, long period) {
+		this((ActivityNetworkSolver)planner.getConstraintSolvers()[0],realClock,period);
+		this.planner = planner;
+		MetaConstraint[] metaConstraints = planner.getMetaConstraints();
+		for (MetaConstraint mc : metaConstraints) {
+			if (mc instanceof ProactivePlanningDomain) {
+				domain = (ProactivePlanningDomain) mc;
+				break;
+			}
+		}
+	}
 	
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, boolean realClock, long period) {
 		synchronized(ans) {
@@ -33,6 +54,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			
 			future = (Activity)ans.createVariable("Time");
 			future.setSymbolicDomain("Future");
+			future.setMarking(markings.JUSTIFIED);
 			long timeNow = Calendar.getInstance().getTimeInMillis()-originOfTime;
 			AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
 			releaseFuture.setFrom(future);
@@ -42,8 +64,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			deadlineFuture.setTo(future);
 			currentReleaseFuture = releaseFuture;
 			if (!ans.addConstraints(currentReleaseFuture,deadlineFuture)) {
-				System.out.println("SHIT");
-				System.exit(0);
+				throw new NetworkMaintenanceError(currentReleaseFuture,deadlineFuture);
 			}
 			this.start();
 		}
@@ -58,17 +79,24 @@ public class ConstraintNetworkAnimator extends Thread {
 	}
 	
 	public void run() {
+		int iteration = 0;
 		while (true) {
 			try { Thread.sleep(period); }
 			catch (InterruptedException e) { e.printStackTrace(); }
-			long timeNow = Calendar.getInstance().getTimeInMillis()-originOfTime;
-			AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
-			releaseFuture.setFrom(future);
-			releaseFuture.setTo(future);
+			
 			synchronized(ans) {
+				//Update release constraint of Future
+				long timeNow = Calendar.getInstance().getTimeInMillis()-originOfTime;
+				AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
+				releaseFuture.setFrom(future);
+				releaseFuture.setTo(future);
 				if (currentReleaseFuture != null) ans.removeConstraint(currentReleaseFuture);
-				ans.addConstraint(releaseFuture);
+				if (!ans.addConstraint(releaseFuture)) {
+					throw new NetworkMaintenanceError(releaseFuture);
+				}
 				currentReleaseFuture = releaseFuture;
+				
+				//If there are registered sensor traces, animate them too  
 				for (Sensor sensor : sensorValues.keySet()) {
 					Vector<Long> toRemove = new Vector<Long>();
 					HashMap<Long,String> values = sensorValues.get(sensor);
@@ -79,6 +107,31 @@ public class ConstraintNetworkAnimator extends Thread {
 						}
 					}
 					for (long time : toRemove) values.remove(time);
+				}
+				
+				//If there is a registered planner, do the planning/context inference
+				if (planner != null) {
+					System.out.println("Iteration " + iteration++);
+					domain.resetContextInference();
+					planner.clearResolvers();
+					planner.backtrack();
+					Vector<Activity> oldInference = new Vector<Activity>();
+					for (ConstraintNetwork cn : planner.getAddedResolvers()) {
+						Variable[] vars = cn.getVariables();
+						if (vars.length == 1) {
+							Variable var = vars[0];
+							if (var instanceof VariablePrototype) {
+								VariablePrototype vp = (VariablePrototype)vars[0];
+								Activity act = (Activity)cn.getSubstitution(vp);
+								if (domain.isContextVar(act.getComponent())) {
+									oldInference.add(act);
+								}
+							}
+						}
+					}
+					if (!oldInference.isEmpty()) {
+						domain.setOldInference(oldInference.toArray(new Activity[oldInference.size()]));
+					}
 				}
 			}
 		}

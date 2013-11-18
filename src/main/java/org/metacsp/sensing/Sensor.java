@@ -12,9 +12,7 @@ import java.util.logging.Logger;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
-import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
-import org.metacsp.meta.simplePlanner.SimpleOperator;
-import org.metacsp.meta.symbolsAndTime.Schedulable;
+import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -30,10 +28,12 @@ public class Sensor implements Serializable {
 	private Activity future = null;
 	private Activity currentAct = null;
 	private AllenIntervalConstraint currentMeetsFuture = null;
+	ConstraintNetworkAnimator animator = null;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 		
 	public Sensor(String name, ConstraintNetworkAnimator animator) {
+		this.animator = animator;
 		this.ans = animator.getActivityNetworkSolver();
 		this.cn = animator.getConstraintNetwork();
 		this.name = name;
@@ -62,6 +62,7 @@ public class Sensor implements Serializable {
 			if (makeNew) {
 				Activity act = (Activity)ans.createVariable(this.name);
 				act.setSymbolicDomain(value);
+				act.setMarking(markings.JUSTIFIED);
 				AllenIntervalConstraint rel = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,timeNow));
 				rel.setFrom(act);
 				rel.setTo(act);
@@ -97,7 +98,7 @@ public class Sensor implements Serializable {
 			}
 			String element = everything.substring(bw,fw);
 			String value = element.substring(element.indexOf("SensorValue")+11).trim();
-			long time = Long.parseLong(value.substring(value.indexOf(" "),value.indexOf(")")).trim());
+			long time = Long.parseLong(value.substring(value.indexOf(" "),value.lastIndexOf(")")).trim());
 			value = value.substring(0,value.indexOf(" ")).trim();
 			ret.put(time,value);
 			everything = everything.substring(0,bw);
@@ -107,7 +108,7 @@ public class Sensor implements Serializable {
 	}
 
 
-	public void registerSensorTrace(String sensorTraceFile, ConstraintNetworkAnimator animator) {
+	public void registerSensorTrace(String sensorTraceFile) {
 		String everything = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(sensorTraceFile));

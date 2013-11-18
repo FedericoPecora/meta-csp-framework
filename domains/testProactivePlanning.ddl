@@ -41,7 +41,7 @@
  (Head Human::Eating())
  (Requirement req1 Location::DiningRoom())
  (Requirement req2 Human::Cooking())
- (Constraint During(Head,req1))
+ (Constraint Finishes(Head,req1))
  (Constraint After(Head,req2))
 )
 
