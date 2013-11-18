@@ -52,8 +52,11 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		ValueOrderingH valOH = new ValueOrderingH() {
 			@Override
 			public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
-				if (arg0.getAnnotation() != null && arg1.getAnnotation() != null)
-					return (Integer)arg1.getAnnotation()-(Integer)arg0.getAnnotation(); 
+				if (arg0.getAnnotation() != null && arg1.getAnnotation() != null) {
+					if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
+						return (Integer)arg1.getAnnotation()-(Integer)arg0.getAnnotation(); 
+					}
+				}
 				return arg1.getVariables().length - arg0.getVariables().length;
 			}
 		};
@@ -145,7 +148,7 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			String headComponent = head.substring(0,head.indexOf("::"));
 			String headValue = head.substring(head.indexOf("::")+2);
 			if (this.isContextVar(headComponent)) {
-				VariablePrototype toInfer = new VariablePrototype(groundSolver, headComponent, headValue);
+				VariablePrototype toInfer = new VariablePrototype(groundSolver, headComponent, headValue, "Inference");
 				toInfer.setMarking(markings.UNJUSTIFIED);
 				vars.add(toInfer);
 			}

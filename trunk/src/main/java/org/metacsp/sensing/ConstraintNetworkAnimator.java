@@ -117,16 +117,20 @@ public class ConstraintNetworkAnimator extends Thread {
 					planner.backtrack();
 					Vector<Activity> oldInference = new Vector<Activity>();
 					for (ConstraintNetwork cn : planner.getAddedResolvers()) {
-						Variable[] vars = cn.getVariables();
-						if (vars.length == 1) {
-							Variable var = vars[0];
-							if (var instanceof VariablePrototype) {
-								VariablePrototype vp = (VariablePrototype)vars[0];
-								Activity act = (Activity)cn.getSubstitution(vp);
-								if (domain.isContextVar(act.getComponent())) {
-									oldInference.add(act);
+						VariablePrototype var = null;
+						for (Variable v : cn.getVariables()) {
+							if (v instanceof VariablePrototype) {
+								if (((VariablePrototype)v).getParameters().length > 2) {
+									if (((VariablePrototype)v).getParameters()[2].equals("Inference")) {
+										var = (VariablePrototype)v;
+									}
 								}
 							}
+						}
+						if (var != null) {
+//							System.out.println("DOING " + cn.getVariables()[0]);
+							Activity act = (Activity)cn.getSubstitution(var);
+							oldInference.add(act);
 						}
 					}
 					if (!oldInference.isEmpty()) {

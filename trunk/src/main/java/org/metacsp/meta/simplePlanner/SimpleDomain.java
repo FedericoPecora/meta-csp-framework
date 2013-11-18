@@ -267,7 +267,6 @@ public class SimpleDomain extends MetaConstraint {
 				for (ConstraintNetwork oneUnification : unifications) {
 					retPossibleConstraintNetworks.add(oneUnification);
 					oneUnification.setAnnotation(2);
-					System.out.println("ADDED UNIFICATION for " + problematicActivity + ": " + oneUnification);
 				}
 			}
 		}
