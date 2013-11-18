@@ -374,7 +374,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 				};
 				Domain.registerValueChoiceFunction(BooleanDomain.class, vcf, "model"+i);
 			}
-			logger.info("Updated value choice functions (there are currently " + currentModels.size() + " models)");
+			logger.finest("Updated value choice functions (there are currently " + currentModels.size() + " models)");
 		}
 		else {
 			ValueChoiceFunction vcf = new ValueChoiceFunction() {
