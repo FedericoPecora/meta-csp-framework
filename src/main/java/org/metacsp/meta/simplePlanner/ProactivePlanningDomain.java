@@ -121,23 +121,23 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		catch (IOException e) { e.printStackTrace(); }
 	}
 
-	private Set<Set<VariablePrototype>> generateGoalsOld() {
-		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
-		SimpleOperator[] ops = this.getOperators();
-		HashSet<VariablePrototype> vars = new HashSet<VariablePrototype>();
-		for (SimpleOperator op : ops) {
-			String head = op.getHead();
-			String headComponent = head.substring(0,head.indexOf("::"));
-			String headValue = head.substring(head.indexOf("::")+2);
-			if (this.isContextVar(headComponent)) {
-				VariablePrototype toInfer = new VariablePrototype(groundSolver, headComponent, headValue);
-				toInfer.setMarking(markings.UNJUSTIFIED);
-				vars.add(toInfer);
-			}
-		}
-		Set<Set<VariablePrototype>> ret = PowerSet.powerSet(vars);
-		return ret;
-	}
+//	private Set<Set<VariablePrototype>> generateGoalsOld() {
+//		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+//		SimpleOperator[] ops = this.getOperators();
+//		HashSet<VariablePrototype> vars = new HashSet<VariablePrototype>();
+//		for (SimpleOperator op : ops) {
+//			String head = op.getHead();
+//			String headComponent = head.substring(0,head.indexOf("::"));
+//			String headValue = head.substring(head.indexOf("::")+2);
+//			if (this.isContextVar(headComponent)) {
+//				VariablePrototype toInfer = new VariablePrototype(groundSolver, headComponent, headValue);
+//				toInfer.setMarking(markings.UNJUSTIFIED);
+//				vars.add(toInfer);
+//			}
+//		}
+//		Set<Set<VariablePrototype>> ret = PowerSet.powerSet(vars);
+//		return ret;
+//	}
 
 	private VariablePrototype[] generateGoals() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
@@ -172,39 +172,39 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		return newRet.toArray(new ConstraintNetwork[newRet.size()]);
 	}
 	
-	public ConstraintNetwork[] getMetaValuesOld(MetaVariable metaVariable) {
-		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
-		//If this is not context inference, get metavalues as usual 
-		if (mv.getConstraints().length != 0 || mv.getVariables().length != 0) {
-			ConstraintNetwork[] ret = super.getMetaValues(metaVariable);
-			return ret;
-		}
-		//We have a context inference metavariable - let's generate all possible worlds
-		Set<Set<VariablePrototype>> possibleWorlds = generateGoalsOld();
-		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-		for (Set<VariablePrototype> oneWorld : possibleWorlds) {
-			if (!oneWorld.isEmpty()) {
-				ConstraintNetwork cn = new ConstraintNetwork(null);
-				for (VariablePrototype var : oneWorld) cn.addVariable(var);
-				if (oldInference != null) {
-					for (VariablePrototype var : oneWorld) {
-						for (Activity oldVar : oldInference) {
-							if (var.getParameters()[0].equals(oldVar.getComponent())) {
-								AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.BeforeOrMeets);
-								before.setFrom(oldVar);
-								before.setTo(var);
-								cn.addConstraint(before);
-								System.out.println("Added BEFORE: " + before);
-							}
-						}
-					}
-				}
-				ret.add(cn);
-			}
-		}
-		if (ret.isEmpty()) return null;
-		return ret.toArray(new ConstraintNetwork[ret.size()]);
-	}
+//	public ConstraintNetwork[] getMetaValuesOld(MetaVariable metaVariable) {
+//		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
+//		//If this is not context inference, get metavalues as usual 
+//		if (mv.getConstraints().length != 0 || mv.getVariables().length != 0) {
+//			ConstraintNetwork[] ret = super.getMetaValues(metaVariable);
+//			return ret;
+//		}
+//		//We have a context inference metavariable - let's generate all possible worlds
+//		Set<Set<VariablePrototype>> possibleWorlds = generateGoalsOld();
+//		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+//		for (Set<VariablePrototype> oneWorld : possibleWorlds) {
+//			if (!oneWorld.isEmpty()) {
+//				ConstraintNetwork cn = new ConstraintNetwork(null);
+//				for (VariablePrototype var : oneWorld) cn.addVariable(var);
+//				if (oldInference != null) {
+//					for (VariablePrototype var : oneWorld) {
+//						for (Activity oldVar : oldInference) {
+//							if (var.getParameters()[0].equals(oldVar.getComponent())) {
+//								AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+//								before.setFrom(oldVar);
+//								before.setTo(var);
+//								cn.addConstraint(before);
+//								System.out.println("Added BEFORE: " + before);
+//							}
+//						}
+//					}
+//				}
+//				ret.add(cn);
+//			}
+//		}
+//		if (ret.isEmpty()) return null;
+//		return ret.toArray(new ConstraintNetwork[ret.size()]);
+//	}
 	
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
@@ -222,11 +222,10 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			if (oldInference != null) {
 				for (Activity oldVar : oldInference) {
 					if (oneGoal.getParameters()[0].equals(oldVar.getComponent())) {
-						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.BeforeOrMeets);
+						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
 						before.setFrom(oldVar);
 						before.setTo(oneGoal);
 						cn.addConstraint(before);
-						System.out.println("Added BEFORE: " + before);
 					}
 				}
 			}

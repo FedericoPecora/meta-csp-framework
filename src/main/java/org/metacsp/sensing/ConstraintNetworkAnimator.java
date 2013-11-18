@@ -3,6 +3,7 @@ package org.metacsp.sensing;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
@@ -15,8 +16,7 @@ import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
-
-import cern.colt.Arrays;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class ConstraintNetworkAnimator extends Thread {
 	
@@ -29,6 +29,8 @@ public class ConstraintNetworkAnimator extends Thread {
 	private HashMap<Sensor,HashMap<Long,String>> sensorValues = new HashMap<Sensor, HashMap<Long,String>>();
 	private SimplePlanner planner = null;
 	private ProactivePlanningDomain domain = null;
+	
+	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	public ConstraintNetworkAnimator(SimplePlanner planner, boolean realClock, long period) {
 		this((ActivityNetworkSolver)planner.getConstraintSolvers()[0],realClock,period);
@@ -111,7 +113,7 @@ public class ConstraintNetworkAnimator extends Thread {
 				
 				//If there is a registered planner, do the planning/context inference
 				if (planner != null) {
-					System.out.println("Iteration " + iteration++);
+					logger.info("Iteration " + iteration++);
 					domain.resetContextInference();
 					planner.clearResolvers();
 					planner.backtrack();
@@ -128,7 +130,6 @@ public class ConstraintNetworkAnimator extends Thread {
 							}
 						}
 						if (var != null) {
-//							System.out.println("DOING " + cn.getVariables()[0]);
 							Activity act = (Activity)cn.getSubstitution(var);
 							oldInference.add(act);
 						}
