@@ -28,7 +28,7 @@ public class Sensor implements Serializable {
 	private Activity future = null;
 	private Activity currentAct = null;
 	private AllenIntervalConstraint currentMeetsFuture = null;
-	ConstraintNetworkAnimator animator = null;
+	private ConstraintNetworkAnimator animator = null;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 		

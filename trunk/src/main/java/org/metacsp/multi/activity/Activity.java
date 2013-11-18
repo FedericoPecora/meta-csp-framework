@@ -82,7 +82,7 @@ public class Activity extends MultiVariable {
 //		ret+="\n<===================================>\n";
 //		ret += this.getComponent() + "::<" + this.symbolicVariable.toString() + ">U<" + this.temporalVariable.toString() + ">";
 		ret += this.getComponent() + "::<" + this.getInternalVariables()[1].toString() + ">U<" + this.getInternalVariables()[0].toString() + ">";
-		if (this.getMarking() != null) ret += "/" + this.getMarking()+"\n";
+		if (this.getMarking() != null) ret += "/" + this.getMarking();
 //		ret+=("\tLLLLLL");
 //		for(Variable v: this.variables){
 //			ret+="\n"+v.toString();
