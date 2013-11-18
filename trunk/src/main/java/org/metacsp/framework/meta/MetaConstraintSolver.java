@@ -67,6 +67,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
+	public MetaConstraint[] getMetaConstraints() {
+		return this.metaConstraints.toArray(new MetaConstraint[this.metaConstraints.size()]);
+	}
 	/**
 	 * Get the final list of resolvers (meta-values) added to the ground-CSP(s)
 	 * for obtaining a solution to the meta-CSP.
@@ -92,7 +95,17 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}
 		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();
 	}
-	
+
+	/**
+	 * Clear memory of all resolvers added to the ground-CSP(s) in order to obtain the
+	 * current solution to the meta-CSP.  This is useful if one wants to restart solving
+	 * from the current solved state.  Note that resolvers are not retracted - to "reset"
+	 * the meta-CSP to its original unsolved state, use method {@link MetaConstraintSolver#retractResolvers()}.
+	 */
+	public void clearResolvers() {
+		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();
+	}
+
 	private class TerminalNode extends MetaVariable {
 		private boolean success;
 		public TerminalNode(boolean success) {
@@ -227,7 +240,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return timeout;
 	}
 	private boolean backtrackHelper(MetaVariable metaVariable) {
-		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
@@ -247,18 +259,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				String valString = "";
 				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
 				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
-				logger.fine("Trying value: " + valString);		
-				//for (MetaConstraint df : this.metaConstraints) {
-				//	if (!df.metaPropagation(value)) {
-				//		break;
-				//	}
-				//}
-				//******************************************************************
-//				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
-//					timeout = true;
-//					return false;
-//				}
-				//******************************************************************
+				logger.fine("Trying value: " + valString);
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.counterMoves++;

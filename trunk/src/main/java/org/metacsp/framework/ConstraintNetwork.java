@@ -481,6 +481,18 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		catch (InvocationTargetException e) { e.printStackTrace(); }
 		return null;
 	}
+	
+	/**
+	 * Set an annotation for this {@link ConstraintNetwork}.
+	 * @param ann An object that should be used to annotate this {@link ConstraintNetwork}.
+	 */
+	public void setAnnotation(Object ann) { this.annotation = ann; }
+
+	/**
+	 * Set the annotation for this {@link ConstraintNetwork}.
+	 * @param ann An object that used to annotate this {@link ConstraintNetwork}.
+	 */
+	public Object getAnnotation() { return this.annotation; }
 
 	
 }

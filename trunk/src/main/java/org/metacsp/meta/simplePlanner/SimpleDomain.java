@@ -216,6 +216,40 @@ public class SimpleDomain extends MetaConstraint {
 		if (contextVars.contains(component)) return true;
 		return false;
 	}
+	
+	private ConstraintNetwork[] getUnifications(Activity activity) {
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		Variable[] acts = groundSolver.getVariables();
+		Vector<Activity> possibleUnifications = new Vector<Activity>();
+		Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
+		for (Variable var : acts) {
+			if (!var.equals(activity)) {
+				Activity act = (Activity)var;
+				String problematicActivitySymbolicDomain = activity.getSymbolicVariable().getSymbols()[0];
+				if (act.getComponent().equals(activity.getComponent())) {
+					String[] actSymbols = act.getSymbolicVariable().getSymbols();
+					for (String symbol : actSymbols) {
+						if (problematicActivitySymbolicDomain.contains(symbol)) {
+							if (act.getMarking().equals(markings.JUSTIFIED)) {
+								possibleUnifications.add(act);
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		for (Activity act : possibleUnifications) {
+			AllenIntervalConstraint equals = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals);
+			equals.setFrom(activity);
+			equals.setTo(act);
+			ConstraintNetwork oneUnification = new ConstraintNetwork(null);
+			oneUnification.addConstraint(equals);
+			unifications.add(oneUnification);
+		}
+		if (unifications.isEmpty()) return null;
+		return unifications.toArray(new ConstraintNetwork[unifications.size()]);		
+	}
 
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
@@ -224,37 +258,18 @@ public class SimpleDomain extends MetaConstraint {
 		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
 
 		if (isSensor(problematicActivity.getComponent())) {
-			ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
-			Variable[] acts = groundSolver.getVariables();
-			Vector<Activity> possibleUnifications = new Vector<Activity>();
-			Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
-			for (Variable var : acts) {
-				if (!var.equals(problematicActivity)) {
-					Activity act = (Activity)var;
-					String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
-					if (act.getComponent().equals(problematicActivity.getComponent())) {
-						String[] actSymbols = act.getSymbolicVariable().getSymbols();
-						for (String symbol : actSymbols) {
-							if (problematicActivitySymbolicDomain.contains(symbol)) {
-								if (act.getMarking().equals(markings.JUSTIFIED)) {
-									possibleUnifications.add(act);
-								}
-								break;
-							}
-						}
-					}
+			return this.getUnifications(problematicActivity);
+		}
+		
+		if (isContextVar(problematicActivity.getComponent())) {
+			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+			if (unifications != null) {
+				for (ConstraintNetwork oneUnification : unifications) {
+					retPossibleConstraintNetworks.add(oneUnification);
+					oneUnification.setAnnotation(2);
+					System.out.println("ADDED UNIFICATION for " + problematicActivity + ": " + oneUnification);
 				}
 			}
-			for (Activity act : possibleUnifications) {
-				AllenIntervalConstraint equals = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals);
-				equals.setFrom(problematicActivity);
-				equals.setTo(act);
-				ConstraintNetwork oneUnification = new ConstraintNetwork(null);
-				oneUnification.addConstraint(equals);
-				unifications.add(oneUnification);
-			}
-			if (unifications.isEmpty()) return null;
-			return unifications.toArray(new ConstraintNetwork[unifications.size()]);
 		}
 		
 		for (SimpleOperator r : operators) {
@@ -265,6 +280,7 @@ public class SimpleDomain extends MetaConstraint {
 			if (opeatorHeadComponent.equals(problematicActivity.getComponent())) {
 				if (problematicActivitySymbolicDomain.contains(operatorHeadSymbol)) {
 					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+					newResolver.setAnnotation(1);
 					retPossibleConstraintNetworks.add(newResolver);
 				}
 			}

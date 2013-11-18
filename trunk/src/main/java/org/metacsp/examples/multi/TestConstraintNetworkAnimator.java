@@ -18,23 +18,14 @@ public class TestConstraintNetworkAnimator {
 		Sensor sensorA = new Sensor("SensorA", animator);
 		Sensor sensorB = new Sensor("SensorB", animator);
 		
-		sensorA.registerSensorTrace("sensorTraces/sensorA.st", animator);
-		sensorB.registerSensorTrace("sensorTraces/sensorB.st", animator);
+		sensorA.registerSensorTrace("sensorTraces/sensorA.st");
+		sensorB.registerSensorTrace("sensorTraces/sensorB.st");
 
-		final TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "SensorA", "SensorB");
+		TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "SensorA", "SensorB");
 		tp.setTemporalResolution(1);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
+		tv.startAutomaticUpdate(1000);
 		
-		Thread t = new Thread() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(1000); }
-					catch (InterruptedException e) { e.printStackTrace(); }			
-					tp.publish(false, true);
-				}		
-			}
-		};
-		t.start();
 	}
 
 }

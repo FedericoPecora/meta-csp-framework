@@ -16,12 +16,19 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.symbolsAndTime.Schedulable;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.utility.PowerSet;
 
 public class ProactivePlanningDomain extends SimpleDomain {
 
 	private boolean triggered = false;
+	private Activity[] oldInference = null;
+	
+	public void setOldInference(Activity[] oldInf) {
+		this.oldInference = oldInf;
+	}
 	
 	public ProactivePlanningDomain(int[] capacities, String[] resourceNames, String domainName) {
 		super(capacities, resourceNames, domainName);
@@ -45,6 +52,8 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		ValueOrderingH valOH = new ValueOrderingH() {
 			@Override
 			public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
+				if (arg0.getAnnotation() != null && arg1.getAnnotation() != null)
+					return (Integer)arg1.getAnnotation()-(Integer)arg0.getAnnotation(); 
 				return arg1.getVariables().length - arg0.getVariables().length;
 			}
 		};
@@ -109,7 +118,7 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		catch (IOException e) { e.printStackTrace(); }
 	}
 
-	private Set<Set<VariablePrototype>> generateGoals() {
+	private Set<Set<VariablePrototype>> generateGoalsOld() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		SimpleOperator[] ops = this.getOperators();
 		HashSet<VariablePrototype> vars = new HashSet<VariablePrototype>();
@@ -127,6 +136,25 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		return ret;
 	}
 
+	private VariablePrototype[] generateGoals() {
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		SimpleOperator[] ops = this.getOperators();
+		HashSet<VariablePrototype> vars = new HashSet<VariablePrototype>();
+		for (SimpleOperator op : ops) {
+			String head = op.getHead();
+			String headComponent = head.substring(0,head.indexOf("::"));
+			String headValue = head.substring(head.indexOf("::")+2);
+			if (this.isContextVar(headComponent)) {
+				VariablePrototype toInfer = new VariablePrototype(groundSolver, headComponent, headValue);
+				toInfer.setMarking(markings.UNJUSTIFIED);
+				vars.add(toInfer);
+			}
+		}
+		return vars.toArray(new VariablePrototype[vars.size()]);
+	}
+
+	public void resetContextInference() { this.triggered = false; }
+
 	public ConstraintNetwork[] getMetaVariables() {
 		//Add the normal metavariables for planning (UNJUSTIFIED activities)
 		ConstraintNetwork[] ret = super.getMetaVariables();
@@ -141,6 +169,40 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		return newRet.toArray(new ConstraintNetwork[newRet.size()]);
 	}
 	
+	public ConstraintNetwork[] getMetaValuesOld(MetaVariable metaVariable) {
+		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
+		//If this is not context inference, get metavalues as usual 
+		if (mv.getConstraints().length != 0 || mv.getVariables().length != 0) {
+			ConstraintNetwork[] ret = super.getMetaValues(metaVariable);
+			return ret;
+		}
+		//We have a context inference metavariable - let's generate all possible worlds
+		Set<Set<VariablePrototype>> possibleWorlds = generateGoalsOld();
+		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+		for (Set<VariablePrototype> oneWorld : possibleWorlds) {
+			if (!oneWorld.isEmpty()) {
+				ConstraintNetwork cn = new ConstraintNetwork(null);
+				for (VariablePrototype var : oneWorld) cn.addVariable(var);
+				if (oldInference != null) {
+					for (VariablePrototype var : oneWorld) {
+						for (Activity oldVar : oldInference) {
+							if (var.getParameters()[0].equals(oldVar.getComponent())) {
+								AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.BeforeOrMeets);
+								before.setFrom(oldVar);
+								before.setTo(var);
+								cn.addConstraint(before);
+								System.out.println("Added BEFORE: " + before);
+							}
+						}
+					}
+				}
+				ret.add(cn);
+			}
+		}
+		if (ret.isEmpty()) return null;
+		return ret.toArray(new ConstraintNetwork[ret.size()]);
+	}
+	
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
 		//If this is not context inference, get metavalues as usual 
@@ -149,14 +211,23 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			return ret;
 		}
 		//We have a context inference metavariable - let's generate all possible worlds
-		Set<Set<VariablePrototype>> possibleWorlds = generateGoals();
+		VariablePrototype[] possibleGoals = generateGoals();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-		for (Set<VariablePrototype> oneWorld : possibleWorlds) {
-			if (!oneWorld.isEmpty()) {
-				ConstraintNetwork cn = new ConstraintNetwork(null);
-				for (VariablePrototype var : oneWorld) cn.addVariable(var);
-				ret.add(cn);
+		for (VariablePrototype oneGoal : possibleGoals) {
+			ConstraintNetwork cn = new ConstraintNetwork(null);
+			cn.addVariable(oneGoal);
+			if (oldInference != null) {
+				for (Activity oldVar : oldInference) {
+					if (oneGoal.getParameters()[0].equals(oldVar.getComponent())) {
+						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.BeforeOrMeets);
+						before.setFrom(oldVar);
+						before.setTo(oneGoal);
+						cn.addConstraint(before);
+						System.out.println("Added BEFORE: " + before);
+					}
+				}
 			}
+			ret.add(cn);
 		}
 		if (ret.isEmpty()) return null;
 		return ret.toArray(new ConstraintNetwork[ret.size()]);

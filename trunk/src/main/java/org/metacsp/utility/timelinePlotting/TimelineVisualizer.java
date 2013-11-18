@@ -50,6 +50,7 @@ public class TimelineVisualizer extends JFrame {
 	private JPanel panel;
 	private ImageIcon icon;
 	private BufferedImage image = null;
+	private TimelinePublisher tp;
 
 	/**
 	 * Force the visualizer to display a given image.
@@ -102,10 +103,12 @@ public class TimelineVisualizer extends JFrame {
 
 	/**
 	 * Creates a new {@link TimelineVisualizer} that will open a window that shows
-	 * {@link SymbolicTimeline}s published by the given {@link TimelinePublisher}.
+	 * {@link SymbolicTimeline}s published by the given {@link TimelinePublisher}. The window is opened at
+	 * first call of {@link TimelinePublisher#publish(boolean, boolean)}.
 	 * @param tp The {@link TimelinePublisher} that publishes the {@link SymbolicTimeline}s.
 	 */
 	public TimelineVisualizer(TimelinePublisher tp) {
+		this.tp = tp;
 		tp.registerTimelineVisualizer(this);
 		panel = new JPanel();
 		panel.setBackground(Color.GRAY);
@@ -117,6 +120,19 @@ public class TimelineVisualizer extends JFrame {
 		sp.setAutoscrolls(true);
 		this.getContentPane().add(sp);
 		this.setVisible(false);
+	}
+	
+	public void startAutomaticUpdate(final long period) {
+		Thread t = new Thread() {
+			public void run() {
+				while (true) {
+					try { Thread.sleep(period); }
+					catch (InterruptedException e) { e.printStackTrace(); }			
+					tp.publish(false, true);
+				}		
+			}
+		};
+		t.start();
 	}
 	
 }
