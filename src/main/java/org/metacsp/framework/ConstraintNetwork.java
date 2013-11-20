@@ -77,6 +77,16 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	}
 	
 	/**
+	 * Remove the {@link Variable} corresponding to a given {@link VariablePrototype} (see addSubstitution() method).
+	 * @param vp The {@link VariablePrototype} to look up.
+	 * @return The {@link Variable} corresponding to the given {@link VariablePrototype}.
+	 */
+	public void removeSubstitution(VariablePrototype vp) {
+		substitutions.remove(vp);
+	}
+
+	
+	/**
 	 * Instantiates a new {@link ConstraintNetwork}.  Note that all implementing classes must call this constructor
 	 * (i.e., specifying a {@link ConstraintSolver} is mandatory).
 	 * @param sol The {@link ConstraintSolver} which maintains this {@link ConstraintNetwork}.
