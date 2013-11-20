@@ -302,6 +302,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	private boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
 //		ActivityNetworkSolver groundSolver 	= (ActivityNetworkSolver)this.getConstraintSolvers()[0];
 //		System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKKKK NUMBER OF VARIABLES" + groundSolver.getVariables().length);
+		System.out.println("===============XXXXXXXXXXXXXX===========================");
+		System.out.println(metaVariable);
+		System.out.println("-------------------------------");
+		System.out.println(metaVariable.getMetaConstraint().valOH);
+		System.out.println("===============XXXXXXXXXXXXXX===========================");
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
@@ -310,7 +315,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
 		if (metaVariable.getMetaConstraint().valOH != null && values!=null){
 //			ConfigMetaConstraintValOH v= (ConfigMetaConstraintValOH)metaVariable.getMetaConstraint().valOH;
+			System.out.println("===============  ===========================");
+			System.out.println(metaVariable);
 			Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
+			System.out.println("===============  ===========================");
 		}
 		if (values == null || values.length == 0) {
 			this.g.addEdge(new NullConstraintNetwork(null), currentVertex, new TerminalNode(false));
@@ -342,12 +350,16 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					if (newConflict == null || breakSearch) {
 						this.g.addEdge(value, currentVertex, new TerminalNode(true));
 						breakSearch = false;
+//						this.retractResolver(mostProblematicNetwork, value);
+//						this.counterMoves--;
+//						return false;
 						return true;
+
 					}
-					if(newConflict.getConstraintNetwork().getVariables()[0].getID()>500){
-						logger.severe("PLANNING VARIABLE GENERATION LIMIT SET TO 1000, plan failed");
-						return false;
-					}
+//					if(newConflict.getConstraintNetwork().getVariables()[0].getID()>500){
+//						logger.severe("PLANNING VARIABLE GENERATION LIMIT SET TO 1000, plan failed");
+//						return false;
+//					}
 
 					// addEdege(e,v,v)
 					this.g.addEdge(value, currentVertex, newConflict);
@@ -379,7 +391,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
 	
 
-	private final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {
+	protected final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {
 		if (!this.addResolverSub(metaVarConstraintNetwork, resolverNetwork)) return false;	
 		Constraint[] resolverNetworkConstraints = resolverNetwork.getConstraints();
 		HashMap<ConstraintSolver, Vector<Constraint>> solvers2constraints = 
@@ -408,6 +420,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 
 	private final void retractResolver(ConstraintNetwork metaVar, ConstraintNetwork res) {
+		this.logger.finest("RETRACT RESOLVER: ");
+		this.logger.finest(metaVar.toString());
+		this.logger.finest(res.toString());
+		
 		Constraint[] groundConstraints = res.getConstraints();
 		HashMap<ConstraintSolver, Vector<Constraint>> solvers2constraints = new HashMap<ConstraintSolver, Vector<Constraint>>();
 		for (Constraint c : groundConstraints) {
@@ -421,7 +437,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 			Constraint[] toAddOneSolver = solvers2constraints.get(cs).toArray(new Constraint[solvers2constraints.get(cs).size()]);
 			cs.removeConstraints(toAddOneSolver);
 		}
+		this.logger.finest("XXXXXX RETRACT SUB XXXXX");
+
 		this.retractResolverSub(metaVar, res);
+		this.logger.finest("====== RETRACT RESOLVER FINISHED =======");
+
 	}
 	
 	@Override

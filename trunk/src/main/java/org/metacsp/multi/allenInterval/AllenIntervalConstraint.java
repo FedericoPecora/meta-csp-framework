@@ -930,6 +930,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		//if(!type.equals(Type.DisjunctionRelation))
 		if(this.types.length == 1)
 			for (Bounds in : bounds) ret += " " + in.toString();
+		ret+=" AR "+this.isAutoRemovable()+" ";
+		ret+=" ID "+this.getID()+" ";
 		return ret;
 	}
 
@@ -938,9 +940,14 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 //		if (this.type.equals(Type.DisjunctionRelation))
 //			return new AllenIntervalConstraint(this.types);
 //		return new AllenIntervalConstraint(this.type, this.bounds);
+		AllenIntervalConstraint r=null;
 		if (this.types.length > 1)
-			return new AllenIntervalConstraint(this.types);
-		return new AllenIntervalConstraint(this.types[0], this.bounds);
+			r= new AllenIntervalConstraint(this.types);
+		else
+			r=new AllenIntervalConstraint(this.types[0], this.bounds);
+		
+		r.setAutoRemovable(this.isAutoRemovable());
+		return r;
 	}
 
 
