@@ -41,6 +41,8 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	protected HashMap<Integer, Variable> variables = new HashMap<Integer, Variable>();
 	protected HashMap<Variable, Integer> variablesR = new HashMap<Variable, Integer>();
 	protected HashMap<VariablePrototype,Variable> substitutions = new HashMap<VariablePrototype, Variable>();
+	protected HashMap<Variable,VariablePrototype> substituted = new HashMap<Variable,VariablePrototype>();
+
 	
 	protected HashMap<Constraint,DummyVariable> hyperEdges = new HashMap<Constraint, DummyVariable>();
 	
@@ -64,6 +66,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	 */
 	public void addSubstitution(VariablePrototype vp, Variable v) {
 		substitutions.put(vp, v);
+		substituted.put(v,vp);
 		logger.finest("Added susbstitution " + vp + " <-- " + v);
 	}
 
@@ -77,12 +80,23 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	}
 	
 	/**
+	 * Get the {@link VariablePrototype} corresponding to a given {@link Variable} (see addSubstitution() method).
+	 * @param v The {@link Variable} to look up.
+	 * @return The {@link VariablePrototype} corresponding to the given {@link Variable}.
+	 */
+	public VariablePrototype getSubstituted(Variable v) {
+		return substituted.get(v);
+	}
+	
+	/**
 	 * Remove the {@link Variable} corresponding to a given {@link VariablePrototype} (see addSubstitution() method).
 	 * @param vp The {@link VariablePrototype} to look up.
 	 * @return The {@link Variable} corresponding to the given {@link VariablePrototype}.
 	 */
 	public void removeSubstitution(VariablePrototype vp) {
+		Variable v= this.substitutions.get(vp);
 		substitutions.remove(vp);
+		substituted.remove(v);
 	}
 
 	
