@@ -60,7 +60,6 @@ public class TestProactivePlanning {
 		sensorB.registerSensorTrace("sensorTraces/stove.st");
 		
 		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
-		tp.setTemporalResolution(1);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 
