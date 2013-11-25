@@ -78,7 +78,44 @@
 )
 
 (SimpleOperator
- (Head LaserScanner::On(power,serialport))
- (Requirement serialport(1))
+ (Head LaserScanner::On())
+ (RequiredResource serialport(1))
  (Requirement power(5))
 )
+
+=================
+(Operator Robot::MoveTo(?from,?to)
+ (Precondition req1 Robot::At(?from)) #copy4
+ (Precondition req2 LocalizationService::On()) #copy1
+ (Effect req3 Robot::At(?to)) #copy6
+ (Effect req4 Robot::Ready()) #copy8
+ (Constraint During(Head,req2)) #copy2
+ (Constraint Duration[5,INF](Head)) #copy3
+ (Constraint Overlaps(req1,Head)) #copy5
+ (Constraint Overlaps(Head,req3)) #copy7
+ (Constraint Meets(Head,req4)) #copy9
+)
+
+==>
+
+(SimpleOperator
+ (Head Robot::MoveTo(?from,?to))
+ (Requirement req2 LocalizationService::Localization()) #copy1
+ (Requirement req1 Robot::At(?from)) #copy4
+ (Constraint During(Head,req2)) #copy2
+ (Constraint Duration[5,INF](Head)) #copy3
+ (Constraint Overlaps(req1,Head)) #copy5
+)
+
+(SimpleOperator
+ (Head Robot::At(?to)) #copy6
+ (Requirement req0 Robot::MoveTo(?from,?to)) #NEW
+ (Constraint Overlaps(req0,Head)) #copy7
+)
+
+(SimpleOperator
+ (Head Robot::Ready()) #copy8
+ (Requirement req0 Robot::MoveTo(?from,?to)) #NEW
+ (Constraint Meets(req0,Head)) #copy9
+)
+=================
