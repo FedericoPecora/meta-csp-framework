@@ -429,11 +429,16 @@ public class SimpleDomain extends MetaConstraint {
 			}
 			String resourceElement = everything.substring(bw,fw);
 			String resourceName = resourceElement.substring(resourceElement.indexOf("Resource")+8).trim();
-			int resourceCap = Integer.parseInt(resourceName.substring(resourceName.indexOf(" "),resourceName.indexOf(")")).trim());
-			resourceName = resourceName.substring(0,resourceName.indexOf(" ")).trim();
-			ret.put(resourceName, resourceCap);
-			everything = everything.substring(0,bw);
-			lastRes = everything.lastIndexOf("Resource");
+			try {
+				int resourceCap = Integer.parseInt(resourceName.substring(resourceName.indexOf(" "),resourceName.indexOf(")")).trim());
+				resourceName = resourceName.substring(0,resourceName.indexOf(" ")).trim();
+				ret.put(resourceName, resourceCap);
+			}
+			catch (java.lang.StringIndexOutOfBoundsException e) { /* ignore, was the end of "RequiredResource" */ }
+			finally {
+				everything = everything.substring(0,bw);
+				lastRes = everything.lastIndexOf("Resource");
+			}
 		}
 		return ret;
 	}

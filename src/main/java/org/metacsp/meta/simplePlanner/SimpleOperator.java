@@ -37,7 +37,7 @@ public class SimpleOperator {
 	protected int[] usages;
 	protected AllenIntervalConstraint[][] extraConstraints;
 	
-	private static enum ReservedWord {Head, SimpleOperator, Resource, Constraint, SimpleDomain, Requirement};
+	private static enum ReservedWord {Head, SimpleOperator, Resource, Constraint, SimpleDomain, RequiredResource, RequiredState};
 	
 	/**
 	 * Creates a {@link SimpleOperator} from a textual specification (used by the
@@ -108,32 +108,23 @@ public class SimpleOperator {
 						resourceRequirements = new int[resources.length];
 					}
 				}
-				else if (rv.equals(ReservedWord.Requirement)) {
-					String reqKey = oneElement.substring(oneElement.indexOf("Requirement")+11).trim();
+				else if (rv.equals(ReservedWord.RequiredState)) {
+					String reqKey = oneElement.substring(oneElement.indexOf("RequiredState")+13).trim();
 					//reqKey = "req1 LaserScanner1::On(power,serialport))"
-					//OR
-					//reqKey = "power(5))"
 					String req = null;
-					boolean resourceReq = false;
-					try {
-						req = reqKey.substring(reqKey.indexOf(" "),reqKey.lastIndexOf(")")).trim();
-						//req = "LaserScanner1::On(power,serialport)"
-					}
-					catch(StringIndexOutOfBoundsException e) {
-						resourceReq = true;
-					}
-					if (!resourceReq) {
-						reqKey = reqKey.substring(0,reqKey.indexOf(" ")).trim();
-						//reqKey = "req1"
-						requirements.put(reqKey,req);
-					}
-					else {
-						String requiredResource = reqKey.substring(0,reqKey.indexOf("(")).trim();
-						int requiredAmount = Integer.parseInt(reqKey.substring(reqKey.indexOf("(")+1,reqKey.indexOf(")")).trim());
-						for (int k = 0; k < resources.length; k++) {
-							if (resources[k].equals(requiredResource)) {
-								resourceRequirements[k] = requiredAmount;
-							}
+					req = reqKey.substring(reqKey.indexOf(" "),reqKey.lastIndexOf(")")).trim();
+					reqKey = reqKey.substring(0,reqKey.indexOf(" ")).trim();
+					//reqKey = "req1"
+					requirements.put(reqKey,req);
+				}
+				else if (rv.equals(ReservedWord.RequiredResource)) {
+					String reqKey = oneElement.substring(oneElement.indexOf("RequiredResource")+16).trim();
+					//reqKey = "power(5))"
+					String requiredResource = reqKey.substring(0,reqKey.indexOf("(")).trim();
+					int requiredAmount = Integer.parseInt(reqKey.substring(reqKey.indexOf("(")+1,reqKey.indexOf(")")).trim());
+					for (int k = 0; k < resources.length; k++) {
+						if (resources[k].equals(requiredResource)) {
+							resourceRequirements[k] = requiredAmount;
 						}
 					}
 				}
