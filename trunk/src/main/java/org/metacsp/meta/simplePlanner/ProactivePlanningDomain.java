@@ -108,7 +108,7 @@ public class ProactivePlanningDomain extends SimpleDomain {
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : operators) {
-					dom.addOperator(SimpleOperator.parseSimpleOperator(operator));
+					dom.addOperator(SimpleOperator.parseSimpleOperator(operator,resourceNames));
 				}
 				//This adds the domain as a meta-constraint of the SimplePlanner
 				sp.addMetaConstraint(dom);

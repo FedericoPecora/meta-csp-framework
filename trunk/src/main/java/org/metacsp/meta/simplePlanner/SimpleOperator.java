@@ -45,14 +45,14 @@ public class SimpleOperator {
 	 * @param textualSpecification A textual specification of an operator
 	 * @return a {@link SimpleOperator} build according to the textual specification.
 	 */
-	public static SimpleOperator parseSimpleOperator(String textualSpecification) {
-		HashMap<String,String> requirements = new HashMap<String, String>();
+	public static SimpleOperator parseSimpleOperator(String textualSpecification, String[] resources) {
+		HashMap<String,String> requiredStates = new HashMap<String, String>();
 		String head = null;
 		Vector<AllenIntervalConstraint> constraints = new Vector<AllenIntervalConstraint>();
 		Vector<String> froms = new Vector<String>();
 		Vector<String> tos = new Vector<String>();
-		String[] resources = null;
-		int[] resourceRequirements = null;
+		String[] args = null;
+		int[] resourceRequirements = new int[resources.length];
 		
 		String[] split = textualSpecification.split("\\(");
 		boolean inConstraint = false;
@@ -102,20 +102,21 @@ public class SimpleOperator {
 				}
 				else if (rv.equals(ReservedWord.Head)) {
 					head = oneElement.substring(oneElement.indexOf("Head")+4,oneElement.lastIndexOf(")")).trim();
-					String resourcesString = head.substring(head.indexOf("(")+1,head.indexOf(")"));
-					if (!resourcesString.trim().equals("")) {
-						resources = resourcesString.split(",");
-						resourceRequirements = new int[resources.length];
+					String argString = head.substring(head.indexOf("(")+1,head.indexOf(")"));
+					if (!argString.trim().equals("")) {
+						args = argString.split(",");
+						//resources = argString.split(",");
+						//resourceRequirements = new int[resources.length];
 					}
 				}
 				else if (rv.equals(ReservedWord.RequiredState)) {
 					String reqKey = oneElement.substring(oneElement.indexOf("RequiredState")+13).trim();
-					//reqKey = "req1 LaserScanner1::On(power,serialport))"
+					//reqKey = "req1 LaserScanner1::On())"
 					String req = null;
 					req = reqKey.substring(reqKey.indexOf(" "),reqKey.lastIndexOf(")")).trim();
 					reqKey = reqKey.substring(0,reqKey.indexOf(" ")).trim();
 					//reqKey = "req1"
-					requirements.put(reqKey,req);
+					requiredStates.put(reqKey,req);
 				}
 				else if (rv.equals(ReservedWord.RequiredResource)) {
 					String reqKey = oneElement.substring(oneElement.indexOf("RequiredResource")+16).trim();
@@ -195,13 +196,13 @@ public class SimpleOperator {
 		int reqCounter = 0;
 		
 		//pass this to constructor
-		String[] requirementStrings = new String[requirements.keySet().size()];
+		String[] requirementStrings = new String[requiredStates.keySet().size()];
 		//pass this to constructor
-		AllenIntervalConstraint[] consFromHeadtoReq = new AllenIntervalConstraint[requirements.keySet().size()];
+		AllenIntervalConstraint[] consFromHeadtoReq = new AllenIntervalConstraint[requiredStates.keySet().size()];
 		Vector<AdditionalConstraint> acs = new Vector<AdditionalConstraint>();
 		
-		for (String reqKey : requirements.keySet()) {
-			String requirement = requirements.get(reqKey);
+		for (String reqKey : requiredStates.keySet()) {
+			String requirement = requiredStates.get(reqKey);
 			requirementStrings[reqCounter] = requirement;
 			for (int i = 0; i < froms.size(); i++) {
 				if (froms.elementAt(i).equals("Head") && tos.elementAt(i).equals(reqKey)) {
@@ -233,8 +234,8 @@ public class SimpleOperator {
 				int reqFromIndex = -1;
 				int reqToIndex = -1;
 				AllenIntervalConstraint con = constraints.elementAt(i);
-				String reqFrom = requirements.get(reqFromKey);
-				String reqTo = requirements.get(reqToKey);
+				String reqFrom = requiredStates.get(reqFromKey);
+				String reqTo = requiredStates.get(reqToKey);
 				for (int j = 0; j < requirementStrings.length; j++) {
 					if (requirementStrings[i].equals(reqFrom)) reqFromIndex = j;
 					if (requirementStrings[i].equals(reqTo)) reqToIndex = j;
