@@ -48,6 +48,7 @@ public class SimpleDomain extends MetaConstraint {
 	 */
 	private static final long serialVersionUID = 5143516447467774523L;
 	private Vector<SimpleOperator> operators;
+	private String[] resourceNames;
 	private HashMap<String,SimpleReusableResource> resourcesMap;
 	private HashMap<SimpleReusableResource,HashMap<Activity,Integer>> currentResourceUtilizers;
 
@@ -65,6 +66,7 @@ public class SimpleDomain extends MetaConstraint {
 	public SimpleDomain(int[] capacities, String[] resourceNames, String domainName) {
 		super(null, null);
 		this.name = domainName;
+		this.resourceNames = resourceNames;
 		currentResourceUtilizers = new HashMap<SimpleReusableResource,HashMap<Activity,Integer>>();
 		resourcesMap = new HashMap<String, SimpleReusableResource>();
 		operators = new Vector<SimpleOperator>();
@@ -178,14 +180,12 @@ public class SimpleDomain extends MetaConstraint {
 			activityNetworkToReturn.addConstraint(newCon);
 		}
 		
-		if (possibleOperator.getUsages() != null) {
-			String resource = possibleOperatorSymbol.substring(possibleOperatorSymbol.indexOf("(")+1,possibleOperatorSymbol.indexOf(")"));
-			String[] resourceArray = resource.split(",");
-			if (!resource.equals("")) {
-				for (int i = 0; i < resourceArray.length; i++) {
-					String oneResource = resourceArray[i];
-					HashMap<Activity, Integer> utilizers = currentResourceUtilizers.get(resourcesMap.get(oneResource));
-					utilizers.put(problematicActivity, possibleOperator.getUsages()[i]);
+		int[] usages = possibleOperator.getUsages();
+		if (usages != null) {
+			for (int i = 0; i < usages.length; i++) {
+				if (usages[i] != 0) {
+					HashMap<Activity, Integer> utilizers = currentResourceUtilizers.get(resourcesMap.get(resourceNames[i]));
+					utilizers.put(problematicActivity, usages[i]);
 					activityNetworkToReturn.addVariable(problematicActivity);
 				}
 			}
@@ -494,7 +494,7 @@ public class SimpleDomain extends MetaConstraint {
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : operators) {
-					dom.addOperator(SimpleOperator.parseSimpleOperator(operator));
+					dom.addOperator(SimpleOperator.parseSimpleOperator(operator,resourceNames));
 				}
 				//This adds the domain as a meta-constraint of the SimplePlanner
 				sp.addMetaConstraint(dom);

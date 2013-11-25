@@ -62,24 +62,24 @@
 
 (SimpleOperator
  (Head LocalizationService::Localization())
- (RequiredState req1 RFIDReader::On(power,usbport))
+ (RequiredState req1 RFIDReader::On())
  (Constraint During(Head,req1)) 
 )
 
 (SimpleOperator
  (Head LocalizationService::Localization())
- (RequiredState req1 LaserScanner::On(power,serialport))
+ (RequiredState req1 LaserScanner::On())
  (Constraint During(Head,req1)) 
 )
 
 (SimpleOperator
- (Head RFIDReader::On(power,usbport))
+ (Head RFIDReader::On())
  (RequiredResource power(5))
  (RequiredResource usbport(7))
 )
 
 (SimpleOperator
- (Head LaserScanner::On(power,serialport))
+ (Head LaserScanner::On())
  (RequiredResource serialport(1))
  (RequiredResource power(5))
 )
