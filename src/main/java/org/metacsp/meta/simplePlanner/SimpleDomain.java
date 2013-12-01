@@ -29,10 +29,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.metacsp.meta.simplePlanner.SimpleOperator.ReservedWord;
 import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ValueOrderingH;
@@ -41,6 +45,8 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
+
+import cern.colt.Arrays;
 
 public class SimpleDomain extends MetaConstraint {
 	/**
@@ -121,8 +127,8 @@ public class SimpleDomain extends MetaConstraint {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		
 		String possibleOperatorHead = possibleOperator.getHead();
-		String possibleOperatorSymbol = possibleOperatorHead.substring(possibleOperatorHead.indexOf("::")+2, possibleOperatorHead.length());
-		String possibleOperatorComponent = possibleOperatorHead.substring(0, possibleOperatorHead.indexOf("::"));
+		String possibleOperatorHeadSymbol = possibleOperatorHead.substring(possibleOperatorHead.indexOf("::")+2, possibleOperatorHead.length());
+		String possibleOperatorHeadComponent = possibleOperatorHead.substring(0, possibleOperatorHead.indexOf("::"));
 		
 		Vector<Variable> operatorTailActivitiesToInsert = new Vector<Variable>();
 		
@@ -130,12 +136,22 @@ public class SimpleDomain extends MetaConstraint {
 			for (String possibleOperatorTail : possibleOperator.getRequirementActivities()) {
 				String possibleOperatorTailComponent = possibleOperatorTail.substring(0, possibleOperatorTail.indexOf("::"));
 				String possibleOperatorTailSymbol = possibleOperatorTail.substring(possibleOperatorTail.indexOf("::")+2, possibleOperatorTail.length());
-				if (possibleOperatorTailComponent.equals(possibleOperatorComponent) && possibleOperatorTailSymbol.equals(possibleOperatorSymbol)) {
+				if (possibleOperatorTailComponent.equals(possibleOperatorHeadComponent) && possibleOperatorTailSymbol.equals(possibleOperatorHeadSymbol)) {
 					operatorTailActivitiesToInsert.add(problematicActivity);
 				}
 				else {
 					VariablePrototype tailActivity = new VariablePrototype(groundSolver, possibleOperatorTailComponent, possibleOperatorTailSymbol);
-					tailActivity.setMarking(markings.UNJUSTIFIED);
+					if (possibleOperator instanceof PlanningOperator) {
+						if (((PlanningOperator)possibleOperator).isEffect(possibleOperatorTail)) {
+							tailActivity.setMarking(markings.JUSTIFIED);
+						}
+						else {
+							tailActivity.setMarking(markings.UNJUSTIFIED);
+						}
+					}
+					else {
+						tailActivity.setMarking(markings.UNJUSTIFIED);
+					}
 					operatorTailActivitiesToInsert.add(tailActivity);
 				}
 			}
@@ -283,6 +299,27 @@ public class SimpleDomain extends MetaConstraint {
 					retPossibleConstraintNetworks.add(newResolver);
 				}
 			}
+			if (r instanceof PlanningOperator) {
+				System.out.println("Using oprerator " + r);
+				for (String reqState : r.getRequirementActivities()) {
+					String operatorEffect = reqState;
+					String opeatorEffectComponent = operatorEffect.substring(0, operatorEffect.indexOf("::"));
+					String operatorEffectSymbol = operatorEffect.substring(operatorEffect.indexOf("::")+2, operatorEffect.length());
+					System.out.println("REQSTATE: " + reqState + " <-?-> ");
+					if (((PlanningOperator)r).isEffect(reqState)) {
+						System.out.println("Check1");
+						if (opeatorEffectComponent.equals(problematicActivity.getComponent())) {
+							System.out.println("Check2");
+							if (problematicActivitySymbolicDomain.contains(operatorEffectSymbol)) {
+								System.out.println("Check3");
+								ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+								newResolver.setAnnotation(1);
+								retPossibleConstraintNetworks.add(newResolver);								
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
@@ -350,105 +387,486 @@ public class SimpleDomain extends MetaConstraint {
 		return false;
 	}
 	
-	protected static String[] parseSensors(String everything) {
-		Vector<String> sensors = new Vector<String>();
-		int lastSensor = everything.lastIndexOf("Sensor");
-		while (lastSensor != -1) {
-			int bw = lastSensor;
-			int fw = lastSensor;
-			while (everything.charAt(--bw) != '(') { }
-			int parcounter = 1;
-			while (parcounter != 0) {
-				if (everything.charAt(fw) == '(') parcounter++;
-				else if (everything.charAt(fw) == ')') parcounter--;
-				fw++;
-			}
-			String sensor = everything.substring(bw,fw).trim();
-			sensor = sensor.substring(sensor.indexOf("Sensor")+6,sensor.indexOf(")")).trim();
-			sensors.add(sensor);
-			everything = everything.substring(0,bw);
-			lastSensor = everything.lastIndexOf("Sensor");
-		}
-		return sensors.toArray(new String[sensors.size()]);		
-	}
+	/**
+	 * Creates a {@link SimpleOperator} from a textual specification (used by the
+	 * domain parser {@link parseDomain}.
+	 * @param textualSpecification A textual specification of an operator
+	 * @return a {@link SimpleOperator} build according to the textual specification.
+	 */
+	public static SimpleOperator parseOperator(String textualSpecification, String[] resources) {
+		HashMap<String,String> requiredStates = new HashMap<String, String>();
+		String head = null;
+		Vector<AllenIntervalConstraint> constraints = new Vector<AllenIntervalConstraint>();
+		Vector<String> froms = new Vector<String>();
+		Vector<String> tos = new Vector<String>();
+		String[] args = null;
+		int[] resourceRequirements = new int[resources.length];
+		HashMap<String,Boolean> effects = new HashMap<String, Boolean>();
+		boolean planningOp = false;
 
-	protected static String[] parseContextVars(String everything) {
-		Vector<String> contexts = new Vector<String>();
-		int lastContext = everything.lastIndexOf("ContextVariable");
-		while (lastContext != -1) {
-			int bw = lastContext;
-			int fw = lastContext;
-			while (everything.charAt(--bw) != '(') { }
-			int parcounter = 1;
-			while (parcounter != 0) {
-				if (everything.charAt(fw) == '(') parcounter++;
-				else if (everything.charAt(fw) == ')') parcounter--;
-				fw++;
-			}
-			String context = everything.substring(bw,fw).trim();
-			context = context.substring(context.indexOf("ContextVariable")+15,context.indexOf(")")).trim();
-			contexts.add(context);
-			everything = everything.substring(0,bw);
-			lastContext = everything.lastIndexOf("ContextVariable");
+		String[] operatorType = parseKeyword("PlanningOperator", textualSpecification);
+		if (operatorType.length == 0) {
+			operatorType = parseKeyword("SimpleOperator", textualSpecification);
+			planningOp = false;
 		}
-		return contexts.toArray(new String[contexts.size()]);		
-	}
+		else planningOp = true;
+		
+		String[] headElement = parseKeyword("Head", textualSpecification);
+		head = headElement[0].trim();
 
-	protected static String[] parseOperators(String everything) {
-		Vector<String> operators = new Vector<String>();
-		int lastOp = everything.lastIndexOf("SimpleOperator");
-		while (lastOp != -1) {
-			int bw = lastOp;
-			int fw = lastOp;
-			while (everything.charAt(--bw) != '(') { }
-			int parcounter = 1;
-			while (parcounter != 0) {
-				if (everything.charAt(fw) == '(') parcounter++;
-				else if (everything.charAt(fw) == ')') parcounter--;
-				fw++;
-			}
-			operators.add(everything.substring(bw,fw));
-			everything = everything.substring(0,bw);
-			lastOp = everything.lastIndexOf("SimpleOperator");
+		String[] requiredStateElements = parseKeyword("RequiredState", textualSpecification);
+		for (String reqElement : requiredStateElements) {
+			String reqKey = reqElement.substring(0,reqElement.indexOf(" ")).trim();
+			String reqState = reqElement.substring(reqElement.indexOf(" ")).trim();
+			requiredStates.put(reqKey, reqState);
+			effects.put(reqKey,false);
 		}
-		return operators.toArray(new String[operators.size()]);
-	}
+
+		String[] achievedStateElements = parseKeyword("AchievedState", textualSpecification);
+		for (String achElement : achievedStateElements) {
+			String achKey = achElement.substring(0,achElement.indexOf(" ")).trim();
+			String achState = achElement.substring(achElement.indexOf(" ")).trim();
+			requiredStates.put(achKey, achState);
+			effects.put(achKey,true);
+		}
+		
+		String[] constraintElements = parseKeyword("Constraint", textualSpecification);
+		for (String conElement : constraintElements) {
+			String constraintName = null;
+			Vector<Bounds> bounds = null;
+			if (conElement.contains("[")) {
+				constraintName = conElement.substring(0,conElement.indexOf("[")).trim();
+				String boundsString = conElement.substring(conElement.indexOf("["),conElement.indexOf("]")+1);
+				String[] splitBounds = boundsString.split("\\[");
+				bounds = new Vector<Bounds>();
+				for (String oneBound : splitBounds) {
+					if (!oneBound.trim().equals("")) {
+						String lbString = oneBound.substring(oneBound.indexOf("[")+1,oneBound.indexOf(",")).trim();
+						String ubString = oneBound.substring(oneBound.indexOf(",")+1,oneBound.indexOf("]")).trim();
+						long lb, ub;
+						if (lbString.equals("INF")) lb = org.metacsp.time.APSPSolver.INF;
+						else lb = Long.parseLong(lbString);
+						if (ubString.equals("INF")) ub = org.metacsp.time.APSPSolver.INF;
+						else ub = Long.parseLong(ubString);
+						bounds.add(new Bounds(lb,ub));
+					}
+				}
+			}
+			else {
+				constraintName = conElement.substring(0,conElement.indexOf("(")).trim();
+			}
+			String from = null;
+			String to = null;
+			if (constraintName.equals("Duration")) {
+				from = conElement.substring(conElement.indexOf("(")+1, conElement.indexOf(")")).trim();
+				to = from;
+			}
+			else {
+				from = conElement.substring(conElement.indexOf("(")+1, conElement.indexOf(",")).trim();
+				to = conElement.substring(conElement.indexOf(",")+1, conElement.indexOf(")")).trim();
+			}
+
+			AllenIntervalConstraint con = null;
+			if (bounds != null) con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName),bounds.toArray(new Bounds[bounds.size()]));
+			else con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName));
+			constraints.add(con);
+			froms.add(from);
+			tos.add(to);
+		}
+		
+		String[] resourceElements = parseKeyword("RequiredResource", textualSpecification);
+		for (String resElement : resourceElements) {
+			String requiredResource = resElement.substring(0,resElement.indexOf("(")).trim();
+			int requiredAmount = Integer.parseInt(resElement.substring(resElement.indexOf("(")+1,resElement.indexOf(")")).trim());
+			for (int k = 0; k < resources.length; k++) {
+				if (resources[k].equals(requiredResource)) {
+					resourceRequirements[k] = requiredAmount;
+				}
+			}
+
+		}
+		
+//		String[] split = textualSpecification.split("\\(");
+//		boolean inConstraint = false;
+//		boolean headInConstraint = false;
+//		for (int i = 0; i < split.length; i++) {
+//			String oneElement = split[i];
+//			if (oneElement != null) {
+//				if (oneElement.trim().equals("")) split[i] = null;
+//				else {
+//					split[i] = "(" + split[i];
+//					boolean found = false;
+//					for (SimpleOperator.ReservedWord reservedWord : SimpleOperator.ReservedWord.values()) {
+//						if (oneElement.contains(reservedWord.toString())) {
+//							if (reservedWord.equals(SimpleOperator.ReservedWord.Constraint)) {
+//								inConstraint = true;
+//							}
+//							found = true;
+//							if (reservedWord.equals(SimpleOperator.ReservedWord.Head) && inConstraint) {
+//								headInConstraint = true;
+//								inConstraint = false;
+//							}
+//							break;
+//						}				
+//					}
+//					if (!found || headInConstraint) {
+//						//join two split elements
+//						split[i-1] = split[i-1] + split[i];
+//						split[i] = null;
+//						if (headInConstraint) headInConstraint = false;
+//					}	
+//				}
+//			}
+//		}
+		
+//		for (int i = 0; i < split.length; i++) {
+//			String oneElement = split[i];
+//			if (oneElement != null) {
+//				SimpleOperator.ReservedWord rv = null;
+//				for (SimpleOperator.ReservedWord reservedWord : SimpleOperator.ReservedWord.values()) {
+//					if (oneElement.substring(oneElement.indexOf("(")+1).trim().startsWith(reservedWord.toString())) {
+//						rv = reservedWord;
+//						break;
+//					}				
+//				}
+//				if (rv.equals(SimpleOperator.ReservedWord.SimpleOperator)) {
+//					//do nothing
+//				}
+//				else if (rv.equals(SimpleOperator.ReservedWord.PlanningOperator)) {
+//					planningOp = true;
+//				}
+//				else if (rv.equals(SimpleOperator.ReservedWord.Head)) {
+//					head = oneElement.substring(oneElement.indexOf("Head")+4,oneElement.lastIndexOf(")")).trim();
+//					String argString = head.substring(head.indexOf("(")+1,head.indexOf(")"));
+//					if (!argString.trim().equals("")) {
+//						args = argString.split(",");
+//						//resources = argString.split(",");
+//						//resourceRequirements = new int[resources.length];
+//					}
+//				}
+//				else if (rv.equals(SimpleOperator.ReservedWord.RequiredState)) {
+//					String reqKey = oneElement.substring(oneElement.indexOf("RequiredState")+13).trim();
+//					//reqKey = "req1 LaserScanner1::On())"
+//					String req = null;
+//					req = reqKey.substring(reqKey.indexOf(" "),reqKey.lastIndexOf(")")).trim();
+//					reqKey = reqKey.substring(0,reqKey.indexOf(" ")).trim();
+//					//reqKey = "req1"
+//					requiredStates.put(reqKey,req);
+//					if (planningOp) effects.put(reqKey,false);
+//				}
+//				else if (rv.equals(SimpleOperator.ReservedWord.AchievedState)) {
+//					String reqKey = oneElement.substring(oneElement.indexOf("AchievedState")+13).trim();
+//					//reqKey = "req1 LaserScanner1::On())"
+//					String req = null;
+//					req = reqKey.substring(reqKey.indexOf(" "),reqKey.lastIndexOf(")")).trim();
+//					reqKey = reqKey.substring(0,reqKey.indexOf(" ")).trim();
+//					//reqKey = "req1"
+//					requiredStates.put(reqKey,req);
+//					effects.put(reqKey,true);
+//				}
+//				else if (rv.equals(SimpleOperator.ReservedWord.RequiredResource)) {
+//					String reqKey = oneElement.substring(oneElement.indexOf("RequiredResource")+16).trim();
+//					//reqKey = "power(5))"
+//					String requiredResource = reqKey.substring(0,reqKey.indexOf("(")).trim();
+//					int requiredAmount = Integer.parseInt(reqKey.substring(reqKey.indexOf("(")+1,reqKey.indexOf(")")).trim());
+//					for (int k = 0; k < resources.length; k++) {
+//						if (resources[k].equals(requiredResource)) {
+//							resourceRequirements[k] = requiredAmount;
+//						}
+//					}
+//				}
+//				else if (rv.equals(SimpleOperator.ReservedWord.Constraint)) {
+//					String aux = oneElement.substring(oneElement.indexOf("Constraint")+10);
+//					String constraintName = null;
+//					Vector<Bounds> bounds = null;
+//					if (aux.contains("[")) {
+//						constraintName = aux.substring(0,aux.indexOf("[")).trim();
+//						String boundsString = aux.substring(aux.indexOf("["),aux.indexOf("]")+1);
+//						String[] splitBounds = boundsString.split("\\[");
+//						bounds = new Vector<Bounds>();
+//						for (String oneBound : splitBounds) {
+//							if (!oneBound.trim().equals("")) {
+//								String lbString = oneBound.substring(oneBound.indexOf("[")+1,oneBound.indexOf(",")).trim();
+//								String ubString = oneBound.substring(oneBound.indexOf(",")+1,oneBound.indexOf("]")).trim();
+//								long lb, ub;
+//								if (lbString.equals("INF")) lb = org.metacsp.time.APSPSolver.INF;
+//								else lb = Long.parseLong(lbString);
+//								if (ubString.equals("INF")) ub = org.metacsp.time.APSPSolver.INF;
+//								else ub = Long.parseLong(ubString);
+//								bounds.add(new Bounds(lb,ub));
+//							}
+//						}
+//					}
+//					else {
+//						constraintName = aux.substring(0,aux.indexOf("(")).trim();
+//					}
+//					String from = null;
+//					String to = null;
+//					if (constraintName.equals("Duration")) {
+//						from = aux.substring(aux.indexOf("(")+1, aux.indexOf(")")).trim();
+//						to = from;
+//					}
+//					else {
+//						from = aux.substring(aux.indexOf("(")+1, aux.indexOf(",")).trim();
+//						to = aux.substring(aux.indexOf(",")+1, aux.indexOf(")")).trim();
+//					}
+//					AllenIntervalConstraint con = null;
+//					if (bounds != null) con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName),bounds.toArray(new Bounds[bounds.size()]));
+//					else con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName));
+//					constraints.add(con);
+//					froms.add(from);
+//					tos.add(to);
+//				}
+//			}
+//		}
+		
+		class AdditionalConstraint {
+			AllenIntervalConstraint con;
+			int from, to;
+			public AdditionalConstraint(AllenIntervalConstraint con, int from, int to) {
+				this.con = con;
+				this.from = from;
+				this.to = to;
+			}
+			public void addAdditionalConstraint(SimpleOperator op) {
+				op.addConstraint(con, from, to);
+			}
+		}
+		
+		//What I have:
+		//constraints = {During, Duration, Before}
+		//froms = {Head, Head, req1}
+		//tos = {req1, Head, req2}
+		//requirements = {req2 = Robot1::At(room), req1 = Robot1::MoveTo()}
 	
-	protected static HashMap<String,Integer> parseResources(String everything) {
-		HashMap<String, Integer> ret = new HashMap<String, Integer>();
-		int lastRes = everything.lastIndexOf("Resource");
-		while (lastRes != -1) {
-			int bw = lastRes;
-			int fw = lastRes;
-			while (everything.charAt(--bw) != '(') { }
-			int parcounter = 1;
-			while (parcounter != 0) {
-				if (everything.charAt(fw) == '(') parcounter++;
-				else if (everything.charAt(fw) == ')') parcounter--;
-				fw++;
+		int reqCounter = 0;
+		
+		//pass this to constructor
+		String[] requirementStrings = new String[requiredStates.keySet().size()];
+		boolean[] effectBools = new boolean[requiredStates.keySet().size()];
+		
+		//pass this to constructor
+		AllenIntervalConstraint[] consFromHeadtoReq = new AllenIntervalConstraint[requiredStates.keySet().size()];
+		Vector<AdditionalConstraint> acs = new Vector<AdditionalConstraint>();
+		
+		for (String reqKey : requiredStates.keySet()) {
+			String requirement = requiredStates.get(reqKey);
+			requirementStrings[reqCounter] = requirement;
+			if (planningOp) {
+				if (effects.get(reqKey)) effectBools[reqCounter] = true;
+				else effectBools[reqCounter] = false;
 			}
-			String resourceElement = everything.substring(bw,fw);
-			String resourceName = resourceElement.substring(resourceElement.indexOf("Resource")+8).trim();
-			try {
-				int resourceCap = Integer.parseInt(resourceName.substring(resourceName.indexOf(" "),resourceName.indexOf(")")).trim());
-				resourceName = resourceName.substring(0,resourceName.indexOf(" ")).trim();
-				ret.put(resourceName, resourceCap);
+			for (int i = 0; i < froms.size(); i++) {
+				if (froms.elementAt(i).equals("Head") && tos.elementAt(i).equals(reqKey)) {
+					consFromHeadtoReq[reqCounter] = constraints.elementAt(i);
+				}
 			}
-			catch (java.lang.StringIndexOutOfBoundsException e) { /* ignore, was the end of "RequiredResource" */ }
-			finally {
+			reqCounter++;
+		}
+	
+		//What I have:
+		//constraints = {During, Duration, Before}
+		//froms = {Head, Head, req1}
+		//tos = {req1, Head, req2}
+		//requirements = {req2 = Robot1::At(room), req1 = Robot1::MoveTo()}
+		//requirementStrings = [Robot1::At(room), Robot1::MoveTo()]
+		//consFromHeadtoReq = [During,null]
+		
+		//addConstraint(durationMoveTo, 0, 0);
+		//addConstraint(beforeReq1Req2, 1, 2);
+		
+		for (int i = 0; i < froms.size(); i++) {
+			if (froms.elementAt(i).equals("Head") && tos.elementAt(i).equals("Head")) {
+				AdditionalConstraint ac = new AdditionalConstraint(constraints.elementAt(i), 0, 0);
+				acs.add(ac);
+			}
+			else if (!froms.elementAt(i).equals("Head") && !tos.elementAt(i).equals("Head")) {
+				String reqFromKey = froms.elementAt(i);
+				String reqToKey = tos.elementAt(i);
+				int reqFromIndex = -1;
+				int reqToIndex = -1;
+				AllenIntervalConstraint con = constraints.elementAt(i);
+				String reqFrom = requiredStates.get(reqFromKey);
+				String reqTo = requiredStates.get(reqToKey);
+				for (int j = 0; j < requirementStrings.length; j++) {
+					if (requirementStrings[i].equals(reqFrom)) reqFromIndex = j;
+					if (requirementStrings[i].equals(reqTo)) reqToIndex = j;
+				}
+				AdditionalConstraint ac = new AdditionalConstraint(con, reqFromIndex, reqToIndex);
+				acs.add(ac);
+			}
+		}
+				
+		//Call constructor
+		SimpleOperator ret = null;
+		if (!planningOp) ret = new SimpleOperator(head,consFromHeadtoReq,requirementStrings,resourceRequirements);
+		else ret = new PlanningOperator(head,consFromHeadtoReq,requirementStrings,effectBools,resourceRequirements);
+		for (AdditionalConstraint ac : acs) ac.addAdditionalConstraint(ret);
+		//System.out.println("OP: " + ret);
+		return ret;
+	}
+
+	protected static String[] parseKeyword(String keyword, String everything) {
+		Vector<String> elements = new Vector<String>();
+		int lastElement = everything.lastIndexOf(keyword);
+		while (lastElement != -1) {
+			int bw = lastElement;
+			int fw = lastElement;
+			boolean skip = false;
+			while (everything.charAt(--bw) != '(') { 
+				if (everything.charAt(bw) != ' ' && everything.charAt(bw) != '(') {
+					everything = everything.substring(0,bw);
+					lastElement = everything.lastIndexOf(keyword);
+					skip = true;
+					break;
+				}
+			}
+			if (!skip) {
+				int parcounter = 1;
+				while (parcounter != 0) {
+					if (everything.charAt(fw) == '(') parcounter++;
+					else if (everything.charAt(fw) == ')') parcounter--;
+					fw++;
+				}
+				String element = everything.substring(bw,fw).trim();
+				element = element.substring(element.indexOf(keyword)+keyword.length(),element.lastIndexOf(")")).trim();
+				if (!element.startsWith(",") && !element.trim().equals("")) elements.add(element);
 				everything = everything.substring(0,bw);
-				lastRes = everything.lastIndexOf("Resource");
+				lastElement = everything.lastIndexOf(keyword);
 			}
+		}
+		return elements.toArray(new String[elements.size()]);		
+	}
+
+//	protected static String[] parseSensors(String everything) {
+//		Vector<String> sensors = new Vector<String>();
+//		int lastSensor = everything.lastIndexOf("Sensor");
+//		while (lastSensor != -1) {
+//			int bw = lastSensor;
+//			int fw = lastSensor;
+//			while (everything.charAt(--bw) != '(') { }
+//			int parcounter = 1;
+//			while (parcounter != 0) {
+//				if (everything.charAt(fw) == '(') parcounter++;
+//				else if (everything.charAt(fw) == ')') parcounter--;
+//				fw++;
+//			}
+//			String sensor = everything.substring(bw,fw).trim();
+//			sensor = sensor.substring(sensor.indexOf("Sensor")+6,sensor.indexOf(")")).trim();
+//			sensors.add(sensor);
+//			everything = everything.substring(0,bw);
+//			lastSensor = everything.lastIndexOf("Sensor");
+//		}
+//		return sensors.toArray(new String[sensors.size()]);		
+//	}
+
+//	protected static String[] parseContextVars(String everything) {
+//		Vector<String> contexts = new Vector<String>();
+//		int lastContext = everything.lastIndexOf("ContextVariable");
+//		while (lastContext != -1) {
+//			int bw = lastContext;
+//			int fw = lastContext;
+//			while (everything.charAt(--bw) != '(') { }
+//			int parcounter = 1;
+//			while (parcounter != 0) {
+//				if (everything.charAt(fw) == '(') parcounter++;
+//				else if (everything.charAt(fw) == ')') parcounter--;
+//				fw++;
+//			}
+//			String context = everything.substring(bw,fw).trim();
+//			context = context.substring(context.indexOf("ContextVariable")+15,context.indexOf(")")).trim();
+//			contexts.add(context);
+//			everything = everything.substring(0,bw);
+//			lastContext = everything.lastIndexOf("ContextVariable");
+//		}
+//		return contexts.toArray(new String[contexts.size()]);		
+//	}
+
+//	protected static String[] parseSimpleOperators(String everything) {
+//		Vector<String> operators = new Vector<String>();
+//		int lastOp = everything.lastIndexOf("SimpleOperator");
+//		while (lastOp != -1) {
+//			int bw = lastOp;
+//			int fw = lastOp;
+//			while (everything.charAt(--bw) != '(') { }
+//			int parcounter = 1;
+//			while (parcounter != 0) {
+//				if (everything.charAt(fw) == '(') parcounter++;
+//				else if (everything.charAt(fw) == ')') parcounter--;
+//				fw++;
+//			}
+//			operators.add(everything.substring(bw,fw));
+//			everything = everything.substring(0,bw);
+//			lastOp = everything.lastIndexOf("SimpleOperator");
+//		}
+//		return operators.toArray(new String[operators.size()]);
+//	}
+
+//	protected static String[] parsePlanningOperators(String everything) {
+//		Vector<String> operators = new Vector<String>();
+//		int lastOp = everything.lastIndexOf("PlanningOperator");
+//		while (lastOp != -1) {
+//			int bw = lastOp;
+//			int fw = lastOp;
+//			while (everything.charAt(--bw) != '(') { }
+//			int parcounter = 1;
+//			while (parcounter != 0) {
+//				if (everything.charAt(fw) == '(') parcounter++;
+//				else if (everything.charAt(fw) == ')') parcounter--;
+//				fw++;
+//			}
+//			operators.add(everything.substring(bw,fw));
+//			everything = everything.substring(0,bw);
+//			lastOp = everything.lastIndexOf("PlanningOperator");
+//		}
+//		return operators.toArray(new String[operators.size()]);
+//	}
+
+	protected static HashMap<String,Integer> processResources (String[] resources) {
+		HashMap<String, Integer> ret = new HashMap<String, Integer>();
+		for (String resourceElement : resources) {
+			String resourceName = resourceElement.substring(0,resourceElement.indexOf(" ")).trim();
+			int resourceCap = Integer.parseInt(resourceElement.substring(resourceElement.indexOf(" ")).trim());
+			ret.put(resourceName, resourceCap);
 		}
 		return ret;
 	}
 	
+//	protected static HashMap<String,Integer> parseResources(String everything) {
+//		HashMap<String, Integer> ret = new HashMap<String, Integer>();
+//		int lastRes = everything.lastIndexOf("Resource");
+//		while (lastRes != -1) {
+//			int bw = lastRes;
+//			int fw = lastRes;
+//			while (everything.charAt(--bw) != '(') { }
+//			int parcounter = 1;
+//			while (parcounter != 0) {
+//				if (everything.charAt(fw) == '(') parcounter++;
+//				else if (everything.charAt(fw) == ')') parcounter--;
+//				fw++;
+//			}
+//			String resourceElement = everything.substring(bw,fw);
+//			String resourceName = resourceElement.substring(resourceElement.indexOf("Resource")+8).trim();
+//			try {
+//				int resourceCap = Integer.parseInt(resourceName.substring(resourceName.indexOf(" "),resourceName.indexOf(")")).trim());
+//				resourceName = resourceName.substring(0,resourceName.indexOf(" ")).trim();
+//				ret.put(resourceName, resourceCap);
+//			}
+//			catch (java.lang.StringIndexOutOfBoundsException e) { /* ignore, was the end of "RequiredResource" */ }
+//			finally {
+//				everything = everything.substring(0,bw);
+//				lastRes = everything.lastIndexOf("Resource");
+//			}
+//		}
+//		return ret;
+//	}
 	
-	protected static String parseName(String everything) {
-		String ret = everything.substring(everything.indexOf("SimpleDomain")+12);
-		ret = ret.substring(0,ret.indexOf(")")).trim();
-		return ret;
-	}
+	
+//	protected static String parseName(String everything) {
+//		String ret = everything.substring(everything.indexOf("SimpleDomain")+12);
+//		ret = ret.substring(0,ret.indexOf(")")).trim();
+//		return ret;
+//	}
 	
 	/**
 	 * Parses a domain file (see domains/testDomain.ddl for an example), instantiates
@@ -471,17 +889,16 @@ public class SimpleDomain extends MetaConstraint {
 					line = br.readLine();
 				}
 				everything = sb.toString();
-				String name = parseName(everything);
-				HashMap<String,Integer> resources = parseResources(everything);
-				String[] operators = parseOperators(everything);
-				String[] sensors = parseSensors(everything);
-				String[] contextVars = parseContextVars(everything);
+				String name = "";
+				String[] nameArray = parseKeyword("SimpleDomain", everything);
+				if (nameArray.length != 0) name = nameArray[0];
+				else name = parseKeyword("PlanningDomain", everything)[0];
+				String[] resourceElements = parseKeyword("Resource", everything);
+				HashMap<String,Integer> resources = processResources(resourceElements);
+				String[] operators = parseKeyword("SimpleOperator", everything);
+				String[] sensors = parseKeyword("Sensor", everything);
+				String[] contextVars = parseKeyword("ContextVariable", everything);
 				
-				//SimpleDomain rd = new SimpleDomain(
-				//  new int[] {6,6,6},
-				//  new String[] {"power", "usbport", "serialport"},
-				//  "TestDomain"
-				//);
 				int[] resourceCaps = new int[resources.keySet().size()];
 				String[] resourceNames = new String[resources.keySet().size()];
 				int resourceCounter = 0;
@@ -494,7 +911,7 @@ public class SimpleDomain extends MetaConstraint {
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : operators) {
-					dom.addOperator(SimpleOperator.parseSimpleOperator(operator,resourceNames));
+					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames));
 				}
 				//This adds the domain as a meta-constraint of the SimplePlanner
 				sp.addMetaConstraint(dom);

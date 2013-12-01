@@ -7,6 +7,7 @@
 #   Sensor                                                      #
 #   ContextVariable                                             #
 #   SimpleOperator                                              #
+#   PlanningOperator                                            #
 #   SimpleDomain                                                #
 #   Constraint                                                  #
 #   RequiredState						#
@@ -18,68 +19,49 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestProactivePlanning)
-
-(Sensor Location)
-(Sensor Stove)
-
-(ContextVariable Human)
+(PlanningDomain TestCausalPlanning)
 
 (Resource power 6)
 (Resource usbport 6)
 (Resource serialport 6)
 
-(SimpleOperator
- (Head Human::Cooking())
- (RequiredState req1 Location::Kitchen())
- (RequiredState req2 Stove::On())
- (RequiredState req3 Robot::SayWarning())
+(PlanningOperator
+ (Head Robot::SayWarning(?location))
+ (RequiredState req1 Robot::At(?location))
  (Constraint During(Head,req1))
- (Constraint Contains(Head,req2))
- (Constraint Overlaps(Head,req3))
-)
-
-(SimpleOperator
- (Head Human::Eating())
- (RequiredState req1 Location::DiningRoom())
- (RequiredState req2 Human::Cooking())
- (Constraint Finishes(Head,req1))
- (Constraint After(Head,req2))
-)
-
-(SimpleOperator
- (Head Robot::SayWarning())
- (RequiredState req1 Robot::MoveTo())
- (Constraint MetBy(Head,req1))
  (Constraint Duration[5,INF](Head))
 )
 
-(SimpleOperator
- (Head Robot::MoveTo())
+(PlanningOperator
+ (Head Robot::MoveTo(?from,?to))
  (RequiredState req1 LocalizationService::Localization())
+ (RequiredState req2 Robot::At(?from))
+ (AchievedState ach1 Robot::At(?to))
  (Constraint During(Head,req1))
+ (Constraint Overlaps(req2,Head))
+ (Constraint Overlaps(Head,ach1))
  (Constraint Duration[5,INF](Head))
 )
 
-(SimpleOperator
+(PlanningOperator
  (Head LocalizationService::Localization())
  (RequiredState req1 RFIDReader::On())
  (Constraint During(Head,req1)) 
 )
 
-(SimpleOperator
+(PlanningOperator
  (Head LocalizationService::Localization())
  (RequiredState req1 LaserScanner::On())
- (Constraint During(Head,req1)) 
+ (Constraint During(Head,req1))
 )
 
-(SimpleOperator
+(PlanningOperator
  (Head RFIDReader::On())
  (RequiredResource power(5))
  (RequiredResource usbport(7))
 )
 
-(SimpleOperator
+(PlanningOperator
  (Head LaserScanner::On())
  (RequiredResource serialport(1))
  (RequiredResource power(5))
