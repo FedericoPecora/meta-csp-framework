@@ -21,6 +21,8 @@ import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.utility.PowerSet;
 
+import cern.colt.Arrays;
+
 public class ProactivePlanningDomain extends SimpleDomain {
 
 	private boolean triggered = false;
@@ -62,8 +64,72 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		};
 		return valOH;
 	}
+
+//	/**
+//	 * Parses a domain file (see domains/testContextInference.ddl for an example), instantiates
+//	 * the necessary {@link MetaConstraint}s and adds them to the provided {@link SimplePlanner}.
+//	 * @param sp The {@link SimplePlanner} that will use this domain.
+//	 * @param filename Text file containing the domain definition. 
+//	 */
+//	public static void parseDomain(SimplePlanner sp, String filename) {
+//		String everything = null;
+//		try {
+//			BufferedReader br = new BufferedReader(new FileReader(filename));
+//			try {
+//				StringBuilder sb = new StringBuilder();
+//				String line = br.readLine();
+//				while (line != null) {
+//					if (!line.startsWith("#")) {
+//						sb.append(line);
+//						sb.append('\n');
+//					}
+//					line = br.readLine();
+//				}
+//				everything = sb.toString();
+//				String name = parseName(everything);
+//				HashMap<String,Integer> resources = parseResources(everything);
+//				String[] simpleOperators = parseSimpleOperators(everything);
+//				String[] planningOperators = parsePlanningOperators(everything);
+//				String[] sensors = parseSensors(everything);
+//				String[] contextVars = parseContextVars(everything);
+//				
+//				//SimpleDomain rd = new SimpleDomain(
+//				//  new int[] {6,6,6},
+//				//  new String[] {"power", "usbport", "serialport"},
+//				//  "TestDomain"
+//				//);
+//				int[] resourceCaps = new int[resources.keySet().size()];
+//				String[] resourceNames = new String[resources.keySet().size()];
+//				int resourceCounter = 0;
+//				for (String rname : resources.keySet()) {
+//					resourceNames[resourceCounter] = rname;
+//					resourceCaps[resourceCounter] = resources.get(rname);
+//					resourceCounter++;
+//				}
+//				ProactivePlanningDomain dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name);
+//				dom.setValOH(getValueOrderingH());
+//				dom.setVarOH(getVariableOrderingH());
+//				for (String sensor : sensors) dom.addSensor(sensor);
+//				for (String cv : contextVars) dom.addContextVar(cv);
+//				for (String operator : simpleOperators) {
+//					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames));
+//				}
+//				for (String operator : planningOperators) {
+//					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames));
+//				}
+//				//This adds the domain as a meta-constraint of the SimplePlanner
+//				sp.addMetaConstraint(dom);
+//				//... and we also add all its resources as separate meta-constraints
+//				for (Schedulable sch : dom.getSchedulingMetaConstraints()) sp.addMetaConstraint(sch);
+//			}
+//			finally { br.close(); }
+//		}
+//		catch (FileNotFoundException e) { e.printStackTrace(); }
+//		catch (IOException e) { e.printStackTrace(); }
+//	}
+	
 	/**
-	 * Parses a domain file (see domains/testContextInference.ddl for an example), instantiates
+	 * Parses a domain file (see domains/testDomain.ddl for an example), instantiates
 	 * the necessary {@link MetaConstraint}s and adds them to the provided {@link SimplePlanner}.
 	 * @param sp The {@link SimplePlanner} that will use this domain.
 	 * @param filename Text file containing the domain definition. 
@@ -83,17 +149,16 @@ public class ProactivePlanningDomain extends SimpleDomain {
 					line = br.readLine();
 				}
 				everything = sb.toString();
-				String name = parseName(everything);
-				HashMap<String,Integer> resources = parseResources(everything);
-				String[] operators = parseOperators(everything);
-				String[] sensors = parseSensors(everything);
-				String[] contextVars = parseContextVars(everything);
+				String name = "";
+				String[] nameArray = parseKeyword("SimpleDomain", everything);
+				if (nameArray.length != 0) name = nameArray[0];
+				else name = parseKeyword("PlanningDomain", everything)[0];
+				String[] resourceElements = parseKeyword("Resource", everything);
+				HashMap<String,Integer> resources = processResources(resourceElements);
+				String[] operators = parseKeyword("SimpleOperator", everything);
+				String[] sensors = parseKeyword("Sensor", everything);
+				String[] contextVars = parseKeyword("ContextVariable", everything);
 				
-				//SimpleDomain rd = new SimpleDomain(
-				//  new int[] {6,6,6},
-				//  new String[] {"power", "usbport", "serialport"},
-				//  "TestDomain"
-				//);
 				int[] resourceCaps = new int[resources.keySet().size()];
 				String[] resourceNames = new String[resources.keySet().size()];
 				int resourceCounter = 0;
@@ -102,13 +167,16 @@ public class ProactivePlanningDomain extends SimpleDomain {
 					resourceCaps[resourceCounter] = resources.get(rname);
 					resourceCounter++;
 				}
+				
+				//SimpleDomain dom = new SimpleDomain(resourceCaps, resourceNames, name);
 				ProactivePlanningDomain dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name);
 				dom.setValOH(getValueOrderingH());
 				dom.setVarOH(getVariableOrderingH());
+
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : operators) {
-					dom.addOperator(SimpleOperator.parseSimpleOperator(operator,resourceNames));
+					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames));
 				}
 				//This adds the domain as a meta-constraint of the SimplePlanner
 				sp.addMetaConstraint(dom);
@@ -121,23 +189,6 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		catch (IOException e) { e.printStackTrace(); }
 	}
 
-//	private Set<Set<VariablePrototype>> generateGoalsOld() {
-//		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
-//		SimpleOperator[] ops = this.getOperators();
-//		HashSet<VariablePrototype> vars = new HashSet<VariablePrototype>();
-//		for (SimpleOperator op : ops) {
-//			String head = op.getHead();
-//			String headComponent = head.substring(0,head.indexOf("::"));
-//			String headValue = head.substring(head.indexOf("::")+2);
-//			if (this.isContextVar(headComponent)) {
-//				VariablePrototype toInfer = new VariablePrototype(groundSolver, headComponent, headValue);
-//				toInfer.setMarking(markings.UNJUSTIFIED);
-//				vars.add(toInfer);
-//			}
-//		}
-//		Set<Set<VariablePrototype>> ret = PowerSet.powerSet(vars);
-//		return ret;
-//	}
 
 	private VariablePrototype[] generateGoals() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
@@ -171,40 +222,6 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		}
 		return newRet.toArray(new ConstraintNetwork[newRet.size()]);
 	}
-	
-//	public ConstraintNetwork[] getMetaValuesOld(MetaVariable metaVariable) {
-//		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
-//		//If this is not context inference, get metavalues as usual 
-//		if (mv.getConstraints().length != 0 || mv.getVariables().length != 0) {
-//			ConstraintNetwork[] ret = super.getMetaValues(metaVariable);
-//			return ret;
-//		}
-//		//We have a context inference metavariable - let's generate all possible worlds
-//		Set<Set<VariablePrototype>> possibleWorlds = generateGoalsOld();
-//		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-//		for (Set<VariablePrototype> oneWorld : possibleWorlds) {
-//			if (!oneWorld.isEmpty()) {
-//				ConstraintNetwork cn = new ConstraintNetwork(null);
-//				for (VariablePrototype var : oneWorld) cn.addVariable(var);
-//				if (oldInference != null) {
-//					for (VariablePrototype var : oneWorld) {
-//						for (Activity oldVar : oldInference) {
-//							if (var.getParameters()[0].equals(oldVar.getComponent())) {
-//								AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-//								before.setFrom(oldVar);
-//								before.setTo(var);
-//								cn.addConstraint(before);
-//								System.out.println("Added BEFORE: " + before);
-//							}
-//						}
-//					}
-//				}
-//				ret.add(cn);
-//			}
-//		}
-//		if (ret.isEmpty()) return null;
-//		return ret.toArray(new ConstraintNetwork[ret.size()]);
-//	}
 	
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
