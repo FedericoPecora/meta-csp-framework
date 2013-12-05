@@ -44,51 +44,51 @@ public class Dispatcher extends Thread {
 		while (true) {
 			try { Thread.sleep(period); }
 			catch (InterruptedException e) { e.printStackTrace(); }
-			for (String component : dfs.keySet()) {
-				for (Variable var : cn.getVariables(component)) {
-					if (var instanceof Activity) {
-						Activity act = (Activity)var;
-						
-						//New act, tag as not dispatched
-						if (!acts.containsKey(act)) {
-							acts.put(act, ACTIVITY_STATE.PLANNED);
-							//If new act and planned for the past, then release at least in the future (done only once)
-							if (act.getTemporalVariable().getEST() < future.getTemporalVariable().getEST()) {
-								AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(future.getTemporalVariable().getEST(),APSPSolver.INF));
-								releaseFuture.setFrom(act);
-								releaseFuture.setTo(act);
-								boolean ret = ans.addConstraint(releaseFuture);
-								System.out.println("ADD REL: " + ret);
+			
+			synchronized(ans) {
+				for (String component : dfs.keySet()) {
+					for (Variable var : cn.getVariables(component)) {
+						if (var instanceof Activity) {
+							Activity act = (Activity)var;
+							
+							//New act, tag as not dispatched
+							if (!acts.containsKey(act)) acts.put(act, ACTIVITY_STATE.PLANNED);
+							
+							//Not dispatched, check if need to dispatch
+							if (acts.get(act).equals(ACTIVITY_STATE.PLANNED)) {
+								//time to dispatch, do it!
+								if (act.getTemporalVariable().getEST() < future.getTemporalVariable().getEST()) {
+									acts.put(act, ACTIVITY_STATE.STARTED);
+									AllenIntervalConstraint overlapsFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps);
+									overlapsFuture.setFrom(act);
+									overlapsFuture.setTo(future);
+									boolean ret = ans.addConstraint(overlapsFuture);
+									System.out.println("ADD OVL: " + ret);
+									overlapFutureConstraints.put(act, overlapsFuture);
+									this.dfs.get(component).dispatch(act);
+								}
 							}
-						}
-						
-						//Not dispatched, check if need to dispatch
-						if (acts.get(act).equals(ACTIVITY_STATE.PLANNED)) {
-							//time to dispatch, do it!
-							if (act.getTemporalVariable().getEST() < future.getTemporalVariable().getEST()) {
-								acts.put(act, ACTIVITY_STATE.STARTED);
-								AllenIntervalConstraint overlapsFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps);
-								overlapsFuture.setFrom(act);
-								overlapsFuture.setTo(future);
-								boolean ret = ans.addConstraint(overlapsFuture);
-								System.out.println("ADD OVL: " + ret);
-								overlapFutureConstraints.put(act, overlapsFuture);
-								this.dfs.get(component).dispatch(act);
+							
+							//If finished, tag as finished
+							else if (acts.get(act).equals(ACTIVITY_STATE.FINISHING)) {
+								acts.put(act, ACTIVITY_STATE.FINISHED);
+								ans.removeConstraint(overlapFutureConstraints.get(act));
+								AllenIntervalConstraint deadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(future.getTemporalVariable().getEST(),future.getTemporalVariable().getEST()));
+								deadline.setFrom(act);
+								deadline.setTo(act);
+								ans.addConstraint(deadline);
 							}
-						}
-						
-						//If finished, tag as finished
-						else if (acts.get(act).equals(ACTIVITY_STATE.FINISHING)) {
-							acts.put(act, ACTIVITY_STATE.FINISHED);
-							ans.removeConstraint(overlapFutureConstraints.get(act));
 						}
 					}
 				}
+			
 			}
+			
 		}
 	}
 	
 	public void addDispatchingFunction(String component, DispatchingFunction df) {
+		df.registerDispatcher(this);
 		this.dfs.put(component, df);
 	}
 	

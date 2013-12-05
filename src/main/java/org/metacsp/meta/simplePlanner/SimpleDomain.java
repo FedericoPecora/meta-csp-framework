@@ -114,7 +114,6 @@ public class SimpleDomain extends MetaConstraint {
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		// for every variable that is marked as UNJUSTIFIED a ConstraintNetwork is built
 		for (Variable task : groundSolver.getVariables()) {
-			if (task.getMarking() == null) System.out.println("NULL MARKING: " + task);
 			if (task.getMarking().equals(markings.UNJUSTIFIED)) {
 				ConstraintNetwork nw = new ConstraintNetwork(null);
 				nw.addVariable(task);
