@@ -29,7 +29,7 @@
  (Head Robot::SayWarning(?location))
  (RequiredState req1 Robot::At(?location))
  (Constraint During(Head,req1))
- (Constraint Duration[5,INF](Head))
+ (Constraint Duration[5000,INF](Head))
 )
 
 (PlanningOperator
@@ -38,9 +38,10 @@
  (RequiredState req2 Robot::At(?from))
  (AchievedState ach1 Robot::At(?to))
  (Constraint During(Head,req1))
+# (Constraint OverlappedBy(Head,req2))
  (Constraint Overlaps(req2,Head))
  (Constraint Overlaps(Head,ach1))
- (Constraint Duration[5,INF](Head))
+ (Constraint Duration[5000,INF](Head))
 )
 
 (PlanningOperator

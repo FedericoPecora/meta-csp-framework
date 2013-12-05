@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.metacsp.dispatching.Dispatcher;
+import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariablePrototype;
@@ -29,6 +31,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	private HashMap<Sensor,HashMap<Long,String>> sensorValues = new HashMap<Sensor, HashMap<Long,String>>();
 	private SimplePlanner planner = null;
 	private ProactivePlanningDomain domain = null;
+	private Dispatcher dis = null;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
@@ -80,6 +83,16 @@ public class ConstraintNetworkAnimator extends Thread {
 		this.sensorValues.put(sensor, values);
 	}
 	
+	public void addDispatchingFunctions(DispatchingFunction ... dfs) {
+		boolean start = false;
+		if (this.dis == null) {
+			this.dis = new Dispatcher(planner, period);
+			start = true;
+		}
+		for (DispatchingFunction df : dfs) dis.addDispatchingFunction(df.getComponent(), df);
+		if (start) dis.start();
+	}
+	
 	public void run() {
 		int iteration = 0;
 		while (true) {
@@ -115,6 +128,7 @@ public class ConstraintNetworkAnimator extends Thread {
 				if (planner != null) {
 					logger.info("Iteration " + iteration++);
 					domain.resetContextInference();
+					domain.updateTimeNow(timeNow);
 					planner.clearResolvers();
 					planner.backtrack();
 					Vector<Activity> oldInference = new Vector<Activity>();
@@ -137,7 +151,7 @@ public class ConstraintNetworkAnimator extends Thread {
 					if (!oldInference.isEmpty()) {
 						domain.setOldInference(oldInference.toArray(new Activity[oldInference.size()]));
 					}
-				}
+				}				
 			}
 		}
 	}

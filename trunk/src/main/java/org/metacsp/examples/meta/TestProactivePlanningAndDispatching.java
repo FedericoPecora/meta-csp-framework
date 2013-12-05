@@ -24,6 +24,7 @@ package org.metacsp.examples.meta;
 
 import java.util.logging.Level;
 
+import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
@@ -41,56 +42,37 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-public class TestCausalPlanning {	
+public class TestProactivePlanningAndDispatching {	
 	
 	public static void main(String[] args) {
 
 		//Create planner
-		SimplePlanner planner = new SimplePlanner(0,6000,0);
-		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
+		SimplePlanner planner = new SimplePlanner(0,100000,0);
+		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
-		//ProactivePlanningDomain.parseDomain(planner, "domains/testCausalPlanningDomain.ddl");
-		SimpleDomain.parseDomain(planner, "domains/testCausalPlanningDomain.ddl", SimpleDomain.class);
-		MetaCSPLogging.setLevel(ProactivePlanningDomain.class, Level.FINEST);
-		
-		// This is a pointer toward the ground constraint network of the planner
-		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
+		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanning.ddl", ProactivePlanningDomain.class);
 
-		// INITIAL AND GOAL STATE DEFS
-		Activity one = (Activity)groundSolver.createVariable("Robot");
-		one.setSymbolicDomain("At(?to)");
-		// ... this is a goal (i.e., an activity to justify through the meta-constraint)
-		one.setMarking(markings.UNJUSTIFIED);
-		//.. let's also give it a minimum duration
-		AllenIntervalConstraint durationOne = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(7,APSPSolver.INF));
-		durationOne.setFrom(one);
-		durationOne.setTo(one);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, false, 1000);
 		
-		groundSolver.addConstraints(new Constraint[] {durationOne});
+		DispatchingFunction df = new DispatchingFunction("Robot") {
+			
+			@Override
+			public void dispatch(Activity act) {
+				System.out.println(">>>>>>>>>>>>>> " + act);
+			}
+		}; 
 		
-//		// We can also specify that goals should be related in time somehow...		
-//		AllenIntervalConstraint after = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, AllenIntervalConstraint.Type.After.getDefaultBounds());
-//		after.setFrom(one);
-//		after.setTo(two);
-//		groundSolver.addConstraint(after);
+		animator.addDispatchingFunctions(df);
 		
-		//Initial Condition
-		Activity init1 = (Activity)groundSolver.createVariable("Robot");
-		init1.setSymbolicDomain("At(?from)");
-		init1.setMarking(markings.JUSTIFIED);
-		AllenIntervalConstraint durationInit1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(1300,APSPSolver.INF));
-		durationInit1.setFrom(init1);
-		durationInit1.setTo(init1);
-
-		groundSolver.addConstraints(durationInit1);
+		Sensor sensorA = new Sensor("Location", animator);
+		Sensor sensorB = new Sensor("Stove", animator);
 		
-		planner.backtrack();
+		sensorA.registerSensorTrace("sensorTraces/location.st");
+		sensorB.registerSensorTrace("sensorTraces/stove.st");
 		
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
+		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
-		tp.publish(true, false);
-		
-		ConstraintNetwork.draw(groundSolver.getConstraintNetwork());
+		tv.startAutomaticUpdate(1000);
 
 	}
 	

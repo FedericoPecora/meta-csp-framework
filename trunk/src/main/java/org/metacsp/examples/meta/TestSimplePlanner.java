@@ -53,6 +53,7 @@ public class TestSimplePlanner {
 		MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 //		MetaCSPLogging.setLevel(Level.FINEST);
 //		MetaCSPLogging.setLevel(planner.getClass(), Level.FINE);
+		MetaCSPLogging.setLevel(SimpleDomain.class, Level.FINEST);
 				
 		SimpleDomain rd = new SimpleDomain(new int[] {6,6,6}, new String[] {"power", "usbport", "serialport"}, "TestDomain");
 			
@@ -86,7 +87,7 @@ public class TestSimplePlanner {
 		AllenIntervalConstraint localizationDuringRFID = new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds());
 		SimpleOperator operator2 = new SimpleOperator("LocalizationService::Localization()",
 				new AllenIntervalConstraint[] {localizationDuringRFID},
-				new String[] {"RFIDReader1::On(power,usbport)"},
+				new String[] {"RFIDReader1::On()"},
 				null);
 		rd.addOperator(operator2);
 		
@@ -94,13 +95,13 @@ public class TestSimplePlanner {
 		AllenIntervalConstraint localizationDuringLaser = new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds());
 		SimpleOperator operator3 = new SimpleOperator("LocalizationService::Localization()",
 				new AllenIntervalConstraint[] {localizationDuringLaser},
-				new String[] {"LaserScanner1::On(power,serialport)"},
+				new String[] {"LaserScanner1::On()"},
 				null);
 		rd.addOperator(operator3);
 		
 		// This operator has no requirement but consumes 5 units of
 		// the first resource and one of the second
-		SimpleOperator operator4 = new SimpleOperator("RFIDReader1::On(power,usbport)",
+		SimpleOperator operator4 = new SimpleOperator("RFIDReader1::On()",
 				null,
 				null,
 				new int[] {5,7});
@@ -108,7 +109,7 @@ public class TestSimplePlanner {
 		
 		
 		// Similar to the previous operator
-		SimpleOperator operator5 = new SimpleOperator("LaserScanner1::On(power,serialport)",
+		SimpleOperator operator5 = new SimpleOperator("LaserScanner1::On()",
 				null,
 				null,
 				new int[] {5,1});
