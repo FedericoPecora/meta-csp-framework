@@ -22,6 +22,10 @@
  ******************************************************************************/
 package org.metacsp.examples.meta;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Vector;
 import java.util.logging.Level;
 
 import org.metacsp.dispatching.DispatchingFunction;
@@ -50,15 +54,16 @@ public class TestProactivePlanningAndDispatching {
 		SimplePlanner planner = new SimplePlanner(0,100000,0);
 		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
-		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanning.ddl", ProactivePlanningDomain.class);
+		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
 
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, false, 1000);
 		
+		final Vector<Activity> executingActs = new Vector<Activity>();
 		DispatchingFunction df = new DispatchingFunction("Robot") {
-			
 			@Override
 			public void dispatch(Activity act) {
-				System.out.println(">>>>>>>>>>>>>> " + act);
+				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
+				executingActs.add(act);
 			}
 		}; 
 		
@@ -70,9 +75,24 @@ public class TestProactivePlanningAndDispatching {
 		sensorA.registerSensorTrace("sensorTraces/location.st");
 		sensorB.registerSensorTrace("sensorTraces/stove.st");
 		
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
+		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
+		
+		while (true) {
+			System.out.println("Executing activities (press <enter> to refresh list):");
+			for (int i = 0; i < executingActs.size(); i++) System.out.println(i + ". " + executingActs.elementAt(i));
+			System.out.println("--");
+			System.out.print("Please enter activity to finish: ");  
+			String input = "";  
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
+			try { input = br.readLine(); }
+			catch (IOException e) { e.printStackTrace(); }
+			if (!input.trim().equals("")) {
+				df.finish(executingActs.elementAt(Integer.parseInt(input)));
+				executingActs.remove(Integer.parseInt(input));
+			}
+		}
 
 	}
 	

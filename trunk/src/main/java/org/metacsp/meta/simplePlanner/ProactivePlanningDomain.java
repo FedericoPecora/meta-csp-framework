@@ -115,7 +115,6 @@ public class ProactivePlanningDomain extends SimpleDomain {
 					AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,APSPSolver.INF));
 					release.setFrom(flaw);
 					release.setTo(flaw);
-					System.out.println("Added TIMENOW constraint: " + release);
 					for (ConstraintNetwork cn : ret) cn.addConstraint(release);
 				}
 			}
