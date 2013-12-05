@@ -22,6 +22,8 @@
  ******************************************************************************/
 package org.metacsp.utility;
 
+import cern.colt.Arrays;
+
 /**
  * A bare-bones immutable data type for M-by-N matrices.
  * @author Robert Sedgewick and Kevin Wayne (Princeton University, Dept. of Computer Science)
@@ -187,6 +189,12 @@ final public class Matrix {
 				System.out.printf("%9.4f ", data[i][j]);
 			System.out.println();
 		}
+	}
+	
+	public static String toString(Object[][] matrix) {
+		String ret = "";
+		for (Object[] row : matrix) ret += Arrays.toString(row) + "\n";
+		return ret;
 	}
 
 

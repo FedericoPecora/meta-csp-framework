@@ -40,7 +40,7 @@ public class SimpleOperator {
 		this.head = head;
 		if (requirementActivities != null) {
 			for (String a : requirementActivities) {
-				if (a.equals(head)) throw new InvalidActivityException(a);
+				if (a != null && a.equals(head)) throw new InvalidActivityException(a);
 			}
 		}
 		this.requirementConstraints = requirementConstraints;
@@ -79,33 +79,36 @@ public class SimpleOperator {
 		String acts = "";
 		if (requirementActivities != null) {
 			for (int i = 0; i < requirementActivities.length; i++) {
-				System.out.println("!! " + this.head + " reqs: " + requirementConstraints[i]);
-				System.out.println("?? " + requirementConstraints[i].getBounds());
-				acts += head + " --" + Arrays.toString(requirementConstraints[i].getTypes()) + " " + Arrays.toString(requirementConstraints[i].getBounds()) + "--> " + requirementActivities[i];
+				if (requirementConstraints[i] != null) {
+					acts += head + " --" + Arrays.toString(requirementConstraints[i].getTypes()) + " " + Arrays.toString(requirementConstraints[i].getBounds()) + "--> " + requirementActivities[i];
+				}
 				if (i != requirementActivities.length-1) acts += "\n";
 			}
 		}
 		if (!acts.trim().equals("")) ret += acts;
-		if (usages != null) {
-			if (!acts.trim().equals("")) ret += "\n";
-			ret += head + " usage: " + Arrays.toString(usages);
-		}
+
 		String extraCons = "";
 		if (extraConstraints != null) {
-			extraCons += "\n";
+			extraCons += "";
 			for (int i = 0; i < extraConstraints.length; i++) {
 				for (int j = 0; j < extraConstraints[i].length; j++) {
 					if (extraConstraints[i][j] != null) {
-						if (i == 0) extraCons += head;
-						else extraCons += requirementActivities[i-1];
+						if (i == 0) extraCons += "\n" + head;
+						else extraCons += "\n" + requirementActivities[i-1];
 						extraCons += " --" + Arrays.toString(extraConstraints[i][j].getTypes()) + " " + Arrays.toString(extraConstraints[i][j].getBounds()) + "--> ";
 						if (j == 0) extraCons += head;
 						else extraCons += requirementActivities[j-1];
 					}
-				}				
+				}
 			}
 		}
 		if (!extraCons.trim().equals("")) ret += extraCons;
+		
+		if (usages != null) {
+			if (!acts.trim().equals("")) ret += "\n";
+			ret += head + " usage: " + Arrays.toString(usages);
+		}
+		
 		return ret;
 	}
 	

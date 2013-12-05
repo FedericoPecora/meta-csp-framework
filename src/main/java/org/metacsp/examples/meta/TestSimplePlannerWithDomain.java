@@ -42,7 +42,7 @@ public class TestSimplePlannerWithDomain {
 		//Create planner
 		SimplePlanner planner = new SimplePlanner(0,600,0);
 		
-		SimpleDomain.parseDomain(planner, "domains/testSimplePlanner.ddl");
+		SimpleDomain.parseDomain(planner, "domains/testSimplePlanner.ddl", SimpleDomain.class);
 		
 		// This is a pointer toward the ground constraint network of the planner
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
