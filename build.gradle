@@ -36,8 +36,8 @@ def getSvnRevision() {
 }
 
 //MetaCSP version
-//version = '1.0.' + getSvnRevision()
-version = '0.0.0-SNAPSHOT'
+version = '1.0.' + getSvnRevision()
+//version = '0.0.0-SNAPSHOT'
 group = 'org.metacsp'
 
 //Repos for dependencies
@@ -114,6 +114,7 @@ publishing {
                     url 'http://metacsp.org'
 		    parent {
 		    	groupId 'org.sonatype.oss'
+			//groupId 'org.metacsp'
 			artifactId 'oss-parent'
     			version '7'
 		    }
