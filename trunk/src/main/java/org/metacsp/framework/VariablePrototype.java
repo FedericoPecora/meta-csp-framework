@@ -59,6 +59,7 @@ public class VariablePrototype extends Variable {
 		this.parameters = parameters;
 	}
 	
+	
 	/**
 	 * Get the parameters of this {@link VariablePrototype}.
 	 * @return The parameters of this {@link VariablePrototype}.
@@ -88,5 +89,16 @@ public class VariablePrototype extends Variable {
 		// TODO Auto-generated method stub
 		return (Arrays.toString(parameters)+" ID "+ this.id +" |");
 	}
+	
+	private VariablePrototype(VariablePrototype cp){
+		super(cp.getConstraintSolver(),id++);
+		this.parameters=cp.getParameters().clone();
+	}
+	
+	public VariablePrototype clone(){
+		return new VariablePrototype(this);
+	}
+	
+	
 
 }

@@ -57,11 +57,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	private static final long serialVersionUID = -7343190680692608215L;
 	protected Vector<MetaConstraint> metaConstraints = null;
 	protected DelegateForest<MetaVariable,ConstraintNetwork> g;
-	private MetaVariable currentVertex = null;
-	private boolean breakSearch = false;
-	private HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
-	private long animationTime = 0;
-	private int counterMoves;
+	protected MetaVariable currentVertex = null;
+	protected boolean breakSearch = false;
+	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
+	protected long animationTime = 0;
+	protected int counterMoves;
 	
 	//private Vector<HashMap<ConstraintSolver,ConstraintNetwork>> statesAlongCurrentBranch = new Vector<HashMap<ConstraintSolver,ConstraintNetwork>>(); 
 
@@ -106,7 +106,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();
 	}
 
-	private class TerminalNode extends MetaVariable {
+	protected class TerminalNode extends MetaVariable {
 		private boolean success;
 		public TerminalNode(boolean success) {
 			super(null, null);
@@ -299,7 +299,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 	
 	
-	private boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
+	protected boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
 //		ActivityNetworkSolver groundSolver 	= (ActivityNetworkSolver)this.getConstraintSolvers()[0];
 //		System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKKKK NUMBER OF VARIABLES" + groundSolver.getVariables().length);
 		System.out.println("===============XXXXXXXXXXXXXX===========================");
@@ -419,7 +419,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return true;
 	}
 
-	private final void retractResolver(ConstraintNetwork metaVar, ConstraintNetwork res) {
+	protected final void retractResolver(ConstraintNetwork metaVar, ConstraintNetwork res) {
 		this.logger.finest("RETRACT RESOLVER: ");
 		this.logger.finest(metaVar.toString());
 		this.logger.finest(res.toString());
@@ -435,6 +435,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}			
 		for (ConstraintSolver cs : solvers2constraints.keySet()) {
 			Constraint[] toAddOneSolver = solvers2constraints.get(cs).toArray(new Constraint[solvers2constraints.get(cs).size()]);
+			this.logger.finest("MetaConstraintSolver: I am removing the following constraints");
 			cs.removeConstraints(toAddOneSolver);
 		}
 		this.logger.finest("XXXXXX RETRACT SUB XXXXX");

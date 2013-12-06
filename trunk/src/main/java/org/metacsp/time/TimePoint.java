@@ -119,7 +119,7 @@ public final class TimePoint extends Variable {
 	public String toString() {
 		String ret="";//\n((((((((((((";
 		
-		ret+= this.id + ":[" + APSPSolver.printLong(this.lowerBound) + "," + APSPSolver.printLong(this.upperBound) + "]";
+		ret+= this.id + ":{" + APSPSolver.printLong(this.lowerBound) + "," + APSPSolver.printLong(this.upperBound) + "}";
 //		ret+="))))))))))))))))\n";
 		return ret;
     }
