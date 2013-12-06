@@ -277,7 +277,20 @@ public abstract class ConstraintSolver implements Serializable {
 			Constraint[] toRemoveArray = toRemove.toArray(new Constraint[toRemove.size()]);
 			
 			removeConstraintsSub(toRemoveArray);
-			for (Constraint con : toRemove) this.theNetwork.removeConstraint(con);
+			for (Constraint con : toRemove) {
+				System.out.println(" ");
+				System.out.println(" ");
+				System.out.println(" ");
+				System.out.println("vvvv Constraint Solver: " + this + "vvvvvvvvvvvvvvvv:   REMOVING");
+				System.out.println(con.toString());
+				System.out.println(con.getScope()[0].toString());
+				System.out.println(con.getScope()[1].toString());
+				System.out.println("vvvvVVVVVVVVVVVVVVVVVVVvvvvv");
+				System.out.println(" ");
+				System.out.println(" ");
+				System.out.println(" ");
+				this.theNetwork.removeConstraint(con);
+			}
 			if (autoprop && checkDomainsInstantiated()) this.propagate();
 			logger.finest("Removed constraints " + toRemove);
 		}
@@ -383,6 +396,7 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @param v The {@link Variable} to remove.
 	 */
 	public final void removeVariable(Variable v) throws VariableNotFound, IllegalVariableRemoval {
+		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Removing "+ v);
 		this.removeVariables(new Variable[] {v});
 	} 
 		

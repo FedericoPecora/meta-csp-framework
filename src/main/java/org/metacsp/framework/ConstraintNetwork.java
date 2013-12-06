@@ -52,6 +52,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	private double weight=-1;
 	
 	public transient Object annotation;
+	public transient ConstraintNetworkMarking marking; // to mark the constraint in the backtracking process
 
 	
 	//This is so that subclasses must invoke 1-arg constructor of ConstraintNetwork (below)
@@ -110,6 +111,8 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		g = new DirectedSparseMultigraph<Variable,Constraint>();
 		graph = new ObservableGraph<Variable,Constraint>(g);
 		this.weight=-1;
+		this.annotation="NONE";
+		this.marking=new ConstraintNetworkMarking();
 	}
 
 	/**
@@ -309,6 +312,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		for (int i = 0; i < in.size(); i++) retSet.add(inArray[i]);
 		for (int i = 0; i < out.size(); i++) retSet.add(outArray[i]);
 		Constraint[] ret = retSet.toArray(new Constraint[retSet.size()]);
+//		if(ret.length==0){return null;}
 		return ret;
 	}
 
@@ -432,7 +436,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	 * @return A {@link String} representation of this {@link ConstraintNetwork}.
 	 */
 	public String toString() {
-		return "[ConstraintNetwork]\n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());
+		return "[ConstraintNetwork]: marking -> "+ this.getMarking().getState()+"\n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());
 	}
 	
 	/**
@@ -517,6 +521,18 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	 * @param ann An object that used to annotate this {@link ConstraintNetwork}.
 	 */
 	public Object getAnnotation() { return this.annotation; }
+
+	public HashMap<VariablePrototype, Variable> getSubstitutions() {
+		return substitutions;
+	}
+
+	public ConstraintNetworkMarking getMarking() {
+		return marking;
+	}
+
+	public void setMarking(ConstraintNetworkMarking marking) {
+		this.marking = marking;
+	}
 
 	
 }
