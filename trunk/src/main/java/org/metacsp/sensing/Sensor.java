@@ -41,20 +41,21 @@ public class Sensor implements Serializable {
 			if (((Activity)timeAct).getSymbolicVariable().getSymbols()[0].equals("Future")) future = (Activity)timeAct;
 		}
 	}
-
+	
 	public void modelSensorValue(String value, long timeNow) {
 		synchronized(ans) {
 			boolean makeNew = false;
 			if (currentAct == null) { makeNew = true; }
 			else if (currentAct != null) {
-				//If it has not changed, do nothing
+				//If it has not changed, do nothing - otherwise:
 				if (!currentAct.getSymbolicVariable().getSymbols()[0].equals(value)) {
 					//change value
 					AllenIntervalConstraint deadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(timeNow,timeNow));
 					deadline.setFrom(currentAct);
 					deadline.setTo(currentAct);
 					ans.removeConstraint(currentMeetsFuture);
-					ans.addConstraint(deadline);
+					boolean ret = ans.addConstraint(deadline);
+					if (!ret) throw new NetworkMaintenanceError(deadline);
 					makeNew = true;
 				}
 			}
@@ -71,7 +72,8 @@ public class Sensor implements Serializable {
 				meetsFuture.setTo(future);
 				currentAct = act;
 				currentMeetsFuture = meetsFuture;
-				ans.addConstraints(new Constraint[] {rel,meetsFuture});
+				boolean ret = ans.addConstraints(new Constraint[] {rel,meetsFuture});
+				if (!ret) throw new NetworkMaintenanceError(rel,meetsFuture);
 				logger.info("" + currentAct);
 			}
 		}
@@ -107,6 +109,9 @@ public class Sensor implements Serializable {
 		return ret;
 	}
 
+	public void postSensorValue(String sensorValue, long time) {
+		animator.postSensorValueToDispatch(this, time, sensorValue);
+	}
 
 	public void registerSensorTrace(String sensorTraceFile) {
 		String everything = null;

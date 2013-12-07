@@ -56,7 +56,7 @@ public class TestProactivePlanningAndDispatching {
 
 		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
 
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, false, 1000);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, 1000);
 		
 		final Vector<Activity> executingActs = new Vector<Activity>();
 		DispatchingFunction df = new DispatchingFunction("Robot") {

@@ -51,7 +51,7 @@ public class TestProactivePlanning {
 
 		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
 
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, false, 1000);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, 1000);
 		
 		Sensor sensorA = new Sensor("Location", animator);
 		Sensor sensorB = new Sensor("Stove", animator);
