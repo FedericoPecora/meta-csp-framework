@@ -26,6 +26,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	private ActivityNetworkSolver ans = null;
 	private Activity future = null;
 	private long originOfTime;
+	private long firstTick;
 	private long period;
 	private AllenIntervalConstraint currentReleaseFuture = null;
 	private HashMap<Sensor,HashMap<Long,String>> sensorValues = new HashMap<Sensor, HashMap<Long,String>>();
@@ -35,8 +36,8 @@ public class ConstraintNetworkAnimator extends Thread {
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
-	public ConstraintNetworkAnimator(SimplePlanner planner, boolean realClock, long period) {
-		this((ActivityNetworkSolver)planner.getConstraintSolvers()[0],realClock,period);
+	public ConstraintNetworkAnimator(SimplePlanner planner, long period) {
+		this((ActivityNetworkSolver)planner.getConstraintSolvers()[0],period);
 		this.planner = planner;
 		MetaConstraint[] metaConstraints = planner.getMetaConstraints();
 		for (MetaConstraint mc : metaConstraints) {
@@ -47,20 +48,21 @@ public class ConstraintNetworkAnimator extends Thread {
 		}
 	}
 	
-	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, boolean realClock, long period) {
+	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period) {
 		synchronized(ans) {
 			this.ans = ans;
-			
 			this.period = period;
-			if (!realClock) originOfTime = Calendar.getInstance().getTimeInMillis();
-			else originOfTime = ans.getOrigin();
+			//if (!realClock) originOfTime = 0;
+			//else originOfTime = ans.getOrigin();
+			originOfTime = ans.getOrigin();
+			firstTick = Calendar.getInstance().getTimeInMillis();
 			
 			this.cn = ans.getConstraintNetwork();
 			
 			future = (Activity)ans.createVariable("Time");
 			future.setSymbolicDomain("Future");
 			future.setMarking(markings.JUSTIFIED);
-			long timeNow = Calendar.getInstance().getTimeInMillis()-originOfTime;
+			long timeNow = getTimeNow();
 			AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
 			releaseFuture.setFrom(future);
 			releaseFuture.setTo(future);
@@ -78,7 +80,14 @@ public class ConstraintNetworkAnimator extends Thread {
 	public ConstraintNetwork getConstraintNetwork() { return this.cn; }
 	
 	public ActivityNetworkSolver getActivityNetworkSolver() { return this.ans; }
-	
+
+	public void postSensorValueToDispatch(Sensor sensor, long time, String value) {
+		if (!this.sensorValues.keySet().contains(sensor))
+			this.sensorValues.put(sensor, new HashMap<Long, String>());
+		HashMap<Long, String> sensorVal = this.sensorValues.get(sensor); 
+		sensorVal.put(time, value);
+	}
+
 	public void registerSensorValuesToDispatch(Sensor sensor, HashMap<Long,String> values) {
 		this.sensorValues.put(sensor, values);
 	}
@@ -92,6 +101,10 @@ public class ConstraintNetworkAnimator extends Thread {
 		for (DispatchingFunction df : dfs) dis.addDispatchingFunction(df.getComponent(), df);
 		if (start) dis.start();
 	}
+
+	private long getTimeNow() {
+		return Calendar.getInstance().getTimeInMillis()-firstTick+originOfTime;
+	}
 	
 	public void run() {
 		int iteration = 0;
@@ -101,7 +114,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			
 			synchronized(ans) {
 				//Update release constraint of Future
-				long timeNow = Calendar.getInstance().getTimeInMillis()-originOfTime;
+				long timeNow = getTimeNow();
 				AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
 				releaseFuture.setFrom(future);
 				releaseFuture.setTo(future);
@@ -111,7 +124,7 @@ public class ConstraintNetworkAnimator extends Thread {
 				}
 				currentReleaseFuture = releaseFuture;
 				
-				//If there are registered sensor traces, animate them too  
+				//If there are registered sensor traces, animate them too
 				for (Sensor sensor : sensorValues.keySet()) {
 					Vector<Long> toRemove = new Vector<Long>();
 					HashMap<Long,String> values = sensorValues.get(sensor);

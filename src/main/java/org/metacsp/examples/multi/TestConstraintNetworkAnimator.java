@@ -13,7 +13,7 @@ public class TestConstraintNetworkAnimator {
 		
 	public static void main(String[] args) {
 		ActivityNetworkSolver ans = new ActivityNetworkSolver(0, 100000);
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, false, 1000);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000);
 		
 		Sensor sensorA = new Sensor("SensorA", animator);
 		Sensor sensorB = new Sensor("SensorB", animator);
