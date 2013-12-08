@@ -43,17 +43,17 @@ public final class TimePoint extends Variable {
 	//out edges
 	private SimpleDistanceConstraint[] out;
 	//private int MAX_TPS;
-	
+
 	//whether this TP is used or can be overwritten
 	private boolean used = false;
-	
+
 	//Bounds
 	private long lowerBound;
 	private long upperBound;
-	
 
-//	public static HashMap<Constraint,SimpleDistanceConstraint> sdcMap = new HashMap<Constraint, SimpleDistanceConstraint>();
-	
+
+	//	public static HashMap<Constraint,SimpleDistanceConstraint> sdcMap = new HashMap<Constraint, SimpleDistanceConstraint>();
+
 	/**
 	 * Instantiate a new {@link TimePoint} with a given identifier and maximum number of time points that can be
 	 * added to the temporal network.  This constructor should NOT be used.  As the {@link APSPSolver} is static,
@@ -69,13 +69,13 @@ public final class TimePoint extends Variable {
 		//this.MAX_TPS = MAX_TPS;
 		out = new SimpleDistanceConstraint[MAX_TPS];
 	}
-	
-//	public TimePoint(int id, int MAX_TPS, APSPSolverIncrementelPPC sol) {
-//		//must invoke 2-arg superconstructor, lest compilation error
-//		super(sol,id);
-//		//this.MAX_TPS = MAX_TPS;
-//		out = new SimpleDistanceConstraint[MAX_TPS];
-//	}
+
+	//	public TimePoint(int id, int MAX_TPS, APSPSolverIncrementelPPC sol) {
+	//		//must invoke 2-arg superconstructor, lest compilation error
+	//		super(sol,id);
+	//		//this.MAX_TPS = MAX_TPS;
+	//		out = new SimpleDistanceConstraint[MAX_TPS];
+	//	}
 
 	/**
 	 * Instantiate a new {@link TimePoint} with a given identifier, upper bound and lower bound that can be
@@ -92,37 +92,37 @@ public final class TimePoint extends Variable {
 		this.lowerBound = lb;
 		this.upperBound = ub;
 	}
-	
 
-//	Utility methods
-	
+
+	//	Utility methods
+
 	/**
 	 * Compare this time point with a reference time point.
 	 * @return True iff the two time points have the same identifier.
 	 */
 	public boolean equals (Object obj)
 	{return (obj instanceof TimePoint)&&
- 		(((TimePoint) obj).id == id); 
- 		//&&
- 		//(((TimePoint) obj).lowerBound == lowerBound) &&
- 		//(((TimePoint) obj).out.equals(out));
- 
+			(((TimePoint) obj).id == id); 
+	//&&
+	//(((TimePoint) obj).lowerBound == lowerBound) &&
+	//(((TimePoint) obj).out.equals(out));
+
 	}
 
 
-//	Print methods
-	
+	//	Print methods
+
 	/**
 	 * Get a String representation of this {@link TimePoint}.
 	 * @return A String describing this {@link TimePoint}.
 	 */
 	public String toString() {
 		String ret="";//\n((((((((((((";
-		
+
 		ret+= this.id + ":{" + APSPSolver.printLong(this.lowerBound) + "," + APSPSolver.printLong(this.upperBound) + "}";
-//		ret+="))))))))))))))))\n";
+		//		ret+="))))))))))))))))\n";
 		return ret;
-    }
+	}
 	/*
 	public String toString() 
     {String s = new String();
@@ -180,11 +180,11 @@ public final class TimePoint extends Variable {
 	 * @param newVal Set to true iff the time point should be included in the underlying temporal network.
 	 */
 	public void setUsed(boolean newVal){
-		
+
 		if(isUsed() && newVal == false) {
 			Arrays.fill(out, null);
 		}
-		
+
 		used = newVal;
 	}
 
@@ -228,41 +228,23 @@ public final class TimePoint extends Variable {
 		// TODO Auto-generated method stub
 		return this.id - o.getID();
 	}
-	
-//	@Override
+
+	@Override
 	public TimePoint clone( ) {
-		
-//		HashMap<Variable,TimePoint> tpMap = new HashMap<Variable, TimePoint>();
-//		HashMap<Constraint,SimpleDistanceConstraint> sdcMap = new HashMap<Constraint, SimpleDistanceConstraint>();
-		
-//		TimePoint c = new TimePoint(id, this.lowerBound, this.upperBound, (APSPSolver) this.solver);
-//		System.out.println("CONSTRUCT");
+
 		TimePoint c = new TimePoint(id, this.out.length, (APSPSolver) this.solver);
 		c.setLowerBound(this.getLowerBound());
 		c.setUpperBound(this.getUpperBound());
 		c.setUsed(this.used);
-//		try {
-//			System.out.println(c.out);
-//			c.out = new SimpleDistanceConstraint[this.out.length];
-			
-			for ( int i = 0 ; i < this.out.length ; i++ ) {
-//				System.out.println(c.out);
-				if ( this.out[i] != null ) {
-//					System.out.println(c.out);
-//					System.out.println(c.getOut());
-					SimpleDistanceConstraint sdc = this.out[i].clone();
-					
-//					sdcMap.put(this.out[i], sdc);
-					
-					c.out[i] = sdc;
-				} else {
-					c.out[i] = null;
-				}
+
+		for ( int i = 0 ; i < this.out.length ; i++ ) {
+			if ( this.out[i] != null ) {
+				SimpleDistanceConstraint sdc = this.out[i].clone();					
+				c.out[i] = sdc;
+			} else {
+				c.out[i] = null;
 			}
-//		} catch ( Exception e ) {
-//			e.printStackTrace();
-//			System.exit(0);
-//		}
+		}
 		return c;
 	}
 

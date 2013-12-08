@@ -164,7 +164,10 @@ public final class TimelinePublisher
 			}
 			for(int tl = 0; tl < components.length; tl++) {
 				String comp = components[tl];
-				SymbolicTimeline stl = new SymbolicTimeline(ans, comp);
+				SymbolicTimeline stl  = null;
+				synchronized(ans) {
+					stl = new SymbolicTimeline(ans, comp);
+				}
 				if (bounds == null) {
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];
 				}

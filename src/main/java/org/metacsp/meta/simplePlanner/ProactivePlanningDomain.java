@@ -30,11 +30,28 @@ public class ProactivePlanningDomain extends SimpleDomain {
 
 	private boolean triggered = false;
 	private Activity[] oldInference = null;
+	private HashMap<String,Activity> oldInferences = new HashMap<String,Activity>();
 	private long timeNow = -1;
 	
-	public void setOldInference(Activity[] oldInf) {
-		this.oldInference = oldInf;
+	public void setOldInference(String component, Activity oldInf) {
+		oldInferences.put(component,oldInf);
 	}
+	
+//	public void setOldInference(Activity[] oldInf) {
+//		Vector<Activity> oldAndNew = new Vector<Activity>();
+//		for (Activity oldOldAct : oldInference) {
+//			boolean found = false;
+//			for (Activity oldAct : oldInf) {
+//				if (oldAct.getComponent().equals(oldOldAct.getComponent())) {
+//					found = true;
+//					break;
+//				}
+//			}
+//			if (!found) oldAndNew.add(oldOldAct);
+//		}
+//		for (Activity oldAct : oldInf) oldAndNew.add(oldAct);
+//		this.oldInference = oldAndNew.toArray(new Activity[oldAndNew.size()]);
+//	}
 	
 	public ProactivePlanningDomain(int[] capacities, String[] resourceNames, String domainName) {
 		super(capacities, resourceNames, domainName);
@@ -126,16 +143,23 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		for (VariablePrototype oneGoal : possibleGoals) {
 			ConstraintNetwork cn = new ConstraintNetwork(null);
 			cn.addVariable(oneGoal);
-			if (oldInference != null) {
-				for (Activity oldVar : oldInference) {
-					if (oneGoal.getParameters()[0].equals(oldVar.getComponent())) {
-						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-						before.setFrom(oldVar);
-						before.setTo(oneGoal);
-						cn.addConstraint(before);
-					}
-				}
+			Activity oldInf = oldInferences.get(oneGoal.getParameters()[0]);
+			if (oldInf != null) {
+				AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+				before.setFrom(oldInf);
+				before.setTo(oneGoal);
+				cn.addConstraint(before);
 			}
+//			if (oldInference != null) {
+//				for (Activity oldVar : oldInference) {
+//					if (oneGoal.getParameters()[0].equals(oldVar.getComponent())) {
+//						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+//						before.setFrom(oldVar);
+//						before.setTo(oneGoal);
+//						cn.addConstraint(before);
+//					}
+//				}
+//			}
 			ret.add(cn);
 		}
 		if (ret.isEmpty()) return null;

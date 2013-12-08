@@ -20,6 +20,8 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
+import cern.colt.Arrays;
+
 public class ConstraintNetworkAnimator extends Thread {
 	
 	private ConstraintNetwork cn = null;
@@ -81,10 +83,10 @@ public class ConstraintNetworkAnimator extends Thread {
 	
 	public ActivityNetworkSolver getActivityNetworkSolver() { return this.ans; }
 
-	public void postSensorValueToDispatch(Sensor sensor, long time, String value) {
+	public synchronized void postSensorValueToDispatch(Sensor sensor, long time, String value) {
 		if (!this.sensorValues.keySet().contains(sensor))
 			this.sensorValues.put(sensor, new HashMap<Long, String>());
-		HashMap<Long, String> sensorVal = this.sensorValues.get(sensor); 
+		HashMap<Long, String> sensorVal = this.sensorValues.get(sensor);
 		sensorVal.put(time, value);
 	}
 
@@ -144,7 +146,7 @@ public class ConstraintNetworkAnimator extends Thread {
 					domain.updateTimeNow(timeNow);
 					planner.clearResolvers();
 					planner.backtrack();
-					Vector<Activity> oldInference = new Vector<Activity>();
+//					Vector<Activity> oldInference = new Vector<Activity>();
 					for (ConstraintNetwork cn : planner.getAddedResolvers()) {
 						VariablePrototype var = null;
 						for (Variable v : cn.getVariables()) {
@@ -158,12 +160,13 @@ public class ConstraintNetworkAnimator extends Thread {
 						}
 						if (var != null) {
 							Activity act = (Activity)cn.getSubstitution(var);
-							oldInference.add(act);
+							domain.setOldInference(act.getComponent(), act);
+							//oldInference.add(act);
 						}
 					}
-					if (!oldInference.isEmpty()) {
-						domain.setOldInference(oldInference.toArray(new Activity[oldInference.size()]));
-					}
+//					if (!oldInference.isEmpty()) {
+//						domain.setOldInference(oldInference.toArray(new Activity[oldInference.size()]));
+//					}
 				}				
 			}
 		}
