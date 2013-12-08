@@ -45,17 +45,11 @@ public class TestTCSPSolver {
 	public static void main(String args[]) {
 		
 		TCSPSolver metaSolver = new TCSPSolver(0, 100, 0);
-		DistanceConstraintSolver groundSolver = (DistanceConstraintSolver)metaSolver.getConstraintSolvers()[0];
+		DistanceConstraintSolver groundSolver = (DistanceConstraintSolver)metaSolver.getConstraintSolvers()[0];		
+		APSPSolver groundGroundSolver = (APSPSolver)groundSolver.getConstraintSolvers()[0];
 		
-//		APSPSolver groundGroundSolver = (APSPSolver)groundSolver.getConstraintSolvers()[0];
+		MetaCSPLogging.setLevel(metaSolver.getClass(), Level.FINEST);
 		
-		MetaCSPLogging.setLevel(Level.FINEST);
-		try {
-			MetaCSPLogging.setLevel(metaSolver.getClass(), Level.FINEST);
-		} catch (LoggerNotDefined e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		/*
 		 * John travels to work either by car (30-40 min) or by bus (at least 60 min).
 		 * Fred goes to work either by car (20-30 min) or in a carpool (40-50 min).
@@ -68,7 +62,8 @@ public class TestTCSPSolver {
 		MultiTimePoint fredGoesToWork = (MultiTimePoint)groundSolver.createVariable();
 		MultiTimePoint fredArrivesAtWork = (MultiTimePoint)groundSolver.createVariable();
 		
-		ConstraintNetwork.draw(groundSolver.getConstraintNetwork());
+		ConstraintNetwork.draw(groundSolver.getConstraintNetwork(), "TCSP");
+		ConstraintNetwork.draw(groundGroundSolver.getConstraintNetwork(), "STP");
 		
 		DistanceConstraint johnTakesCarOrBus = new DistanceConstraint(new Bounds(30, 40), new Bounds(60, APSPSolver.INF));
 		johnTakesCarOrBus.setFrom(johnGoesToWork);
@@ -100,12 +95,7 @@ public class TestTCSPSolver {
 		metaSolver.addMetaConstraint(metaCons);
 		
 		System.out.println("Solved? " + metaSolver.backtrack());
-		
-//		for (Variable tp : groundGroundSolver.getVariables()) {
-//			System.out.println("TP " + tp);
-//		}
-		
-		//groundGroundSolver.draw();
+				
 		metaSolver.draw();
 		
 		System.out.println(metaSolver.getDescription());

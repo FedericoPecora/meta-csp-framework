@@ -1,4 +1,5 @@
 org.metacsp.booleanSAT
+org.metacsp.dispatching
 org.metacsp.examples
 org.metacsp.examples.meta
 org.metacsp.examples.multi
@@ -15,14 +16,18 @@ org.metacsp.multi.TCSP
 org.metacsp.multi.activity
 org.metacsp.multi.allenInterval
 org.metacsp.multi.fuzzyActivity
+org.metacsp.multi.spatial.blockAlgebra
 org.metacsp.multi.spatial.rectangleAlgebra
 org.metacsp.multi.spatial.rectangleAlgebraNew.toRemove
 org.metacsp.multi.spatioTemporal
 org.metacsp.multi.symbols
 org.metacsp.onLineMonitoring
+org.metacsp.sensing
 org.metacsp.spatial.RCC
 org.metacsp.spatial.cardinal
 org.metacsp.tests
+org.metacsp.tests.meta
+org.metacsp.tests.multi
 org.metacsp.throwables
 org.metacsp.throwables.time
 org.metacsp.time

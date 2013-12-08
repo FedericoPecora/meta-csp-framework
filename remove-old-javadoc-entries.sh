@@ -7,8 +7,9 @@ do
     if [ ! -f $srcName ]; then
 	num=`echo "$srcName" | grep -o "\." | wc -l`
 	if [ $num == 1 ]; then
-	    echo $srcName" not found, removing javadoc entry."
-	    rm $filename
+	    echo $srcName" not found, removing javadoc entry ($filename)."
+	    svn rm --force $filename
+	    #rm $filename
 	fi
     fi
 	
