@@ -190,7 +190,6 @@ public class SimpleDomain extends MetaConstraint {
 		Vector<AllenIntervalConstraint> toAddExtra = new Vector<AllenIntervalConstraint>();
 		for (int i = 0; i < operatorTailActivitiesToInsert.length+1; i++) {
 			AllenIntervalConstraint[][] ec = possibleOperator.getExtraConstraints();
-			//System.out.println("Matrix:\n" + Matrix.toString(ec) + "==");
 			if (ec != null) {
 				AllenIntervalConstraint[] con = ec[i];
 				for (int j = 0; j < con.length; j++) {
@@ -220,23 +219,7 @@ public class SimpleDomain extends MetaConstraint {
 		if (!toAddExtra.isEmpty()) {
 			for (AllenIntervalConstraint con : toAddExtra) activityNetworkToReturn.addConstraint(con);
 		}
-		
-
-//		else if (possibleOperator.getExtraConstraints()[0][0] != null) {
-//			AllenIntervalConstraint ec = possibleOperator.getExtraConstraints()[0][0];
-//			AllenIntervalConstraint newCon = (AllenIntervalConstraint) ec.clone();
-//			System.out.println("HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + newCon);
-//			if (problematicActIsEffect) {
-//				newCon.setFrom(headActivity);
-//				newCon.setTo(headActivity);
-//			}
-//			else {
-//				newCon.setFrom(problematicActivity);
-//				newCon.setTo(problematicActivity);
-//			}
-//			activityNetworkToReturn.addConstraint(newCon);
-//		}
-		
+				
 		int[] usages = possibleOperator.getUsages();
 		if (usages != null) {
 			for (int i = 0; i < usages.length; i++) {

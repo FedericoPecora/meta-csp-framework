@@ -420,9 +420,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 
 	protected final void retractResolver(ConstraintNetwork metaVar, ConstraintNetwork res) {
-		this.logger.finest("RETRACT RESOLVER: ");
-		this.logger.finest(metaVar.toString());
-		this.logger.finest(res.toString());
+		this.logger.finest("Retracting resolver:");
+		this.logger.finest("  MetaVariable: " + metaVar.toString());
+		this.logger.finest("  MetaValue: " + res.toString());
 		
 		Constraint[] groundConstraints = res.getConstraints();
 		HashMap<ConstraintSolver, Vector<Constraint>> solvers2constraints = new HashMap<ConstraintSolver, Vector<Constraint>>();
@@ -435,14 +435,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}			
 		for (ConstraintSolver cs : solvers2constraints.keySet()) {
 			Constraint[] toAddOneSolver = solvers2constraints.get(cs).toArray(new Constraint[solvers2constraints.get(cs).size()]);
-			this.logger.finest("MetaConstraintSolver: I am removing the following constraints");
 			cs.removeConstraints(toAddOneSolver);
 		}
-		this.logger.finest("XXXXXX RETRACT SUB XXXXX");
 
 		this.retractResolverSub(metaVar, res);
-		this.logger.finest("====== RETRACT RESOLVER FINISHED =======");
-
+		this.logger.finest("Done retracting resolver.");
 	}
 	
 	@Override

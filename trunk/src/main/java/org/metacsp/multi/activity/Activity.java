@@ -37,13 +37,6 @@ public class Activity extends MultiVariable {
 	 */
 	private static final long serialVersionUID = 4709760631961797060L;
 	private String[] symbols;
-//	private SymbolicVariable symbolicVariable;
-//	private AllenInterval temporalVariable;
-	
-	
-//	protected Activity(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers) {
-//		super(cs, id, internalSolvers);
-//	}
 
 	public Activity(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs,id,internalSolvers,internalVars);
@@ -51,7 +44,6 @@ public class Activity extends MultiVariable {
 	
 	public void setSymbolicDomain(String... symbols) {
 		this.symbols = symbols;
-//		symbolicVariable.setDomain(this.symbols);
 		((SymbolicVariable)this.getInternalVariables()[1]).setDomain(this.symbols);
 	}
 
@@ -61,34 +53,16 @@ public class Activity extends MultiVariable {
 		return null;
 	}
 
-//	@Override
-//	protected Variable[] createInternalVariables() {
-//		AllenInterval temporalVariable = (AllenInterval)internalSolvers[0].createVariable();
-//		SymbolicVariable symbolicVariable = (SymbolicVariable)internalSolvers[1].createVariable();
-////		this.symbolicVariable = symbolicVariable;
-////		this.temporalVariable = temporalVariable;
-//		return new Variable[]{temporalVariable,symbolicVariable};
-//	}
-
 	@Override
 	public void setDomain(Domain d) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String toString() {
 		String ret="";
-		ret+="\n<===================================>\n";
-//		ret += this.getComponent() + "::<" + this.symbolicVariable.toString() + ">U<" + this.temporalVariable.toString() + ">";
 		ret += this.getComponent() + "::<" + this.getInternalVariables()[1].toString() + ">U<" + this.getInternalVariables()[0].toString() + ">";
 		if (this.getMarking() != null) ret += "/" + this.getMarking();
-		ret+=("\tLLLLLL");
-		for(Variable v: this.variables){
-			ret+="\n"+v.toString();
-		}
-		ret+=("\n\tMMMMM");
-		ret+="\n<_____________________________________>\n"; 
 		return ret;
 	}
 	
@@ -96,7 +70,6 @@ public class Activity extends MultiVariable {
 	 * @return The {@link SymbolicVariable} representing the symbolic value of this {@link Activity}.
 	 */
 	public SymbolicVariable getSymbolicVariable() {
-		//return symbolicVariable;
 		return (SymbolicVariable)this.getInternalVariables()[1];
 	}
 
@@ -104,7 +77,6 @@ public class Activity extends MultiVariable {
 	 * @return The {@link AllenInterval} representing the temporal value of this {@link Activity}.
 	 */
 	public AllenInterval getTemporalVariable() {
-		//return temporalVariable;
 		return (AllenInterval)this.getInternalVariables()[0];
 	}
 
