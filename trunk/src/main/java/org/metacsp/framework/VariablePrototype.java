@@ -87,7 +87,7 @@ public class VariablePrototype extends Variable {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return (Arrays.toString(parameters)+" ID "+ this.id +" |");
+		return (Arrays.toString(parameters)+" ID "+ this.id +" "+ this.getMarking()+ " |");
 	}
 	
 	private VariablePrototype(VariablePrototype cp){

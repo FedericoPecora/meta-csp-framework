@@ -64,7 +64,8 @@ public class SimpleDomain extends MetaConstraint {
 	private Vector<String> sensors = new Vector<String>();
 	private Vector<String> contextVars = new Vector<String>();
 	
-	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
+//	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
+	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE_UNJ,OBSERVABLE_JUST, OBSERVABLE_LEAF};
 	
 	public Schedulable[] getSchedulingMetaConstraints() {
 		return currentResourceUtilizers.keySet().toArray(new Schedulable[currentResourceUtilizers.keySet().size()]);
