@@ -90,7 +90,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		Set<ConstraintNetwork> vars = resolvers.keySet();
 		for (ConstraintNetwork var : vars) {
 			ConstraintNetwork value = resolvers.get(var);
-			logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));
+			logger.fine("=== ||| === Retracting value: " + Arrays.toString(value.getConstraints()));
 			this.retractResolver(var, value);
 		}
 		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();

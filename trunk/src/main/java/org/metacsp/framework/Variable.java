@@ -194,5 +194,6 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	public void setAttributes(Object attributes) {
 		this.attributes = attributes;
 	}
+
 	
 }
