@@ -54,10 +54,10 @@ public class SimpleDomain extends MetaConstraint {
 	 * 
 	 */
 	private static final long serialVersionUID = 5143516447467774523L;
-	private Vector<SimpleOperator> operators;
-	private String[] resourceNames;
-	private HashMap<String,SimpleReusableResource> resourcesMap;
-	private HashMap<SimpleReusableResource,HashMap<Variable,Integer>> currentResourceUtilizers;
+	protected Vector<SimpleOperator> operators;
+	protected String[] resourceNames;
+	protected HashMap<String,SimpleReusableResource> resourcesMap;
+	protected HashMap<SimpleReusableResource,HashMap<Variable,Integer>> currentResourceUtilizers;
 
 	private String name;
 	
@@ -259,7 +259,7 @@ public class SimpleDomain extends MetaConstraint {
 		return false;
 	}
 	
-	private ConstraintNetwork[] getUnifications(Activity activity) {
+	protected ConstraintNetwork[] getUnifications(Activity activity) {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Variable[] acts = groundSolver.getVariables();
 		Vector<Activity> possibleUnifications = new Vector<Activity>();
