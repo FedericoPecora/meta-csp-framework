@@ -51,7 +51,7 @@ public class TCSPLabeling extends MetaConstraint {
 
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-		ConstraintNetwork dcn = (ConstraintNetwork)metaCS.getConstraintSolvers()[0].getConstraintNetwork();
+		ConstraintNetwork dcn = getGroundSolver().getConstraintNetwork();//(ConstraintNetwork)metaCS.getConstraintSolvers()[0].getConstraintNetwork();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		//ConstraintNetwork[] ret = new ConstraintNetwork[dcn.getConstraints().length];
 		for (Constraint con : dcn.getConstraints()) {
@@ -83,7 +83,7 @@ public class TCSPLabeling extends MetaConstraint {
 		ConstraintNetwork[] dcs = new ConstraintNetwork[((DistanceConstraint)cons[0]).getInternalConstraints().length];
 		Variable from = ((DistanceConstraint)cons[0]).getFrom();
 		Variable to = ((DistanceConstraint)cons[0]).getTo();
-		ConstraintSolver groundSolver = from.getConstraintSolver();
+		ConstraintSolver groundSolver = getGroundSolver();//from.getConstraintSolver();
 		for (int i = 0; i < dcs.length; i++) {
 			SimpleDistanceConstraint sdc = (SimpleDistanceConstraint)((DistanceConstraint)cons[0]).getInternalConstraints()[i];
 			Bounds interval = new Bounds(sdc.getMinimum(), sdc.getMaximum());
@@ -135,6 +135,11 @@ public class TCSPLabeling extends MetaConstraint {
 	public boolean isEquivalent(Constraint c) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ConstraintSolver getGroundSolver() {
+		return metaCS.getConstraintSolvers()[0];
 	}
 
 }

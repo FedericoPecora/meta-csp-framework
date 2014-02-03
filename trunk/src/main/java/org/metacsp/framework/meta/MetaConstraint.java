@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 
@@ -187,5 +188,10 @@ public abstract class MetaConstraint extends Constraint {
 		this.valOH = valOH;
 	}
 	
-
+	/**
+	 * Provides the definition of how to get the/a groundSolver for this {@link MetaConstraint}. 
+	 * @return The/a groundSolver for this {@link MetaConstraint}.
+	 */
+	public abstract ConstraintSolver getGroundSolver();
+	
 }
