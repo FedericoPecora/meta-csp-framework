@@ -43,7 +43,6 @@
  (Constraint Overlaps(Head,ach1))
  (Constraint Duration[5000,INF](Head))
 )
-
 (PlanningOperator
  (Head LocalizationService::Localization())
  (RequiredState req1 RFIDReader::On())

@@ -52,7 +52,6 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	private HashMap<HashMap<String, Bounds[]>, Integer> permutation;
 	private Vector<String> initialUnboundedObjName = new Vector<String>();
 	private Vector<String> potentialCulprit; 
-	private Vector<SimpleOperator> operators = new Vector<SimpleOperator>();
 	private HashMap<String, UnaryRectangleConstraint> currentAssertionalCons;
 //	private Vector<HashMap<String, BoundingBox>> newRectangularRegion = null;
 	private HashMap<String, BoundingBox> oldRectangularRegion = null;
@@ -71,9 +70,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		return currentAssertionalCons;
 	}
 		
-	public void addOperator(SimpleOperator r) {
-		operators.add(r);
-	}
+
 	
 	public HashMap<String, BoundingBox> getOldRectangularRegion(){
 		return oldRectangularRegion;
@@ -1376,6 +1373,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		generateCombinantion(atConstraints);
 
 		
+	}
+
+	@Override
+	public ConstraintSolver getGroundSolver() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

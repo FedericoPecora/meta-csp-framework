@@ -38,6 +38,7 @@ import org.metacsp.utility.PermutationsWithRepetition;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraint;
@@ -547,6 +548,12 @@ public class FuzzyActivityDomain extends MetaConstraint {
 	public boolean isEquivalent(Constraint c) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ConstraintSolver getGroundSolver() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

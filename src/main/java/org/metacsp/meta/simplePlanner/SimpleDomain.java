@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
+import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.SimpleOperator.ReservedWord;
 import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
@@ -40,11 +42,13 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.Matrix;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
+import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 
 import cern.colt.Arrays;
@@ -63,6 +67,7 @@ public class SimpleDomain extends MetaConstraint {
 	
 	private Vector<String> sensors = new Vector<String>();
 	private Vector<String> contextVars = new Vector<String>();
+	private Vector<String> controllables = new Vector<String>();
 	
 //	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE_UNJ,OBSERVABLE_JUST, OBSERVABLE_LEAF};
@@ -70,7 +75,7 @@ public class SimpleDomain extends MetaConstraint {
 	public Schedulable[] getSchedulingMetaConstraints() {
 		return currentResourceUtilizers.keySet().toArray(new Schedulable[currentResourceUtilizers.keySet().size()]);
 	}
-
+	
 	public SimpleDomain(int[] capacities, String[] resourceNames, String domainName) {
 		super(null, null);
 		this.name = domainName;
@@ -110,8 +115,13 @@ public class SimpleDomain extends MetaConstraint {
 	}		
 
 	@Override
+	public ConstraintSolver getGroundSolver() {
+		return (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+	}
+	
+	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		// for every variable that is marked as UNJUSTIFIED a ConstraintNetwork is built
 		for (Variable task : groundSolver.getVariables()) {
@@ -127,7 +137,7 @@ public class SimpleDomain extends MetaConstraint {
 	private ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
 		logger.finest("Expanding operator " + possibleOperator.getHead());
 		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);
-		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver(); //(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		
 		String possibleOperatorHead = possibleOperator.getHead();
 		String possibleOperatorHeadSymbol = possibleOperatorHead.substring(possibleOperatorHead.indexOf("::")+2, possibleOperatorHead.length());
@@ -244,23 +254,33 @@ public class SimpleDomain extends MetaConstraint {
 	public void addSensor(String sensor) {
 		this.sensors.add(sensor);
 	}
+	
+	public void addControllable(String controllable){
+		this.controllables.add(controllable);
+	}
 
 	public void addContextVar(String cv) {
 		this.contextVars.add(cv);
 	}
-
+	
 	public boolean isSensor(String component) {
 		if (sensors.contains(component)) return true;
 		return false;
 	}
 
+	public boolean isControllable(String component) {
+		if (controllables.contains(component)) return true;
+		return false;
+	}
+
+	
 	public boolean isContextVar(String component) {
 		if (contextVars.contains(component)) return true;
 		return false;
 	}
 	
 	protected ConstraintNetwork[] getUnifications(Activity activity) {
-		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Variable[] acts = groundSolver.getVariables();
 		Vector<Activity> possibleUnifications = new Vector<Activity>();
 		Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
@@ -303,6 +323,15 @@ public class SimpleDomain extends MetaConstraint {
 		if (isSensor(problematicActivity.getComponent())) {
 			return this.getUnifications(problematicActivity);
 		}
+		
+		if (isControllable(problematicActivity.getComponent())) {
+			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+			if(unifications != null)
+				retPossibleConstraintNetworks.add(unifications[0]);
+//				return this.getUnifications(problematicActivity);
+			
+		}
+		
 		
 		//If it's a context var, it needs to be unified (or expanded, see later) 
 		if (isContextVar(problematicActivity.getComponent())) {
@@ -630,7 +659,7 @@ public class SimpleDomain extends MetaConstraint {
 	 * @param sp The {@link SimplePlanner} that will use this domain.
 	 * @param filename Text file containing the domain definition. 
 	 */
-	public static void parseDomain(SimplePlanner sp, String filename, Class domainType) {
+	public static void parseDomain(MetaConstraintSolver sp, String filename, Class domainType) {
 		String everything = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -654,6 +683,8 @@ public class SimpleDomain extends MetaConstraint {
 				String[] simpleOperators = parseKeyword("SimpleOperator", everything);
 				String[] planningOperators = parseKeyword("PlanningOperator", everything);
 				String[] sensors = parseKeyword("Sensor", everything);
+				String[] controllable = parseKeyword("Controllable", everything);
+				
 				String[] contextVars = parseKeyword("ContextVariable", everything);
 				
 				int[] resourceCaps = new int[resources.keySet().size()];
@@ -668,6 +699,9 @@ public class SimpleDomain extends MetaConstraint {
 				SimpleDomain dom = null;
 				if (domainType.equals(SimpleDomain.class)) {
 					dom = new SimpleDomain(resourceCaps, resourceNames, name);
+				}
+				else if (domainType.equals(FluentBasedSimpleDomain.class)) {
+					dom = new FluentBasedSimpleDomain(resourceCaps, resourceNames, name);
 				}
 				else if (domainType.equals(ProactivePlanningDomain.class)) {
 					dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name);
@@ -699,6 +733,7 @@ public class SimpleDomain extends MetaConstraint {
 				//ProactivePlanningDomain dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name);
 
 				for (String sensor : sensors) dom.addSensor(sensor);
+				for (String cont : controllable) dom.addControllable(cont);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : simpleOperators) {
 					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames,false));
@@ -718,4 +753,6 @@ public class SimpleDomain extends MetaConstraint {
 	}
 
 
+	
+	
 }
