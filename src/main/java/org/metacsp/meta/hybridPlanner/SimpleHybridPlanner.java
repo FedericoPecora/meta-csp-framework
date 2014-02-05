@@ -134,7 +134,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 	@Override
 	protected boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
-		
+				
 		if (metaValue.annotation != null && metaValue.annotation instanceof SimpleOperator) {
 			if (operatorsAlongBranch.contains((metaValue.annotation))) {
 //				System.out.println("-------------------> skipped " + metaValue.annotation);
