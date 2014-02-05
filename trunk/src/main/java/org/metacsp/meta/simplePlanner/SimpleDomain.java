@@ -344,6 +344,7 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
+		
 		//Find all expansions
 		for (SimpleOperator r : operators) {
 			String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
@@ -353,7 +354,9 @@ public class SimpleDomain extends MetaConstraint {
 			if (opeatorHeadComponent.equals(problematicActivity.getComponent())) {
 				if (problematicActivitySymbolicDomain.contains(operatorHeadSymbol)) {
 					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+					
 					newResolver.setAnnotation(1);
+					newResolver.setAnnotation(r);
 					retPossibleConstraintNetworks.add(newResolver);
 				}
 			}
@@ -366,6 +369,7 @@ public class SimpleDomain extends MetaConstraint {
 						if (opeatorEffectComponent.equals(problematicActivity.getComponent())) {
 							if (problematicActivitySymbolicDomain.contains(operatorEffectSymbol)) {
 								ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+								newResolver.annotation = r;
 								newResolver.setAnnotation(1);
 								retPossibleConstraintNetworks.add(newResolver);
 							}

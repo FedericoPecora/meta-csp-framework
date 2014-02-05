@@ -42,11 +42,11 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		
 		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 		Vector<Activity> activities = new Vector<Activity>();
-		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
-			if(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getRectangularRegion().getOntologicalProp().isMovable()){
-				activities.add(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity());
-				activityToFluent.put(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity(), 
-				((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]));
+		for (int i = 0; i < getGroundSolver().getVariables().length; i++) {
+			if(((SpatialFluent)getGroundSolver().getVariables()[i]).getRectangularRegion().getOntologicalProp().isMovable()){
+				activities.add(((SpatialFluent)getGroundSolver().getVariables()[i]).getActivity());
+				activityToFluent.put(((SpatialFluent)(getGroundSolver()).getVariables()[i]).getActivity(), 
+				((SpatialFluent)getGroundSolver().getVariables()[i]));
 			}
 		}
 		
@@ -147,12 +147,12 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 				new Bounds(((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[0]).getEET(), ((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[0]).getLET()), 
 				new Bounds(((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getEST(), ((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getLST()), 
 				new Bounds(((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getEET(), ((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getLET())).getAlmostCentreRectangle();
-//		System.out.println("rec1: " + boundedsf.get(0).getRectangularRegion());
+//		System.out.println("rec1 -- boundedsf: " + rec1);
 		Rectangle  rec2 = null;
 		for (String str : ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().keySet()) {
 			if(unboundedsf.get(0).getRectangularRegion().getName().compareTo(str) == 0){
 				rec2 = ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().get(str).getAlmostCentreRectangle();
-//				System.out.println("rec2: " + unboundedsf.get(0).getRectangularRegion());
+//				System.out.println("rec2: "+ str + " -- "+((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().get(str).getAlmostCentreRectangle());
 			}
 		}
 		
@@ -270,7 +270,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	@Override
 	public ConstraintSolver getGroundSolver() {
 		// TODO Auto-generated method stub
-		return null;
+		return ((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]);
 	}
 
 
