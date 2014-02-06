@@ -6,7 +6,8 @@ import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 
 
 public class FluentBasedSimpleDomain extends SimpleDomain {
-
+	
+	private long timeNow = -1;
 	public FluentBasedSimpleDomain(int[] capacities, String[] resourceNames,
 			String domainName) {
 		super(capacities, resourceNames, domainName);
@@ -24,5 +25,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	}
 	
 
-
+	public void updateTimeNow(long timeNow) {
+		this.timeNow = timeNow;
+	}
 }
