@@ -12,11 +12,14 @@ import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
+import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
+import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
@@ -36,7 +39,23 @@ public class ConstraintNetworkAnimator extends Thread {
 	private ProactivePlanningDomain domain = null;
 	private Dispatcher dis = null;
 	
+	private SimpleHybridPlanner hybridPlanner = null;
+	private FluentBasedSimpleDomain fsDomain = null;
+	
+	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
+
+	public ConstraintNetworkAnimator(SimpleHybridPlanner planner, long period) {
+		this((ActivityNetworkSolver)(((SpatialFluentSolver)planner.getConstraintSolvers()[0])).getConstraintSolvers()[1],period);
+		this.hybridPlanner = planner;
+		MetaConstraint[] metaConstraints = planner.getMetaConstraints();
+		for (MetaConstraint mc : metaConstraints) {
+			if (mc instanceof FluentBasedSimpleDomain) {
+				fsDomain = (FluentBasedSimpleDomain) mc;
+				break;
+			}
+		}
+	}
 	
 	public ConstraintNetworkAnimator(SimplePlanner planner, long period) {
 		this((ActivityNetworkSolver)planner.getConstraintSolvers()[0],period);
@@ -49,6 +68,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			}
 		}
 	}
+	
 	
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period) {
 		synchronized(ans) {
@@ -94,7 +114,7 @@ public class ConstraintNetworkAnimator extends Thread {
 		this.sensorValues.put(sensor, values);
 	}
 	
-	public void addDispatchingFunctions(DispatchingFunction ... dfs) {
+	public void addDispatchingFunctions(SimplePlanner planner, DispatchingFunction ... dfs) {
 		boolean start = false;
 		if (this.dis == null) {
 			this.dis = new Dispatcher(planner, period);
@@ -104,6 +124,17 @@ public class ConstraintNetworkAnimator extends Thread {
 		if (start) dis.start();
 	}
 
+	public void addDispatchingFunctions(SimpleHybridPlanner planner, DispatchingFunction ... dfs) {
+		boolean start = false;
+		if (this.dis == null) {
+			this.dis = new Dispatcher(planner, period);
+			start = true;
+		}
+		for (DispatchingFunction df : dfs) dis.addDispatchingFunction(df.getComponent(), df);
+		if (start) dis.start();
+	}
+
+	
 	private long getTimeNow() {
 		return Calendar.getInstance().getTimeInMillis()-firstTick+originOfTime;
 	}
@@ -167,7 +198,33 @@ public class ConstraintNetworkAnimator extends Thread {
 //					if (!oldInference.isEmpty()) {
 //						domain.setOldInference(oldInference.toArray(new Activity[oldInference.size()]));
 //					}
-				}				
+				}
+				
+				if (hybridPlanner != null) {
+					logger.info("Iteration " + iteration++);
+//					fsDomain.resetContextInference();
+					fsDomain.updateTimeNow(timeNow);
+					hybridPlanner.clearResolvers();
+					hybridPlanner.backtrack();
+//					Vector<Activity> oldInference = new Vector<Activity>();
+					for (ConstraintNetwork cn : hybridPlanner.getAddedResolvers()) {
+						VariablePrototype var = null;
+						for (Variable v : cn.getVariables()) {
+							if (v instanceof VariablePrototype) {
+								if (((VariablePrototype)v).getParameters().length > 2) {
+									if (((VariablePrototype)v).getParameters()[2].equals("Inference")) {
+										var = (VariablePrototype)v;
+									}
+								}
+							}
+						}
+						if (var != null) {
+							Activity act = (Activity)cn.getSubstitution(var);
+//							fsDomain.setOldInference(act.getComponent(), act);
+						}
+					}
+				}
+				
 			}
 		}
 	}

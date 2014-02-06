@@ -67,7 +67,7 @@ public class TestProactivePlanningAndDispatching {
 			}
 		}; 
 		
-		animator.addDispatchingFunctions(df);
+		animator.addDispatchingFunctions(planner, df);
 		
 		Sensor sensorA = new Sensor("Location", animator);
 		Sensor sensorB = new Sensor("Stove", animator);
