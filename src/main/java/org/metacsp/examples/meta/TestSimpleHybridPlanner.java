@@ -44,7 +44,7 @@ public class TestSimpleHybridPlanner {
 
 	//oneCulprit example
 
-	static int pad = 2;    
+	static int pad = 0;    
 	static long duration = 5;
 
 	public static void main(String[] args) {
@@ -325,7 +325,16 @@ public class TestSimpleHybridPlanner {
 	private static HashMap<String, Rectangle> getAssertionalRule(Vector<SpatialAssertionalRelation> saRelations){
 
 		HashMap<String, Rectangle> recs = new HashMap<String, Rectangle>();
-
+		
+//		//just knife should be replaced due to spatial heuristic
+//		insertAtConstraint(recs, saRelations, "table", 0, 100, 0, 99, false);
+//		insertAtConstraint(recs, saRelations, "fork", 31, 37, 13, 32, true);
+//		insertAtConstraint(recs, saRelations, "knife", 40, 46, 10, 33, true);
+//		insertAtConstraint(recs, saRelations, "cup", 0, 0, 0, 0, true);
+		
+		
+		
+		//both fork and knife should be replaced
 		insertAtConstraint(recs, saRelations, "table", 0, 60, 0, 99, false);
 		insertAtConstraint(recs, saRelations, "fork", 20, 26, 13, 32, true);
 		insertAtConstraint(recs, saRelations, "knife", 30, 36, 10, 33, true);

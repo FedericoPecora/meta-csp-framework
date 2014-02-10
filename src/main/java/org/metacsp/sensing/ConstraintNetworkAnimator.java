@@ -183,17 +183,17 @@ public class ConstraintNetworkAnimator extends Thread {
 				}
 				
 				//If there are registered controllable sensor traces, animate them too
-				for (Controllable controllable : controllableValues.keySet()) {
-					Vector<Long> toRemove = new Vector<Long>();
-					HashMap<Long,String> values = controllableValues.get(controllable);
-					for (long time : values.keySet()) {
-						if (time <= timeNow) {
-							controllable.modelSensorValue(values.get(time), time);
-							toRemove.add(time);
-						}
-					}
-					for (long time : toRemove) values.remove(time);
-				}
+//				for (Controllable controllable : controllableValues.keySet()) {
+//					Vector<Long> toRemove = new Vector<Long>();
+//					HashMap<Long,String> values = controllableValues.get(controllable);
+//					for (long time : values.keySet()) {
+//						if (time <= timeNow) {
+//							controllable.modelSensorValue(values.get(time), time);
+//							toRemove.add(time);
+//						}
+//					}
+//					for (long time : toRemove) values.remove(time);
+//				}
 				
 				//If there is a registered planner, do the planning/context inference
 				if (planner != null) {

@@ -47,7 +47,6 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	private static final long serialVersionUID = 1598461825401250494L;
 	private long origin = 0, horizon = 1000;
 	private Vector<SpatialAssertionalRelation> sAssertionalRels = new Vector<SpatialAssertionalRelation>();
-	
 	private SpatialRule[] rules;
 	private HashMap<HashMap<String, Bounds[]>, Integer> permutation;
 	private Vector<String> initialUnboundedObjName = new Vector<String>();
@@ -93,7 +92,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 //	}
 
 	public void setSpatialAssertionalRelations(Vector<SpatialAssertionalRelation> sAssertionalRels) {
-		
+		this.sAssertionalRels.clear();
 		this.sAssertionalRels = sAssertionalRels;
 	}
 
@@ -817,8 +816,17 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		
 		final HashMap<Integer, ConstraintNetworkSortingCritera> sortingCN = new HashMap<Integer, ConstraintNetworkSortingCritera>();
 		HashMap<Integer, HashMap<String, Bounds[]>> cnToInitPose = new HashMap<Integer, HashMap<String, Bounds[]>>();
+		HashMap<Integer, Boolean> levelTracker = new HashMap<Integer, Boolean>(); //created for generating the culprit incrementally
+		
+		for (Integer level : permutation.values()) 
+			levelTracker.put(level, false);
+		
 		int counter = 0;
 		for (HashMap<String, Bounds[]> iterCN : permutation.keySet()) {
+			
+			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true))
+				break;
+			
 //			System.out.println("------------------------------------------");
 //			for (String st : iterCN.keySet()) {
 //				System.out.print(st + "  ");
@@ -981,9 +989,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 //				System.out.println("THIS IS CONSISTENT");
 //				sortingCN.put(iterSolver.getConstraintNetwork(), new ConstraintNetworkSortingCritera(rigidityavg,permutation.get(iterCN)));
 //				cnToInitPose.put(iterSolver.getConstraintNetwork(), iterCN);
+//				System.out.println("level: " + permutation.get(iterCN));
 				sortingCN.put(counter, new ConstraintNetworkSortingCritera(rigidityavg,permutation.get(iterCN)));
 				cnToInitPose.put(counter, iterCN);
-
+				levelTracker.put(permutation.get(iterCN), true);
 			}
 			counter++;
 			
