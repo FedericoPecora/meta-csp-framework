@@ -45,7 +45,8 @@ public class TestHybridPlanningWithSensingAndDispatching {
 	static int pad = 2;    
 	static long duration = 5;
 	public static void main(String[] args) {
-
+		
+		System.out.println("IRAN");
 		//Create planner
 		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0,100000,0);
 		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
@@ -128,11 +129,11 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		
 		animator.addDispatchingFunctions(simpleHybridPlanner, dispatches.toArray(new DispatchingFunction[dispatches.size()]));
 		
-		Controllable cntlSensorA = new Controllable("RobotProprioception", animator);
+//		Controllable cntlSensorA = new Controllable("RobotProprioception", animator);
 		Controllable cntlSensorB = new Controllable("atLocation", animator);
 		
-		cntlSensorA.registerSensorTrace("sensorTraces/atLocation.st");
-//		cntlSensorB.registerSensorTrace("sensorTraces/RobotProprioception.st");
+//		cntlSensorA.registerControllableSensorTrace("sensorTraces/RobotProprioception.st");
+		cntlSensorB.registerControllableSensorTrace("sensorTraces/atLocation.st");
 		
 
 		ActivityNetworkSolver actSolver = ((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
