@@ -22,6 +22,7 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
+import org.sat4j.specs.ContradictionException;
 
 import cern.colt.Arrays;
 
@@ -41,7 +42,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	
 	private SimpleHybridPlanner hybridPlanner = null;
 	private FluentBasedSimpleDomain fsDomain = null;
-	
+	private HashMap<Controllable,HashMap<Long,String>> controllableValues = new HashMap<Controllable, HashMap<Long,String>>();
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
@@ -109,9 +110,20 @@ public class ConstraintNetworkAnimator extends Thread {
 		HashMap<Long, String> sensorVal = this.sensorValues.get(sensor);
 		sensorVal.put(time, value);
 	}
+	
+	public synchronized void postControllableValueToDispatch(Controllable controllable, long time, String value) {
+		if (!this.controllableValues.keySet().contains(controllable))
+			this.controllableValues.put(controllable, new HashMap<Long, String>());
+		HashMap<Long, String> contrVal = this.controllableValues.get(controllable);
+		contrVal.put(time, value);
+	}
 
 	public void registerSensorValuesToDispatch(Sensor sensor, HashMap<Long,String> values) {
 		this.sensorValues.put(sensor, values);
+	}
+	
+	public void registerControllableValuesToDispatch(Controllable controllable, HashMap<Long,String> values) {
+		this.controllableValues.put(controllable, values);
 	}
 	
 	public void addDispatchingFunctions(SimplePlanner planner, DispatchingFunction ... dfs) {
@@ -164,6 +176,19 @@ public class ConstraintNetworkAnimator extends Thread {
 					for (long time : values.keySet()) {
 						if (time <= timeNow) {
 							sensor.modelSensorValue(values.get(time), time);
+							toRemove.add(time);
+						}
+					}
+					for (long time : toRemove) values.remove(time);
+				}
+				
+				//If there are registered controllable sensor traces, animate them too
+				for (Controllable controllable : controllableValues.keySet()) {
+					Vector<Long> toRemove = new Vector<Long>();
+					HashMap<Long,String> values = controllableValues.get(controllable);
+					for (long time : values.keySet()) {
+						if (time <= timeNow) {
+							controllable.modelSensorValue(values.get(time), time);
 							toRemove.add(time);
 						}
 					}

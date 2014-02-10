@@ -37,21 +37,21 @@
 (Resource arm 2)
 (Resource kinect 1)
 
-(SimpleOperator
- (Head RobotSense::sensing_table1())
- (RequiredState req1 atLocation::at_robot1_table1())
- (Constraint During(Head,req1))
- (Constraint Duration[5000,INF](Head))
- (RequiredResource kinect(1))
-)
+#(SimpleOperator
+# (Head RobotSense::sensing_table1())
+# (RequiredState req1 atLocation::at_robot1_table1())
+# (Constraint During(Head,req1))
+# (Constraint Duration[5000,INF](Head))
+# (RequiredResource kinect(1))
+#)
 
-(SimpleOperator
- (Head RobotSense::sensing_counter1())
- (RequiredState req1 atLocation::at_robot1_counter1())
- (Constraint During(Head,req1))
- (Constraint Duration[5000,INF](Head))
- (RequiredResource kinect(1))
-)
+#(SimpleOperator
+# (Head RobotSense::sensing_counter1())
+# (RequiredState req1 atLocation::at_robot1_counter1())
+# (Constraint During(Head,req1))
+# (Constraint Duration[5000,INF](Head))
+# (RequiredResource kinect(1))
+#)
 
 (SimpleOperator
  (Head atLocation::at_cup1_table1())
@@ -67,6 +67,7 @@
  (RequiredState req1 RobotProprioception::holding_cup1())
  (RequiredState req2 RobotSense::sensing_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint MetBy(Head,req1))
@@ -89,6 +90,7 @@
  (RequiredState req1 atLocation::at_cup1_table1())
  (RequiredState req2 RobotSense::sensing_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint OverlappedBy(Head,req1))
@@ -111,7 +113,7 @@
 (SimpleOperator
  (Head RobotAction::pick_cup1_tray1())
  (RequiredState req1 atLocation::at_cup1_tray1())
-(RequiredState req2 RobotSense::sensing_table1())
+ (RequiredState req2 RobotSense::sensing_table1())
  (Constraint MetBy(Head,req2))
  (Constraint MetBy(Head,req1))
  (Constraint Duration[5000,INF](Head))
@@ -151,6 +153,7 @@
  (RequiredState req1 atLocation::at_cup1_counter1())
 (RequiredState req2 RobotSense::sensing_counter1())
  (RequiredState req3 atLocation::at_robot1_counter1())
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint OverlappedBy(Head,req1))

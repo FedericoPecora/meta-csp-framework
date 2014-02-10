@@ -82,6 +82,8 @@ public class Dispatcher extends Thread {
 									AllenIntervalConstraint overlapsFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps);
 									overlapsFuture.setFrom(act);
 									overlapsFuture.setTo(future);
+									System.out.println("act" + act);
+									System.out.println("future" + future);
 									boolean ret = ans.addConstraint(overlapsFuture);
 									System.out.println("ADD OVL: " + ret);
 									overlapFutureConstraints.put(act, overlapsFuture);

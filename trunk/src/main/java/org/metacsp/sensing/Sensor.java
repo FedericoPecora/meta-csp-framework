@@ -24,11 +24,11 @@ public class Sensor implements Serializable {
 	private static final long serialVersionUID = -852002916221212114L;
 	private ActivityNetworkSolver ans = null;
 	private ConstraintNetwork cn = null;
-	private String name;
+	protected String name;
 	private Activity future = null;
 	private Activity currentAct = null;
 	private AllenIntervalConstraint currentMeetsFuture = null;
-	private ConstraintNetworkAnimator animator = null;
+	protected ConstraintNetworkAnimator animator = null;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 		
@@ -49,6 +49,7 @@ public class Sensor implements Serializable {
 			else if (currentAct != null) {
 				//If it has not changed, do nothing - otherwise:
 				if (!currentAct.getSymbolicVariable().getSymbols()[0].equals(value)) {
+					System.out.println("put deadline on: " + currentAct);
 					//change value
 					AllenIntervalConstraint deadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(timeNow,timeNow));
 					deadline.setFrom(currentAct);
@@ -60,8 +61,9 @@ public class Sensor implements Serializable {
 				}
 			}
 			//First reading or value changed --> make new activity
-			if (makeNew) {
+			if (makeNew) {				
 				Activity act = (Activity)ans.createVariable(this.name);
+				System.out.println("new Activity " + act);
 				act.setSymbolicDomain(value);
 				act.setMarking(markings.JUSTIFIED);
 				AllenIntervalConstraint rel = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,timeNow));
