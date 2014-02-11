@@ -154,6 +154,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	// conflicting (e.g., over-consuming a resource)
 	private ConstraintNetwork[] samplingPeakCollection(HashMap<Activity, SpatialFluent> aTOsf) {
 		
+		
+		
 		Vector<Activity> observation = new Vector<Activity>();
 		Vector<Activity> activities = new Vector<Activity>();
 		for (Activity act : aTOsf.keySet()) {
@@ -574,12 +576,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		
 		if(peak.length == 1) return false;
 		
-//		System.out.println("------------------------------------------------------------");
-//		for (int i = 0; i < peak.length; i++) {
-////			System.out.println(peak[i]);
-//			System.out.println(aTOsf.get(peak[i]));
-//		}
-//		System.out.println("------------------------------------------------------------");
+		System.out.println("------------------------------------------------------------");
+		for (int i = 0; i < peak.length; i++) {
+//			System.out.println(peak[i]);
+			System.out.println(aTOsf.get(peak[i]));
+		}
+		System.out.println("------------------------------------------------------------");
 		
 		Vector<UnaryRectangleConstraint> atConstraints = new Vector<UnaryRectangleConstraint>();
 		HashMap<String, SpatialFluent> currentFluent = new HashMap<String, SpatialFluent>();
@@ -680,7 +682,36 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 		if (!iterSolver.addConstraints(addedGeneralKn.toArray(new MultiBinaryConstraint[addedGeneralKn.size()])))
 			System.out.println("Failed to general knowledge add");
+		// ####################################################################################
+		//check whether the fluent which overlapped in time is a fluent of interest meaning they are mentioned in the spatial rules
+		//otherwise return false
 		
+//		System.out.println("++++++Before++++++");
+//		Vector<String> conceptsInUse = new Vector<String>();
+//		for (int j = 0; j < iterSolver.getVariables().length; j++) {
+//			for (int j2 = 0; j2 < sAssertionalRels.size(); j2++) {
+//				if(((RectangularRegion)iterSolver.getVariables()[j]).getName().compareTo(sAssertionalRels.get(j2).getTo()) == 0){
+//					conceptsInUse.add(sAssertionalRels.get(j2).getFrom());
+//				}
+//			}
+//			
+//		}
+//		
+//		System.out.println("conceptInUse" + conceptsInUse);
+//		
+//		boolean isThere = false;
+//		for (Activity a : aTOsf.keySet()) {
+//			System.out.println("====" + aTOsf.get(a).getName());
+//			for (int j = 0; j < conceptsInUse.size(); j++) {
+//				System.out.println(conceptsInUse.get(j));
+//				if(aTOsf.get(a).getName().compareTo(conceptsInUse.get(j)) == 0)
+//					isThere = true;	
+//			}
+//			if(!isThere) return false;
+//			isThere = false;
+//		}
+//		
+//		System.out.println("++++++After++++++");
 		// ####################################################################################
 		// Add at constraint
 		Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();
