@@ -37,6 +37,7 @@ import org.metacsp.spatial.utility.SpatialAssertionalRelation;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.time.TimePoint;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
@@ -46,12 +47,12 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 public class TestHybridPlanningWithSensingAndDispatching {
 
 	static int pad = 2;    
-	static long duration = 5;
+	static long duration = 1000;
 	static HashMap<String, SpatialAssertionalRelation> currentObservation = new HashMap<String, SpatialAssertionalRelation>();
 
 	static MetaOccupiedConstraint metaOccupiedConstraint = null;
 	static MetaSpatialAdherenceConstraint metaSpatialAdherence  = null;
-	
+
 	static int counter = 0;
 	public static void main(String[] args) {
 
@@ -96,23 +97,22 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//#################################################################################################################
 		//Set initial situation
 		metaSpatialAdherence.setInitialGoal(new String[]{"cup1"});
-		setFluentintoNetwork(groundSolver, "atLocation", "cup1", "at_cup1_table1()", markings.UNJUSTIFIED, -1);
 
-		Vector<Constraint> cons = new Vector<Constraint>();
+
+		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(-1,-1,-1,-1)++true");
+		act.setMarking(markings.UNJUSTIFIED);
+
+		
 		Activity two = (Activity)groundSolver.getConstraintSolvers()[1].createVariable("atLocation");
 		two.setSymbolicDomain("at_robot1_counter1()");
 		two.setMarking(markings.JUSTIFIED);
-		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1000,1000));
-		releaseHolding.setFrom(two);
-		releaseHolding.setTo(two);
-		cons.add(releaseHolding);
+		
+		long releaseTime = 1000;
+		releaseActivity(groundSolver, releaseTime, two);
+		addDurationToActivity(groundSolver, duration, two);
+		
 
-		AllenIntervalConstraint durationHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(5000,APSPSolver.INF));
-		durationHolding.setFrom(two);
-		durationHolding.setTo(two);
-		cons.add(durationHolding);
-
-		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));		
+				
 
 		//##############################################################################################################
 		//add meta constraint to hybrid planner
@@ -121,14 +121,14 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 		//################################################################################################################
 		Controllable contrallableAtLocation = new Controllable();
-				
+
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,60,0,99)++false");
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(20,26,13,32)++true");
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(30,36,10,33)++true");
-		
+
 		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
-		
+
 		//#######################################################################
 		final Vector<Activity> executingActs = new Vector<Activity>();
 
@@ -148,10 +148,11 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			public void dispatch(Activity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
-
 				if(counter == 0){
 					System.out.println("HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-					getCreatedActivty(groundSolver, ctrls.get(0));
+
+//					getCreatedActivty(groundSolver, ctrls.get(0));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(0)));
 					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
 					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
 					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);
@@ -159,21 +160,20 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				}
 				else if(counter == 1){
 					System.out.println("BYEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-					getCreatedActivty(groundSolver, ctrls.get(1));
-					getCreatedActivty(groundSolver, ctrls.get(2));
-					getCreatedActivty(groundSolver, ctrls.get(3));
+					
+//					getCreatedActivty(groundSolver, ctrls.get(1));
+//					getCreatedActivty(groundSolver, ctrls.get(2));
+//					getCreatedActivty(groundSolver, ctrls.get(3));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(1)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(2)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(3)));
 					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
 					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
 					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);					
 				}
-
-
 			}
 		}; 
 		dispatches.add(dfSense);
-
-
-
 
 		animator.addDispatchingFunctions(simpleHybridPlanner, dispatches.toArray(new DispatchingFunction[dispatches.size()]));
 
@@ -205,6 +205,8 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 	}
 
+
+
 	private static Activity getCreatedActivty(SpatialFluentSolver groundSolver, String actString) {
 
 		String component = actString.substring(0, actString.indexOf("::")); //e.g., atLocation
@@ -219,6 +221,18 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//		System.out.println("coord: " + coordSym);
 		//		System.out.println("is Movable: " + isMovable);
 
+		Activity act = null;
+		for (int i = 0; i < groundSolver.getConstraintSolvers()[1].getVariables().length; i++) {
+			//it has to have the same name and it should not be finished yet , i.e, it is on the plan
+			
+			if(((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getSymbolicVariable().getSymbols()[0].toString().compareTo(actSymbol) == 0 && 
+					((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getEET() != ((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getLET()){				
+				System.out.println("IRAN");
+				act = ((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]);
+			}
+				
+		}
+		
 		SpatialFluent sf = (SpatialFluent)groundSolver.createVariable(component);
 		String fluentId = actSymbol.substring(0, actSymbol.length() - 2);
 		sf.setName(fluentId);//e.g., at_cup1_table1
@@ -226,11 +240,21 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		((RectangularRegion)sf.getInternalVariables()[0]).setName(fluentId);
 		((Activity)sf.getInternalVariables()[1]).setSymbolicDomain(actSymbol);
 		((Activity)sf.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+		
 
-		Activity act = (Activity)groundSolver.getConstraintSolvers()[1].createVariable(component);
-		act.setSymbolicDomain(actSymbol);
-		act.setMarking(markings.JUSTIFIED);
+		//if this is already planned so it has to unified with the real observation i.e., spatial fluents
+		if(act != null){
+			AllenIntervalConstraint unify = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals, AllenIntervalConstraint.Type.Equals);
+			unify.setFrom(sf.getActivity());
+			unify.setTo(act);
+			System.out.println("***********************************************************");
+			System.out.println(unify);
+			System.out.println("***********************************************************");
+			groundSolver.getConstraintSolvers()[1].addConstraint(unify);
+		}
 
+		
+		addDurationToActivity(groundSolver, duration, sf.getActivity());
 
 
 		//update current observation
@@ -238,6 +262,27 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 
 		return sf.getActivity();
+	}
+
+	private static void addDurationToActivity(SpatialFluentSolver groundSolver, long duration, Activity act) {
+
+		Vector<Constraint> cons = new Vector<Constraint>();
+		AllenIntervalConstraint onDuration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(duration,APSPSolver.INF));
+		onDuration.setFrom(act);
+		onDuration.setTo(act);
+		cons.add(onDuration);
+		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));
+	}
+	
+	private static void releaseActivity(SpatialFluentSolver groundSolver,
+			long releaseTime, Activity act) {
+		
+		Vector<Constraint> cons = new Vector<Constraint>();
+		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(releaseTime,releaseTime));
+		releaseHolding.setFrom(act);
+		releaseHolding.setTo(act);
+		cons.add(releaseHolding);
+		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));		
 	}
 
 	private static void updateObservation(String fluentId, String[] coords,
@@ -250,17 +295,19 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		yl = Long.parseLong(coords[2]);
 		yu = Long.parseLong(coords[3]);
 
-
-		String categoryInstace = fluentId.substring(fluentId.indexOf("_") + 1);
+		//fluentId : at_fork1_table1
+		//categoryconcept = fork_table
+		String categoryInstace = fluentId.substring(fluentId.indexOf("_") + 1); //
 		String categoryConcept = categoryInstace.replaceAll("[0-9]",""); 
 
 
 		//#########################################################################
-		//		System.out.println("====================================");
-		//		System.out.println(xl + " "+ xu +" "+ yl + " "+ yu);
-		//		System.out.println(movable);
-		//		System.out.println(categoryConcept);
-		//		System.out.println("====================================");
+		System.out.println("====================================");
+		System.out.println(xl + " "+ xu +" "+ yl + " "+ yu);
+		System.out.println(movable);
+		System.out.println(fluentId);
+		System.out.println(categoryConcept);
+		System.out.println("====================================");
 		//#########################################################################
 
 
@@ -301,27 +348,27 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 
 
-		SpatialRule r7 = new SpatialRule("knife", "knife", 
+		SpatialRule r7 = new SpatialRule("knife_table", "knife_table", 
 				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, knife_size_x, knife_size_y));
 		srules.add(r7);
 
-		SpatialRule r8 = new SpatialRule("cup", "cup", 
+		SpatialRule r8 = new SpatialRule("cup_table", "cup_table", 
 				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, cup_size_x, cup_size_y));
 		srules.add(r8);
 
-		SpatialRule r9 = new SpatialRule("fork", "fork", 
+		SpatialRule r9 = new SpatialRule("fork_table", "fork_table", 
 				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, fork_size_x, fork_size_y));
 		srules.add(r9);
 
 
 		//Every thing should be on the table            
-		addOnTableConstraint(srules, "fork");
-		addOnTableConstraint(srules, "knife");
-		addOnTableConstraint(srules, "cup");
+		addOnTableConstraint(srules, "fork_table");
+		addOnTableConstraint(srules, "knife_table");
+		addOnTableConstraint(srules, "cup_table");
 
 
 
-		SpatialRule r2 = new SpatialRule("cup", "knife", 
+		SpatialRule r2 = new SpatialRule("cup", "knife_table", 
 				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(15, 20)),
 						new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds() ))
 				);
@@ -329,7 +376,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 
 
-		SpatialRule r3 = new SpatialRule("cup", "fork", 
+		SpatialRule r3 = new SpatialRule("cup", "fork_table", 
 				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, new Bounds(15, 20)),
 						new AllenIntervalConstraint(AllenIntervalConstraint.Type.During , AllenIntervalConstraint.Type.During.getDefaultBounds()))
 
@@ -346,7 +393,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		Bounds withinReach_x_lower = new Bounds(5, APSPSolver.INF);
 		Bounds withinReach_x_upper = new Bounds(5, APSPSolver.INF);
 
-		SpatialRule r8 = new SpatialRule(str, "table", 
+		SpatialRule r8 = new SpatialRule(str, "table_table", 
 				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, withinReach_x_lower,withinReach_x_upper),
 						new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, withinReach_y_lower, withinReach_y_upper))
 				);
@@ -355,29 +402,6 @@ public class TestHybridPlanningWithSensingAndDispatching {
 	}
 
 
-
-	private static void setFluentintoNetwork(SpatialFluentSolver grounSpatialFluentSolver, String component, 
-			String name, String symbolicDomain, markings mk, long release){
-
-		SpatialFluent sf = (SpatialFluent)grounSpatialFluentSolver.createVariable(component);
-		sf.setName(name);
-
-		((RectangularRegion)sf.getInternalVariables()[0]).setName(name);
-		((Activity)sf.getInternalVariables()[1]).setSymbolicDomain(symbolicDomain);
-		((Activity)sf.getInternalVariables()[1]).setMarking(mk);
-
-		if(mk.equals(markings.JUSTIFIED)){
-			AllenIntervalConstraint onDuration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(duration,APSPSolver.INF));
-			onDuration.setFrom(sf.getActivity());
-			onDuration.setTo(sf.getActivity());
-
-
-			AllenIntervalConstraint releaseOn = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(release, release));
-			releaseOn.setFrom(sf.getActivity());
-			releaseOn.setTo(sf.getActivity());
-		}
-
-	}
 
 
 }
