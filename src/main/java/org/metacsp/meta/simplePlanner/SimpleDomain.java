@@ -152,7 +152,7 @@ public class SimpleDomain extends MetaConstraint {
 
 			for (int i = 0; i < possibleOperator.getRequirementActivities().length; i++) {
 				String possibleOperatorTail = possibleOperator.getRequirementActivities()[i];
-				String possibleOperatorTailComponent = possibleOperatorTail.substring(0, possibleOperatorTail.indexOf("::"));
+				String possibleOperatorTailComponent = possibleOperatorTail.substring(0, possibleOperatorTail.indexOf("::"));				
 				String possibleOperatorTailSymbol = possibleOperatorTail.substring(possibleOperatorTail.indexOf("::")+2, possibleOperatorTail.length());
 				
 				//If this req is the prob act, then insert prob act
@@ -327,7 +327,10 @@ public class SimpleDomain extends MetaConstraint {
 		if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
 			if(unifications != null)
-				retPossibleConstraintNetworks.add(unifications[0]);
+				for (int i = 0; i < unifications.length; i++) {
+					retPossibleConstraintNetworks.add(unifications[i]);
+				}
+				
 //				return this.getUnifications(problematicActivity);
 			
 		}

@@ -32,27 +32,27 @@ import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Controllable;
-import org.metacsp.sensing.Sensor;
 import org.metacsp.spatial.utility.SpatialAssertionalRelation;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
-import org.metacsp.time.TimePoint;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
+
 
 public class TestHybridPlanningWithSensingAndDispatching {
 
-	static int pad = 2;    
-	static long duration = 1000;
+	static int pad = 0;    
+	static long duration = 1000; //both for activity and location
+	static long tick = 1000;
 	static HashMap<String, SpatialAssertionalRelation> currentObservation = new HashMap<String, SpatialAssertionalRelation>();
 
 	static MetaOccupiedConstraint metaOccupiedConstraint = null;
 	static MetaSpatialAdherenceConstraint metaSpatialAdherence  = null;
-
+	static SensingSchedulable sensingSchedulable = null;
+	
 	static int counter = 0;
 	public static void main(String[] args) {
 
@@ -63,7 +63,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
 
 
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(simpleHybridPlanner, 1000);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(simpleHybridPlanner, tick);
 
 		//Most critical conflict is the one with most activities 
 		VariableOrderingH varOH = new VariableOrderingH() {
@@ -89,6 +89,10 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		metaOccupiedConstraint = new MetaOccupiedConstraint(null, null);
 		metaOccupiedConstraint.setPad(pad);
 		//#################################################################################################################
+		//add sensor schedulable
+		sensingSchedulable = new SensingSchedulable(null, null);
+		
+		//#################################################################################################################
 		//add spatial general rule to MetaSpatialFluentConstraint
 		Vector<SpatialRule> srules = new Vector<SpatialRule>();
 		getSpatialKnowledge(srules);
@@ -99,7 +103,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		metaSpatialAdherence.setInitialGoal(new String[]{"cup1"});
 
 
-		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(-1,-1,-1,-1)++true");
+		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(0,0,0,0)++true");
 		act.setMarking(markings.UNJUSTIFIED);
 
 		
@@ -111,22 +115,28 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		releaseActivity(groundSolver, releaseTime, two);
 		addDurationToActivity(groundSolver, duration, two);
 		
-
-				
-
 		//##############################################################################################################
 		//add meta constraint to hybrid planner
-		simpleHybridPlanner.addMetaConstraint(metaOccupiedConstraint);
+//		simpleHybridPlanner.addMetaConstraint(sensingSchedulable);
+		simpleHybridPlanner.addMetaConstraint(metaOccupiedConstraint);		
 		simpleHybridPlanner.addMetaConstraint(metaSpatialAdherence);
 
 		//################################################################################################################
 		Controllable contrallableAtLocation = new Controllable();
-
+		
+		//Two culprit
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,60,0,99)++false");
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(20,26,13,32)++true");
 		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(30,36,10,33)++true");
 
+		//One culprit
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,100,0,99)++false");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(31,37,13,32)++true");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(40,46,10,33)++true");
+
+		
 		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
 
 		//#######################################################################
@@ -164,12 +174,13 @@ public class TestHybridPlanningWithSensingAndDispatching {
 //					getCreatedActivty(groundSolver, ctrls.get(1));
 //					getCreatedActivty(groundSolver, ctrls.get(2));
 //					getCreatedActivty(groundSolver, ctrls.get(3));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(1)));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(2)));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(3)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(1)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(2)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(3)));
 					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
 					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
-					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);					
+					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);	
+					counter++;
 				}
 			}
 		}; 

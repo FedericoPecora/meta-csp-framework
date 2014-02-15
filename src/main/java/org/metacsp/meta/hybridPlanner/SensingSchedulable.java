@@ -69,8 +69,6 @@ public class SensingSchedulable extends MetaConstraint{
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		
-		
-		
 		Vector<Activity> activities = new Vector<Activity>();
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].getVariables().length; i++) {
 			Activity act = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].getVariables()[i];			
@@ -78,6 +76,7 @@ public class SensingSchedulable extends MetaConstraint{
 				activities.add(act);
 			}
 		}
+		
 		
 		return binaryPeakCollection(activities);
 	}

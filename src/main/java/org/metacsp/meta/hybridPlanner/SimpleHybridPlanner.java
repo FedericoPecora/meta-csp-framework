@@ -131,16 +131,32 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		
 		
 	}
-
+	
+	
+	
 	@Override
 	protected boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 				
 		if (metaValue.annotation != null && metaValue.annotation instanceof SimpleOperator) {
 			if (operatorsAlongBranch.contains((metaValue.annotation))) {
-//				System.out.println("-------------------> skipped " + metaValue.annotation);
-				return false;
+//				boolean isSkipable = false;
+//				for (int i = 0; i < getRepeatedActivitySymbolicDomain().size(); i++) {
+//					if(((Activity)metaVariable.getVariables()[0]).getSymbolicVariable().getSymbols()[0].compareTo(getRepeatedActivitySymbolicDomain().get(i)) == 0){
+//						System.out.println("-------------------> NOT skipped " + metaVariable);
+//						isSkipable = true;
+//					}
+//				}
+//				if(!isSkipable)
+				{
+//					System.out.println("-------------------> skipped " + metaValue.annotation);
+//					System.out.println("-------------------> skipped " + metaVariable);
+					return false;					
+				}
 			}
 			operatorsAlongBranch.add((SimpleOperator)metaValue.annotation);
+//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+//			System.out.println(operatorsAlongBranch);
+//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 //			System.out.println("-------------------> pushed " + metaValue.annotation);
 		}
 				
@@ -239,7 +255,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		}
 		return null;
 	}
-
 	
+
 
 }

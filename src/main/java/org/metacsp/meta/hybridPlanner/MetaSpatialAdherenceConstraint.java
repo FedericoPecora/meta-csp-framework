@@ -576,12 +576,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		
 		if(peak.length == 1) return false;
 		
-		System.out.println("------------------------------------------------------------");
-		for (int i = 0; i < peak.length; i++) {
-//			System.out.println(peak[i]);
-			System.out.println(aTOsf.get(peak[i]));
-		}
-		System.out.println("------------------------------------------------------------");
+//		System.out.println("------------------------------------------------------------");
+//		for (int i = 0; i < peak.length; i++) {
+////			System.out.println(peak[i]);
+//			System.out.println(aTOsf.get(peak[i]));
+//		}
+//		System.out.println("------------------------------------------------------------");
 		
 		Vector<UnaryRectangleConstraint> atConstraints = new Vector<UnaryRectangleConstraint>();
 		HashMap<String, SpatialFluent> currentFluent = new HashMap<String, SpatialFluent>();
@@ -855,8 +855,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		int counter = 0;
 		for (HashMap<String, Bounds[]> iterCN : permutation.keySet()) {
 			
-			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true))
-				break;
+//			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true))
+//				break;
 			
 //			System.out.println("------------------------------------------");
 //			for (String st : iterCN.keySet()) {
