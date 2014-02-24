@@ -45,14 +45,16 @@ public class TestSimpleHybridPlanner {
 	//oneCulprit example
 
 	static int pad = 0;    
-	static long duration = 5;
+	static long duration = 1000;
 
 	public static void main(String[] args) {
 
 
-		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0, 6000, 0);
+		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0, 100000, 0);
 
-		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
+		//FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
+		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
+		
 		//Most critical conflict is the one with most activities 
 		VariableOrderingH varOH = new VariableOrderingH() {
 			@Override

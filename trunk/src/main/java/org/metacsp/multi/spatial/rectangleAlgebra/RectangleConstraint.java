@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010-2013 Federico Pecora <federico.pecora@oru.se>
+ * Copyright (c) 2010-2013 Masoumeh Mansouri <masoumeh.mansouri@oru.se>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the

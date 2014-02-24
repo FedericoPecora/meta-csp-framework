@@ -57,7 +57,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 	public static void main(String[] args) {
 
 		//Create planner
-		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0,100000,0);
+		final SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0,100000,0);
 		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
@@ -100,7 +100,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 		//#################################################################################################################
 		//Set initial situation
-		metaSpatialAdherence.setInitialGoal(new String[]{"cup1"});
+		metaSpatialAdherence.setInitialGoal(new String[]{"at_cup1_table1"});
 
 
 		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(0,0,0,0)++true");
@@ -170,7 +170,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				}
 				else if(counter == 1){
 					System.out.println("BYEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-					
+//					ConstraintNetwork.draw(((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[0].getConstraintNetwork(), "RA Constraint Network");					
 //					getCreatedActivty(groundSolver, ctrls.get(1));
 //					getCreatedActivty(groundSolver, ctrls.get(2));
 //					getCreatedActivty(groundSolver, ctrls.get(3));
@@ -238,7 +238,6 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			
 			if(((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getSymbolicVariable().getSymbols()[0].toString().compareTo(actSymbol) == 0 && 
 					((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getEET() != ((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getLET()){				
-				System.out.println("IRAN");
 				act = ((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]);
 			}
 				
@@ -379,7 +378,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 
 
-		SpatialRule r2 = new SpatialRule("cup", "knife_table", 
+		SpatialRule r2 = new SpatialRule("cup_table", "knife_table", 
 				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(15, 20)),
 						new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds() ))
 				);
@@ -387,7 +386,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 
 
-		SpatialRule r3 = new SpatialRule("cup", "fork_table", 
+		SpatialRule r3 = new SpatialRule("cup_table", "fork_table", 
 				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, new Bounds(15, 20)),
 						new AllenIntervalConstraint(AllenIntervalConstraint.Type.During , AllenIntervalConstraint.Type.During.getDefaultBounds()))
 
