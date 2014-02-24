@@ -106,11 +106,11 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		
 		if(peak.length == 1) return false;
 		
-		System.out.println("_________________________________________________");
-		for (int i = 0; i < peak.length; i++) {
-			System.out.println("peak: " + activityToFluent.get(peak[i]));
-		}
-		System.out.println("_________________________________________________");
+//		System.out.println("_________________________________________________");
+//		for (int i = 0; i < peak.length; i++) {
+//			System.out.println("peak: " + activityToFluent.get(peak[i]));
+//		}
+//		System.out.println("_________________________________________________");
 //		System.out.println("==============================================================");
 		
 		Vector<SpatialFluent> unboundedsf = new Vector<SpatialFluent>();
@@ -167,8 +167,8 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 //		System.out.println("=================================================");
 		
 		if(r1new.intersects(r2new)){
-			System.out.println("--These are conflicting--");
-			System.out.println("---------------------------");
+//			System.out.println("--These are conflicting--");
+//			System.out.println("---------------------------");
 			return true;
 		}
 		else{
@@ -184,7 +184,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	
 
 	private boolean isUnboundedBoundingBox(Bounds xLB, Bounds xUB, Bounds yLB, Bounds yUB) {
-
+		
 		long horizon = ((ActivityNetworkSolver)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]).getHorizon();
 		
 		if( (xLB.min == 0 && xLB.max == horizon) && (xUB.min == 0&& xUB.max == horizon) &&
