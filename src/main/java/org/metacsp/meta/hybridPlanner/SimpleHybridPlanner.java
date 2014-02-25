@@ -147,11 +147,11 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 //					}
 //				}
 //				if(!isSkipable)
-				{
+//				{
 //					System.out.println("-------------------> skipped " + metaValue.annotation);
 //					System.out.println("-------------------> skipped " + metaVariable);
 					return false;					
-				}
+//				}
 			}
 			operatorsAlongBranch.add((SimpleOperator)metaValue.annotation);
 //			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
