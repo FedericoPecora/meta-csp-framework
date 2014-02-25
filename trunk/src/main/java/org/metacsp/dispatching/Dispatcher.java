@@ -84,8 +84,14 @@ public class Dispatcher extends Thread {
 									overlapsFuture.setTo(future);
 									boolean ret = ans.addConstraint(overlapsFuture);
 									System.out.println("ADD OVL: " + ret);
-									overlapFutureConstraints.put(act, overlapsFuture);
-									this.dfs.get(component).dispatch(act);
+									if(!ret){
+										System.out.println("IGNORED: " + act);
+									}
+									if(ret){
+										overlapFutureConstraints.put(act, overlapsFuture);
+										this.dfs.get(component).dispatch(act);
+									}
+									
 								}
 							}
 							

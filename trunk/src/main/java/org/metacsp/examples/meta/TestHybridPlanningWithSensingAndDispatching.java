@@ -4,7 +4,11 @@ import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -21,6 +25,7 @@ import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
+import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -61,8 +66,9 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
-
-
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/After.ddl", FluentBasedSimpleDomain.class);
+//      FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/tray.ddl", FluentBasedSimpleDomain.class);
+		
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(simpleHybridPlanner, tick);
 
 		//Most critical conflict is the one with most activities 
@@ -118,6 +124,8 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//##############################################################################################################
 		//add meta constraint to hybrid planner
 //		simpleHybridPlanner.addMetaConstraint(sensingSchedulable);
+		
+		
 		simpleHybridPlanner.addMetaConstraint(metaOccupiedConstraint);		
 		simpleHybridPlanner.addMetaConstraint(metaSpatialAdherence);
 
@@ -147,6 +155,21 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			@Override
 			public void dispatch(Activity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
+//				//#####################################################################################################################
+//				ActivityNetworkSolver actSolver = ((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
+//				//sort Activity based on the start time for debugging purpose
+//				HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
+//				for (int i = 0; i < actSolver.getVariables().length; i++) {
+//					starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
+//				}
+//
+//				//          Collections.sort(starttimes.values());
+//				starttimes =  sortHashMapByValuesD(starttimes);
+//				for (Activity act0 : starttimes.keySet()) {
+//					System.out.println(act0 + " --> " + starttimes.get(act0));
+//				}
+//				//#####################################################################################################################
+				
 				executingActs.add(act);
 
 			}
@@ -159,24 +182,22 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
 				if(counter == 0){
-					System.out.println("HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-
 //					getCreatedActivty(groundSolver, ctrls.get(0));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 10, getCreatedActivty(groundSolver, ctrls.get(0)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(0)));
 					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
 					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
 					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);
 					counter ++;
 				}
 				else if(counter == 1){
-					System.out.println("BYEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 //					ConstraintNetwork.draw(((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[0].getConstraintNetwork(), "RA Constraint Network");					
 //					getCreatedActivty(groundSolver, ctrls.get(1));
 //					getCreatedActivty(groundSolver, ctrls.get(2));
 //					getCreatedActivty(groundSolver, ctrls.get(3));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(1)));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(2)));
-					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(3)));
+					
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(1)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(2)));
+					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(3)));
 					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
 					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
 					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);	
@@ -347,6 +368,38 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 	}
 
+	private static LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
+		ArrayList mapKeys = new ArrayList(passedMap.keySet());
+		ArrayList mapValues = new ArrayList(passedMap.values());
+		Collections.sort(mapValues);
+		Collections.sort(mapKeys);
+
+		LinkedHashMap sortedMap = 
+				new LinkedHashMap();
+
+		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
+		while (valueIt.hasNext()) {
+			long val = (Long) valueIt.next();
+			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
+
+			while (keyIt.hasNext()) {
+				Activity key = (Activity) keyIt.next();
+				long comp1 = (Long) passedMap.get(key);
+				long comp2 = val;
+
+				if (comp1 == comp2){
+					passedMap.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put(key, val);
+					break;
+				}
+			}
+		}
+		return sortedMap;
+	}
+
+	
+	
 	private static void getSpatialKnowledge(Vector<SpatialRule> srules){
 
 		Bounds knife_size_x = new Bounds(4, 8);

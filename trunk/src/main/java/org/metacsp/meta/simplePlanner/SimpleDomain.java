@@ -748,10 +748,11 @@ public class SimpleDomain extends MetaConstraint {
 				for (String operator : planningOperators) {
 					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames,true));
 				}
-				//This adds the domain as a meta-constraint of the SimplePlanner
-				sp.addMetaConstraint(dom);
 				//... and we also add all its resources as separate meta-constraints
 				for (Schedulable sch : dom.getSchedulingMetaConstraints()) sp.addMetaConstraint(sch);
+
+				//This adds the domain as a meta-constraint of the SimplePlanner
+				sp.addMetaConstraint(dom);
 			}
 			finally { br.close(); }
 		}

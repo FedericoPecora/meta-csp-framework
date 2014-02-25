@@ -52,8 +52,9 @@ public class TestSimpleHybridPlanner {
 
 		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0, 100000, 0);
 
-		//FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
-		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
+		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
+		
 		
 		//Most critical conflict is the one with most activities 
 		VariableOrderingH varOH = new VariableOrderingH() {
