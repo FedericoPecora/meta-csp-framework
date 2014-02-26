@@ -68,6 +68,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/After.ddl", FluentBasedSimpleDomain.class);
 //      FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/tray.ddl", FluentBasedSimpleDomain.class);
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/1.ddl", FluentBasedSimpleDomain.class);
 		
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(simpleHybridPlanner, tick);
 
