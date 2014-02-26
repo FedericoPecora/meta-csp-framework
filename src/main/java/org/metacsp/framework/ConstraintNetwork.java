@@ -52,8 +52,16 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	private double weight=-1;
 	
 	public transient Object annotation;
+	public transient Object specilizedAnnotation;
 	public transient ConstraintNetworkMarking marking; // to mark the constraint in the backtracking process
 
+	public Object getSpecilizedAnnotation() {
+		return specilizedAnnotation;
+	}
+	
+	public void setSpecilizedAnnotation(Object specilizedAnnotation) {
+		this.specilizedAnnotation = specilizedAnnotation;
+	}
 	
 	//This is so that subclasses must invoke 1-arg constructor of ConstraintNetwork (below)
 	@SuppressWarnings("unused")

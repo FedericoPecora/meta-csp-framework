@@ -54,6 +54,7 @@ public class TestSimpleHybridPlanner {
 
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/1.ddl", FluentBasedSimpleDomain.class);
 		
 		
 		//Most critical conflict is the one with most activities 
@@ -103,6 +104,7 @@ public class TestSimpleHybridPlanner {
 
 		long timeNow = Calendar.getInstance().getTimeInMillis();
 		simpleHybridPlanner.backtrack();
+		
 		System.out.println("TOTAL TIME: " + (Calendar.getInstance().getTimeInMillis()-timeNow));
 
 		//#####################################################################################################################
@@ -214,7 +216,9 @@ public class TestSimpleHybridPlanner {
 		//===================================================================================================================
 
 		Activity two = (Activity)grounSpatialFluentSolver.getConstraintSolvers()[1].createVariable("RobotProprioception");
+//		Activity two = (Activity)grounSpatialFluentSolver.getConstraintSolvers()[1].createVariable("atLocation");
 		two.setSymbolicDomain("holding_cup1()");
+//		two.setSymbolicDomain("at_robot1_counter1()");
 		two.setMarking(markings.JUSTIFIED);
 		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1,1));
 		releaseHolding.setFrom(two);

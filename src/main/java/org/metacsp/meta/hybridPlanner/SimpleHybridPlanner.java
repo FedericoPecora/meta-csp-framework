@@ -25,6 +25,8 @@ import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 public class SimpleHybridPlanner extends MetaConstraintSolver {
 	
 	
@@ -34,7 +36,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private static final long serialVersionUID = 1L;
 	private long horizon = 0;
 	public Vector<SimpleOperator> operatorsAlongBranch = new Vector<SimpleOperator>();
-
+	public Vector<String> unificationAlongBranch = new  Vector<String>();
 	
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
@@ -61,11 +63,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 		
-		if (metaValue.annotation != null && metaValue.annotation instanceof SimpleOperator) {
+		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof SimpleOperator) {
 			this.operatorsAlongBranch.remove(operatorsAlongBranch.size()-1);
-//			System.out.println("-------------------> popped " + metaValue.annotation);
+//			System.out.println("-------------------> popped " + metaValue.specilizedAnnotation);
 		}
 
+//		if (metaValue.annotation != null && metaValue.annotation instanceof String) {
+//			this.unificationAlongBranch.remove(unificationAlongBranch.size()-1);
+//			System.out.println("-------------------> popped " + metaValue.annotation);
+//		}
+
+		
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 		Vector<Variable> activityToRemove = new Vector<Variable>();
 
@@ -137,29 +145,25 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	@Override
 	protected boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 				
-		if (metaValue.annotation != null && metaValue.annotation instanceof SimpleOperator) {
-			if (operatorsAlongBranch.contains((metaValue.annotation))) {
-//				boolean isSkipable = false;
-//				for (int i = 0; i < getRepeatedActivitySymbolicDomain().size(); i++) {
-//					if(((Activity)metaVariable.getVariables()[0]).getSymbolicVariable().getSymbols()[0].compareTo(getRepeatedActivitySymbolicDomain().get(i)) == 0){
-//						System.out.println("-------------------> NOT skipped " + metaVariable);
-//						isSkipable = true;
-//					}
-//				}
-//				if(!isSkipable)
-//				{
-//					System.out.println("-------------------> skipped " + metaValue.annotation);
-//					System.out.println("-------------------> skipped " + metaVariable);
-					return false;					
-//				}
+		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof SimpleOperator) {
+			if (operatorsAlongBranch.contains((metaValue.specilizedAnnotation))) {
+				return false;					
 			}
-			operatorsAlongBranch.add((SimpleOperator)metaValue.annotation);
-//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-//			System.out.println(operatorsAlongBranch);
-//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-//			System.out.println("-------------------> pushed " + metaValue.annotation);
+			operatorsAlongBranch.add((SimpleOperator)metaValue.specilizedAnnotation);
 		}
-				
+//		if (metaValue.annotation != null && metaValue.annotation instanceof String) {
+//			if(metaValue.getVariables().length > 0){
+//				String id = metaVariable.getVariables()[0].getID() + "-" + metaValue.getVariables()[0].getID();
+//				System.out.println(">>> " + id);
+//				if (unificationAlongBranch.contains(id)) {
+//					return false;					
+//				}
+//				unificationAlongBranch.add(id);				
+//			}
+//			
+//		}
+		
+		
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 
 		//Make real variables from variable prototypes

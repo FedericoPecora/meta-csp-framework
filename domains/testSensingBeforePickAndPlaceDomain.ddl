@@ -187,7 +187,7 @@
  (RequiredState req1 RobotProprioception::holding_cup1())
  (RequiredState req2 RobotSense::sensing_before_placing_cup1_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
-# (Constraint During(req2,req3))
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint MetBy(Head,req1))
@@ -210,7 +210,7 @@
  (RequiredState req1 atLocation::at_cup1_table1())
  (RequiredState req2 RobotSense::sensing_before_picking_cup1_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
-# (Constraint During(req2,req3))
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint OverlappedBy(Head,req1))
@@ -344,7 +344,8 @@
  (RequiredResource arm(1))
 )
 
-#
+
+#table
 
 (SimpleOperator
  (Head atLocation::at_knife1_table1())
@@ -359,7 +360,7 @@
  (RequiredState req1 RobotProprioception::holding_knife1())
  (RequiredState req2 RobotSense::sensing_before_placing_knife1_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
-# (Constraint During(req2,req3))
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint MetBy(Head,req1))
@@ -380,7 +381,7 @@
  (RequiredState req1 atLocation::at_knife1_table1())
  (RequiredState req2 RobotSense::sensing_before_picking_knife1_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
-# (Constraint During(req2,req3))
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint OverlappedBy(Head,req1))
@@ -391,9 +392,10 @@
 
 
 
+
 ###############################fork#####################################
 
-
+#tray
 
 (SimpleOperator
  (Head atLocation::at_fork1_tray1())
@@ -434,6 +436,8 @@
 )
 
 
+#table
+
 (SimpleOperator
  (Head atLocation::at_fork1_table1())
  (RequiredState req1 RobotAction::place_fork1_table1())
@@ -447,7 +451,7 @@
  (RequiredState req1 RobotProprioception::holding_fork1())
  (RequiredState req2 RobotSense::sensing_before_placing_fork1_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
-# (Constraint During(req2,req3))
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint MetBy(Head,req1))
@@ -472,7 +476,7 @@
  (RequiredState req1 atLocation::at_fork1_table1())
  (RequiredState req2 RobotSense::sensing_before_picking_fork1_table1())
  (RequiredState req3 atLocation::at_robot1_table1())
-# (Constraint During(req2,req3))
+ (Constraint During(req2,req3))
  (Constraint During(Head,req3))
  (Constraint MetBy(Head,req2))
  (Constraint OverlappedBy(Head,req1))
@@ -480,4 +484,5 @@
  (Constraint Duration[2000,INF](Head))
  (RequiredResource arm(1))
 )
+
 
