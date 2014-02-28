@@ -316,7 +316,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 	
 	protected boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
-
+		
+		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
+		
 //		System.out.println("===============XXXXXXXXXXXXXX===========================");
 //		System.out.println(metaVariable);
 //		System.out.println("-------------------------------");
@@ -347,6 +349,13 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					catch (InterruptedException e) { e.printStackTrace(); }
 				}
 				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
+				
+				//******************************************************************
+//				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
+//					timeout = true;
+//					return false;
+//				}
+				//******************************************************************
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
