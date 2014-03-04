@@ -106,16 +106,22 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		metaSpatialAdherence.setSpatialRules(srules.toArray(new SpatialRule[srules.size()]));
 
 		//#################################################################################################################
-		//Set initial situation
+		
 		metaSpatialAdherence.setInitialGoal(new String[]{"at_cup1_table1"});
 
 
 		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(0,0,0,0)++true");
 		act.setMarking(markings.UNJUSTIFIED);
 
+		//################################################################################################
+		//Set initial situation
+//		Activity two = (Activity)groundSolver.getConstraintSolvers()[1].createVariable("atLocation");
+//		two.setSymbolicDomain("at_robot1_counter1()");
+//		two.setMarking(markings.JUSTIFIED);
 		
+
 		Activity two = (Activity)groundSolver.getConstraintSolvers()[1].createVariable("atLocation");
-		two.setSymbolicDomain("at_robot1_counter1()");
+		two.setSymbolicDomain("at_robot1_table1()");
 		two.setMarking(markings.JUSTIFIED);
 		
 		long releaseTime = 1000;
@@ -134,16 +140,17 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		Controllable contrallableAtLocation = new Controllable();
 		
 		//Two culprit
-		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
-		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,60,0,99)++false");
-		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(20,26,13,32)++true");
-		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(30,36,10,33)++true");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,60,0,99)++false");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(20,26,13,32)++true");
+//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(30,36,10,33)++true");
 
 		//One culprit
-//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
-//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,100,0,99)++false");
-//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(31,37,13,32)++true");
-//		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(40,46,10,33)++true");
+		//contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_counter1()--(1,2,3,4)++true");
+		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_cup1_tray1()--(1,2,3,4)++true");
+		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_table1_table1()--(0,100,0,99)++false");
+		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(31,37,13,32)++true");
+		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(40,46,10,33)++true");
 
 		
 		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
@@ -183,11 +190,16 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
 				if(counter == 0){
-//					getCreatedActivty(groundSolver, ctrls.get(0));
+//					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(0)));
+//					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
+//					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
+//					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);
+					
 					releaseActivity(groundSolver, act.getTemporalVariable().getLST() + 1000, getCreatedActivty(groundSolver, ctrls.get(0)));
 					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
 					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
 					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);
+
 					counter ++;
 				}
 				else if(counter == 1){
