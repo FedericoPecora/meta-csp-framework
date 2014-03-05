@@ -327,13 +327,14 @@ public class SimpleDomain extends MetaConstraint {
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
 		if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
-			if(unifications != null)
+			if(unifications != null){
 				for (int i = 0; i < unifications.length; i++) {
 //					String anotationId = problematicActivity.getID() + "-" +unifications[i].getVariables()[0].getID();
 //					System.out.println("ID: " + problematicActivity.getID() + " --- " +unifications[i].getVariables()[0].getID());
 //					unifications[i].setAnnotation(anotationId);
 					retPossibleConstraintNetworks.add(unifications[i]);
 				}				
+			}
 		}
 
 
@@ -364,6 +365,7 @@ public class SimpleDomain extends MetaConstraint {
 					retPossibleConstraintNetworks.add(newResolver);
 				}
 			}
+			
 			if (r instanceof PlanningOperator) {
 				for (String reqState : r.getRequirementActivities()) {
 					String operatorEffect = reqState;
@@ -384,6 +386,12 @@ public class SimpleDomain extends MetaConstraint {
 		}
 
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
+		else if (isControllable(problematicActivity.getComponent())) {
+			ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
+			nullActivityNetwork.setSpecilizedAnnotation(false);
+			return new ConstraintNetwork[] {nullActivityNetwork};
+			
+		}
 		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
 		return new ConstraintNetwork[] {nullActivityNetwork};
 	}
