@@ -52,9 +52,15 @@ public class TestSimpleHybridPlanner {
 
 		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0, 100000, 0);
 
-		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/1.ddl", FluentBasedSimpleDomain.class);
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
+		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class); //did not terminate
+
+		
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutSensingAndMoving.ddl", FluentBasedSimpleDomain.class); //26 but wrong went to the counter
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutMove.ddl", FluentBasedSimpleDomain.class); //did not terminate
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutSensingMovingCounter.ddl", FluentBasedSimpleDomain.class); //24
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutMovingCounrter.ddl", FluentBasedSimpleDomain.class); //did not terminate
+		
 		
 		
 		//Most critical conflict is the one with most activities 
@@ -206,7 +212,13 @@ public class TestSimpleHybridPlanner {
 		Vector<Constraint> cons = new Vector<Constraint>();
 
 
-		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "table1", "at_table1()", markings.JUSTIFIED,  8);
+//		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "table1", "at_robot1_table1()", markings.JUSTIFIED,  8);
+//		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "fork1", "at_fork1_table1()", markings.JUSTIFIED, 8);
+//		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "knife1", "at_knife1_table1()", markings.JUSTIFIED,8);
+//		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "cup1", "at_cup1_table1()", markings.UNJUSTIFIED, -1);
+
+		
+		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "table1", "at_robot1_table1()", markings.JUSTIFIED,  1);
 		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "fork1", "at_fork1_table1()", markings.JUSTIFIED, 8);
 		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "knife1", "at_knife1_table1()", markings.JUSTIFIED,8);
 		setFluentintoNetwork(cons, grounSpatialFluentSolver, "atLocation", "cup1", "at_cup1_table1()", markings.UNJUSTIFIED, -1);
@@ -216,9 +228,7 @@ public class TestSimpleHybridPlanner {
 		//===================================================================================================================
 
 		Activity two = (Activity)grounSpatialFluentSolver.getConstraintSolvers()[1].createVariable("RobotProprioception");
-//		Activity two = (Activity)grounSpatialFluentSolver.getConstraintSolvers()[1].createVariable("atLocation");
 		two.setSymbolicDomain("holding_cup1()");
-//		two.setSymbolicDomain("at_robot1_counter1()");
 		two.setMarking(markings.JUSTIFIED);
 		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1,1));
 		releaseHolding.setFrom(two);
@@ -229,6 +239,7 @@ public class TestSimpleHybridPlanner {
 		durationHolding.setFrom(two);
 		durationHolding.setTo(two);
 		cons.add(durationHolding);
+		
 
 		grounSpatialFluentSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));
 

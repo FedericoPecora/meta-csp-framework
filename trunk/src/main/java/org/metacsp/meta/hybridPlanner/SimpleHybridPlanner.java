@@ -28,8 +28,8 @@ import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class SimpleHybridPlanner extends MetaConstraintSolver {
-	
-	
+
+
 	/**
 	 * 
 	 */
@@ -37,7 +37,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private long horizon = 0;
 	public Vector<SimpleOperator> operatorsAlongBranch = new Vector<SimpleOperator>();
 	public Vector<String> unificationAlongBranch = new  Vector<String>();
-	
+
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				animationTime, new SpatialFluentSolver(origin, horizon)	);
@@ -51,29 +51,25 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 	@Override
 	public void postBacktrack(MetaVariable mv) {
-		
+
 		if (mv.getMetaConstraint() instanceof FluentBasedSimpleDomain)
 			for (Variable v : mv.getConstraintNetwork().getVariables()) {
 				v.setMarking(markings.UNJUSTIFIED);
 			}
 
-		
+
 	}
 
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
-		
+
 		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof SimpleOperator) {
 			this.operatorsAlongBranch.remove(operatorsAlongBranch.size()-1);
-//			System.out.println("-------------------> popped " + metaValue.specilizedAnnotation);
+			//			System.out.println("-------------------> popped " + metaValue.specilizedAnnotation);
 		}
 
-//		if (metaValue.annotation != null && metaValue.annotation instanceof String) {
-//			this.unificationAlongBranch.remove(unificationAlongBranch.size()-1);
-//			System.out.println("-------------------> popped " + metaValue.annotation);
-//		}
 
-		
+
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 		Vector<Variable> activityToRemove = new Vector<Variable>();
 
@@ -82,12 +78,19 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				if (v instanceof VariablePrototype) {
 					Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 					if (vReal != null) {
-						activityToRemove.add(vReal);
+						if(vReal.getComponent().compareTo("atLocation") == 0 && 
+								((Activity)vReal).getSymbolicVariable().getSymbols()[0].toString().compareTo("at_robot1_table1()") == 0){
+							continue;
+						}
+						else{
+							activityToRemove.add(vReal);
+						}
 					}
 				}
 			}
 		}
 
+	
 		for (int j = 0; j < this.metaConstraints.size(); j++){ 
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 				FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)this.metaConstraints.get(j);
@@ -98,7 +101,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				}
 			}
 		}
-		
+
+	
 		boolean isRtractingSpatialRelations = false;
 		for (int i = 0; i < metaValue.getVariables().length; i++) {
 			if(metaValue.getVariables()[i] instanceof RectangularRegion ){
@@ -106,64 +110,77 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				break;
 			}
 		}
-					
-		
+	
+
 		if(isRtractingSpatialRelations){
 			Vector<SpatialFluent> spatialFluentToBeRemoved = new Vector<SpatialFluent>();
 			System.out.println("Meta Value of MetaSpatialConstraint is retracted");
-			
+
 			for (int i = 0; i < this.getConstraintSolvers()[0].getVariables().length; i++) {
 				if(((Activity)((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]).getActivity()).getTemporalVariable().getEST() == 0 &&
 						((Activity)((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]).getActivity()).getTemporalVariable().getLST() == horizon){
 					spatialFluentToBeRemoved.add((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]);
-//					System.out.println((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]);
+					//					System.out.println((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]);
 				}
 			}
-			
+		
 			for (int i = 0; i < this.metaConstraints.size(); i++){
 				if(this.metaConstraints.get(i) instanceof MetaSpatialAdherenceConstraint ){	
 					for (int j = 0; j < ((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getsAssertionalRels().size(); j++) {
-							((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getsAssertionalRels().get(j).setUnaryAtRectangleConstraint
-							(((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getCurrentAssertionalCons().
-									get(((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getsAssertionalRels().get(j).getFrom()));
-//							System.out.println("Assertional Realtion: " + (((SpatialSchedulable)this.metaConstraints.get(i)).getCurrentAssertionalCons().
-//									get(((SpatialSchedulable)this.metaConstraints.get(i)).getsAssertionalRels()[j].getFrom())));
+						((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getsAssertionalRels().get(j).setUnaryAtRectangleConstraint
+						(((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getCurrentAssertionalCons().
+								get(((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getsAssertionalRels().get(j).getFrom()));
+						//							System.out.println("Assertional Realtion: " + (((SpatialSchedulable)this.metaConstraints.get(i)).getCurrentAssertionalCons().
+						//									get(((SpatialSchedulable)this.metaConstraints.get(i)).getsAssertionalRels()[j].getFrom())));
 					}			
 				}
 			}
 			((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(spatialFluentToBeRemoved.toArray(new Variable[spatialFluentToBeRemoved.size()]));
 		}
-		
-		
+
+	
 		groundSolver.removeVariables(activityToRemove.toArray(new Variable[activityToRemove.size()]));
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	@Override
 	protected boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
-				
+
 		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof SimpleOperator) {
 			if (operatorsAlongBranch.contains((metaValue.specilizedAnnotation))) {
 				return false;					
 			}
 			operatorsAlongBranch.add((SimpleOperator)metaValue.specilizedAnnotation);
 		}
-//		if (metaValue.annotation != null && metaValue.annotation instanceof String) {
-//			if(metaValue.getVariables().length > 0){
-//				String id = metaVariable.getVariables()[0].getID() + "-" + metaValue.getVariables()[0].getID();
-//				System.out.println(">>> " + id);
-//				if (unificationAlongBranch.contains(id)) {
-//					return false;					
-//				}
-//				unificationAlongBranch.add(id);				
-//			}
-//			
-//		}
-		
-		
+
+		//this if handles the cases when the controllables are not unified and there is no operators which can be activated
+		//then we annotated as false to force it to be failed rather than return null constraint network 
+		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof Boolean) {
+			System.out.println("metaValue: " + metaValue);
+			System.out.println("Annotation: " + (Boolean)metaValue.getSpecilizedAnnotation());
+			if (!(Boolean)metaValue.getSpecilizedAnnotation()) {
+				System.out.println(">>>>>>>>>>>>>>>>>");
+				return false;
+			}
+		}
+
+
+		//		if (metaValue.annotation != null && metaValue.annotation instanceof String) {
+		//			if(metaValue.getVariables().length > 0){
+		//				String id = metaVariable.getVariables()[0].getID() + "-" + metaValue.getVariables()[0].getID();
+		//				System.out.println(">>> " + id);
+		//				if (unificationAlongBranch.contains(id)) {
+		//					return false;					
+		//				}
+		//				unificationAlongBranch.add(id);				
+		//			}
+		//			
+		//		}
+
+
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 
 		//Make real variables from variable prototypes
@@ -173,15 +190,43 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				//	the symbol of the Activity to be instantiated
 				String component = (String)((VariablePrototype) v).getParameters()[0];
 				String symbol = (String)((VariablePrototype) v).getParameters()[1];
-				Activity tailActivity = (Activity)groundSolver.createVariable(component);
-				tailActivity.setSymbolicDomain(symbol);
-				tailActivity.setMarking(v.getMarking());
-				metaValue.addSubstitution((VariablePrototype)v, tailActivity);
+				
+				Activity tailActivity = null;
+				boolean isUnified = false;
+				for (int j = 0; j < this.metaConstraints.size(); j++) {
+					if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
+						//if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(component)){
+						if(component.compareTo("atLocation") == 0 && symbol.compareTo("at_robot1_table1()") == 0)
+						{
+							for (int i = 0; i < groundSolver.getVariables().length; i++) {
+								Activity tmpAct = (Activity)groundSolver.getVariables()[i];
+								if(tmpAct.getComponent().compareTo(component) == 0 && 
+										tmpAct.getSymbolicVariable().getSymbols()[0].toString().compareTo(symbol) == 0){
+//									System.out.println("tmpAct: " + tmpAct);
+									tailActivity = tmpAct;
+									isUnified = true;
+									metaValue.addSubstitution((VariablePrototype)v, tailActivity);									
+								}
+
+							}
+						}
+					}
+				}
+
+
+
+
+				if(!isUnified){
+					tailActivity = (Activity)groundSolver.createVariable(component);
+					tailActivity.setSymbolicDomain(symbol);
+					tailActivity.setMarking(v.getMarking());
+					metaValue.addSubstitution((VariablePrototype)v, tailActivity);					
+				}
 			}
 		}
-		
 
-		
+
+
 		//Involve real variables in the constraints
 		for (Constraint con : metaValue.getConstraints()) {
 			Constraint clonedConstraint = (Constraint)con.clone();  
@@ -195,9 +240,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			metaValue.removeConstraint(con);
 			metaValue.addConstraint(clonedConstraint);
 		}
-		
 
-		
+
+
 		for (Variable v : metaValue.getVariables()) {
 			for (int j = 0; j < this.metaConstraints.size(); j++) {
 				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
@@ -208,11 +253,11 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				}
 			}
 		}
-		
-		
+
+
 		return true;
 	}
-		
+
 
 	@Override
 	protected double getUpperBound() {
@@ -249,9 +294,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public HashMap<String, BoundingBox> getOldRectangularRegion(){
-				
+
 		for (int j = 0; j < this.metaConstraints.size(); j++){ 
 			if(this.metaConstraints.get(j) instanceof MetaSpatialAdherenceConstraint ){
 				return ((MetaSpatialAdherenceConstraint)this.metaConstraints.get(j)).getOldRectangularRegion();
@@ -259,7 +304,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		}
 		return null;
 	}
-	
+
 
 
 }
