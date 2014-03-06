@@ -78,7 +78,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 //		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_fork1_table1()--(31,37,13,32)++true");
 //		contrallableAtLocation.registerSymbolsFromControllableSensor("atLocation::at_knife1_table1()--(40,46,10,33)++true");
 
-		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
+		
 
 		//#######################################################################
 
@@ -133,7 +133,12 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		act.setMarking(markings.UNJUSTIFIED);
 
 		//################################################################################################
+		//get controllable symbols
+		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
+
+		//################################################################################################
 		//Set initial situation
+
 		Activity two = (Activity)groundSolver.getConstraintSolvers()[1].createVariable("atLocation");
 		two.setSymbolicDomain("at_robot1_counter1()");
 		two.setMarking(markings.JUSTIFIED);
@@ -156,6 +161,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		simpleHybridPlanner.addMetaConstraint(metaSpatialAdherence);
 
 		final Vector<Activity> executingActs = new Vector<Activity>();
+		
 
 		Vector<DispatchingFunction> dispatches = new Vector<DispatchingFunction>();
 		DispatchingFunction df = new DispatchingFunction("RobotAction") {

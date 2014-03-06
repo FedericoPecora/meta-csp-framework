@@ -207,6 +207,9 @@
 
 #########################cup######################################
 
+#table
+
+
 (SimpleOperator
  (Head atLocation::at_cup1_table1())
  (RequiredState req1 RobotAction::place_cup1_table1())
@@ -279,7 +282,6 @@
  (RequiredResource arm(1))
 )
 
-
 #tray
 
 (SimpleOperator
@@ -321,6 +323,7 @@
  (Constraint Duration[2000,INF](Head))
  (RequiredResource arm(1))
 )
+
 
 
 ##################Knife##########################
