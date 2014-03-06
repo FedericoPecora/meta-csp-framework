@@ -195,7 +195,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				boolean isUnified = false;
 				for (int j = 0; j < this.metaConstraints.size(); j++) {
 					if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
-						//if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(component)){
+						//if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(component)){ //test
 						if(component.compareTo("atLocation") == 0 && symbol.compareTo("at_robot1_table1()") == 0)
 						{
 							for (int i = 0; i < groundSolver.getVariables().length; i++) {
