@@ -78,13 +78,12 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				if (v instanceof VariablePrototype) {
 					Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 					if (vReal != null) {
-						if(vReal.getComponent().compareTo("atLocation") == 0 && 
-								((Activity)vReal).getSymbolicVariable().getSymbols()[0].toString().compareTo("at_robot1_table1()") == 0){
-							continue;
-						}
-						else{
+//						if(vReal.getComponent().compareTo("atLocation") == 0 && 
+//								((Activity)vReal).getSymbolicVariable().getSymbols()[0].toString().compareTo("at_robot1_table1()") == 0){
+//						}
+//						else{
 							activityToRemove.add(vReal);
-						}
+//						}
 					}
 				}
 			}
@@ -183,25 +182,25 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				
 				Activity tailActivity = null;
 				boolean isUnified = false;
-				for (int j = 0; j < this.metaConstraints.size(); j++) {
-					if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
-						//if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(component)){ //test
-						if(component.compareTo("atLocation") == 0 && symbol.compareTo("at_robot1_table1()") == 0)
-						{
-							for (int i = 0; i < groundSolver.getVariables().length; i++) {
-								Activity tmpAct = (Activity)groundSolver.getVariables()[i];
-								if(tmpAct.getComponent().compareTo(component) == 0 && 
-										tmpAct.getSymbolicVariable().getSymbols()[0].toString().compareTo(symbol) == 0){
+//				for (int j = 0; j < this.metaConstraints.size(); j++) {
+//					if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
+//						//if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(component)){ //test
+//						if(component.compareTo("atLocation") == 0 && symbol.compareTo("at_robot1_table1()") == 0)
+//						{
+//							for (int i = 0; i < groundSolver.getVariables().length; i++) {
+//								Activity tmpAct = (Activity)groundSolver.getVariables()[i];
+//								if(tmpAct.getComponent().compareTo(component) == 0 && 
+//										tmpAct.getSymbolicVariable().getSymbols()[0].toString().compareTo(symbol) == 0){
 //									System.out.println("tmpAct: " + tmpAct);
-									tailActivity = tmpAct;
-									isUnified = true;
-									metaValue.addSubstitution((VariablePrototype)v, tailActivity);									
-								}
-
-							}
-						}
-					}
-				}
+//									tailActivity = tmpAct;
+//									isUnified = true;
+//									metaValue.addSubstitution((VariablePrototype)v, tailActivity);									
+//								}
+//
+//							}
+//						}
+//					}
+//				}
 
 
 
