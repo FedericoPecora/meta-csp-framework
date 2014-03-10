@@ -60,7 +60,7 @@ public class TestSimpleHybridPlanner {
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutMove.ddl", FluentBasedSimpleDomain.class); //did not terminate
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutSensingMovingCounter.ddl", FluentBasedSimpleDomain.class); //24
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutMovingCounrter.ddl", FluentBasedSimpleDomain.class); //did not terminate
-		
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/deskDomain_1.ddl", FluentBasedSimpleDomain.class);
 		
 		
 		//Most critical conflict is the one with most activities 
@@ -159,8 +159,7 @@ public class TestSimpleHybridPlanner {
 		Collections.sort(mapValues);
 		Collections.sort(mapKeys);
 
-		LinkedHashMap sortedMap = 
-				new LinkedHashMap();
+		LinkedHashMap sortedMap =  new LinkedHashMap();
 
 		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
 		while (valueIt.hasNext()) {
@@ -359,13 +358,6 @@ public class TestSimpleHybridPlanner {
 		insertAtConstraint(recs, saRelations, "cup", 0, 0, 0, 0, true);
 
 		return recs;
-
-
-
-
-
-
-
 	}
 
 

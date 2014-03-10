@@ -168,17 +168,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		}
 
 
-		//		if (metaValue.annotation != null && metaValue.annotation instanceof String) {
-		//			if(metaValue.getVariables().length > 0){
-		//				String id = metaVariable.getVariables()[0].getID() + "-" + metaValue.getVariables()[0].getID();
-		//				System.out.println(">>> " + id);
-		//				if (unificationAlongBranch.contains(id)) {
-		//					return false;					
-		//				}
-		//				unificationAlongBranch.add(id);				
-		//			}
-		//			
-		//		}
+
 
 
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
