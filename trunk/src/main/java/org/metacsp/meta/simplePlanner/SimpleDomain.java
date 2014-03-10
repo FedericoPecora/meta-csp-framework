@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.sound.midi.Track;
+
 import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.SimpleOperator.ReservedWord;
@@ -69,6 +71,8 @@ public class SimpleDomain extends MetaConstraint {
 	private Vector<String> contextVars = new Vector<String>();
 	private Vector<String> controllables = new Vector<String>();
 
+	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
+	
 	//public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE_UNJ,OBSERVABLE_JUST, OBSERVABLE_LEAF};
 
@@ -324,20 +328,33 @@ public class SimpleDomain extends MetaConstraint {
 			return this.getUnifications(problematicActivity);
 		}
 		
+		
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
-		if (isControllable(problematicActivity.getComponent())) {
+		if (isControllable(problematicActivity.getComponent())) {			
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
 			if(unifications != null){
+				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
-//					String anotationId = problematicActivity.getID() + "-" +unifications[i].getVariables()[0].getID();
-//					System.out.println("ID: " + problematicActivity.getID() + " --- " +unifications[i].getVariables()[0].getID());
-//					unifications[i].setAnnotation(anotationId);
-					retPossibleConstraintNetworks.add(unifications[i]);
-				}				
+					//add if it is not the key and is true
+					
+					if(!unificationTrack.keySet().contains(((Activity)unifications[i].getVariables()[0]))){						
+						retPossibleConstraintNetworks.add(unifications[i]);
+						unificationTrack.put(problematicActivity, (Activity)unifications[i].getVariables()[0]);
+						System.out.println("UNIFIED: " + (Activity)unifications[i].getVariables()[0]);
+					}
+					else{
+						System.out.println("SKIPED: " +(Activity)unifications[i].getVariables()[0]);
+						
+					}
+				}
 			}
 		}
 
-
+//		System.out.println(unificationTrack);
+		
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+		
 		//If it's a context var, it needs to be unified (or expanded, see later) 
 		if (isContextVar(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
@@ -359,13 +376,13 @@ public class SimpleDomain extends MetaConstraint {
 			if (opeatorHeadComponent.equals(problematicActivity.getComponent())) {
 				if (problematicActivitySymbolicDomain.contains(operatorHeadSymbol)) {
 					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
-
 					newResolver.setAnnotation(1);
 					newResolver.setSpecilizedAnnotation(r);
 					retPossibleConstraintNetworks.add(newResolver);
 				}
 			}
 			
+
 			if (r instanceof PlanningOperator) {
 				for (String reqState : r.getRequirementActivities()) {
 					String operatorEffect = reqState;
@@ -384,7 +401,11 @@ public class SimpleDomain extends MetaConstraint {
 				}
 			}
 		}
-
+		
+		if(problematicActivity.getSymbolicVariable().getSymbols()[0].toString().contains("hold")){
+			System.out.println("--->" + retPossibleConstraintNetworks);
+		}
+		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
 		else if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);

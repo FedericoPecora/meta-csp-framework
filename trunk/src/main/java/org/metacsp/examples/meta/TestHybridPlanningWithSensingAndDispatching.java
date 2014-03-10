@@ -198,6 +198,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 					counter ++;
 				}
 				else if(counter == 1){
+					
 					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(1)));
 					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(2)));
 					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(3)));
