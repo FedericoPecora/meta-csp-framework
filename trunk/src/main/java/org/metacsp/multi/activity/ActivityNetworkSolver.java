@@ -44,7 +44,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	protected int IDs = 0;
 	protected long origin;
 	
-	private static int MAX_ACTIVITIES = 500;
+	protected static int MAX_ACTIVITIES = 500;
 	
 	/**
 	 * @return the origin
@@ -60,7 +60,19 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return horizon;
 	}
 
-	private long horizon;
+	protected long horizon;
+	
+	
+	
+	protected ActivityNetworkSolver(Class<?>[] constraintTypes, Class<?> variableType, ConstraintSolver[] internalSolvers, int[] ingredients, long origin, long horizon) {
+		
+		super(constraintTypes,variableType,internalSolvers,ingredients);
+		this.origin=origin;
+		this.horizon=horizon;
+			
+	}
+
+	
 	
 	public ActivityNetworkSolver(long origin, long horizon) {
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
@@ -88,12 +100,12 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		MAX_ACTIVITIES = numActivities;
 	}
 
-	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int numActivities) {
+	protected static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int numActivities) {
 		ConstraintSolver[] ret = new ConstraintSolver[] {new AllenIntervalNetworkSolver(origin, horizon, numActivities), new SymbolicVariableConstraintSolver()};
 		return ret;
 	}
 	
-	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int numActivities, String[] symbols) {
+	protected static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int numActivities, String[] symbols) {
 		ConstraintSolver[] ret = new ConstraintSolver[] {new AllenIntervalNetworkSolver(origin, horizon, numActivities), new SymbolicVariableConstraintSolver(symbols, numActivities)};
 		return ret;
 	}
