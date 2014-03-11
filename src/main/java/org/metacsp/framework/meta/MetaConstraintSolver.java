@@ -319,11 +319,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		
 		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 		
-//		System.out.println("===============XXXXXXXXXXXXXX===========================");
-//		System.out.println(metaVariable);
-//		System.out.println("-------------------------------");
-//		System.out.println(metaVariable.getMetaConstraint().valOH);
-//		System.out.println("===============XXXXXXXXXXXXXX===========================");
+
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
@@ -331,11 +327,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		logger.fine("Solving conflict: " + metaVariable);
 		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
 		if (metaVariable.getMetaConstraint().valOH != null && values!=null){
-//			ConfigMetaConstraintValOH v= (ConfigMetaConstraintValOH)metaVariable.getMetaConstraint().valOH;
-//			System.out.println("===============  ===========================");
-//			System.out.println(metaVariable);
 			Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
-//			System.out.println("===============  ===========================");
 		}
 		if (values == null || values.length == 0) {
 			this.g.addEdge(new NullConstraintNetwork(null), currentVertex, new TerminalNode(false));

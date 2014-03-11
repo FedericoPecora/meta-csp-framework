@@ -49,7 +49,7 @@ public class TestBooleanSatisfiabilitySolverUNSAT {
 		logger.info("SAT? "+solver.addConstraint(clause4));
 		logger.info(Arrays.toString(solver.getVariables()));
 
-		try { Thread.sleep(2000); }
+		try { Thread.sleep(40000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 
 		solver.removeConstraint(clause3);
