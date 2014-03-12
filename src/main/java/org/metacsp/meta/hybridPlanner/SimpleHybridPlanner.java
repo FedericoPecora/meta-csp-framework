@@ -89,7 +89,36 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 
-	
+		
+		
+//		for (int j = 0; j < this.metaConstraints.size(); j++) {
+//			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
+//				Activity metaVarAct = ((Activity)metaVariable.getVariables()[0]);
+//				if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(metaVarAct.getComponent())){ //test
+//					if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().containsKey(metaVarAct)){
+//						
+//						for (int i = 0; i < metaValue.getVariables().length; i++) {
+//							Activity unifiedMetaValueActivity = ((Activity)metaValue.getVariables()[i]);
+//							if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().get(metaVarAct).equals(unifiedMetaValueActivity)){
+//								((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().remove(metaVarAct);
+//								System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//								System.out.println(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().get(metaVarAct));
+//								System.out.println(unifiedMetaValueActivity);
+//								System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//								break;
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+
+		
+		
+
+		
+
+		
 		for (int j = 0; j < this.metaConstraints.size(); j++){ 
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 				FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)this.metaConstraints.get(j);
