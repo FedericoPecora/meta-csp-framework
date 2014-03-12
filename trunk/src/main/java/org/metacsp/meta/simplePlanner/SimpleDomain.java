@@ -79,7 +79,11 @@ public class SimpleDomain extends MetaConstraint {
 	public Schedulable[] getSchedulingMetaConstraints() {
 		return currentResourceUtilizers.keySet().toArray(new Schedulable[currentResourceUtilizers.keySet().size()]);
 	}
-
+	
+	public HashMap<Activity, Activity> getUnificationTrack(){
+		return unificationTrack;
+	}
+	
 	public SimpleDomain(int[] capacities, String[] resourceNames, String domainName) {
 		super(null, null);
 		this.name = domainName;
@@ -286,6 +290,7 @@ public class SimpleDomain extends MetaConstraint {
 	private ConstraintNetwork[] getUnifications(Activity activity) {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Variable[] acts = groundSolver.getVariables();
+				
 		Vector<Activity> possibleUnifications = new Vector<Activity>();
 		Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
 		for (Variable var : acts) {
@@ -305,6 +310,8 @@ public class SimpleDomain extends MetaConstraint {
 				}
 			}
 		}
+		
+		
 		for (Activity act : possibleUnifications) {
 			AllenIntervalConstraint equals = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals);
 			equals.setFrom(activity);
@@ -331,21 +338,28 @@ public class SimpleDomain extends MetaConstraint {
 		
 		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
-		if (isControllable(problematicActivity.getComponent())) {			
+		if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+			
 			if(unifications != null){
 				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
 					//add if it is not the key and is true
 					
-					if(!unificationTrack.keySet().contains(((Activity)unifications[i].getVariables()[0]))){						
-						retPossibleConstraintNetworks.add(unifications[i]);
-						unificationTrack.put(problematicActivity, (Activity)unifications[i].getVariables()[0]);
-						System.out.println("UNIFIED: " + (Activity)unifications[i].getVariables()[0]);
+					Activity unifiedAct = null;
+					for (int j = 0; j < unifications[i].getVariables().length; j++) {
+						if(!((Activity)unifications[i].getVariables()[j]).equals(problematicActivity))
+							unifiedAct = (Activity)unifications[i].getVariables()[j];
 					}
-					else{
-						System.out.println("SKIPED: " +(Activity)unifications[i].getVariables()[0]);
-						
+					
+					
+					if(!unificationTrack.keySet().contains(unifiedAct)){						
+						retPossibleConstraintNetworks.add(unifications[i]);
+						unificationTrack.put(problematicActivity, unifiedAct);
+						System.out.println("UNIFIED: " + unifiedAct);
+					}
+					else{						
+						System.out.println("SKIPED: " +unifiedAct);						
 					}
 				}
 			}
@@ -402,9 +416,7 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
-		if(problematicActivity.getSymbolicVariable().getSymbols()[0].toString().contains("hold")){
-			System.out.println("--->" + retPossibleConstraintNetworks);
-		}
+
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
 		else if (isControllable(problematicActivity.getComponent())) {
