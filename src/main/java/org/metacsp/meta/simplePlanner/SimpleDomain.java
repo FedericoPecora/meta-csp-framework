@@ -74,7 +74,8 @@ public class SimpleDomain extends MetaConstraint {
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
 	
 	//public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
-	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE_UNJ,OBSERVABLE_JUST, OBSERVABLE_LEAF};
+	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVED, IMPOSSIBLE, 
+		COND_UNJUSTIFIED, COND_CURRENT_UNJUSTIFIED};
 
 	public Schedulable[] getSchedulingMetaConstraints() {
 		return currentResourceUtilizers.keySet().toArray(new Schedulable[currentResourceUtilizers.keySet().size()]);

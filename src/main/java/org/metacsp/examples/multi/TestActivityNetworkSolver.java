@@ -41,7 +41,7 @@ public class TestActivityNetworkSolver {
 		Activity act1 = (Activity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable();
-		act2.setSymbolicDomain("B", "C");
+		act2.setSymbolicDomain("B", "C", "D");
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 
@@ -52,7 +52,12 @@ public class TestActivityNetworkSolver {
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);
 		con1.setFrom(act1);
 		con1.setTo(act2);
-		
+
+		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.UNARYEQUALS);
+		con1a.setFrom(act1);
+		con1a.setTo(act1);
+		con1a.setUnaryValue(new boolean[] {false,true,false,false,false,false});
+
 		AllenIntervalConstraint con2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(10, 20));
 		con2.setFrom(act1);
 		con2.setTo(act2);
@@ -73,26 +78,26 @@ public class TestActivityNetworkSolver {
 		con5a.setFrom(act2);
 		con5a.setTo(act2);
 
-		Constraint[] cons = new Constraint[]{con1,con2,con3,con4,con5,con5a};
+		Constraint[] cons = new Constraint[]{con1,con2,con3,con4,con5,con5a,con1a};
 		solver.addConstraints(cons);
 				
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		solver.removeConstraints(new Constraint[] {con1,con2,con3,con4,con5,con5a});
-
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		solver.removeVariables(new Variable[] {act2});
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		solver.removeConstraints(new Constraint[] {con1,con2,con3,con4,con5,con5a});
+//
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		solver.removeVariables(new Variable[] {act2});
 	}
 
 }

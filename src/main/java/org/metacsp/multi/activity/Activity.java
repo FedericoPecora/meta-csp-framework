@@ -61,7 +61,7 @@ public class Activity extends MultiVariable {
 	@Override
 	public String toString() {
 		String ret="";
-		ret += this.getComponent() + "::<" + this.getInternalVariables()[1].toString() + ">U<" + this.getInternalVariables()[0].toString() + ">";
+		ret += this.getComponent()+"("+this.getID()+")" + "::<" + this.getInternalVariables()[1].toString() + ">U<" + this.getInternalVariables()[0].toString() + ">";
 		if (this.getMarking() != null) ret += "/" + this.getMarking();
 		return ret;
 	}

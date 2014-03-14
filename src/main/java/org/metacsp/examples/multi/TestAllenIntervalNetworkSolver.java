@@ -61,6 +61,12 @@ public class TestAllenIntervalNetworkSolver {
 
                 Constraint[] cons = new Constraint[]{con1,con2,con3};
                 System.out.println(solver.addConstraintsDebug(cons) == null);
+                
+                AllenIntervalConstraint con4 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, AllenIntervalConstraint.Type.After.getDefaultBounds());
+                con4.setFrom(intervals[0]);
+                con4.setTo(intervals[2]);
+                
+                System.out.println("FOR JASMIN: " + solver.addConstraint(con4));
 
 
         }
