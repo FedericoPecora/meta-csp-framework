@@ -9,7 +9,9 @@ public class ConstraintNetworkMarking {
 	}
 	
 	public String getState(){return this.networkState;}
-	public void setState(String s){this.networkState=s;}
+	public void setState(String s){
+		this.networkState=s;
+	}
 	
 	
 

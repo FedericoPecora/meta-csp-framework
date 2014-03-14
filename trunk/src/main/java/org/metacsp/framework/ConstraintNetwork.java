@@ -54,6 +54,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public transient Object annotation;
 	public transient Object specilizedAnnotation;
 	public transient ConstraintNetworkMarking marking; // to mark the constraint in the backtracking process
+	
 
 	public Object getSpecilizedAnnotation() {
 		return specilizedAnnotation;
@@ -540,6 +541,15 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 
 	public void setMarking(ConstraintNetworkMarking marking) {
 		this.marking = marking;
+	}
+
+	/**
+	 * This method returns the variables which have been created into the network (i.e. the ones that first were var prototyped 
+	 * and then became activities) 
+	 * @return
+	 */
+	Variable[] getNativeVariables(){
+		return this.substituted.keySet().toArray(new Variable[this.substituted.keySet().size()]);
 	}
 
 	
