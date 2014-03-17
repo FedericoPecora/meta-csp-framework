@@ -81,18 +81,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
-	public void retractResolver(ConstraintNetwork cn) {
-		Set<ConstraintNetwork> vars = resolvers.keySet();
-		for (ConstraintNetwork var : vars) {
-			if(var.equals(cn)){
-				ConstraintNetwork value = resolvers.get(var);
-				logger.fine("=== ||| === Retracting value: " + Arrays.toString(value.getConstraints()));
-				this.retractResolver(var, value);				
-			}
-		}
-	}
-
-	
 	/**
 	 * Retract all resolvers added to the ground-CSP(s) in order to obtain the
 	 * current solution to the meta-CSP.  This is useful if one wants to "reset"
