@@ -337,13 +337,13 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		
 		
-		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+//		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
 		if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
 			
 			if(unifications != null){
-				System.out.println("TRYING: " + problematicActivity);
+//				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
 					//add if it is not the key and is true
 					
@@ -357,10 +357,10 @@ public class SimpleDomain extends MetaConstraint {
 					if(!unificationTrack.keySet().contains(unifiedAct)){						
 						retPossibleConstraintNetworks.add(unifications[i]);
 						unificationTrack.put(problematicActivity, unifiedAct);
-						System.out.println("UNIFIED: " + unifiedAct);
+//						System.out.println("UNIFIED: " + unifiedAct);
 					}
 					else{						
-						System.out.println("SKIPED: " +unifiedAct);						
+//						System.out.println("SKIPED: " +unifiedAct);						
 					}
 				}
 			}
@@ -368,7 +368,11 @@ public class SimpleDomain extends MetaConstraint {
 
 //		System.out.println(unificationTrack);
 		
-		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+//		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+		
+		
+
+
 		
 		//If it's a context var, it needs to be unified (or expanded, see later) 
 		if (isContextVar(problematicActivity.getComponent())) {

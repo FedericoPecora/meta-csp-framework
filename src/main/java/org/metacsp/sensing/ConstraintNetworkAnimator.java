@@ -1,25 +1,33 @@
 package org.metacsp.sensing;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.metacsp.dispatching.Dispatcher;
 import org.metacsp.dispatching.DispatchingFunction;
+import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
+import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
 import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
+import org.metacsp.meta.simplePlanner.SimpleReusableResource;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
@@ -224,31 +232,140 @@ public class ConstraintNetworkAnimator extends Thread {
 				
 				if (hybridPlanner != null) {
 					logger.info("Iteration " + iteration++);
-//					fsDomain.resetContextInference();
 					fsDomain.updateTimeNow(timeNow);
-					hybridPlanner.clearResolvers();
-					hybridPlanner.backtrack();
-//					Vector<Activity> oldInference = new Vector<Activity>();
-					for (ConstraintNetwork cn : hybridPlanner.getAddedResolvers()) {
-						VariablePrototype var = null;
-						for (Variable v : cn.getVariables()) {
-							if (v instanceof VariablePrototype) {
-								if (((VariablePrototype)v).getParameters().length > 2) {
-									if (((VariablePrototype)v).getParameters()[2].equals("Inference")) {
-										var = (VariablePrototype)v;
+//					hybridPlanner.clearResolvers();
+//					hybridPlanner.backtrack();
+					
+					if(!hybridPlanner.backtrack()){
+						System.out.println("komaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaak");
+						System.out.println("Time now: " + timeNow);
+//						Vector<ConstraintNetwork> toBeRemoved = new Vector<ConstraintNetwork>();
+						hybridPlanner.operatorsAlongBranch.clear();
+						Vector<Activity> constraintDomainHasTobeRemoved = new Vector<Activity>();
+						Vector<Activity> actsToBeremoved = new Vector<Activity>();
+						
+						
+						for (ConstraintNetwork cn : hybridPlanner.getResolvers().keySet()) {
+							for (int i = 0; i < hybridPlanner.getGoals().size(); i++) {
+								Activity metaVarAct = ((Activity)cn.getVariables()[0]);
+								if(metaVarAct.equals(hybridPlanner.getGoals().get(i))){
+									metaVarAct.setMarking(org.metacsp.meta.simplePlanner.SimpleDomain.markings.UNJUSTIFIED);
+									constraintDomainHasTobeRemoved.add(metaVarAct);
+								}								
+								else if(metaVarAct.getTemporalVariable().getLST() >= timeNow - 1){
+									constraintDomainHasTobeRemoved.add(metaVarAct);
+									actsToBeremoved.add(metaVarAct);
+//									System.out.println("has to be removed: " + metaVarAct);
+								}									
+							}							
+						}						
+
+						
+						
+						//delete all the constraints involves planned activity
+						ActivityNetworkSolver groundActSolver =  ((ActivityNetworkSolver)((SpatialFluentSolver)hybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
+						Vector<Constraint> consToBeRemoved = new Vector<Constraint>();
+						for (int i = 0; i < groundActSolver.getConstraints().length; i++) {
+//							System.out.println("trying constraint: " + groundActSolver.getConstraints()[i]);
+							for (int j = 0; j < constraintDomainHasTobeRemoved.size(); j++) {
+								if(groundActSolver.getConstraints()[i].getScope()[0].equals(constraintDomainHasTobeRemoved.get(j)) || 
+										groundActSolver.getConstraints()[i].getScope()[1].equals(constraintDomainHasTobeRemoved.get(j))){
+//									System.out.println("to be removed: " + groundActSolver.getConstraints()[i]);
+									consToBeRemoved.add(groundActSolver.getConstraints()[i]);
+									break;
+									
+								}
+							}
+						}
+						
+						groundActSolver.removeConstraints(consToBeRemoved.toArray(new Constraint[consToBeRemoved.size()]));
+						
+						
+						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){ 
+							if(hybridPlanner.getMetaConstraints()[j] instanceof FluentBasedSimpleDomain ){
+								FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)hybridPlanner.getMetaConstraints()[j];
+								for (Variable v : actsToBeremoved) {
+									for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
+										rr.removeUsage((Activity)v);
 									}
 								}
 							}
 						}
-						if (var != null) {
-							Activity act = (Activity)cn.getSubstitution(var);
-//							fsDomain.setOldInference(act.getComponent(), act);
-						}
+						
+						groundActSolver.removeVariables(actsToBeremoved.toArray(new Activity[actsToBeremoved.size()]));
+//						hybridPlanner.retractResolvers();
+						hybridPlanner.clearResolvers();
+						
+						
+						
+
+//						for (int i = 0; i < toBeRemoved.size(); i++) {
+//							if(hybridPlanner.getResolvers().containsKey(toBeRemoved.get(i))){
+////								hybridPlanner.getResolvers().remove(toBeRemoved.get(i));
+//								hybridPlanner.retractResolver(toBeRemoved.get(i));
+//							}
+//						}
+						
+//						System.out.println(hybridPlanner.getGroundVariables());						
+//						for (ConstraintNetwork cn : hybridPlanner.getResolvers().keySet()) {
+//							
+//							System.out.println("metaVar: " + cn);
+//							System.out.println("============================");
+//							System.out.println("metaVar: " + hybridPlanner.getResolvers().get(cn));
+//							System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");	
+//						}
 					}
-				}
-				
+				}				
 			}
 		}
 	}
+	
+	private  void printOutActivityNetwork(ActivityNetworkSolver actSolver) {
+
+		//sort Activity based on the start time for debugging purpose
+		HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
+		for (int i = 0; i < actSolver.getVariables().length; i++) {
+			starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
+		}
+
+		//Collections.sort(starttimes.values());
+		starttimes =  sortHashMapByValuesD(starttimes);
+		for (Activity act0 : starttimes.keySet()) {
+			System.out.println(act0 + " --> " + starttimes.get(act0));
+		}
+		
+	}
+
+	
+	private  LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
+		ArrayList mapKeys = new ArrayList(passedMap.keySet());
+		ArrayList mapValues = new ArrayList(passedMap.values());
+		Collections.sort(mapValues);
+		Collections.sort(mapKeys);
+
+		LinkedHashMap sortedMap = 
+				new LinkedHashMap();
+
+		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
+		while (valueIt.hasNext()) {
+			long val = (Long) valueIt.next();
+			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
+
+			while (keyIt.hasNext()) {
+				Activity key = (Activity) keyIt.next();
+				long comp1 = (Long) passedMap.get(key);
+				long comp2 = val;
+
+				if (comp1 == comp2){
+					passedMap.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put(key, val);
+					break;
+				}
+			}
+		}
+		return sortedMap;
+	}
+
 	
 }
