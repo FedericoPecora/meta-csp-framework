@@ -112,6 +112,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 		MetaCSPLogging.setLevel(SimpleHybridPlanner.class, Level.FINEST);
 		MetaCSPLogging.setLevel(MetaSpatialAdherenceConstraint.class, Level.FINEST);
+		MetaCSPLogging.setLevel(FluentBasedSimpleDomain.class, Level.FINEST);
 		//#################################################################################################################
 		//add metaOccupiedConstraint
 		metaOccupiedConstraint = new MetaOccupiedConstraint(null, null);
@@ -132,6 +133,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(0,0,0,0)++true");
 		act.setMarking(markings.UNJUSTIFIED);
 
+		simpleHybridPlanner.addGoal((Activity)act);
 		//################################################################################################
 		//get controllable symbols
 		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
@@ -167,22 +169,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		DispatchingFunction df = new DispatchingFunction("RobotAction") {
 			@Override
 			public void dispatch(Activity act) {
-				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
-//				//#####################################################################################################################
-//				ActivityNetworkSolver actSolver = ((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-//				//sort Activity based on the start time for debugging purpose
-//				HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
-//				for (int i = 0; i < actSolver.getVariables().length; i++) {
-//					starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
-//				}
-//
-//				//          Collections.sort(starttimes.values());
-//				starttimes =  sortHashMapByValuesD(starttimes);
-//				for (Activity act0 : starttimes.keySet()) {
-//					System.out.println(act0 + " --> " + starttimes.get(act0));
-//				}
-//				//#####################################################################################################################
-				
+				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);				
 				executingActs.add(act);
 
 			}
@@ -195,6 +182,9 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
 				if(counter == 0){
+					
+					printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
+					
 					counter ++;
 				}
 				else if(counter == 1){
@@ -209,6 +199,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 					counter++;
 				}
 			}
+
 		}; 
 		dispatches.add(dfSense);
 
@@ -279,15 +270,15 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		
 
 		//if this is already planned so it has to unified with the real observation i.e., spatial fluents
-		if(act != null){
-			AllenIntervalConstraint unify = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals, AllenIntervalConstraint.Type.Equals);
-			unify.setFrom(sf.getActivity());
-			unify.setTo(act);
-			System.out.println("***********************************************************");
-			System.out.println(unify);
-			System.out.println("***********************************************************");
-			groundSolver.getConstraintSolvers()[1].addConstraint(unify);
-		}
+//		if(act != null){
+//			AllenIntervalConstraint unify = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals, AllenIntervalConstraint.Type.Equals);
+//			unify.setFrom(sf.getActivity());
+//			unify.setTo(act);
+//			System.out.println("***********************************************************");
+//			System.out.println(unify);
+//			System.out.println("***********************************************************");
+//			groundSolver.getConstraintSolvers()[1].addConstraint(unify);
+//		}
 
 		
 		addDurationToActivity(groundSolver, duration, sf.getActivity());
@@ -310,15 +301,15 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));
 	}
 	
-	private static void releaseActivity(SpatialFluentSolver groundSolver,
-			long releaseTime, Activity act) {
+	private static void releaseActivity(SpatialFluentSolver groundSolver, long releaseTime, Activity act) {
 		
 		Vector<Constraint> cons = new Vector<Constraint>();
 		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(releaseTime,releaseTime));
 		releaseHolding.setFrom(act);
 		releaseHolding.setTo(act);
 		cons.add(releaseHolding);
-		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));		
+		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));
+		
 	}
 
 	private static void updateObservation(String fluentId, String[] coords,
@@ -369,10 +360,25 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			currentObservation.put(fluentId, objectAssertion);
 
 		}
-
-
 	}
 
+	private static void printOutActivityNetwork(ActivityNetworkSolver actSolver) {
+
+		//sort Activity based on the start time for debugging purpose
+		HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
+		for (int i = 0; i < actSolver.getVariables().length; i++) {
+			starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
+		}
+
+		//Collections.sort(starttimes.values());
+		starttimes =  sortHashMapByValuesD(starttimes);
+		for (Activity act0 : starttimes.keySet()) {
+			System.out.println(act0 + " --> " + starttimes.get(act0));
+		}
+		
+	}
+
+	
 	private static LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
 		ArrayList mapKeys = new ArrayList(passedMap.keySet());
 		ArrayList mapValues = new ArrayList(passedMap.values());

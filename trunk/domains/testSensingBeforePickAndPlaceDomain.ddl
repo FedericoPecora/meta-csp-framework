@@ -207,7 +207,47 @@
 
 #########################cup######################################
 
+#tray
 
+(SimpleOperator
+ (Head atLocation::at_cup1_tray1())
+ (RequiredState req1 RobotAction::place_cup1_tray1())
+ (Constraint StartedBy(Head,req1))
+ (Constraint OverlappedBy(Head,req1))
+ (Constraint Duration[2000,INF](Head))
+)
+
+(SimpleOperator
+ (Head RobotAction::pick_cup1_tray1())
+ (RequiredState req1 atLocation::at_cup1_tray1())
+ (RequiredState req2 RobotSense::sensing_before_picking_cup1_tray1())
+ (RequiredState req3 atLocation::at_robot1_table1())
+ (Constraint During(Head,req3))
+ (Constraint MetBy(Head,req2))
+ (Constraint MetBy(Head,req1))
+ (Constraint Duration[2000,INF](Head))
+ (RequiredResource arm(1))
+)
+
+(SimpleOperator
+ (Head RobotProprioception::holding_cup1())
+ (RequiredState req1 RobotAction::pick_cup1_tray1())
+ (Constraint MetBy(Head,req1))
+ (Constraint Duration[2000,INF](Head))
+ (RequiredResource arm(1))
+)
+
+(SimpleOperator
+ (Head RobotAction::place_cup1_tray1())
+ (RequiredState req1 RobotProprioception::holding_cup1())
+(RequiredState req2 RobotSense::sensing_before_placing_cup1_tray1())
+ (RequiredState req3 atLocation::at_robot1_table1())
+ (Constraint During(Head,req3))
+ (Constraint MetBy(Head,req2))
+ (Constraint MetBy(Head,req1))
+ (Constraint Duration[2000,INF](Head))
+ (RequiredResource arm(1))
+)
 
 #table
 
@@ -284,47 +324,6 @@
  (RequiredResource arm(1))
 )
 
-#tray
-
-(SimpleOperator
- (Head atLocation::at_cup1_tray1())
- (RequiredState req1 RobotAction::place_cup1_tray1())
- (Constraint StartedBy(Head,req1))
- (Constraint OverlappedBy(Head,req1))
- (Constraint Duration[2000,INF](Head))
-)
-
-(SimpleOperator
- (Head RobotAction::pick_cup1_tray1())
- (RequiredState req1 atLocation::at_cup1_tray1())
- (RequiredState req2 RobotSense::sensing_before_picking_cup1_tray1())
- (RequiredState req3 atLocation::at_robot1_table1())
- (Constraint During(Head,req3))
- (Constraint MetBy(Head,req2))
- (Constraint MetBy(Head,req1))
- (Constraint Duration[2000,INF](Head))
- (RequiredResource arm(1))
-)
-
-(SimpleOperator
- (Head RobotProprioception::holding_cup1())
- (RequiredState req1 RobotAction::pick_cup1_tray1())
- (Constraint MetBy(Head,req1))
- (Constraint Duration[2000,INF](Head))
- (RequiredResource arm(1))
-)
-
-(SimpleOperator
- (Head RobotAction::place_cup1_tray1())
- (RequiredState req1 RobotProprioception::holding_cup1())
-(RequiredState req2 RobotSense::sensing_before_placing_cup1_tray1())
- (RequiredState req3 atLocation::at_robot1_table1())
- (Constraint During(Head,req3))
- (Constraint MetBy(Head,req2))
- (Constraint MetBy(Head,req1))
- (Constraint Duration[2000,INF](Head))
- (RequiredResource arm(1))
-)
 
 
 

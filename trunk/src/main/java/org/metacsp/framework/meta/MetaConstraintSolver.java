@@ -66,7 +66,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	//private Vector<HashMap<ConstraintSolver,ConstraintNetwork>> statesAlongCurrentBranch = new Vector<HashMap<ConstraintSolver,ConstraintNetwork>>(); 
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
-	
+		
 	public MetaConstraint[] getMetaConstraints() {
 		return this.metaConstraints.toArray(new MetaConstraint[this.metaConstraints.size()]);
 	}
@@ -80,6 +80,18 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		Collection<ConstraintNetwork> ret = resolvers.values();
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
+
+	public void retractResolver(ConstraintNetwork cn) {
+		Set<ConstraintNetwork> vars = resolvers.keySet();
+		for (ConstraintNetwork var : vars) {
+			if(var.equals(cn)){
+				ConstraintNetwork value = resolvers.get(var);
+				logger.fine("=== ||| === Retracting value: " + Arrays.toString(value.getConstraints()));
+				this.retractResolver(var, value);				
+			}
+		}
+	}
+
 	
 	/**
 	 * Retract all resolvers added to the ground-CSP(s) in order to obtain the
@@ -409,7 +421,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	
 
 	protected final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {
-		if (!this.addResolverSub(metaVarConstraintNetwork, resolverNetwork)) return false;	
+		if (!this.addResolverSub(metaVarConstraintNetwork, resolverNetwork)) return false;
 		Constraint[] resolverNetworkConstraints = resolverNetwork.getConstraints();
 		HashMap<ConstraintSolver, Vector<Constraint>> solvers2constraints = 
 				new HashMap<ConstraintSolver, Vector<Constraint>>();		

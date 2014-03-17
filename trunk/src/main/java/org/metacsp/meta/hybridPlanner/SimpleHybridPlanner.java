@@ -35,7 +35,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private long horizon = 0;
 	public Vector<SimpleOperator> operatorsAlongBranch = new Vector<SimpleOperator>();
 	public Vector<String> unificationAlongBranch = new  Vector<String>();
-
+	private Vector<Activity> goals = new Vector<Activity>();//this contains original goals (not sub goal)
+	
+	
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				animationTime, new SpatialFluentSolver(origin, horizon)	);
@@ -319,6 +321,15 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 		return null;
+	}
+
+
+	public void addGoal(Activity act) {
+		goals.add(act);
+	}
+	
+	public Vector<Activity> getGoals(){
+		return goals;
 	}
 
 
