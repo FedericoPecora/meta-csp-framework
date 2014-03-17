@@ -41,7 +41,7 @@ public class SymbolicVariable extends MultiVariable {
 			else wff += "w" + (i+1);
 		}
 		for (int i = 0; i < variables.length; i++) wff += ")";
-		System.out.println("TEST: " + wff);
+		logger.finest("Generated internal WFF for variable " + this.getID() + ": " + wff);
 		BooleanVariable[] bvs = new BooleanVariable[variables.length];
 		for (int i = 0; i < bvs.length; i++) bvs[i] = (BooleanVariable)variables[i];
 		BooleanConstraint[] ret = BooleanConstraint.createBooleanConstraints(bvs, wff);
