@@ -25,8 +25,6 @@ import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 

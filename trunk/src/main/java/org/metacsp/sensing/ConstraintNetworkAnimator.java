@@ -22,9 +22,6 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.sat4j.specs.ContradictionException;
-
-import cern.colt.Arrays;
 
 public class ConstraintNetworkAnimator extends Thread {
 	

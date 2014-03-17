@@ -3,6 +3,7 @@ package org.metacsp.multi.symbols;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanDomain;
 import org.metacsp.booleanSAT.BooleanVariable;
 import org.metacsp.framework.Constraint;
@@ -33,7 +34,18 @@ public class SymbolicVariable extends MultiVariable {
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
 		// TODO Auto-generated method stub
-		return null;
+		// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT LEAST ONE SYMBOL!
+		String wff = "(";
+		for (int i = 0; i < variables.length; i++) {
+			if (i != variables.length-1) wff += "w" + (i+1) + " v (";
+			else wff += "w" + (i+1);
+		}
+		for (int i = 0; i < variables.length; i++) wff += ")";
+		System.out.println("TEST: " + wff);
+		BooleanVariable[] bvs = new BooleanVariable[variables.length];
+		for (int i = 0; i < bvs.length; i++) bvs[i] = (BooleanVariable)variables[i];
+		BooleanConstraint[] ret = BooleanConstraint.createBooleanConstraints(bvs, wff);
+		return ret;
 	}
 
 	@Override

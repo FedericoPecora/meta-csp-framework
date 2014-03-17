@@ -83,7 +83,6 @@ public class Dispatcher extends Thread {
 									overlapsFuture.setFrom(act);
 									overlapsFuture.setTo(future);
 									boolean ret = ans.addConstraint(overlapsFuture);
-									System.out.println("ADD OVL: " + ret);
 									if(!ret){
 										System.out.println("IGNORED: " + act);
 									}

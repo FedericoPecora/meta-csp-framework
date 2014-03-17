@@ -84,13 +84,16 @@ public class TestProactivePlanningAndDispatching {
 			for (int i = 0; i < executingActs.size(); i++) System.out.println(i + ". " + executingActs.elementAt(i));
 			System.out.println("--");
 			System.out.print("Please enter activity to finish: ");  
-			String input = "";  
+			String input = "";
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
 			try { input = br.readLine(); }
 			catch (IOException e) { e.printStackTrace(); }
 			if (!input.trim().equals("")) {
-				df.finish(executingActs.elementAt(Integer.parseInt(input)));
-				executingActs.remove(Integer.parseInt(input));
+				try {
+					df.finish(executingActs.elementAt(Integer.parseInt(input)));
+					executingActs.remove(Integer.parseInt(input));
+				}
+				catch (ArrayIndexOutOfBoundsException e1) { /* Ignore unknown activity */ }
 			}
 		}
 
