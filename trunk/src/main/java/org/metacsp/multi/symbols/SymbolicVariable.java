@@ -35,6 +35,9 @@ public class SymbolicVariable extends MultiVariable {
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
 		// TODO Auto-generated method stub
 		// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT LEAST ONE SYMBOL!
+		if (variables == null || variables.length == 0) return null;
+		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols() == null) return null;
+		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols().length == 0) return null;
 		String wff = "(";
 		for (int i = 0; i < variables.length; i++) {
 			if (i != variables.length-1) wff += "w" + (i+1) + " v (";
