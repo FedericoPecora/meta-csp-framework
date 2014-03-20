@@ -33,6 +33,7 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariablePrototype;
+import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 
@@ -68,7 +69,9 @@ public class SimplePlanner extends MetaConstraintSolver {
 			}
 		}
 
-		SimpleDomain sd = (SimpleDomain)this.metaConstraints.elementAt(0);
+		SimpleDomain sd = null;
+		for (MetaConstraint mcon : this.metaConstraints) if (mcon instanceof SimpleDomain) sd = (SimpleDomain)mcon; 
+		
 		for (Variable v : activityToRemove) {
 			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
 				rr.removeUsage((Activity)v);
@@ -109,10 +112,12 @@ public class SimplePlanner extends MetaConstraintSolver {
 			possibleOperatorConstraintNetwork.removeConstraint(con);
 			possibleOperatorConstraintNetwork.addConstraint(clonedConstraint);
 		}
-		
+
+		SimpleDomain sd = null;
+		for (MetaConstraint mcon : this.metaConstraints) if (mcon instanceof SimpleDomain) sd = (SimpleDomain)mcon; 
+
 		//Set resource usage if necessary
 		for (Variable v : possibleOperatorConstraintNetwork.getVariables()) {
-			SimpleDomain sd = (SimpleDomain)this.metaConstraints.elementAt(0);
 			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity(v)) {
 				rr.setUsage((Activity)v);
 			}

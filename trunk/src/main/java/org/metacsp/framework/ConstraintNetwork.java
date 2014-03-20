@@ -53,7 +53,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	
 	public transient Object annotation;
 	public transient Object specilizedAnnotation;
-	public transient ConstraintNetworkMarking marking; // to mark the constraint in the backtracking process
+	public transient ConstraintNetworkMarking marking; // to mark the ConstraintNetwork in the backtracking process
 	
 
 	public Object getSpecilizedAnnotation() {

@@ -134,6 +134,9 @@ public abstract class MetaConstraint extends Constraint {
 	 * @param metaVariable The {@link MetaVariable} for which we seek meta values.
 	 * @return All meta values for the given {@link MetaVariable}.
 	 */
+	@Deprecated
+	//FPA: general backtracking search should not depend on there being a temporal network
+	//     at the ground level.
 	public abstract ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initial_time);
 
 	/**
