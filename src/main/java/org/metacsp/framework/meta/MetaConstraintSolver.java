@@ -176,28 +176,28 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 * @return <code>true</code> iff a set of assignments to all {@link MetaVariable}s which
 	 * satisfies the {@link MetaConstraint}s was found.
 	 */
-	public boolean backtrack() {
-		return backtrack(0);
-	}
 //	public boolean backtrack() {
-//		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
-//		logger.info("Starting search...");
-////		preBacktrack();
-//		MetaVariable conflict = null;
-//		if ((conflict = this.getConflict()) != null) {
-//			currentVertex = conflict;
-//			if (backtrackHelper(conflict)) {
-////				postBacktrack();
-//				logger.info("... solution found");
-//				return true;
-//			}
-////			postBacktrack();
-//			return false;
-//		}
-////		postBacktrack();
-//		logger.info("... no conflicts found");		
-//		return true;
+//		return backtrack(0);
 //	}
+	public boolean backtrack() {
+		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
+		logger.info("Starting search...");
+//		preBacktrack();
+		MetaVariable conflict = null;
+		if ((conflict = this.getConflict()) != null) {
+			currentVertex = conflict;
+			if (backtrackHelper(conflict)) {
+//				postBacktrack();
+				logger.info("... solution found");
+				return true;
+			}
+//			postBacktrack();
+			return false;
+		}
+//		postBacktrack();
+		logger.info("... no conflicts found");		
+		return true;
+	}
 	
 	/**
 	 * Initiates CSP-style backtracking search on the meta-CSP with intial time.  
@@ -205,6 +205,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 * satisfies the {@link MetaConstraint}s was found. The initial_time parameter constraints all the moves
 	 * of the constraint solvers to act after such instant
 	 */
+	//FPA: This method should be removed (poor maintainability, mixes time with non-temporal
+	//     resolution, backtracking should not depend on time.)  Fix: this behavior should be
+	//     implemented in specific metaconstraint solvers - see, e.g., how this is done in
+	//     the SimplePlanner.
+	@Deprecated	
 	public boolean backtrack(int initial_time) {
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		logger.info("Starting search...");
@@ -238,73 +243,73 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 //		statesAlongCurrentBranch.add(currentState);
 //		return true;
 //	}
+	
+	//FPA: Is this used? Seems not... please remove! 
 	private boolean timeout = false;
 	public boolean getTimeOut(){
 		return timeout;
 	}
 	
-	private boolean backtrackHelper(MetaVariable metaVariable) {
-		return backtrackHelper(metaVariable,0);
-	}
-	
 //	private boolean backtrackHelper(MetaVariable metaVariable) {
-//		preBacktrack();
-//		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
-//		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
-//		logger.fine("Solving conflict: " + metaVariable);
-//		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable);	
-//		if (metaVariable.getMetaConstraint().valOH != null && values!=null) Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
-//		if (values == null || values.length == 0) {
-//			this.g.addEdge(new NullConstraintNetwork(null), currentVertex, new TerminalNode(false));
-//			logger.fine("Failure (1)...");		
-//		}
-//		else {
-//			for (ConstraintNetwork value : values) {
-//				if (animationTime != 0) {
-//					try { Thread.sleep(animationTime); }
-//					catch (InterruptedException e) { e.printStackTrace(); }
-//				}
-//				String valString = "";
-//				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
-//				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
-//				logger.fine("Trying value: " + valString);
-//				if (this.addResolver(mostProblematicNetwork, value)) {
-//					this.resolvers.put(mostProblematicNetwork, value);
-//					this.counterMoves++;
-//
-//					logger.fine("Success...");		
-//					
-//					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
-//					MetaVariable newConflict = this.getConflict();
-//					
-//					if (newConflict == null || breakSearch) {
-//						this.g.addEdge(value, currentVertex, new TerminalNode(true));
-//						breakSearch = false;
-//						return true;
-//					}
-//					// addEdege(e,v,v)
-//					this.g.addEdge(value, currentVertex, newConflict);
-//					currentVertex = newConflict;
-//					if (backtrackHelper(newConflict)) return true;					
-//					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
-//					this.retractResolver(mostProblematicNetwork, value);
-//					this.resolvers.remove(mostProblematicNetwork);			
-//					this.counterMoves--;
-//
-//				}
-//				else {
-//					this.g.addEdge(value, currentVertex, new TerminalNode(false));
-////					this.counterMoves--;
-////					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!");
-//					logger.fine("Failure... (2)");
-//				}
-//			}
-//		}
-//		logger.fine("Backtracking...");
-//		currentVertex = this.g.getParent(currentVertex);
-//		postBacktrack(metaVariable);
-//		return false;
+//		return backtrackHelper(metaVariable,0);
 //	}
+	
+	private boolean backtrackHelper(MetaVariable metaVariable) {
+		preBacktrack();
+		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
+		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
+		logger.fine("Solving conflict: " + metaVariable);
+		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable);	
+		if (metaVariable.getMetaConstraint().valOH != null && values!=null) Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
+		if (values == null || values.length == 0) {
+			this.g.addEdge(new NullConstraintNetwork(null), currentVertex, new TerminalNode(false));
+			logger.fine("Failure (1)...");		
+		}
+		else {
+			for (ConstraintNetwork value : values) {
+				if (animationTime != 0) {
+					try { Thread.sleep(animationTime); }
+					catch (InterruptedException e) { e.printStackTrace(); }
+				}
+				String valString = "";
+				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
+				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
+				logger.fine("Trying value: " + valString);
+				if (this.addResolver(mostProblematicNetwork, value)) {
+					this.resolvers.put(mostProblematicNetwork, value);
+					this.counterMoves++;
+
+					logger.fine("Success...");		
+					
+					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
+					MetaVariable newConflict = this.getConflict();
+					
+					if (newConflict == null || breakSearch) {
+						this.g.addEdge(value, currentVertex, new TerminalNode(true));
+						breakSearch = false;
+						return true;
+					}
+					// addEdege(e,v,v)
+					this.g.addEdge(value, currentVertex, newConflict);
+					currentVertex = newConflict;
+					if (backtrackHelper(newConflict)) return true;					
+					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
+					this.retractResolver(mostProblematicNetwork, value);
+					this.resolvers.remove(mostProblematicNetwork);			
+					this.counterMoves--;
+
+				}
+				else {
+					this.g.addEdge(value, currentVertex, new TerminalNode(false));
+					logger.fine("Failure... (2)");
+				}
+			}
+		}
+		logger.fine("Backtracking...");
+		currentVertex = this.g.getParent(currentVertex);
+		postBacktrack(metaVariable);
+		return false;
+	}
 	
 	protected boolean processSolution(MetaVariable metaVariable,ConstraintNetwork value){
 		this.g.addEdge(value, currentVertex, new TerminalNode(true));
@@ -315,14 +320,19 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return true;
 	}
 	
+	//FPA: This method should be removed (poor maintainability, mixes time with non-temporal
+	//     resolution, backtracking should not depend on time.)  Fix: this behavior should be
+	//     implemented in specific metaconstraint solvers - see, e.g., how this is done in
+	//     the SimplePlanner.
+	@Deprecated
 	protected boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
 		
 		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
-		
 
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
-		logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
+		//FPA: if this is important, please make proper logging message
+		//logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
 		logger.fine("Solving conflict: " + metaVariable);
 		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
@@ -334,7 +344,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 			logger.fine("Failure (1)...");		
 		}
 		else {
-			logger.finest("FOUND " + values.length+" MOVES");
+			//FPA: if this is important, please make proper logging message
+			//logger.finest("FOUND " + values.length+" MOVES");
 			for (ConstraintNetwork value : values) {
 				if (animationTime != 0) {
 					try { Thread.sleep(animationTime); }
