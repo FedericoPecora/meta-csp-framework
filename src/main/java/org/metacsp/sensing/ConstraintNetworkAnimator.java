@@ -26,6 +26,7 @@ import org.metacsp.meta.simplePlanner.SimpleReusableResource;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.Bounds;
@@ -236,6 +237,8 @@ public class ConstraintNetworkAnimator extends Thread {
 //					hybridPlanner.clearResolvers();
 //					hybridPlanner.backtrack();
 					
+					long timeNow1 = Calendar.getInstance().getTimeInMillis();
+
 					if(!hybridPlanner.backtrack()){
 						System.out.println("komaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaak");
 						System.out.println("Time now: " + timeNow);
@@ -255,7 +258,7 @@ public class ConstraintNetworkAnimator extends Thread {
 								else if(metaVarAct.getTemporalVariable().getLST() >= timeNow - 1){
 									constraintDomainHasTobeRemoved.add(metaVarAct);
 									actsToBeremoved.add(metaVarAct);
-//									System.out.println("has to be removed: " + metaVarAct);
+									System.out.println("has to be removed: " + metaVarAct);
 								}									
 							}							
 						}						
@@ -272,20 +275,33 @@ public class ConstraintNetworkAnimator extends Thread {
 										groundActSolver.getConstraints()[i].getScope()[1].equals(constraintDomainHasTobeRemoved.get(j))){
 //									System.out.println("to be removed: " + groundActSolver.getConstraints()[i]);
 									consToBeRemoved.add(groundActSolver.getConstraints()[i]);
-									break;
-									
+									break;									
 								}
 							}
 						}
 						
 						groundActSolver.removeConstraints(consToBeRemoved.toArray(new Constraint[consToBeRemoved.size()]));
 						
+
+						
+						
+						Vector<Activity> activityOnResourceUse = new Vector<Activity>();
+						//print all resources in use
+						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){
+							if(hybridPlanner.getMetaConstraints()[j] instanceof SimpleReusableResource ){
+								SimpleReusableResource rr = (SimpleReusableResource)hybridPlanner.getMetaConstraints()[j];
+								activityOnResourceUse.addAll(rr.getActivityOnUse());																
+							}
+						}
+						
+						System.out.println("ActivityOnUse: " + activityOnResourceUse);
 						
 						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){ 
 							if(hybridPlanner.getMetaConstraints()[j] instanceof FluentBasedSimpleDomain ){
 								FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)hybridPlanner.getMetaConstraints()[j];
-								for (Variable v : actsToBeremoved) {
+								for (Variable v : activityOnResourceUse) {
 									for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
+//										System.out.println("--->" + (Activity)v);
 										rr.removeUsage((Activity)v);
 									}
 								}
@@ -293,28 +309,19 @@ public class ConstraintNetworkAnimator extends Thread {
 						}
 						
 						groundActSolver.removeVariables(actsToBeremoved.toArray(new Activity[actsToBeremoved.size()]));
-//						hybridPlanner.retractResolvers();
 						hybridPlanner.clearResolvers();
 						
+						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){ 
+							if(hybridPlanner.getMetaConstraints()[j] instanceof FluentBasedSimpleDomain ){
+								FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)hybridPlanner.getMetaConstraints()[j];
+//								System.out.println(" @@@@@@@@@ " + mcc.getAllResourceUsageLevel());
+								mcc.resetAllResourceAllocation();
+								break;
+							}
+						}
 						
-						
-
-//						for (int i = 0; i < toBeRemoved.size(); i++) {
-//							if(hybridPlanner.getResolvers().containsKey(toBeRemoved.get(i))){
-////								hybridPlanner.getResolvers().remove(toBeRemoved.get(i));
-//								hybridPlanner.retractResolver(toBeRemoved.get(i));
-//							}
-//						}
-						
-//						System.out.println(hybridPlanner.getGroundVariables());						
-//						for (ConstraintNetwork cn : hybridPlanner.getResolvers().keySet()) {
-//							
-//							System.out.println("metaVar: " + cn);
-//							System.out.println("============================");
-//							System.out.println("metaVar: " + hybridPlanner.getResolvers().get(cn));
-//							System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");	
-//						}
 					}
+					System.out.println("TOTAL TIME: " + (Calendar.getInstance().getTimeInMillis()-timeNow1));
 				}				
 			}
 		}

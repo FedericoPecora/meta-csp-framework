@@ -44,7 +44,7 @@ public class TestSymbolicVariableConstraintSolver {
 		Variable[] vars = solver.createVariables(2);
 		
 		((SymbolicVariable)vars[0]).setDomain(new String[] {"B", "D", "F", "S1", "S2"});
-
+ 
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
 		try { Thread.sleep(2000); }

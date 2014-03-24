@@ -332,6 +332,14 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		return goals;
 	}
 
+	private Vector<SpatialFluent> observedSpatialFluents = new Vector<SpatialFluent>();
+	public void addObservedSpatialFluents(SpatialFluent observedSpatialFluent) {
+		observedSpatialFluents.add(observedSpatialFluent);
+	}
+
+	public Vector<SpatialFluent> getObservedSpatialFluents(){
+		return observedSpatialFluents;
+	}
 
 
 }

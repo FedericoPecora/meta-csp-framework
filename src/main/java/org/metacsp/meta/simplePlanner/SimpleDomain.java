@@ -371,6 +371,17 @@ public class SimpleDomain extends MetaConstraint {
 //		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		
 		
+//		if (isControllable(problematicActivity.getComponent())) {
+//			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+//			
+//			if(unifications != null){
+////				System.out.println("TRYING: " + problematicActivity);
+//				for (int i = 0; i < unifications.length; i++) {
+//					//add if it is not the key and is true
+//					retPossibleConstraintNetworks.add(unifications[i]);
+//				}
+//			}
+//		}
 
 
 		
@@ -462,7 +473,17 @@ public class SimpleDomain extends MetaConstraint {
 	public int getResourceUsageLevel(SimpleReusableResource rr, Variable act) {
 		return currentResourceUtilizers.get(rr).get(act);
 	}
+	
+	public HashMap<SimpleReusableResource,HashMap<Variable,Integer>> getAllResourceUsageLevel(){
+		return currentResourceUtilizers;
+	}
 
+	public void resetAllResourceAllocation(){
+		currentResourceUtilizers = new HashMap<SimpleReusableResource, HashMap<Variable,Integer>>();
+		for (SimpleReusableResource rr : resourcesMap.values()) currentResourceUtilizers.put(rr,new HashMap<Variable, Integer>());
+
+	}
+	
 	@Override
 	public String toString() {
 		String ret = this.getClass().getSimpleName() + " " + this.name;
@@ -556,13 +577,15 @@ public class SimpleDomain extends MetaConstraint {
 			}
 			String from = null;
 			String to = null;
+			String fromSeg = null;
 			if (constraintName.equals("Duration")) {
 				from = conElement.substring(conElement.indexOf("(")+1, conElement.indexOf(")")).trim();
 				to = from;
 			}
 			else {
-				from = conElement.substring(conElement.indexOf("(")+1, conElement.indexOf(",")).trim();
-				to = conElement.substring(conElement.indexOf(",")+1, conElement.indexOf(")")).trim();
+				fromSeg = conElement.substring(conElement.indexOf("("));
+				from = fromSeg.substring(fromSeg.indexOf("(")+1, fromSeg.indexOf(",")).trim();
+				to = fromSeg.substring(fromSeg.indexOf(",")+1, fromSeg.indexOf(")")).trim();
 			}
 
 			AllenIntervalConstraint con = null;
