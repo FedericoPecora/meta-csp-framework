@@ -50,7 +50,7 @@ import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 public class TestHybridPlanningWithSensingAndDispatching {
 
 	static int pad = 0;    
-	static long duration = 1000; //both for activity and location
+	static long duration = 10000; //both for activity and location
 	static long tick = 1000;
 	static HashMap<String, SpatialAssertionalRelation> currentObservation = new HashMap<String, SpatialAssertionalRelation>();
 
@@ -112,7 +112,6 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 		MetaCSPLogging.setLevel(SimpleHybridPlanner.class, Level.FINEST);
 		MetaCSPLogging.setLevel(MetaSpatialAdherenceConstraint.class, Level.FINEST);
-		MetaCSPLogging.setLevel(FluentBasedSimpleDomain.class, Level.FINEST);
 		//#################################################################################################################
 		//add metaOccupiedConstraint
 		metaOccupiedConstraint = new MetaOccupiedConstraint(null, null);

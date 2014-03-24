@@ -490,5 +490,9 @@ public abstract class Schedulable extends MetaConstraint {
 		for (Activity act : acts) activities.removeElement(act);
 		//System.out.println("-->" + activities.size());
 	}
-
+	
+		
+	public Vector<Activity> getActivityOnUse(){
+		return activities;
+	}
 }
