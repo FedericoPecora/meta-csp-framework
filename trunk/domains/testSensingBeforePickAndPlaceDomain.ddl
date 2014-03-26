@@ -205,7 +205,8 @@
 )
 
 
-#########################cup######################################
+
+##############################cup#########################################
 
 #tray
 
@@ -245,6 +246,30 @@
  (Constraint During(Head,req3))
  (Constraint After[1,1](Head,req2))
  (Constraint After[1,1](Head,req1))
+ (Constraint Duration[2000,INF](Head))
+ (RequiredResource arm(1))
+)
+
+#counter
+
+(SimpleOperator
+ (Head RobotProprioception::holding_cup1())
+ (RequiredState req1 RobotAction::pick_cup1_counter1())
+ (Constraint After[1,1](Head,req1))
+ (Constraint Duration[2000,INF](Head))
+ (RequiredResource arm(1))
+)
+
+(SimpleOperator
+ (Head RobotAction::pick_cup1_counter1())
+ (RequiredState req1 atLocation::at_cup1_counter1())
+(RequiredState req2 RobotSense::sensing_before_picking_cup1_counter1())
+ (RequiredState req3 atLocation::at_robot1_counter1())
+ (Constraint During(req2,req3))
+ (Constraint During(Head,req3))
+ (Constraint After[1,1](Head,req2))
+ (Constraint OverlappedBy(Head,req1))
+ (Constraint Finishes(Head,req1))
  (Constraint Duration[2000,INF](Head))
  (RequiredResource arm(1))
 )
@@ -298,31 +323,6 @@
  (RequiredResource arm(1))
 )
 
-
-
-#counter
-
-(SimpleOperator
- (Head RobotProprioception::holding_cup1())
- (RequiredState req1 RobotAction::pick_cup1_counter1())
- (Constraint After[1,1](Head,req1))
- (Constraint Duration[2000,INF](Head))
- (RequiredResource arm(1))
-)
-
-(SimpleOperator
- (Head RobotAction::pick_cup1_counter1())
- (RequiredState req1 atLocation::at_cup1_counter1())
-(RequiredState req2 RobotSense::sensing_before_picking_cup1_counter1())
- (RequiredState req3 atLocation::at_robot1_counter1())
- (Constraint During(req2,req3))
- (Constraint During(Head,req3))
- (Constraint After[1,1](Head,req2))
- (Constraint OverlappedBy(Head,req1))
- (Constraint Finishes(Head,req1))
- (Constraint Duration[2000,INF](Head))
- (RequiredResource arm(1))
-)
 
 
 

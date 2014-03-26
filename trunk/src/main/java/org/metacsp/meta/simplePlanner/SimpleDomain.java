@@ -26,7 +26,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import javax.sound.midi.Track;
@@ -39,6 +43,7 @@ import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
+import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.Matrix;
@@ -52,6 +57,7 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
+import org.sat4j.specs.ContradictionException;
 
 import cern.colt.Arrays;
 
@@ -70,8 +76,11 @@ public class SimpleDomain extends MetaConstraint {
 	private Vector<String> sensors = new Vector<String>();
 	private Vector<String> contextVars = new Vector<String>();
 	private Vector<String> controllables = new Vector<String>();
-
+	private HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
+	
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
+	private boolean activeHeuristic = false;
+	
 	
 	//public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVED, IMPOSSIBLE, 
@@ -330,7 +339,9 @@ public class SimpleDomain extends MetaConstraint {
 		Vector<ConstraintNetwork> retPossibleConstraintNetworks = new Vector<ConstraintNetwork>();
 		ConstraintNetwork problematicNetwork = metaVariable.getConstraintNetwork();
 		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
-
+		
+		Vector<ConstraintNetwork> operatorsConsNetwork = new Vector<ConstraintNetwork>();
+		
 		//If it's a sensor, it needs to be unified
 		if (isSensor(problematicActivity.getComponent())) {
 			return this.getUnifications(problematicActivity);
@@ -345,17 +356,15 @@ public class SimpleDomain extends MetaConstraint {
 			if(unifications != null){
 //				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
-					//add if it is not the key and is true
-					
+					//add if it is not the key and is true					
 					Activity unifiedAct = null;
 					for (int j = 0; j < unifications[i].getVariables().length; j++) {
 						if(!((Activity)unifications[i].getVariables()[j]).equals(problematicActivity))
 							unifiedAct = (Activity)unifications[i].getVariables()[j];
 					}
-					
-					
 					if(!unificationTrack.keySet().contains(unifiedAct)){						
 						retPossibleConstraintNetworks.add(unifications[i]);
+//						operatorsConsNetwork.add(unifications[i]);
 						unificationTrack.put(problematicActivity, unifiedAct);
 //						System.out.println("UNIFIED: " + unifiedAct);
 					}
@@ -365,24 +374,6 @@ public class SimpleDomain extends MetaConstraint {
 				}
 			}
 		}
-
-//		System.out.println(unificationTrack);
-		
-//		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
-		
-		
-//		if (isControllable(problematicActivity.getComponent())) {
-//			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
-//			
-//			if(unifications != null){
-////				System.out.println("TRYING: " + problematicActivity);
-//				for (int i = 0; i < unifications.length; i++) {
-//					//add if it is not the key and is true
-//					retPossibleConstraintNetworks.add(unifications[i]);
-//				}
-//			}
-//		}
-
 
 		
 		//If it's a context var, it needs to be unified (or expanded, see later) 
@@ -395,8 +386,10 @@ public class SimpleDomain extends MetaConstraint {
 				}
 			}
 		}
-
-
+		
+		
+		
+		
 		//Find all expansions
 		for (SimpleOperator r : operators) {
 			String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
@@ -408,10 +401,14 @@ public class SimpleDomain extends MetaConstraint {
 					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
 					newResolver.setAnnotation(1);
 					newResolver.setSpecilizedAnnotation(r);
-					retPossibleConstraintNetworks.add(newResolver);
+					operatorsConsNetwork.add(newResolver);					
+					//retPossibleConstraintNetworks.add(newResolver);					
 				}
 			}
 			
+//			System.out.println("__________________________________");
+//			System.out.println(operatorsConsNetwork);
+//			System.out.println("__________________________________");
 
 			if (r instanceof PlanningOperator) {
 				for (String reqState : r.getRequirementActivities()) {
@@ -432,6 +429,21 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
+		if(!activeHeuristic ){			
+			retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				
+		}
+		else{
+			HashMap<ConstraintNetwork, Integer> sortedResolvers = new HashMap<ConstraintNetwork, Integer>();
+			for (int j = 0; j < operatorsConsNetwork.size(); j++) {
+				if(operatorsConsNetwork.get(j).getSpecilizedAnnotation() != null)
+					sortedResolvers.put(operatorsConsNetwork.get(j), operatorsLevels.get(operatorsConsNetwork.get(j).getSpecilizedAnnotation()));
+//				else
+//					sortedResolvers.put(operatorsConsNetwork.get(j), 2);
+			}
+			sortedResolvers = sortHashMapByValues(sortedResolvers);
+			retPossibleConstraintNetworks.addAll(sortedResolvers.keySet());
+		}
+
 
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
@@ -830,7 +842,96 @@ public class SimpleDomain extends MetaConstraint {
 		catch (IOException e) { e.printStackTrace(); }
 	}
 
+	public void applyFreeArmHeuristic(Vector<Activity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {
+		
+		//get Parameter from activities
+		Vector<String> objParams = new Vector<String>();
+		for (int i = 0; i < varInvolvedInOccupiedMetaConstraints.size(); i++) {
+			String sym = varInvolvedInOccupiedMetaConstraints.get(i).getSymbolicVariable().getSymbols()[0];
+			String param = sym.substring(sym.indexOf("_")+1, sym.indexOf("_", sym.indexOf("_")+1));
+			objParams.add(param);
+		}
+		
+		
+		HashMap<String, Vector<SimpleOperator>> paramsToOperators = new HashMap<String, Vector<SimpleOperator>>();
+		//separate the operators based on the object parameters involved in
+		
+		
+		for (int i = 0; i < objParams.size(); i++) {
+			Vector<SimpleOperator> ops = new Vector<SimpleOperator>();
+			for (int j = 0; j < operators.size(); j++) {
+				if(operators.get(j).getHead().contains(objParams.get(i))){
+					ops.add(operators.get(j));
+				}
+				paramsToOperators.put(objParams.get(i), ops);
+			}
+		}
+		
+		//set level on each operator based on whether the operator free the arm or not!
+		for (String param : paramsToOperators.keySet()) {
+			for (int i = 0; i < paramsToOperators.get(param).size(); i++) {
+				if(hasOperator( paramsToOperators.get(param).get(i), heursiticTerm)){
+					operatorsLevels.put(paramsToOperators.get(param).get(i), 0);
+				}
+				else{
+					operatorsLevels.put(paramsToOperators.get(param).get(i), 1);
+				}				
+			}
+		}
+				
+		for (int i = 0; i < operators.size(); i++) {
+			if(!operatorsLevels.containsKey(operators.get(i))){
+				operatorsLevels.put(operators.get(i), 2);
+			}
+		}
+		
+	}
 
+	private boolean hasOperator(SimpleOperator simpleOperator, String heursiticTerm) {
+		
+		if(simpleOperator.getHead().contains(heursiticTerm)) return true;
+		
+		for (int i = 0; i < simpleOperator.getRequirementActivities().length; i++) {
+			if(simpleOperator.getRequirementActivities()[i].contains(heursiticTerm))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	
+	private static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
+		ArrayList mapKeys = new ArrayList(passedMap.keySet());
+		ArrayList mapValues = new ArrayList(passedMap.values());
+		Collections.sort(mapValues);
+		//Collections.sort(mapKeys);
 
+		LinkedHashMap sortedMap = 
+				new LinkedHashMap();
 
+		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
+		while (valueIt.hasNext()) {
+			int val = (Integer) valueIt.next();
+			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
+
+			while (keyIt.hasNext()) {
+				ConstraintNetwork key = (ConstraintNetwork) keyIt.next();
+				int comp1 = (Integer) passedMap.get(key);
+				int comp2 = val;
+
+				if (comp1 == comp2){
+					passedMap.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put(key, val);
+					break;
+				}
+			}
+		}
+		return sortedMap;
+	}
+
+	public void activeHeuristic(boolean active){
+		this.activeHeuristic = active;
+	}
+	
 }
