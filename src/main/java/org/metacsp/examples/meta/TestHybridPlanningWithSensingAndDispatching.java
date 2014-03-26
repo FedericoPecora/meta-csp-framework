@@ -50,7 +50,7 @@ import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 public class TestHybridPlanningWithSensingAndDispatching {
 
 	static int pad = 0;    
-	static long duration = 10000; //both for activity and location
+	static long duration = 1000; //both for activity and location
 	static long tick = 1000;
 	static HashMap<String, SpatialAssertionalRelation> currentObservation = new HashMap<String, SpatialAssertionalRelation>();
 
@@ -148,7 +148,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		releaseActivity(groundSolver, releaseTime, two);
 		addDurationToActivity(groundSolver, duration, two);
 
-		
+		//at_cup1_counter1
 		releaseActivity(groundSolver, releaseTime, getCreatedActivty(groundSolver, ctrls.get(0)));
 		//insert assertions 
 		Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
@@ -182,7 +182,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				executingActs.add(act);
 				if(counter == 0){
 					
-					printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
+					//printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
 					
 					counter ++;
 				}
@@ -379,13 +379,13 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 	
 	private static LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
+		
 		ArrayList mapKeys = new ArrayList(passedMap.keySet());
 		ArrayList mapValues = new ArrayList(passedMap.values());
 		Collections.sort(mapValues);
 		Collections.sort(mapKeys);
 
-		LinkedHashMap sortedMap = 
-				new LinkedHashMap();
+		LinkedHashMap sortedMap = new LinkedHashMap();
 
 		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
 		while (valueIt.hasNext()) {

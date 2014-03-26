@@ -99,4 +99,8 @@ public class SimpleReusableResource extends Schedulable {
 		return null;
 	}
 	
+	public int getCapacity(){
+		return capacity;
+	}
+	
 }

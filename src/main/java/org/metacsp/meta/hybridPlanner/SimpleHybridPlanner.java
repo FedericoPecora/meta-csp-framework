@@ -36,7 +36,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	public Vector<SimpleOperator> operatorsAlongBranch = new Vector<SimpleOperator>();
 	public Vector<String> unificationAlongBranch = new  Vector<String>();
 	private Vector<Activity> goals = new Vector<Activity>();//this contains original goals (not sub goal)
-	
+	private Vector<Activity> varInvolvedInOccupiedMetaConstraints = new Vector<Activity>();
 	
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
@@ -52,11 +52,38 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	@Override
 	public void postBacktrack(MetaVariable mv) {
 
-		if (mv.getMetaConstraint() instanceof FluentBasedSimpleDomain)
+		if (mv.getMetaConstraint() instanceof FluentBasedSimpleDomain){
 			for (Variable v : mv.getConstraintNetwork().getVariables()) {
 				v.setMarking(markings.UNJUSTIFIED);
 			}
+		}
 
+		int armCapacity = 100;
+		FluentBasedSimpleDomain causalReasoner = null;
+		for (int j = 0; j < this.metaConstraints.size(); j++) {
+			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
+				causalReasoner = ((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j));
+				for (String  resourceName : causalReasoner.getResources().keySet()) {
+					if(resourceName.compareTo("arm") == 0)
+						armCapacity = causalReasoner.getResources().get(resourceName).getCapacity();						
+				}
+			}
+		}
+
+		
+		if (mv.getMetaConstraint() instanceof MetaOccupiedConstraint){
+			for (Variable v : mv.getConstraintNetwork().getVariables()) {								
+				if(!varInvolvedInOccupiedMetaConstraints.contains((Activity)v)){
+//					System.out.println("== occupied constraints == " + (Activity)v);
+					varInvolvedInOccupiedMetaConstraints.add((Activity)v);	
+				}
+			}
+			
+			if(armCapacity < varInvolvedInOccupiedMetaConstraints.size()){
+				causalReasoner.applyFreeArmHeuristic(varInvolvedInOccupiedMetaConstraints, "tray");
+				causalReasoner.activeHeuristic(true);
+			}
+		}
 
 	}
 

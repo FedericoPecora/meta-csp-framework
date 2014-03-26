@@ -241,7 +241,7 @@ public class ConstraintNetworkAnimator extends Thread {
 
 					if(!hybridPlanner.backtrack()){
 						System.out.println("komaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaak");
-						System.out.println("Time now: " + timeNow);
+//						System.out.println("Time now: " + timeNow);
 //						Vector<ConstraintNetwork> toBeRemoved = new Vector<ConstraintNetwork>();
 						hybridPlanner.operatorsAlongBranch.clear();
 						Vector<Activity> constraintDomainHasTobeRemoved = new Vector<Activity>();
@@ -258,7 +258,7 @@ public class ConstraintNetworkAnimator extends Thread {
 								else if(metaVarAct.getTemporalVariable().getLST() >= timeNow - 1){
 									constraintDomainHasTobeRemoved.add(metaVarAct);
 									actsToBeremoved.add(metaVarAct);
-									System.out.println("has to be removed: " + metaVarAct);
+//									System.out.println("has to be removed: " + metaVarAct);
 								}									
 							}							
 						}						
@@ -282,9 +282,6 @@ public class ConstraintNetworkAnimator extends Thread {
 						
 						groundActSolver.removeConstraints(consToBeRemoved.toArray(new Constraint[consToBeRemoved.size()]));
 						
-
-						
-						
 						Vector<Activity> activityOnResourceUse = new Vector<Activity>();
 						//print all resources in use
 						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){
@@ -294,8 +291,9 @@ public class ConstraintNetworkAnimator extends Thread {
 							}
 						}
 						
-						System.out.println("ActivityOnUse: " + activityOnResourceUse);
+//						System.out.println("ActivityOnUse: " + activityOnResourceUse);
 						
+						//it delets the activities currently uses resources
 						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){ 
 							if(hybridPlanner.getMetaConstraints()[j] instanceof FluentBasedSimpleDomain ){
 								FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)hybridPlanner.getMetaConstraints()[j];
@@ -309,17 +307,18 @@ public class ConstraintNetworkAnimator extends Thread {
 						}
 						
 						groundActSolver.removeVariables(actsToBeremoved.toArray(new Activity[actsToBeremoved.size()]));
-						hybridPlanner.clearResolvers();
+						//hybridPlanner.clearResolvers();
 						
+						//it is deleting all the allocation of resource in the previous failed backtrack search
 						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){ 
 							if(hybridPlanner.getMetaConstraints()[j] instanceof FluentBasedSimpleDomain ){
 								FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)hybridPlanner.getMetaConstraints()[j];
 //								System.out.println(" @@@@@@@@@ " + mcc.getAllResourceUsageLevel());
 								mcc.resetAllResourceAllocation();
+								//mcc.activeHeuristic(false);
 								break;
 							}
-						}
-						
+						}						
 					}
 					System.out.println("TOTAL TIME: " + (Calendar.getInstance().getTimeInMillis()-timeNow1));
 				}				
@@ -327,52 +326,6 @@ public class ConstraintNetworkAnimator extends Thread {
 		}
 	}
 	
-	private  void printOutActivityNetwork(ActivityNetworkSolver actSolver) {
-
-		//sort Activity based on the start time for debugging purpose
-		HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
-		for (int i = 0; i < actSolver.getVariables().length; i++) {
-			starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
-		}
-
-		//Collections.sort(starttimes.values());
-		starttimes =  sortHashMapByValuesD(starttimes);
-		for (Activity act0 : starttimes.keySet()) {
-			System.out.println(act0 + " --> " + starttimes.get(act0));
-		}
-		
-	}
-
-	
-	private  LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
-		ArrayList mapKeys = new ArrayList(passedMap.keySet());
-		ArrayList mapValues = new ArrayList(passedMap.values());
-		Collections.sort(mapValues);
-		Collections.sort(mapKeys);
-
-		LinkedHashMap sortedMap = 
-				new LinkedHashMap();
-
-		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
-		while (valueIt.hasNext()) {
-			long val = (Long) valueIt.next();
-			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
-
-			while (keyIt.hasNext()) {
-				Activity key = (Activity) keyIt.next();
-				long comp1 = (Long) passedMap.get(key);
-				long comp2 = val;
-
-				if (comp1 == comp2){
-					passedMap.remove(key);
-					mapKeys.remove(key);
-					sortedMap.put(key, val);
-					break;
-				}
-			}
-		}
-		return sortedMap;
-	}
 
 	
 }
