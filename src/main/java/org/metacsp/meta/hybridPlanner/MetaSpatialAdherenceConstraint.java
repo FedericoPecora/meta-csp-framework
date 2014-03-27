@@ -434,9 +434,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 //		newGoal.add("phone1");
 //		newGoal.add("vase1");
 		//################################################################################
-		//This is a hard code for testing RACE YEAR2 Demo
-//		newGoal.removeAllElements();
-//		newGoal.add("knife1");		
+//		//This is a hard code for testing RACE YEAR2 Demo
+//		newGoal.removeAllElements();		
+//		newGoal.add("at_knife1_table1");
+//		newGoal.add("at_fork1_table1");
 		//################################################################################
 
 		

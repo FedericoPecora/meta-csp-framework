@@ -79,7 +79,9 @@ public class SimpleDomain extends MetaConstraint {
 	private HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
-	private boolean activeHeuristic = false;
+	private boolean activeFreeArmHeuristic = false;
+	private boolean addedNegationofInitialsituation = true;
+	private Vector<String> objParams;
 	
 	
 	//public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
@@ -341,6 +343,7 @@ public class SimpleDomain extends MetaConstraint {
 		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
 		
 		Vector<ConstraintNetwork> operatorsConsNetwork = new Vector<ConstraintNetwork>();
+		Vector<ConstraintNetwork> unificationConsNetwork = new Vector<ConstraintNetwork>();
 		
 		//If it's a sensor, it needs to be unified
 		if (isSensor(problematicActivity.getComponent())) {
@@ -352,7 +355,7 @@ public class SimpleDomain extends MetaConstraint {
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
 		if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
-			
+//			System.out.println("I AM AT LEAST CONTRAOLLABLE");
 			if(unifications != null){
 //				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
@@ -363,8 +366,8 @@ public class SimpleDomain extends MetaConstraint {
 							unifiedAct = (Activity)unifications[i].getVariables()[j];
 					}
 					if(!unificationTrack.keySet().contains(unifiedAct)){						
-						retPossibleConstraintNetworks.add(unifications[i]);
-//						operatorsConsNetwork.add(unifications[i]);
+//						retPossibleConstraintNetworks.add(unifications[i]);
+						unificationConsNetwork.add(unifications[i]);
 						unificationTrack.put(problematicActivity, unifiedAct);
 //						System.out.println("UNIFIED: " + unifiedAct);
 					}
@@ -375,6 +378,7 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 
+//		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		
 		//If it's a context var, it needs to be unified (or expanded, see later) 
 		if (isContextVar(problematicActivity.getComponent())) {
@@ -429,18 +433,23 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
-		if(!activeHeuristic ){			
+		if(!activeFreeArmHeuristic ){			
+			retPossibleConstraintNetworks.addAll(unificationConsNetwork);
 			retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				
 		}
 		else{
+			retPossibleConstraintNetworks.addAll(unificationConsNetwork); //has to be changed
+			//HashMap<ConstraintNetwork, Integer> rankedUnification = rankUnificationBasedOnFreeArmHeuristic(unificationConsNetwork);			
 			HashMap<ConstraintNetwork, Integer> sortedResolvers = new HashMap<ConstraintNetwork, Integer>();
 			for (int j = 0; j < operatorsConsNetwork.size(); j++) {
 				if(operatorsConsNetwork.get(j).getSpecilizedAnnotation() != null)
 					sortedResolvers.put(operatorsConsNetwork.get(j), operatorsLevels.get(operatorsConsNetwork.get(j).getSpecilizedAnnotation()));
-//				else
-//					sortedResolvers.put(operatorsConsNetwork.get(j), 2);
 			}
+			//sortedResolvers.putAll(rankedUnification);
 			sortedResolvers = sortHashMapByValues(sortedResolvers);
+//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+//			System.out.println(sortedResolvers);
+//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			retPossibleConstraintNetworks.addAll(sortedResolvers.keySet());
 		}
 
@@ -845,18 +854,16 @@ public class SimpleDomain extends MetaConstraint {
 	public void applyFreeArmHeuristic(Vector<Activity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {
 		
 		//get Parameter from activities
-		Vector<String> objParams = new Vector<String>();
+		objParams = new Vector<String>();
 		for (int i = 0; i < varInvolvedInOccupiedMetaConstraints.size(); i++) {
 			String sym = varInvolvedInOccupiedMetaConstraints.get(i).getSymbolicVariable().getSymbols()[0];
 			String param = sym.substring(sym.indexOf("_")+1, sym.indexOf("_", sym.indexOf("_")+1));
 			objParams.add(param);
 		}
 		
-		
 		HashMap<String, Vector<SimpleOperator>> paramsToOperators = new HashMap<String, Vector<SimpleOperator>>();
 		//separate the operators based on the object parameters involved in
-		
-		
+
 		for (int i = 0; i < objParams.size(); i++) {
 			Vector<SimpleOperator> ops = new Vector<SimpleOperator>();
 			for (int j = 0; j < operators.size(); j++) {
@@ -873,7 +880,7 @@ public class SimpleDomain extends MetaConstraint {
 				if(hasOperator( paramsToOperators.get(param).get(i), heursiticTerm)){
 					operatorsLevels.put(paramsToOperators.get(param).get(i), 0);
 				}
-				else{
+				else{					
 					operatorsLevels.put(paramsToOperators.get(param).get(i), 1);
 				}				
 			}
@@ -931,7 +938,36 @@ public class SimpleDomain extends MetaConstraint {
 	}
 
 	public void activeHeuristic(boolean active){
-		this.activeHeuristic = active;
+		this.activeFreeArmHeuristic = active;
+	}
+	
+	private HashMap<ConstraintNetwork, Integer> rankUnificationBasedOnFreeArmHeuristic(
+			Vector<ConstraintNetwork> unificationConsNetwork) {
+		
+		HashMap<ConstraintNetwork, Integer> ret = new HashMap<ConstraintNetwork, Integer>();
+		if(addedNegationofInitialsituation){
+			for (int i = 0; i < unificationConsNetwork.size(); i++) {
+				String sym = ((Activity)unificationConsNetwork.get(i).getVariables()[0]).getSymbolicVariable().getSymbols()[0];			
+				if(sym.contains("hold")){
+					String param = sym.substring(sym.indexOf("_")+1, sym.indexOf("("));
+					System.out.println("param: " + param);
+					if(objParams.contains(param)){					
+						ret.put(unificationConsNetwork.get(i), 1);
+					}
+					else{
+						ret.put(unificationConsNetwork.get(i), 0);
+					}
+				}
+				else ret.put(unificationConsNetwork.get(i), 0);			
+			}
+			addedNegationofInitialsituation = false;
+		}
+		else{
+			for (int i = 0; i < unificationConsNetwork.size(); i++) {
+				ret.put(unificationConsNetwork.get(i), 0);
+			}
+		}
+		return ret;
 	}
 	
 }
