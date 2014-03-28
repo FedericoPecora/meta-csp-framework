@@ -10,14 +10,18 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.APSPSolver;
@@ -26,7 +30,12 @@ import org.metacsp.time.Bounds;
 public class MetaOccupiedConstraint extends MetaConstraint{
 
 	private int pad = 0;
-
+	private boolean freeArmHeuristic = false;
+	
+	public void activeHeuristic(boolean active){
+		this.freeArmHeuristic = active;
+	}
+	
 	long beforeParameter = 1;
 	public MetaOccupiedConstraint(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
@@ -220,6 +229,75 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		resolver.addConstraint(before10);
 		ret.add(resolver);
 		
+		
+		if(freeArmHeuristic){
+//			//create the new goal if the free arm heuristic is activated
+//			//first create the new goal
+//			ConstraintNetwork resolver2 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
+//			Activity problamaticActivity = null;
+//			for (int i = 0; i < conflict.getVariables().length; i++) {
+//				if(((Activity)conflict.getVariables()[i]).getTemporalVariable().getEST() != ((Activity)conflict.getVariables()[i]).getTemporalVariable().getLST()){
+//					problamaticActivity = ((Activity)conflict.getVariables()[i]);
+//				}			
+//			}
+//
+//			long d = 2000;
+//
+//			SpatialFluent newgoalFlunet = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0])).createVariable("atLocation");
+//			newgoalFlunet.setName("at_cup1_tray1");
+//			((Activity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain("at_cup1_tray1()");
+//			((Activity)newgoalFlunet.getInternalVariables()[1]).setMarking(markings.UNJUSTIFIED);
+//			((RectangularRegion)newgoalFlunet.getInternalVariables()[0]).setName("at_cup1_tray1");
+//			resolver2.addVariable(newgoalFlunet);
+//			
+//			AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(d,APSPSolver.INF));
+//			duration.setFrom(newgoalFlunet.getActivity());
+//			duration.setTo(newgoalFlunet.getActivity());
+//			resolver2.addConstraint(duration);
+//
+//			AllenIntervalConstraint before= new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Before.getDefaultBounds());
+//			before.setFrom(newgoalFlunet.getActivity());
+//			before.setTo(problamaticActivity);
+//			resolver2.addConstraint(before);
+//			
+//			ret.add(resolver2);
+//			freeArmHeuristic = false;
+			
+			
+			ConstraintNetwork resolver2 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
+			ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)getGroundSolver()).getConstraintSolvers()[1];
+			
+			Activity problamaticActivity = null;
+			for (int i = 0; i < conflict.getVariables().length; i++) {
+				if(((Activity)conflict.getVariables()[i]).getTemporalVariable().getEST() != ((Activity)conflict.getVariables()[i]).getTemporalVariable().getLST()){
+					problamaticActivity = ((Activity)conflict.getVariables()[i]);
+				}			
+			}
+
+			long d = 2000;
+			
+			Variable[] operatorTailActivitiesToInsert = new Variable[1];
+			VariablePrototype tailActivity = new VariablePrototype(groundSolver, "atLocation", "at_cup1_tray1()");
+			operatorTailActivitiesToInsert[0] = tailActivity;
+			tailActivity.setMarking(markings.UNJUSTIFIED);
+			resolver2.addVariable(operatorTailActivitiesToInsert[0]);
+			
+			AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(d,APSPSolver.INF));
+			duration.setFrom(operatorTailActivitiesToInsert[0]);
+			duration.setTo(operatorTailActivitiesToInsert[0]);
+			resolver2.addConstraint(duration);
+
+			AllenIntervalConstraint before= new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Before.getDefaultBounds());
+			before.setFrom(operatorTailActivitiesToInsert[0]);
+			before.setTo(problamaticActivity);
+			resolver2.addConstraint(before);
+
+			ret.add(resolver2);
+			freeArmHeuristic = false; //this has to be false! do not change it
+		}
+		
+		
+		
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 		
 	}
@@ -269,7 +347,6 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 
 	@Override
 	public ConstraintSolver getGroundSolver() {
-		// TODO Auto-generated method stub
 		return ((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]);
 	}
 

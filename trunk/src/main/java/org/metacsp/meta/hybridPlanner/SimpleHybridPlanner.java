@@ -60,6 +60,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		int armCapacity = 100;
 		FluentBasedSimpleDomain causalReasoner = null;
+		MetaOccupiedConstraint metaOccupiedConstraint = null;
 		for (int j = 0; j < this.metaConstraints.size(); j++) {
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 				causalReasoner = ((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j));
@@ -67,6 +68,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					if(resourceName.compareTo("arm") == 0)
 						armCapacity = causalReasoner.getResources().get(resourceName).getCapacity();						
 				}
+			}
+			if(this.metaConstraints.get(j) instanceof MetaOccupiedConstraint ){
+				metaOccupiedConstraint = ((MetaOccupiedConstraint)this.metaConstraints.elementAt(j)); 
 			}
 		}
 
@@ -82,6 +86,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			if(armCapacity < varInvolvedInOccupiedMetaConstraints.size()){
 				causalReasoner.applyFreeArmHeuristic(varInvolvedInOccupiedMetaConstraints, "tray");
 				causalReasoner.activeHeuristic(true);
+				metaOccupiedConstraint.activeHeuristic(true);
 			}
 		}
 
@@ -105,46 +110,13 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				if (v instanceof VariablePrototype) {
 					Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 					if (vReal != null) {
-//						if(vReal.getComponent().compareTo("atLocation") == 0 && 
-//								((Activity)vReal).getSymbolicVariable().getSymbols()[0].toString().compareTo("at_robot1_table1()") == 0){
-//						}
-//						else{
 							activityToRemove.add(vReal);
-//						}
 					}
 				}
 			}
 		}
 
 		
-		
-//		for (int j = 0; j < this.metaConstraints.size(); j++) {
-//			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
-//				Activity metaVarAct = ((Activity)metaVariable.getVariables()[0]);
-//				if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(metaVarAct.getComponent())){ //test
-//					if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().containsKey(metaVarAct)){
-//						
-//						for (int i = 0; i < metaValue.getVariables().length; i++) {
-//							Activity unifiedMetaValueActivity = ((Activity)metaValue.getVariables()[i]);
-//							if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().get(metaVarAct).equals(unifiedMetaValueActivity)){
-//								((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().remove(metaVarAct);
-//								System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-//								System.out.println(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).getUnificationTrack().get(metaVarAct));
-//								System.out.println(unifiedMetaValueActivity);
-//								System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-//								break;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-
-		
-		
-
-		
-
 		
 		for (int j = 0; j < this.metaConstraints.size(); j++){ 
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
@@ -237,36 +209,11 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				String symbol = (String)((VariablePrototype) v).getParameters()[1];
 				
 				Activity tailActivity = null;
-				boolean isUnified = false;
-//				for (int j = 0; j < this.metaConstraints.size(); j++) {
-//					if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
-//						//if(((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j)).isControllable(component)){ //test
-//						if(component.compareTo("atLocation") == 0 && symbol.compareTo("at_robot1_table1()") == 0)
-//						{
-//							for (int i = 0; i < groundSolver.getVariables().length; i++) {
-//								Activity tmpAct = (Activity)groundSolver.getVariables()[i];
-//								if(tmpAct.getComponent().compareTo(component) == 0 && 
-//										tmpAct.getSymbolicVariable().getSymbols()[0].toString().compareTo(symbol) == 0){
-//									System.out.println("tmpAct: " + tmpAct);
-//									tailActivity = tmpAct;
-//									isUnified = true;
-//									metaValue.addSubstitution((VariablePrototype)v, tailActivity);									
-//								}
-//
-//							}
-//						}
-//					}
-//				}
+				tailActivity = (Activity)groundSolver.createVariable(component);
+				tailActivity.setSymbolicDomain(symbol);
+				tailActivity.setMarking(v.getMarking());
+				metaValue.addSubstitution((VariablePrototype)v, tailActivity);					
 
-
-
-
-				if(!isUnified){
-					tailActivity = (Activity)groundSolver.createVariable(component);
-					tailActivity.setSymbolicDomain(symbol);
-					tailActivity.setMarking(v.getMarking());
-					metaValue.addSubstitution((VariablePrototype)v, tailActivity);					
-				}
 			}
 		}
 
