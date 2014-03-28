@@ -169,7 +169,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			@Override
 			public void dispatch(Activity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);				
-				//printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
+				printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
 				executingActs.add(act);
 
 			}

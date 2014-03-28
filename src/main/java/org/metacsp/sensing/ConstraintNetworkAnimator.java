@@ -19,6 +19,7 @@ import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
 import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
+import org.metacsp.meta.hybridPlanner.MetaOccupiedConstraint;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
@@ -29,6 +30,7 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.spatial.utility.SpatialRule;
+import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
@@ -318,8 +320,50 @@ public class ConstraintNetworkAnimator extends Thread {
 								//mcc.activeHeuristic(false);
 								break;
 							}
-						}						
+						}			
+						hybridPlanner.clearResolvers();
+
+						
+						for (int j = 0; j < hybridPlanner.getMetaConstraints().length; j++){ 
+							if(hybridPlanner.getMetaConstraints()[j] instanceof MetaOccupiedConstraint ){
+								MetaOccupiedConstraint mcc = (MetaOccupiedConstraint)hybridPlanner.getMetaConstraints()[j];
+//								System.out.println(" @@@@@@@@@ " + mcc.getAllResourceUsageLevel());
+								mcc.activeHeuristic(true);
+//								mcc.activeHeuristic(false);
+								break;
+							}
+						}			
+
+						
+						boolean huristicLearning = true;
+						if(huristicLearning){
+
+							Vector<Constraint> cons = new Vector<Constraint>();
+
+							long duration = 1000;
+							Activity two = (Activity)((SpatialFluentSolver)hybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable("atLocation");
+							two.setSymbolicDomain("at_cup1_tray1()");
+							two.setMarking(org.metacsp.meta.simplePlanner.SimpleDomain.markings.UNJUSTIFIED);
+
+							
+							AllenIntervalConstraint durationHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(duration,APSPSolver.INF));
+							durationHolding.setFrom(two);
+							durationHolding.setTo(two);
+							cons.add(durationHolding);
+
+							AllenIntervalConstraint before= new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Before.getDefaultBounds());
+							before.setFrom(two);
+							before.setTo(hybridPlanner.getGoals().get(0));
+							cons.add(before);
+
+							
+							((SpatialFluentSolver)hybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));
+							
+						}
+						
 					}
+
+					
 					System.out.println("TOTAL TIME: " + (Calendar.getInstance().getTimeInMillis()-timeNow1));
 				}				
 			}
