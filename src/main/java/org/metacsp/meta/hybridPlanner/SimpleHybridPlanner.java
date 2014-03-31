@@ -37,6 +37,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	public Vector<String> unificationAlongBranch = new  Vector<String>();
 	private Vector<Activity> goals = new Vector<Activity>();//this contains original goals (not sub goal)
 	private Vector<Activity> varInvolvedInOccupiedMetaConstraints = new Vector<Activity>();
+	private boolean learningFromfailure = false;
 	
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
@@ -86,12 +87,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			if(armCapacity < varInvolvedInOccupiedMetaConstraints.size()){
 				causalReasoner.applyFreeArmHeuristic(varInvolvedInOccupiedMetaConstraints, "tray");
 				causalReasoner.activeHeuristic(true);
-				metaOccupiedConstraint.activeHeuristic(true);
+				learningFromfailure  = true;
+				//metaOccupiedConstraint.activeHeuristic(true);
 			}
 		}
 
 	}
 
+	public boolean learningFromFailure(){
+		return learningFromfailure;
+	}
+	
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 

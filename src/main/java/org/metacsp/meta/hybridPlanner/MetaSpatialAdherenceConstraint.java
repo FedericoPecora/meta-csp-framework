@@ -855,8 +855,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		int counter = 0;
 		for (HashMap<String, Bounds[]> iterCN : permutation.keySet()) {
 			
-//			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true))
-//				break;
+			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true))
+				break;
 			
 //			System.out.println("------------------------------------------");
 //			for (String st : iterCN.keySet()) {
