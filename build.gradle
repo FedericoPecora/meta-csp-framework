@@ -2,11 +2,13 @@
     apply plugin : it
 }
 
-set("myGradleVersion", GradleVersion.current().getVersion().substring(0,3))
+set("myGradleVersion", GradleVersion.current().getVersion())
+set("myGradleVersionMajor", myGradleVersion.substring(0,myGradleVersion.indexOf(".")))
+set("myGradleVersionMinor", myGradleVersion.substring(myGradleVersion.indexOf(".")+1))
 
-println ("Using Gradle version: " + myGradleVersion)
+println ("Using Gradle version: (major) " + myGradleVersionMajor + " (minor) " + myGradleVersionMinor)
 
-if (Double.parseDouble(myGradleVersion) >= 1.6) {
+if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
    apply plugin : 'maven-publish'
 }
 else {
@@ -97,7 +99,7 @@ task sourceJar (type : Jar) {
 //}
 
 //publish bin, source and javaDoc to repo
-if (Double.parseDouble(GradleVersion.current().getVersion().substring(0,3)) >= 1.6) {
+if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
 publishing {
     publications {
         metaCSPFramework(MavenPublication) {
@@ -112,12 +114,13 @@ publishing {
                     name 'The MetaCSP Framework'
                     description 'A Java API for Meta-CSP based reasoning'
                     url 'http://metacsp.org'
+		    /*
 		    parent {
 		    	groupId 'org.sonatype.oss'
 			//groupId 'org.metacsp'
 			artifactId 'oss-parent'
     			version '7'
-		    }
+		    }*/
                     scm {
                         url 'http://metacsp.org'
                         connection 'scm:svn:http://meta-csp-framework.googlecode.com/svn/trunk'
