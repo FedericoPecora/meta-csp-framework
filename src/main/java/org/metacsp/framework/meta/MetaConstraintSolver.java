@@ -125,6 +125,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.animationTime = animationTime;
 		this.resolvers = new HashMap<ConstraintNetwork,ConstraintNetwork>();
+		this.resolversInverseMapping = new HashMap<ConstraintNetwork,ConstraintNetwork>();
+
 		this.counterMoves=0;
 	}
 		
