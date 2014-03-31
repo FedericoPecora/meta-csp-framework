@@ -95,6 +95,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 			this.retractResolver(var, value);
 		}
 		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();
+		this.resolversInverseMapping = new HashMap<ConstraintNetwork, ConstraintNetwork>();
 	}
 
 	/**
