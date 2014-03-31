@@ -384,6 +384,7 @@ public class SimpleDomain extends MetaConstraint {
 		if (isContextVar(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
 			if (unifications != null) {
+				System.out.println("lenght: " + unifications.length);
 				for (ConstraintNetwork oneUnification : unifications) {
 					retPossibleConstraintNetworks.add(oneUnification);
 					oneUnification.setAnnotation(2);
@@ -405,7 +406,7 @@ public class SimpleDomain extends MetaConstraint {
 					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
 					newResolver.setAnnotation(1);
 					newResolver.setSpecilizedAnnotation(r);
-					operatorsConsNetwork.add(newResolver);					
+					operatorsConsNetwork.add(newResolver);
 					//retPossibleConstraintNetworks.add(newResolver);					
 				}
 			}
@@ -438,8 +439,7 @@ public class SimpleDomain extends MetaConstraint {
 			retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				
 		}
 		else{
-			retPossibleConstraintNetworks.addAll(unificationConsNetwork); //has to be changed
-			//HashMap<ConstraintNetwork, Integer> rankedUnification = rankUnificationBasedOnFreeArmHeuristic(unificationConsNetwork);			
+			retPossibleConstraintNetworks.addAll(unificationConsNetwork);		
 			HashMap<ConstraintNetwork, Integer> sortedResolvers = new HashMap<ConstraintNetwork, Integer>();
 			for (int j = 0; j < operatorsConsNetwork.size(); j++) {
 				if(operatorsConsNetwork.get(j).getSpecilizedAnnotation() != null)
@@ -941,33 +941,5 @@ public class SimpleDomain extends MetaConstraint {
 		this.activeFreeArmHeuristic = active;
 	}
 	
-	private HashMap<ConstraintNetwork, Integer> rankUnificationBasedOnFreeArmHeuristic(
-			Vector<ConstraintNetwork> unificationConsNetwork) {
-		
-		HashMap<ConstraintNetwork, Integer> ret = new HashMap<ConstraintNetwork, Integer>();
-		if(addedNegationofInitialsituation){
-			for (int i = 0; i < unificationConsNetwork.size(); i++) {
-				String sym = ((Activity)unificationConsNetwork.get(i).getVariables()[0]).getSymbolicVariable().getSymbols()[0];			
-				if(sym.contains("hold")){
-					String param = sym.substring(sym.indexOf("_")+1, sym.indexOf("("));
-					System.out.println("param: " + param);
-					if(objParams.contains(param)){					
-						ret.put(unificationConsNetwork.get(i), 1);
-					}
-					else{
-						ret.put(unificationConsNetwork.get(i), 0);
-					}
-				}
-				else ret.put(unificationConsNetwork.get(i), 0);			
-			}
-			addedNegationofInitialsituation = false;
-		}
-		else{
-			for (int i = 0; i < unificationConsNetwork.size(); i++) {
-				ret.put(unificationConsNetwork.get(i), 0);
-			}
-		}
-		return ret;
-	}
 	
 }
