@@ -95,7 +95,8 @@ public abstract class Schedulable extends MetaConstraint {
 			
 			Vector<Vector<Activity>> overlappingAll = new Vector<Vector<Activity>>();
 			
-			
+			// this first block checks whether a single activity is overconsuming 
+			// the resource
 			for (Activity act : activities) {
 				if (isConflicting(new Activity[] {act})) {
 					ConstraintNetwork temp = new ConstraintNetwork(null);

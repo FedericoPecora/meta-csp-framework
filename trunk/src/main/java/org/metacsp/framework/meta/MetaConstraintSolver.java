@@ -60,6 +60,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	protected MetaVariable currentVertex = null;
 	protected boolean breakSearch = false;
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
+	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolversInverseMapping;
 	protected long animationTime = 0;
 	protected int counterMoves;
 	
@@ -277,6 +278,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				logger.fine("Trying value: " + valString);
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
+					this.resolversInverseMapping.put(value,mostProblematicNetwork);
 					this.counterMoves++;
 
 					logger.fine("Success...");		
@@ -295,7 +297,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					if (backtrackHelper(newConflict)) return true;					
 					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
 					this.retractResolver(mostProblematicNetwork, value);
-					this.resolvers.remove(mostProblematicNetwork);			
+					this.resolvers.remove(mostProblematicNetwork);		
+					this.resolversInverseMapping.remove(value);
 					this.counterMoves--;
 
 				}
@@ -362,6 +365,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
+					this.resolversInverseMapping.put(value,mostProblematicNetwork);
+
 					this.counterMoves++;
 //					System.out.println("INCREMENTED COUNTERMOVES");
 //					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
@@ -396,6 +401,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
 					this.retractResolver(mostProblematicNetwork, value);
 					this.resolvers.remove(mostProblematicNetwork);	
+					this.resolversInverseMapping.remove(value);
 					this.counterMoves--;
 					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
 

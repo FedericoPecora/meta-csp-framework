@@ -69,7 +69,7 @@ public class StateVariable extends Schedulable {
 //		intersection.retainAll(Arrays.asList(((SymbolicDomain)peak[1].getSymbolicVariable().getDomain()).getSymbols()));
 		Vector<String> intersection = new Vector<String>(Arrays.asList(peak[0].getSymbolicVariable().getSymbols()));
 		intersection.retainAll(Arrays.asList(peak[1].getSymbolicVariable().getSymbols()));
-		return intersection.isEmpty();
+		return intersection.isEmpty(); // if the intersection is null these variables do not share symbols and therefore can not co-exist
 	}
 
 	@Override
