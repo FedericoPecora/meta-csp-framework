@@ -374,7 +374,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 									
 									if(((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getEST() == 
 											((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getLST()){
-										System.out.println(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName());
+//										System.out.println(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName()); //this has to uncommented
 //										System.out.println("==== " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
 										culpritActivities.put(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName(), 
 												((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
@@ -858,18 +858,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			
 			//incremental generation break
 			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true)){
-				System.out.println(levelTracker.get(permutation.get(iterCN)));
-				System.out.println(permutation.get(iterCN));
-				break;
-			}
-			
-//			//incremental generation break
-//			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN)) == true) &&  (levelTracker.get(permutation.get(iterCN) + 1) == false)){
 //				System.out.println(levelTracker.get(permutation.get(iterCN)));
 //				System.out.println(permutation.get(iterCN));
-//				break;
-//			}
-
+				break;
+			}
 			
 //			System.out.println("------------------------------------------");
 //			for (String st : iterCN.keySet()) {

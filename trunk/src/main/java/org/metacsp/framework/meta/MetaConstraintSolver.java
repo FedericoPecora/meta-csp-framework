@@ -248,7 +248,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 //		return true;
 //	}
 	
-	//FPA: Is this used? Seems not... please remove! 
+	//FPA: Is this used? Seems not... please remove! (Iran: it is used for hybrid planner benchmarking)
 	private boolean timeout = false;
 	public boolean getTimeOut(){
 		return timeout;
@@ -259,6 +259,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 //	}
 	
 	private boolean backtrackHelper(MetaVariable metaVariable) {
+		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
@@ -279,6 +280,14 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
 				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
 				logger.fine("Trying value: " + valString);
+
+//				//******************************************************************
+//				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
+//					timeout = true;
+//					return false;
+//				}
+//				//******************************************************************
+				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.resolversInverseMapping.put(value,mostProblematicNetwork);
@@ -359,12 +368,12 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
 				
-				//******************************************************************
+//				//******************************************************************
 //				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
 //					timeout = true;
 //					return false;
 //				}
-				//******************************************************************
+//				//******************************************************************
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
