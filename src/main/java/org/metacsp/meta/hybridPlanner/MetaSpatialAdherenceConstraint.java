@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -855,8 +856,20 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		int counter = 0;
 		for (HashMap<String, Bounds[]> iterCN : permutation.keySet()) {
 			
-			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true))
+			//incremental generation break
+			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true)){
+				System.out.println(levelTracker.get(permutation.get(iterCN)));
+				System.out.println(permutation.get(iterCN));
 				break;
+			}
+			
+//			//incremental generation break
+//			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN)) == true) &&  (levelTracker.get(permutation.get(iterCN) + 1) == false)){
+//				System.out.println(levelTracker.get(permutation.get(iterCN)));
+//				System.out.println(permutation.get(iterCN));
+//				break;
+//			}
+
 			
 //			System.out.println("------------------------------------------");
 //			for (String st : iterCN.keySet()) {
@@ -1233,8 +1246,11 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			}
 			permutation.put(culprit, rank.get(cc));
 		}
-
-		// System.out.println(permutation);
+				
+		//sort permutation
+		HashMap<HashMap<String, Bounds[]>, Integer> tempPermutation = sortHashMapByValues(permutation);
+		permutation.clear();
+		permutation = tempPermutation;
 	}
 
 	private boolean isUnboundedBoundingBox(Bounds xLB, Bounds xUB, Bounds yLB,
@@ -1415,6 +1431,39 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		
 	}
 
+	
+	private static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
+		ArrayList mapKeys = new ArrayList(passedMap.keySet());
+		ArrayList mapValues = new ArrayList(passedMap.values());
+		Collections.sort(mapValues);
+		//Collections.sort(mapKeys);
+
+		LinkedHashMap sortedMap = 
+				new LinkedHashMap();
+
+		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
+		while (valueIt.hasNext()) {
+			int val = (Integer) valueIt.next();
+			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
+
+			while (keyIt.hasNext()) {
+				HashMap<String, Bounds[]> key = (HashMap<String, Bounds[]>) keyIt.next();
+				int comp1 = (Integer) passedMap.get(key);
+				int comp2 = val;
+
+				if (comp1 == comp2){
+					passedMap.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put(key, val);
+					break;
+				}
+			}
+		}
+		return sortedMap;
+	}
+
+	
+	
 	@Override
 	public ConstraintSolver getGroundSolver() {
 		// TODO Auto-generated method stub
