@@ -4,15 +4,20 @@
 
 set("myGradleVersion", GradleVersion.current().getVersion())
 set("myGradleVersionMajor", myGradleVersion.substring(0,myGradleVersion.indexOf(".")))
-set("myGradleVersionMinor", myGradleVersion.substring(myGradleVersion.indexOf(".")+1))
+set("myGradleVersionMinor", myGradleVersion.substring(myGradleVersion.indexOf(".")+1)+"-milestone9")
 
 println ("Using Gradle version: (major) " + myGradleVersionMajor + " (minor) " + myGradleVersionMinor)
 
+try {
 if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
    apply plugin : 'maven-publish'
 }
 else {
      println "Note: you need Gradle version >= 1.6 to publish to a Maven repo"
+}
+}
+catch (NumberFormatException e) {
+    println "Note: could not parse Gradle version - you cannot invoke publish target"
 }
 
 //Main class for 'gradle run'
@@ -98,6 +103,7 @@ task sourceJar (type : Jar) {
 //    from lib
 //}
 
+try {
 //publish bin, source and javaDoc to repo
 if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
 publishing {
@@ -164,5 +170,8 @@ publishing {
     }
 }
 }
+}
+catch (NumberFormatException e) { }
+
 
 defaultTasks 'install'
