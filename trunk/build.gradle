@@ -4,7 +4,7 @@
 
 set("myGradleVersion", GradleVersion.current().getVersion())
 set("myGradleVersionMajor", myGradleVersion.substring(0,myGradleVersion.indexOf(".")))
-set("myGradleVersionMinor", myGradleVersion.substring(myGradleVersion.indexOf(".")+1)+"-milestone9")
+set("myGradleVersionMinor", myGradleVersion.substring(myGradleVersion.indexOf(".")+1))
 
 println ("Using Gradle version: (major) " + myGradleVersionMajor + " (minor) " + myGradleVersionMinor)
 
