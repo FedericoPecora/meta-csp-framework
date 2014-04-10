@@ -149,7 +149,10 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 
 	@Override
 	public Object clone() {
-		return new SymbolicValueConstraint(this.type);
+		SymbolicValueConstraint res = new SymbolicValueConstraint(this.type);
+		if(this.unaryValue != null)
+			res.setUnaryValue(this.unaryValue);
+		return res;
 	}
 
 
