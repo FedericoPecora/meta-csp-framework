@@ -380,6 +380,20 @@ public class SimpleDomain extends MetaConstraint {
 
 //		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		
+		
+		
+
+//		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
+//		if (isControllable(problematicActivity.getComponent())) {
+//			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+//			if(unifications != null){
+//				for (int i = 0; i < unifications.length; i++) {
+//					System.out.println(unifications[i]);
+//					unificationConsNetwork.add(unifications[i]);
+//				}
+//			}
+//		}
+		
 		//If it's a context var, it needs to be unified (or expanded, see later) 
 		if (isContextVar(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
@@ -434,6 +448,7 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
+		activeFreeArmHeuristic = false;
 		if(!activeFreeArmHeuristic ){			
 			retPossibleConstraintNetworks.addAll(unificationConsNetwork);
 			retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				

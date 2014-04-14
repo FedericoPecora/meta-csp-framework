@@ -2,6 +2,7 @@ package org.metacsp.meta.hybridPlanner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -58,7 +59,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 //	private HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 //	private HashMap<Activity, SpatialFluent> activityToFluent;
 //	protected Vector<Activity> activities;
+	private long totalTime = 0; 
 	
+	public long getCulpritDetectionTime(){
+		return totalTime;
+	}
+			
 	private int numberOfmisplaced = 0;
 	public int getNumberofMisplaced(){
 		
@@ -323,7 +329,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		}
 		
 		setPermutationHashMAP(conflictvars, conflictRecvars);//it only generate permutation, does not perform any propagation
+		long timeNow = Calendar.getInstance().getTimeInMillis();
 		Vector<HashMap<String, Bounds[]>> alternativeSets = generateAllAlternativeSet(conflictRecvars);//it ranks the alternative
+		totalTime = (Calendar.getInstance().getTimeInMillis()-timeNow);
 		HashMap<String, Bounds[]> alternativeSet = alternativeSets.get(0);
 		
 		
@@ -374,7 +382,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 									
 									if(((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getEST() == 
 											((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getLST()){
-//										System.out.println(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName()); //this has to uncommented
+										System.out.println(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName()); //this has to uncommented
 //										System.out.println("==== " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
 										culpritActivities.put(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName(), 
 												((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
@@ -427,16 +435,13 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		//These are hard coded for testing an heuristic!
 		//[pen1, notebook1, book1, penHolder1, phone1, keyboard1]
 //		newGoal.removeAllElements();
+//		newGoal.add("book1");
+//		newGoal.add("monitor1");
 //		newGoal.add("keyboard1");
 //		newGoal.add("pen1");
-//		newGoal.add("penHolder1");
-//		newGoal.add("book1");
-//		newGoal.add("notebook1");
-//		newGoal.add("phone1");
-//		newGoal.add("vase1");
 		//################################################################################
 //		//This is a hard code for testing RACE YEAR2 Demo
-//		newGoal.removeAllElements();		
+//		newGoal.removeAllElements();
 //		newGoal.add("at_knife1_table1");
 //		newGoal.add("at_fork1_table1");
 		//################################################################################

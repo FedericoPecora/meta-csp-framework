@@ -1,6 +1,7 @@
 package org.metacsp.meta.hybridPlanner;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 
@@ -53,6 +54,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	@Override
 	public void postBacktrack(MetaVariable mv) {
 
+		
+		
 		if (mv.getMetaConstraint() instanceof FluentBasedSimpleDomain){
 			for (Variable v : mv.getConstraintNetwork().getVariables()) {
 				v.setMarking(markings.UNJUSTIFIED);
@@ -77,13 +80,12 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		
 		if (mv.getMetaConstraint() instanceof MetaOccupiedConstraint){
-			for (Variable v : mv.getConstraintNetwork().getVariables()) {								
+			for (Variable v : mv.getConstraintNetwork().getVariables()) {
 				if(!varInvolvedInOccupiedMetaConstraints.contains((Activity)v)){
 //					System.out.println("== occupied constraints == " + (Activity)v);
 					varInvolvedInOccupiedMetaConstraints.add((Activity)v);	
 				}
 			}
-			
 			if(armCapacity < varInvolvedInOccupiedMetaConstraints.size()){
 				causalReasoner.applyFreeArmHeuristic(varInvolvedInOccupiedMetaConstraints, "tray");
 				causalReasoner.activeHeuristic(true);
