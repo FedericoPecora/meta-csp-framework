@@ -810,7 +810,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "SpatialScheduable ";
+		return "MetaSpatialAdherenceConstraint ";
 	}
 
 	@Override
