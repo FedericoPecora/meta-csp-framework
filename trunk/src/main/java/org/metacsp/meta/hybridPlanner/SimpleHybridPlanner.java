@@ -1,5 +1,6 @@
 package org.metacsp.meta.hybridPlanner;
 
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
@@ -20,6 +21,7 @@ import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
@@ -40,16 +42,78 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private Vector<Activity> varInvolvedInOccupiedMetaConstraints = new Vector<Activity>();
 	private boolean learningFromfailure = false;
 	
+	private HashMap<String, Rectangle> observation = new HashMap<String, Rectangle>();
+	private HashMap<String, Integer> conflictRanking = null;
+	
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
 				animationTime, new SpatialFluentSolver(origin, horizon)	);
 		this.horizon = horizon;
 	}
-
+	
+	
 
 	@Override
 	public void preBacktrack() {
+
+		HashMap<String, Rectangle> recs = null;
+		for (int j = 0; j < this.metaConstraints.size(); j++){ 
+			if(this.metaConstraints.get(j) instanceof MetaSpatialAdherenceConstraint ){
+				recs = new HashMap<String, Rectangle>();  
+				for (String str : ((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0])
+						.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().keySet()) {
+					if(str.endsWith("1")){
+						recs.put( str,((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0])
+								.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
+					}
+				}
+				
+//				System.out.println("recs: " + recs);
+			}
+		}
+		
+
+		HashMap<String,  Vector<String>> overlappedPairs = new HashMap<String, Vector<String>>();
+		conflictRanking = new HashMap<String, Integer>();
+		if(observation != null){
+//			System.out.println("obs: " + observation);
+			for (String recNew : recs.keySet()) {
+				if(recNew.compareTo("table1") == 0) continue;
+				if(recs.get(recNew).getWidth() == 0) break; //the bounds are not updated since the spatiak adherence is not called
+				Vector<String> ovr = new Vector<String>();
+				for (String recOld : observation.keySet()) {
+					if(recOld.compareTo("table1") == 0) continue;
+					if(recOld.compareTo(recNew) == 0) continue;
+					if(recs.get(recNew).intersects(observation.get(recOld))){
+						ovr.add(recOld);
+					}
+					
+				}
+				//if(ovr.size() > 0)
+					overlappedPairs.put(recNew, ovr);
+			}
+
+//			System.out.println("overlappedPairs" + overlappedPairs);
+			
+			for (String st : overlappedPairs.keySet()) {
+				if(conflictRanking.get(st) == null){
+					conflictRanking.put(st, 1);
+				}
+				for (int i = 0; i < overlappedPairs.get(st).size(); i++) {
+					if(conflictRanking.get(overlappedPairs.get(st).get(i)) != null){
+						int rank = conflictRanking.get(st); 
+						conflictRanking.put(overlappedPairs.get(st).get(i), ++rank);
+					}else{
+						conflictRanking.put(overlappedPairs.get(st).get(i), 1);
+					}					
+				}
+			}
+		}
+		
+//		System.out.println("rank: " + conflictRanking);
+
 	}
+	
 
 	@Override
 	public void postBacktrack(MetaVariable mv) {
@@ -64,7 +128,6 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		int armCapacity = 100;
 		FluentBasedSimpleDomain causalReasoner = null;
-		MetaOccupiedConstraint metaOccupiedConstraint = null;
 		for (int j = 0; j < this.metaConstraints.size(); j++) {
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 				causalReasoner = ((FluentBasedSimpleDomain)this.metaConstraints.elementAt(j));
@@ -72,9 +135,6 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					if(resourceName.compareTo("arm") == 0)
 						armCapacity = causalReasoner.getResources().get(resourceName).getCapacity();						
 				}
-			}
-			if(this.metaConstraints.get(j) instanceof MetaOccupiedConstraint ){
-				metaOccupiedConstraint = ((MetaOccupiedConstraint)this.metaConstraints.elementAt(j)); 
 			}
 		}
 
@@ -86,14 +146,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					varInvolvedInOccupiedMetaConstraints.add((Activity)v);	
 				}
 			}
-			if(armCapacity < varInvolvedInOccupiedMetaConstraints.size()){
+			if(armCapacity <= varInvolvedInOccupiedMetaConstraints.size()){
 				causalReasoner.applyFreeArmHeuristic(varInvolvedInOccupiedMetaConstraints, "tray");
-				causalReasoner.activeHeuristic(true);
+				causalReasoner.activeHeuristic(false);
 				learningFromfailure  = true;
 				//metaOccupiedConstraint.activeHeuristic(true);
 			}
 		}
 
+		
+		
+		
 	}
 
 	public boolean learningFromFailure(){
@@ -314,6 +377,12 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		return goals;
 	}
 
+
+
+	public void addObservation(HashMap<String, Rectangle> observation) {
+		this.observation = observation;
+	}
+
 	private Vector<SpatialFluent> observedSpatialFluents = new Vector<SpatialFluent>();
 	public void addObservedSpatialFluents(SpatialFluent observedSpatialFluent) {
 		observedSpatialFluents.add(observedSpatialFluent);
@@ -323,5 +392,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		return observedSpatialFluents;
 	}
 
-
+	public HashMap<String, Integer> getConflictRanking(){
+		return conflictRanking;
+	}
+ 
 }

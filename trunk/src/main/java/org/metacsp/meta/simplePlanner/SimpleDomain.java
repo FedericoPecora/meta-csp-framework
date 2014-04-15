@@ -922,7 +922,7 @@ public class SimpleDomain extends MetaConstraint {
 	}
 	
 	
-	private static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
+	protected static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
 		ArrayList mapKeys = new ArrayList(passedMap.keySet());
 		ArrayList mapValues = new ArrayList(passedMap.values());
 		Collections.sort(mapValues);
