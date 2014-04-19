@@ -682,6 +682,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	public HashMap<ConstraintNetwork, ConstraintNetwork> getResolvers() {
 		return resolvers;
 	}
+	
+	public HashMap<ConstraintNetwork, ConstraintNetwork> getResolversInverseMapping() {
+		return resolversInverseMapping;
+	}
 
 	public void setResolvers(HashMap<ConstraintNetwork, ConstraintNetwork> resolvers) {
 		this.resolvers = resolvers;

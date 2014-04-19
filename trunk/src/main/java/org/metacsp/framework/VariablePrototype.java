@@ -41,7 +41,7 @@ public class VariablePrototype extends Variable {
 	 */
 	private static final long serialVersionUID = 6552888283766914530L;
 
-	private Object[] parameters;
+	protected Object[] parameters;
 	
 	/**
 	 * Static ID counter for {@link VariablePrototype}s. 
