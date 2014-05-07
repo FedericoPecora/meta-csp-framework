@@ -197,7 +197,8 @@ public abstract class ConstraintSolver implements Serializable {
 		ArrayList<Constraint> incomp = new ArrayList<Constraint>(c.length);
 		for (Constraint con : c) {
 			if (isCompatible(con) && !con.isSkippableSolver(this)) { }
-			else incomp.add(con);
+			else 
+				incomp.add(con);
 		}
 		ArrayList<Constraint> toAdd = new ArrayList<Constraint>(c.length);
 

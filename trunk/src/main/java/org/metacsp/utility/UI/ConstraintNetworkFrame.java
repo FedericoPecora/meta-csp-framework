@@ -165,13 +165,22 @@ public class ConstraintNetworkFrame extends JFrame {
 			public Paint transform(Variable v) {
 				return v.getColor();
 			}
+		};
+		
+		Transformer<Constraint,Paint> constraintPaint = new Transformer<Constraint,Paint>() {
+			public Paint transform(Constraint c) {
+				return c.getColor();
+			}
 		};  
 
+
 		vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
-
+//		vv.getRenderContext().setEdgeFillPaintTransformer(constraintPaint);
 		vv.getRenderContext().setEdgeLabelTransformer(stringer);
-		vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<Constraint>(vv.getPickedEdgeState(), Color.black, Color.cyan));
-
+//		vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<Constraint>(vv.getPickedEdgeState(), Color.black, Color.cyan));
+		vv.getRenderContext().setEdgeDrawPaintTransformer(constraintPaint);
+		
+		
 		vv.addComponentListener(new ComponentAdapter() {
 
 			/**

@@ -22,6 +22,8 @@
  ******************************************************************************/
 package org.metacsp.framework;
 
+import java.awt.Color;
+import java.awt.Paint;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -52,6 +54,8 @@ public abstract class Constraint implements Cloneable, Serializable {
 	protected Object annotation;
 	
 	private boolean autoRemovable = false;
+	
+	protected Paint color= Color.black;
 	
 	/**
 	 * Provide a list of solvers that should not process this constraint.
@@ -146,6 +150,14 @@ public abstract class Constraint implements Cloneable, Serializable {
 
 	public void setAutoRemovable(boolean autoRemovable) {
 		this.autoRemovable = autoRemovable;
+	}
+
+	public Paint getColor() {
+		return color;
+	}
+
+	public void setColor(Paint color) {
+		this.color = color;
 	}
 
 }

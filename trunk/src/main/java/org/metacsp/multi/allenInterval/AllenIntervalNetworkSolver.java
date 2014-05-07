@@ -47,7 +47,12 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 		super(new Class[]{AllenIntervalConstraint.class}, AllenInterval.class, createConstraintSolvers(origin, horizon, -1), new int[] {2});
 	}
 	
-	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxActivities) {
+	protected AllenIntervalNetworkSolver(Class<?>[] constraintTypes, Class<?> variableType, ConstraintSolver[] internalSolvers, int[] ingredients) {
+		super(constraintTypes,variableType,internalSolvers,ingredients);
+	}
+
+	
+	protected static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxActivities) {
 		APSPSolver stpSolver;
 		if (maxActivities >= 1)
 			stpSolver = new APSPSolver(origin, horizon, 2*maxActivities);

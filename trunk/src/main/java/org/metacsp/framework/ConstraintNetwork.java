@@ -15,12 +15,15 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
+import org.apache.commons.collections15.map.HashedMap;
 import org.metacsp.throwables.NonInstantiatedDomain;
 import org.metacsp.utility.UI.Callback;
 import org.metacsp.utility.UI.ConstraintNetworkFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
+
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.ObservableGraph;
+
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
 
@@ -79,6 +82,21 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		substituted.put(v,vp);
 		logger.finest("Added susbstitution " + vp + " <-- " + v);
 	}
+	
+	/**
+	 * Convenience method to keep track of correspondences between {@link VariablePrototype}s and {@link Variable}s (useful
+	 * when {@link ConstraintNetwork}s are used as meta-values in {@link MetaConstraintSolver}s).
+	 * @param vp2v: map of correspondences
+	 */
+	public void addSubstitutions(HashedMap<VariablePrototype,Variable> vp2v) {
+		
+		for(VariablePrototype vp: vp2v.keySet()){
+			substitutions.put(vp, vp2v.get(vp));
+			substituted.put(vp2v.get(vp),vp);
+			logger.finest("Added susbstitution " + vp + " <-- " + vp2v.get(vp));
+		}
+	}
+	
 
 	/**
 	 * Get the {@link Variable} corresponding to a given {@link VariablePrototype} (see addSubstitution() method).
@@ -445,7 +463,8 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	 * @return A {@link String} representation of this {@link ConstraintNetwork}.
 	 */
 	public String toString() {
-		return "[ConstraintNetwork]: marking -> "+ this.getMarking().getState()+"\n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());
+		return "[ConstraintNetwork]: \n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());		
+//		return "[ConstraintNetwork]: marking -> "+ this.getMarking().getState()+"\n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());
 	}
 	
 	/**

@@ -45,7 +45,7 @@ import org.metacsp.framework.Variable;
  */
 public class MetaVariable {
 	private MetaConstraint metaConstraint;
-	private ConstraintNetwork mv;
+	protected ConstraintNetwork mv;
 	private String annotation = null;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
