@@ -151,8 +151,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			return intervals;
 		}
 		
-		private final Bounds[] defaultIntervalBounds;
-		protected final int numParams;
+		protected final Bounds[] defaultIntervalBounds;
+		public final int numParams;
 		
 		
 		private Type(Long... bounds) {
@@ -198,7 +198,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 
 	
 	//protected Type type;
-	private Bounds[] bounds;
+	protected Bounds[] bounds;
 	protected Type[] types;
 	
 //	@Deprecated
