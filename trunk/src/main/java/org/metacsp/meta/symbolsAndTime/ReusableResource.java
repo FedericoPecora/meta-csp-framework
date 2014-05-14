@@ -28,6 +28,7 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.meta.MetaVariable;
 
 public class ReusableResource extends Schedulable {
 
@@ -84,6 +85,13 @@ public class ReusableResource extends Schedulable {
 
 	@Override
 	public ConstraintSolver getGroundSolver() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
+			int initial_time) {
 		// TODO Auto-generated method stub
 		return null;
 	}
