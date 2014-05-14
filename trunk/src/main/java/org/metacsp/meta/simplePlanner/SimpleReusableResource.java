@@ -29,6 +29,7 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.meta.MetaVariable;
 
 
 
@@ -101,6 +102,14 @@ public class SimpleReusableResource extends Schedulable {
 	
 	public int getCapacity(){
 		return capacity;
+	}
+
+
+	@Override
+	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
+			int initial_time) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
