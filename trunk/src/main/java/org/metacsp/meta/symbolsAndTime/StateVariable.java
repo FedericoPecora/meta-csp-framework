@@ -33,6 +33,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraintSolver;
+import org.metacsp.framework.meta.MetaVariable;
 
 public class StateVariable extends Schedulable {
 
@@ -126,6 +127,11 @@ public class StateVariable extends Schedulable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initial_time){
+		return this.getMetaValues(metaVariable);
+	}
+
 	
 	
 

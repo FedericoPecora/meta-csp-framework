@@ -553,6 +553,10 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public HashMap<VariablePrototype, Variable> getSubstitutions() {
 		return substitutions;
 	}
+	
+	public HashMap<Variable, VariablePrototype> getInverseSubstitutions() {
+		return substituted;
+	}
 
 	public ConstraintNetworkMarking getMarking() {
 		return marking;
