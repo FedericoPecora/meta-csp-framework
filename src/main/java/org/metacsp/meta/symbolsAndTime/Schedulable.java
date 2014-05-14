@@ -49,7 +49,7 @@ public abstract class Schedulable extends MetaConstraint {
 	 * 
 	 */
 	private static final long serialVersionUID = 5719994497319584156L;
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	public long getBeforeParameter() {
 		return beforeParameter;
@@ -59,7 +59,7 @@ public abstract class Schedulable extends MetaConstraint {
 		this.beforeParameter = beforeParameter;
 	}
 
-	long beforeParameter = 1;
+	protected long beforeParameter = 1;
 
 	public PEAKCOLLECTION getPeakCollectionStrategy() {
 		return peakCollectionStrategy;
@@ -81,7 +81,7 @@ public abstract class Schedulable extends MetaConstraint {
 	
 	
 	// Finds sets of overlapping activities and assesses whether they are conflicting (e.g., over-consuming a resource)
-	private ConstraintNetwork[] samplingPeakCollection() {
+	protected ConstraintNetwork[] samplingPeakCollection() {
 
 		if (activities != null && !activities.isEmpty()) {
 			
@@ -157,7 +157,7 @@ public abstract class Schedulable extends MetaConstraint {
 	}
 
 	
-	private ConstraintNetwork[] completePeakCollection() {
+	protected ConstraintNetwork[] completePeakCollection() {
 		if (activities != null && !activities.isEmpty()) {
 			logger.finest("Doing complete peak collection with " + activities.size() + " activities...");
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
@@ -205,7 +205,7 @@ public abstract class Schedulable extends MetaConstraint {
 	}
 
 	
-	private ConstraintNetwork[] binaryPeakCollection() {
+	protected ConstraintNetwork[] binaryPeakCollection() {
 		if (activities != null && !activities.isEmpty()) {
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			logger.finest("Doing binary peak collection with " + activities.size() + " activities...");
@@ -264,10 +264,10 @@ public abstract class Schedulable extends MetaConstraint {
 		return completePeakCollection();
 	}
 
-	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initialTime) {
-		return getMetaValues(metaVariable);
-	}
+//	@Override
+//	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initialTime) {
+//		return getMetaValues(metaVariable);
+//	}
 	
 	
 	@Override

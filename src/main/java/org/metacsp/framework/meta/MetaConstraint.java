@@ -137,7 +137,7 @@ public abstract class MetaConstraint extends Constraint {
 	@Deprecated
 	//FPA: general backtracking search should not depend on there being a temporal network
 	//     at the ground level.
-	public abstract ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, long initial_time);
+	public abstract ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initial_time);
 
 	/**
 	 * Method to mark a {@link MetaVariable} as solved. This method is called by the
