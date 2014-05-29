@@ -88,7 +88,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withManipulationSpace.ddl", FluentBasedSimpleDomain.class);
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testFieldOfViewDomain.ddl", FluentBasedSimpleDomain.class);
 		
 		
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(simpleHybridPlanner, tick);
@@ -169,7 +169,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			@Override
 			public void dispatch(Activity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);				
-				printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
+				//printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
 				executingActs.add(act);
 
 			}
