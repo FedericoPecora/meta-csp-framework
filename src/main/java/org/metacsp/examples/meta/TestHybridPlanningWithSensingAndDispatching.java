@@ -84,11 +84,13 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 		
 		//Create planner
-		final SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0,100000,0);
+		final SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0,10000000,0);
 		//MetaCSPLogging.setLevel(planner.getClass(), Level.FINEST);
 
 		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class);
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testFieldOfViewDomain.ddl", FluentBasedSimpleDomain.class);
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingWhileReachingTable.ddl", FluentBasedSimpleDomain.class);
+		
 		
 		
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(simpleHybridPlanner, tick);
@@ -169,13 +171,47 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			@Override
 			public void dispatch(Activity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);				
-				//printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
+//				printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
 				executingActs.add(act);
 
 			}
 		};
 		dispatches.add(df);
 
+//		DispatchingFunction dfSense = new DispatchingFunction("RobotSense") {
+//			@Override
+//			public void dispatch(Activity act) {
+//				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
+//				executingActs.add(act);
+//				if(counter == 0){
+//
+//					releaseActivity(groundSolver, act.getTemporalVariable().getLST()  , getCreatedActivty(groundSolver, ctrls.get(1)));
+//					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(2)));
+//					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(3)));
+//					//insert assertions 
+//					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
+//					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
+//					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);	
+//
+//					//printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
+//					
+//					counter ++;
+//				}
+//				else if(counter == 1){
+//					
+////					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(1)));
+////					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(2)));
+////					releaseActivity(groundSolver, act.getTemporalVariable().getLST() , getCreatedActivty(groundSolver, ctrls.get(3)));
+////					//insert assertions 
+////					Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>(); 
+////					for (String st : currentObservation.keySet()) saRelations.add(currentObservation.get(st));
+////					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);	
+////					counter++;
+//				}
+//			}
+//		}; 
+		
+		
 		DispatchingFunction dfSense = new DispatchingFunction("RobotSense") {
 			@Override
 			public void dispatch(Activity act) {
@@ -200,8 +236,10 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				}
 			}
 
-		}; 
+		};
 		dispatches.add(dfSense);
+		
+
 
 		animator.addDispatchingFunctions(simpleHybridPlanner, dispatches.toArray(new DispatchingFunction[dispatches.size()]));
 

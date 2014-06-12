@@ -81,7 +81,11 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		
 		if(sym.contains("hold")){
 			ret = sym.substring(sym.indexOf("_")+1, sym.indexOf("("));
-		}else{
+		}
+		else if(sym.contains("sensing")){
+			ret = sym.substring(sym.indexOf("_")+1, sym.indexOf("("));
+		}
+		else{
 			String first_ = sym.substring(sym.indexOf("_")+1, sym.length());
 			ret = first_.substring(0, first_.indexOf("_"));
 		}
