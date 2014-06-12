@@ -266,7 +266,7 @@ public class ConstraintNetworkAnimator extends Thread {
 								}
 								else if(metaVarAct.getTemporalVariable().getEET() > timeNow ){
 									currentSituation.add(metaVarAct);
-									System.out.println("current situation: " + metaVarAct);
+//									System.out.println("current situation: " + metaVarAct);
 								}
 							}							
 						}						
