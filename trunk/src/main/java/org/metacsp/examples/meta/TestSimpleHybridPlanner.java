@@ -53,13 +53,10 @@ public class TestSimpleHybridPlanner {
 		SimpleHybridPlanner simpleHybridPlanner = new SimpleHybridPlanner(0, 100000, 0);
 
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);//parseHybridDomain(simpleHybridPlanner, "domains/testSimpleHybridPlanningDomain.ddl", FluentBasedSimpleDomain.class);
-		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class); //did not terminate
-
+//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testSensingBeforePickAndPlaceDomain.ddl", FluentBasedSimpleDomain.class); //did not terminate
+		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/testFieldOfViewDomain.ddl", FluentBasedSimpleDomain.class); //did not terminate
 		
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutSensingAndMoving.ddl", FluentBasedSimpleDomain.class); //26 but wrong went to the counter
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutMove.ddl", FluentBasedSimpleDomain.class); //did not terminate
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutSensingMovingCounter.ddl", FluentBasedSimpleDomain.class); //24
-//		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/withoutMovingCounrter.ddl", FluentBasedSimpleDomain.class); //did not terminate
+		
 //		FluentBasedSimpleDomain.parseDomain(simpleHybridPlanner, "domains/deskDomain_1.ddl", FluentBasedSimpleDomain.class);
 		
 		
