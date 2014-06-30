@@ -34,7 +34,7 @@
 (Controllable RobotProprioception) #proprioception
 (Controllable atLocation) #tabletop perception
 
-(Resource arm 1)
+(Resource arm 2)
 #(Resource kinect 1)
 (Resource fieldOfView 200)
 
