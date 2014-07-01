@@ -341,6 +341,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		// Att At cpnstraint
 		Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();		
 		for (SpatialFluent var : conflictvars) {
+			//skip fluents which are not in the general spatial knowledge
+			if(alternativeSet.get(var.getRectangularRegion().getName()) == null) continue;
+			
 			Bounds[] atBounds = new Bounds[alternativeSet.get(var.getRectangularRegion().getName()).length];
 			for (int j = 0; j < atBounds.length; j++) {
 				Bounds at = new Bounds(alternativeSet.get(var.getName())[j].min,alternativeSet.get(var.getName())[j].max);
@@ -850,6 +853,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		}
 		
 //		System.out.println("targetRecs: " + targetRecs);
+//		System.out.println("permutation" + permutation);
 		
 		final HashMap<Integer, ConstraintNetworkSortingCritera> sortingCN = new HashMap<Integer, ConstraintNetworkSortingCritera>();
 		HashMap<Integer, HashMap<String, Bounds[]>> cnToInitPose = new HashMap<Integer, HashMap<String, Bounds[]>>();
@@ -967,9 +971,17 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();
 
 			for (RectangularRegion Metavar : targetRecs) {
+				
+				//skip those fluents which is not mention in general spatial knowledge
+				if(iterCN.get(Metavar.getName()) == null) continue;
+				
 				RectangularRegion var = (RectangularRegion) iterSolver.createVariable();
 				var.setName(Metavar.getName());
+				
 
+//				System.out.println("Metavar.getName(): " + Metavar.getName());
+//				System.out.println("iterCN: " + iterCN);
+				
 				Bounds[] atBounds = new Bounds[iterCN.get(Metavar.getName()).length];
 				for (int j = 0; j < atBounds.length; j++) {
 					Bounds at = new Bounds(
