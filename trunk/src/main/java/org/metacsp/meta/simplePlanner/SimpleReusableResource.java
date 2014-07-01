@@ -53,16 +53,30 @@ public class SimpleReusableResource extends Schedulable {
 		this.name = name;
 	}
 	
-
 	@Override
 	public boolean isConflicting(Activity[] peak) {
 		int sum = 0;
+//		System.out.println("NOTE: " + peak[0].getSymbolicVariable().getSymbols()[0]);
+//		if(peak.length == 2){
+//			if(peak[0].getSymbolicVariable().getSymbols()[0].compareTo(peak[1].getSymbolicVariable().getSymbols()[0]) == 0) return false;	
+//		}
+		
 		for (Activity act : peak) {
 			sum += rd.getResourceUsageLevel(this, act);
 			if (sum > capacity) return true;
 		}
 		return false;
 	}
+
+//	@Override
+//	public boolean isConflicting(Activity[] peak) {
+//		int sum = 0;
+//		for (Activity act : peak) {
+//			sum += rd.getResourceUsageLevel(this, act);
+//			if (sum > capacity) return true;
+//		}
+//		return false;
+//	}
 
 	@Override
 	public void draw(ConstraintNetwork network) {
