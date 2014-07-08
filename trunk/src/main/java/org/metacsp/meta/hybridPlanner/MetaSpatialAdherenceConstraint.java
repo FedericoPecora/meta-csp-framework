@@ -34,6 +34,8 @@ import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.spatial.reachability.ConfigurationVariable;
+import org.metacsp.spatial.reachability.ReachabilityConstraint;
 import org.metacsp.spatial.utility.SpatialAssertionalRelation;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;
@@ -54,35 +56,35 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	private Vector<String> initialUnboundedObjName = new Vector<String>();
 	private Vector<String> potentialCulprit; 
 	private HashMap<String, UnaryRectangleConstraint> currentAssertionalCons;
-//	private Vector<HashMap<String, BoundingBox>> newRectangularRegion = null;
+	//	private Vector<HashMap<String, BoundingBox>> newRectangularRegion = null;
 	private HashMap<String, BoundingBox> oldRectangularRegion = null;
-//	private HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
-//	private HashMap<Activity, SpatialFluent> activityToFluent;
-//	protected Vector<Activity> activities;
+	//	private HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
+	//	private HashMap<Activity, SpatialFluent> activityToFluent;
+	//	protected Vector<Activity> activities;
 	private long totalTime = 0; 
-	
+
 	public long getCulpritDetectionTime(){
 		return totalTime;
 	}
-			
+
 	private int numberOfmisplaced = 0;
 	public int getNumberofMisplaced(){
-		
+
 		return numberOfmisplaced;
-		
+
 	}
-	
+
 	public HashMap<String, UnaryRectangleConstraint> getCurrentAssertionalCons(){
 		return currentAssertionalCons;
 	}
-		
 
-	
+
+
 	public HashMap<String, BoundingBox> getOldRectangularRegion(){
 		return oldRectangularRegion;
 	}
-	
-	
+
+
 	public MetaSpatialAdherenceConstraint(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
 		this.beforeParameter = 1;
@@ -93,21 +95,21 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		this.rules = rules;
 	}
 
-//	public void setSpatialAssertionalRelations(SpatialAssertionalRelation2... sAssertionalRels) {
-//		this.sAssertionalRels = new SpatialAssertionalRelation2[sAssertionalRels.length];
-//		this.sAssertionalRels = sAssertionalRels;
-//	}
+	//	public void setSpatialAssertionalRelations(SpatialAssertionalRelation2... sAssertionalRels) {
+	//		this.sAssertionalRels = new SpatialAssertionalRelation2[sAssertionalRels.length];
+	//		this.sAssertionalRels = sAssertionalRels;
+	//	}
 
 	public void setSpatialAssertionalRelations(Vector<SpatialAssertionalRelation> sAssertionalRels) {
 		this.sAssertionalRels.clear();
 		this.sAssertionalRels = sAssertionalRels;
 	}
 
-	
+
 	public Vector<SpatialAssertionalRelation> getsAssertionalRels() {
 		return sAssertionalRels;
 	}
-	
+
 
 	public int getBeforeParameter() {
 		return beforeParameter;
@@ -127,7 +129,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		this.peakCollectionStrategy = peakCollectionStrategy;
 	}
 
-	
+
 
 	public static enum PEAKCOLLECTION {
 		SAMPLING, COMPLETE, BINARY
@@ -153,16 +155,16 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		}
 		return sets;
 	}
-	
 
 
-	
+
+
 	// Finds sets of overlapping activities and assesses whether they are
 	// conflicting (e.g., over-consuming a resource)
 	private ConstraintNetwork[] samplingPeakCollection(HashMap<Activity, SpatialFluent> aTOsf) {
-		
-		
-		
+
+
+
 		Vector<Activity> observation = new Vector<Activity>();
 		Vector<Activity> activities = new Vector<Activity>();
 		for (Activity act : aTOsf.keySet()) {
@@ -171,8 +173,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				observation.add(act);
 		}
 		if (activities != null && !activities.isEmpty()) {
-			
- 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);			
+
+			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);			
 			Arrays.sort(groundVars, new ActivityComparator(true));
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			Vector<Vector<Activity>> overlappingAll = new Vector<Vector<Activity>>();
@@ -198,8 +200,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 						start = (groundVars[j]).getTemporalVariable().getEST();
 						end = (groundVars[j]).getTemporalVariable().getEET();
 						Bounds nextInterval = new Bounds(start, end);
-//						 System.out.println("nextinterval: " + groundVars[j] + " " +nextInterval);
-//						 System.out.println("____________________________________");
+						//						 System.out.println("nextinterval: " + groundVars[j] + " " +nextInterval);
+						//						 System.out.println("____________________________________");
 						Bounds intersectionNew = intersection.intersectStrict(nextInterval);
 						if (intersectionNew != null) {
 							overlapping.add(groundVars[j]);
@@ -224,7 +226,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					}
 				}
 				retActivities.add(current);
-				
+
 				for (Vector<Activity> actVec : retActivities) {
 					ConstraintNetwork tmp = new ConstraintNetwork(null);
 					for (Activity act : actVec){
@@ -232,14 +234,14 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					}
 					ret.add(tmp);					
 				}
-				
-//				System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-//				for (int i = 0; i < ret.size(); i++) {
-//					System.out.println("ret: " + ret);
-//				}
-//				System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-				
-//				return new ConstraintNetwork[]{ret.size()};
+
+				//				System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+				//				for (int i = 0; i < ret.size(); i++) {
+				//					System.out.println("ret: " + ret);
+				//				}
+				//				System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+				//				return new ConstraintNetwork[]{ret.size()};
 				return ret.toArray(new ConstraintNetwork[ret.size()]);
 			}
 		}
@@ -248,24 +250,24 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 
 	private boolean isEqual(Vector<Activity> current, Vector<Activity> next) {
-		
+
 		if(current.size() != next.size()) return false;
-		
+
 		int[] nextId = new int[next.size()]; 
 		int[] currentId = new int[current.size()];
 		for (int i = 0; i < next.size(); i++){ 
 			nextId[i] = next.get(i).getID();
 			currentId[i] = current.get(i).getID();
 		}
-		
+
 		Arrays.sort(nextId);
 		Arrays.sort(currentId);
-		
+
 		for (int i = 0; i < currentId.length; i++) {
 			if(currentId[i] != nextId[i])
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -277,15 +279,15 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			activities.add(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity());
 			activityToFluent.put(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity(), 
-				((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]));
+					((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]));
 		}
-		
-//		System.out.println("==========================================================================");
-//		System.out.println("activityToFluent: " + activityToFluent);
-//		System.out.println("==========================================================================");
-		
+
+		//		System.out.println("==========================================================================");
+		//		System.out.println("activityToFluent: " + activityToFluent);
+		//		System.out.println("==========================================================================");
+
 		return samplingPeakCollection(activityToFluent);
-//		return completePeakCollection(activityToFluent);
+		//		return completePeakCollection(activityToFluent);
 	}
 
 	@Override
@@ -299,15 +301,15 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 		if (metaVariable == null)
 			return null;
-		
+
 		//#######################################################################################################
 		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 		Vector<Activity> activities = new Vector<Activity>();
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			activities.add(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity());
 			activityToFluent.put(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity(), 
-				((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]));
-			
+					((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]));
+
 		}
 		//########################################################################################################
 		permutation = new HashMap<HashMap<String, Bounds[]>, Integer>();
@@ -318,24 +320,24 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		Vector<SpatialFluent> conflictvars = new Vector<SpatialFluent>();
 		Vector<RectangularRegion> conflictRecvars = new Vector<RectangularRegion>();
 		HashMap<String, RectangularRegion> getVariableByName = new HashMap<String, RectangularRegion>();
-//		newRectangularRegion = new Vector<HashMap<String, BoundingBox>>(); //this is for tracking the alternative position and check whether the new places is already overlapped by previous places 
+		//		newRectangularRegion = new Vector<HashMap<String, BoundingBox>>(); //this is for tracking the alternative position and check whether the new places is already overlapped by previous places 
 		oldRectangularRegion = new HashMap<String, BoundingBox>();
-		
+
 		//#########################################################################################################
-		
+
 		for (int j = 0; j < conflict.getVariables().length; j++) {
 			conflictvars.add(activityToFluent.get((Activity) conflict.getVariables()[j]));
 			conflictRecvars.add(activityToFluent.get((Activity) conflict.getVariables()[j]).getRectangularRegion());
 		}
-		
+
 		setPermutationHashMAP(conflictvars, conflictRecvars);//it only generate permutation, does not perform any propagation
 		long timeNow = Calendar.getInstance().getTimeInMillis();
 		Vector<HashMap<String, Bounds[]>> alternativeSets = generateAllAlternativeSet(conflictRecvars);//it ranks the alternative
 		totalTime = (Calendar.getInstance().getTimeInMillis()-timeNow);
 		HashMap<String, Bounds[]> alternativeSet = alternativeSets.get(0);
-		
-		
-		
+
+
+
 		// TBOX general knowledge in RectangleCN
 		mvalue.join(createTBOXspatialNetwork(((SpatialFluentSolver) this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[0],getVariableByName)); 
 		// Att At cpnstraint
@@ -343,7 +345,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		for (SpatialFluent var : conflictvars) {
 			//skip fluents which are not in the general spatial knowledge
 			if(alternativeSet.get(var.getRectangularRegion().getName()) == null) continue;
-			
+
 			Bounds[] atBounds = new Bounds[alternativeSet.get(var.getRectangularRegion().getName()).length];
 			for (int j = 0; j < atBounds.length; j++) {
 				Bounds at = new Bounds(alternativeSet.get(var.getName())[j].min,alternativeSet.get(var.getName())[j].max);
@@ -357,15 +359,15 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			mvalue.addConstraint(atCon);
 			mvalue.addVariable(var.getRectangularRegion());
 		}
-		
-		
-		//###########################################################################################################
-//		logger.finest("pregenerated meta value for scoring: " + mvalue);
 
-//		System.out.println("mvalue" + mvalue);
+
+		//###########################################################################################################
+		//		logger.finest("pregenerated meta value for scoring: " + mvalue);
+
+		//		System.out.println("mvalue" + mvalue);
 		Vector<String> newGoal = new Vector<String>();
 		HashMap<String, Activity> culpritActivities = new HashMap<String, Activity>(); 
-		
+
 		for (int i = 0; i < mvalue.getConstraints().length; i++) {
 			if (mvalue.getConstraints()[i] instanceof UnaryRectangleConstraint) {
 				// this if will check for unboudned obj in order to create the goal
@@ -375,18 +377,18 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 							((UnaryRectangleConstraint) mvalue.getConstraints()[i]).getBounds()[1],
 							((UnaryRectangleConstraint) mvalue.getConstraints()[i]).getBounds()[2],
 							((UnaryRectangleConstraint) mvalue.getConstraints()[i]).getBounds()[3])) {
-//						System.out.println("%%%%%%%%");
+						//						System.out.println("%%%%%%%%");
 						for (int j = 0; j < metaVariable.getConstraintNetwork().getVariables().length; j++) {
 							if (((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName().compareTo
 									(((SpatialFluent) activityToFluent.get((Activity)metaVariable.getConstraintNetwork().getVariables()[j]) ).getName()) == 0) {
-//								System.out.println("ADDED ACTIVITY: " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));								
+								//								System.out.println("ADDED ACTIVITY: " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));								
 								if (this.getPotentialCulprit().contains(((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName())) {
-									
-									
+
+
 									if(((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getEST() == 
 											((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getLST()){
 										System.out.println(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName()); //this has to uncommented
-//										System.out.println("==== " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
+										//										System.out.println("==== " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
 										culpritActivities.put(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName(), 
 												((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
 										if(!newGoal.contains(((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName()))
@@ -399,7 +401,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				}						
 			}
 		}
-//		System.out.println("%%%%%%%%");
+		//		System.out.println("%%%%%%%%");
 
 
 		//extract the fluent which is relevant to the original goal(s)
@@ -416,13 +418,13 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				nonMovableObj.add(sAssertionalRels.get(j).getFrom());
 				nonMovableObj.add(sAssertionalRels.get(j).getTo());
 			}
-			
+
 			currentAssertionalCons.put(sAssertionalRels.get(j).getFrom(), new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At,
 					new Bounds(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[0].min, sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[0].max), 
 					new Bounds(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[1].min, sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[1].max),
 					new Bounds(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[2].min, sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[2].max),
 					new Bounds(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[3].min, sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[3].max)));
-			
+
 			BoundingBox bb = new BoundingBox(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[0], 
 					sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[1],
 					sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[2],
@@ -430,28 +432,28 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			oldRectangularRegion.put(sAssertionalRels.get(j).getFrom(), bb);
 
 		}
-		
+
 		Vector<SpatialFluent> newGoalFluentsVector = new Vector<SpatialFluent>();
 		ConstraintNetwork actNetwork = new ConstraintNetwork(((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0])).getConstraintSolvers()[1]);
-		
+
 		//################################################################################
 		//These are hard coded for testing an heuristic!
 		//[pen1, notebook1, book1, penHolder1, phone1, keyboard1]
-//		newGoal.removeAllElements();
-//		newGoal.add("book1");
-//		newGoal.add("monitor1");
-//		newGoal.add("keyboard1");
-//		newGoal.add("pen1");
+		//		newGoal.removeAllElements();
+		//		newGoal.add("book1");
+		//		newGoal.add("monitor1");
+		//		newGoal.add("keyboard1");
+		//		newGoal.add("pen1");
 		//################################################################################
-//		//This is a hard code for testing RACE YEAR2 Demo
-//		newGoal.removeAllElements();
-//		newGoal.add("at_knife1_table1");
-//		newGoal.add("at_fork1_table1");
+		//		//This is a hard code for testing RACE YEAR2 Demo
+		//		newGoal.removeAllElements();
+		//		newGoal.add("at_knife1_table1");
+		//		newGoal.add("at_fork1_table1");
 		//################################################################################
 
-		
+
 		numberOfmisplaced = newGoal.size();
-		
+
 		//set new Goal After old activity
 		for (String st :newGoal) {
 			//add new fluent if there is not already a fluent which represent the goal, 
@@ -461,44 +463,117 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 
 			newgoalFlunet = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
-						.createVariable(culpritActivities.get(st).getComponent());
+					.createVariable(culpritActivities.get(st).getComponent());
 			newgoalFlunet.setName(st);
 			((Activity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain(culpritActivities.get(st).getSymbolicVariable().getSymbols()[0]);
-//			((Activity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain(culpritActivities.get(st).getSymbolicVariable().toString()
-//						.subSequence(21, ((Activity)culpritActivities.get(st)).getSymbolicVariable().toString().length() - 1).toString());
+			//			((Activity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain(culpritActivities.get(st).getSymbolicVariable().toString()
+			//						.subSequence(21, ((Activity)culpritActivities.get(st)).getSymbolicVariable().toString().length() - 1).toString());
 			((Activity)newgoalFlunet.getInternalVariables()[1]).setMarking(markings.UNJUSTIFIED);
 			((RectangularRegion)newgoalFlunet.getInternalVariables()[0]).setName(st);
 			mvalue.addVariable(newgoalFlunet);
 			activityToFluent.put(((Activity)newgoalFlunet.getInternalVariables()[1]), newgoalFlunet);
-			
-			
+
+
 			newGoalFluentsVector.add(newgoalFlunet);
 			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			//update assertional rule
 			for (int j = 0; j < sAssertionalRels.size(); j++) {
 				if(sAssertionalRels.get(j).getFrom().compareTo(st) == 0)
-				sAssertionalRels.get(j).setUnaryAtRectangleConstraint(new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, 
-						new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF)));
+					sAssertionalRels.get(j).setUnaryAtRectangleConstraint(new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, 
+							new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF)));
 			}			
 			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			if(!activities.contains(((Activity)newgoalFlunet.getInternalVariables()[1])))
 				activities.add(((Activity)newgoalFlunet.getInternalVariables()[1]));
 			AllenIntervalConstraint newOnAfteroldOn = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After,
-					 AllenIntervalConstraint.Type.After.getDefaultBounds());
+					AllenIntervalConstraint.Type.After.getDefaultBounds());
 			newOnAfteroldOn.setFrom(((Activity)newgoalFlunet.getInternalVariables()[1]));
 			newOnAfteroldOn.setTo(culpritActivities.get(st));
-			
+
 			//((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0])).getConstraintSolvers()[1].addConstraints(new
-//					 Constraint[] {newOnAfteroldOn});
+			//					 Constraint[] {newOnAfteroldOn});
 			actNetwork.addConstraint(newOnAfteroldOn);			
-//			System.out.println("newOnAfteroldOn" + newOnAfteroldOn);
+			//			System.out.println("newOnAfteroldOn" + newOnAfteroldOn);
+
+
+			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			//it generates manipulationFluent for corresponding new goal fluent
+			//the name of fluent comes from parsing the operator with certain relations :
+			//it generate for example, atLocation::at_robot1_manipulationArea_fork1_table1()) for at_fork1_table1() 
+			SpatialFluent newmanFlunetPick = null;
+			
+			String extractedNameAndSupport = st.substring(3); //remove at_
+			String manFluentsName = "at_robot1_manipulationArea_" + extractedNameAndSupport + "()";
+			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
+			newmanFlunetPick = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
+					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
+			newmanFlunetPick.setName(manFluentsName);
+			((Activity)newmanFlunetPick.getInternalVariables()[1]).setSymbolicDomain(manFluentsName);
+			((Activity)newmanFlunetPick.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+			((RectangularRegion)newmanFlunetPick.getInternalVariables()[0]).setName(manFluentsName);
+			mvalue.addVariable(newmanFlunetPick);
+			
+			////////////////////////////////////////////////////////////////////////////////////////
+			ReachabilityConstraint rc1 = new ReachabilityConstraint(ReachabilityConstraint.Type.basePickingupReachable);
+			rc1.setFrom(((ConfigurationVariable)activityToFluent.get(culpritActivities.get(st)).getInternalVariables()[2]));
+			rc1.setTo(((ConfigurationVariable)newmanFlunetPick.getInternalVariables()[2]));
+			actNetwork.addConstraint(rc1);
+			
+			System.out.println("----------------! " + rc1);
+			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			//the another flunet with the same name, in case, the position of the objects are different, should be two different 
+			SpatialFluent newmanFlunetPlace = null;			
+			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
+			newmanFlunetPlace = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
+					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
+			newmanFlunetPlace.setName(manFluentsName);
+			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setSymbolicDomain(manFluentsName);
+			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+			((RectangularRegion)newmanFlunetPlace.getInternalVariables()[0]).setName(manFluentsName);
+			mvalue.addVariable(newmanFlunetPlace);
+			
+			////////////////////////////////////////////////////////////////////////////////////////
+			ReachabilityConstraint rc2 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
+			rc2.setFrom(((ConfigurationVariable)newgoalFlunet.getInternalVariables()[2]));
+			rc2.setTo(((ConfigurationVariable)newmanFlunetPlace.getInternalVariables()[2]));
+			actNetwork.addConstraint(rc2);
+			System.out.println("----------------" + rc2);
+			
+			////////////////////////////////////////////////
+			//Put before constraint to seprate manipulation Area for pick and Place of the same Objects
+			///////////////////////////////////////////////
+			AllenIntervalConstraint beforeForSeprationOfManFleunts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before,
+					AllenIntervalConstraint.Type.Before.getDefaultBounds());
+			beforeForSeprationOfManFleunts.setFrom(((Activity)newmanFlunetPick.getInternalVariables()[1]));
+			beforeForSeprationOfManFleunts.setTo(((Activity)newmanFlunetPlace.getInternalVariables()[1]));
+			actNetwork.addConstraint(beforeForSeprationOfManFleunts);	
+
+			////////////////////////////////////////////////
+			//create manipulationArea for orginal goal
+			///////////////////////////////////////////////
+//			for (int j = 0; j < originalGoals.size(); j++) {
+//				
+//				String extractOriginalFlunet = originalGoals.get(j).getSymbolicVariable().getSymbols()[0].substring(3);
+//				String originalGoalManFleuntName =  "at_robot1_manipulationArea_" + extractOriginalFlunet;
+//				SpatialFluent originalGoalmanFlunetPlace = null;			
+//				System.out.println("---NEWNMANFLUNT--" + originalGoalManFleuntName);
+//				originalGoalmanFlunetPlace = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
+//						.createVariable(originalGoals.get(j).getComponent()); //e.g., at_location
+//				originalGoalmanFlunetPlace.setName(originalGoalManFleuntName);
+//				((Activity)originalGoalmanFlunetPlace.getInternalVariables()[1]).setSymbolicDomain(originalGoalManFleuntName);
+//				((Activity)originalGoalmanFlunetPlace.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+//				((RectangularRegion)originalGoalmanFlunetPlace.getInternalVariables()[0]).setName(originalGoalManFleuntName);
+//				mvalue.addVariable(originalGoalmanFlunetPlace);
+//				
+//			}
+
 			
 			
 		}
-		
-		
+
+
 		Vector<RectangleConstraint> assertionList = new Vector<RectangleConstraint>();
-//		newGoal
+		//		newGoal
 		for(int i = 0; i < sAssertionalRels.size(); i++) {
 			boolean isAdded = false;
 			if(newGoal.contains(sAssertionalRels.get(i).getFrom())){
@@ -508,8 +583,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 						RectangleConstraint assertion = new RectangleConstraint(
 								new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
 										AllenIntervalConstraint.Type.Equals.getDefaultBounds()),
-								new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
-										AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
+										new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
+												AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
 
 						assertion.setFrom(((RectangularRegion) newGoalFluentsVector.get(j).getRectangularRegion()));
 						assertion.setTo(getVariableByName.get(sAssertionalRels.get(i).getTo()));
@@ -526,46 +601,46 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 						RectangleConstraint assertion = new RectangleConstraint(
 								new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
 										AllenIntervalConstraint.Type.Equals.getDefaultBounds()),
-								new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
-										AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
+										new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
+												AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
 
 						assertion.setFrom(((RectangularRegion) metaVaribales.get(j)));
 						assertion.setTo(getVariableByName.get(sAssertionalRels.get(i).getTo()));
 						if(getVariableByName.get(sAssertionalRels.get(i).getTo()) !=  null){
 							assertionList.add(assertion);
-						    mvalue.addConstraint(assertion);
-						    isAdded = true;
+							mvalue.addConstraint(assertion);
+							isAdded = true;
 						}
-						
-	              }
+
+					}
 				}
 			}
 			if(!isAdded){ //goals and we do not care about the rest of the objects which is in the well set table and can not be observed and does not exist in the set of original goal!
 				for (int j = 0; j < originalGoals.size(); j++) {
 					if(activityToFluent.get(originalGoals.get(j)).getRectangularRegion().getName().compareTo(sAssertionalRels.get(i).getFrom()) == 0){
 						RectangleConstraint assertion = new RectangleConstraint(
-						new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
-								AllenIntervalConstraint.Type.Equals.getDefaultBounds()),
-						new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
-								AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
+								new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
+										AllenIntervalConstraint.Type.Equals.getDefaultBounds()),
+										new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals,
+												AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
 
 						assertion.setFrom(activityToFluent.get(originalGoals.get(j)).getRectangularRegion());
 						assertion.setTo(getVariableByName.get(sAssertionalRels.get(i).getTo()));
 						if(getVariableByName.get(sAssertionalRels.get(i).getTo()) !=  null){
 							assertionList.add(assertion);
-						    mvalue.addConstraint(assertion);
+							mvalue.addConstraint(assertion);
 						}
-						
+
 
 					}
 				}
 			}
 		}
-		
+
 		actNetwork.join(mvalue);
 		ret.add(actNetwork);
 		actNetwork.annotation = this.currentAssertionalCons;
-				
+
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 
 	}
@@ -582,16 +657,16 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	}
 
 	public boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> aTOsf) {
-		
+
 		if(peak.length == 1) return false;
-		
-//		System.out.println("------------------------------------------------------------");
-//		for (int i = 0; i < peak.length; i++) {
-////			System.out.println(peak[i]);
-//			System.out.println(aTOsf.get(peak[i]));
-//		}
-//		System.out.println("------------------------------------------------------------");
-		
+
+		//		System.out.println("------------------------------------------------------------");
+		//		for (int i = 0; i < peak.length; i++) {
+		////			System.out.println(peak[i]);
+		//			System.out.println(aTOsf.get(peak[i]));
+		//		}
+		//		System.out.println("------------------------------------------------------------");
+
 		Vector<UnaryRectangleConstraint> atConstraints = new Vector<UnaryRectangleConstraint>();
 		HashMap<String, SpatialFluent> currentFluent = new HashMap<String, SpatialFluent>();
 		Vector<RectangularRegion> targetRecs = new Vector<RectangularRegion>();
@@ -600,7 +675,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			currentFluent.put(aTOsf.get(peak[i]).getName(),aTOsf.get(peak[i]));
 			targetRecs.add(aTOsf.get(peak[i]).getRectangularRegion());
 		}
-		
+
 		// ###################################################################################################
 		RectangleConstraintSolver iterSolver = new RectangleConstraintSolver(origin, horizon);
 		HashMap<String, RectangularRegion> getVariableByName = new HashMap<String, RectangularRegion>();
@@ -627,7 +702,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				}
 				if (getVariableByName.get(this.rules[i].getTo()) != null)
 					uConsSize
-							.setTo(getVariableByName.get(this.rules[i].getTo()));
+					.setTo(getVariableByName.get(this.rules[i].getTo()));
 				else {
 					RectangularRegion var = (RectangularRegion) iterSolver.createVariable();
 					var.setName(this.rules[i].getTo());
@@ -658,15 +733,15 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
 				AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(
 						(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
-				
-				
+
+
 				//This part is for the Allen intervals do not have any bounds e.g., Equals
 				if((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
 					xAllenCon = (AllenIntervalConstraint)(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
 				if((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
 					yAllenCon = (AllenIntervalConstraint)(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
-				
-				
+
+
 				RectangleConstraint uConsBinary = new RectangleConstraint(xAllenCon, yAllenCon);
 
 				if (getVariableByName.get(this.rules[i].getFrom()) != null)
@@ -694,33 +769,33 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		// ####################################################################################
 		//check whether the fluent which overlapped in time is a fluent of interest meaning they are mentioned in the spatial rules
 		//otherwise return false
-		
-//		System.out.println("++++++Before++++++");
-//		Vector<String> conceptsInUse = new Vector<String>();
-//		for (int j = 0; j < iterSolver.getVariables().length; j++) {
-//			for (int j2 = 0; j2 < sAssertionalRels.size(); j2++) {
-//				if(((RectangularRegion)iterSolver.getVariables()[j]).getName().compareTo(sAssertionalRels.get(j2).getTo()) == 0){
-//					conceptsInUse.add(sAssertionalRels.get(j2).getFrom());
-//				}
-//			}
-//			
-//		}
-//		
-//		System.out.println("conceptInUse" + conceptsInUse);
-//		
-//		boolean isThere = false;
-//		for (Activity a : aTOsf.keySet()) {
-//			System.out.println("====" + aTOsf.get(a).getName());
-//			for (int j = 0; j < conceptsInUse.size(); j++) {
-//				System.out.println(conceptsInUse.get(j));
-//				if(aTOsf.get(a).getName().compareTo(conceptsInUse.get(j)) == 0)
-//					isThere = true;	
-//			}
-//			if(!isThere) return false;
-//			isThere = false;
-//		}
-//		
-//		System.out.println("++++++After++++++");
+
+		//		System.out.println("++++++Before++++++");
+		//		Vector<String> conceptsInUse = new Vector<String>();
+		//		for (int j = 0; j < iterSolver.getVariables().length; j++) {
+		//			for (int j2 = 0; j2 < sAssertionalRels.size(); j2++) {
+		//				if(((RectangularRegion)iterSolver.getVariables()[j]).getName().compareTo(sAssertionalRels.get(j2).getTo()) == 0){
+		//					conceptsInUse.add(sAssertionalRels.get(j2).getFrom());
+		//				}
+		//			}
+		//			
+		//		}
+		//		
+		//		System.out.println("conceptInUse" + conceptsInUse);
+		//		
+		//		boolean isThere = false;
+		//		for (Activity a : aTOsf.keySet()) {
+		//			System.out.println("====" + aTOsf.get(a).getName());
+		//			for (int j = 0; j < conceptsInUse.size(); j++) {
+		//				System.out.println(conceptsInUse.get(j));
+		//				if(aTOsf.get(a).getName().compareTo(conceptsInUse.get(j)) == 0)
+		//					isThere = true;	
+		//			}
+		//			if(!isThere) return false;
+		//			isThere = false;
+		//		}
+		//		
+		//		System.out.println("++++++After++++++");
 		// ####################################################################################
 		// Add at constraint
 		Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();
@@ -736,7 +811,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				for (int j = 0; j < atBounds.length; j++) {
 					Bounds b = new Bounds(
 							sAssertionalRels.get(i).getUnaryAtRectangleConstraint().getBounds()[j].min, sAssertionalRels.get(i)
-									.getUnaryAtRectangleConstraint().getBounds()[j].max);
+							.getUnaryAtRectangleConstraint().getBounds()[j].max);
 					atBounds[j] = b;
 				}
 
@@ -763,40 +838,40 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		for (int i = 0; i < sAssertionalRels.size(); i++) {
 			for (int j = 0; j < metaVaribales.size(); j++) {
 				if (sAssertionalRels.get(i).getFrom().compareTo(((RectangularRegion) (metaVaribales.get(j))).getName()) == 0) {
-					
+
 					RectangleConstraint assertion = new RectangleConstraint(
 							new AllenIntervalConstraint(
 									AllenIntervalConstraint.Type.Equals,
 									AllenIntervalConstraint.Type.Equals.getDefaultBounds()),
-							new AllenIntervalConstraint(
-									AllenIntervalConstraint.Type.Equals,
-									AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
+									new AllenIntervalConstraint(
+											AllenIntervalConstraint.Type.Equals,
+											AllenIntervalConstraint.Type.Equals.getDefaultBounds()));
 
 					assertion.setFrom(((RectangularRegion) metaVaribales.get(j)));
 					assertion.setTo(getVariableByName.get(sAssertionalRels.get(i).getTo()));					
 					if(getVariableByName.get(sAssertionalRels.get(i).getTo()) != null){
 						assertionList.add(assertion);
-//						System.out.println(assertion);
+						//						System.out.println(assertion);
 					}
 				}
 			}
 		}
-		
+
 		boolean isConsistent = true;
-		
-		
+
+
 		// MetaCSPLogging.setLevel(Level.FINE);
 		if (!iterSolver.addConstraints(assertionList.toArray(new RectangleConstraint[assertionList.size()])))
 			isConsistent = false;
-		
-//		System.out.println(isConsistent);
-//		System.out.println("------------------------------------------------------------");
+
+		//		System.out.println(isConsistent);
+		//		System.out.println("------------------------------------------------------------");
 		return (!isConsistent);
 	}
 
 	public void setInitialGoal(String[] initialGoals) {
-		
-		
+
+
 		for (int i = 0; i < initialGoals.length; i++) {
 			initialUnboundedObjName.add(initialGoals[i]);
 		}
@@ -851,39 +926,39 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				this.rigidityNumber = rigidityNumber;
 			}
 		}
-		
-//		System.out.println("targetRecs: " + targetRecs);
-//		System.out.println("permutation" + permutation);
-		
+
+		//		System.out.println("targetRecs: " + targetRecs);
+		//		System.out.println("permutation" + permutation);
+
 		final HashMap<Integer, ConstraintNetworkSortingCritera> sortingCN = new HashMap<Integer, ConstraintNetworkSortingCritera>();
 		HashMap<Integer, HashMap<String, Bounds[]>> cnToInitPose = new HashMap<Integer, HashMap<String, Bounds[]>>();
 		HashMap<Integer, Boolean> levelTracker = new HashMap<Integer, Boolean>(); //created for generating the culprit incrementally
-		
+
 		for (Integer level : permutation.values()) 
 			levelTracker.put(level, false);
-		
+
 		int counter = 0;
 		for (HashMap<String, Bounds[]> iterCN : permutation.keySet()) {
-			
+
 			//incremental generation break
 			if(permutation.get(iterCN) > 0 && (levelTracker.get(permutation.get(iterCN) - 1) == true)){
-//				System.out.println(levelTracker.get(permutation.get(iterCN)));
-//				System.out.println(permutation.get(iterCN));
+				//				System.out.println(levelTracker.get(permutation.get(iterCN)));
+				//				System.out.println(permutation.get(iterCN));
 				break;
 			}
-			
-//			System.out.println("------------------------------------------");
-//			for (String st : iterCN.keySet()) {
-//				System.out.print(st + "  ");
-//				for (int i = 0; i < iterCN.get(st).length; i++) {
-//					System.out.print(iterCN.get(st)[i] + "  ");
-//				}
-//				System.out.println();
-//			}
-//			System.out.println("------------------------------------------");
+
+			//			System.out.println("------------------------------------------");
+			//			for (String st : iterCN.keySet()) {
+			//				System.out.print(st + "  ");
+			//				for (int i = 0; i < iterCN.get(st).length; i++) {
+			//					System.out.print(iterCN.get(st)[i] + "  ");
+			//				}
+			//				System.out.println();
+			//			}
+			//			System.out.println("------------------------------------------");
 			RectangleConstraintSolver iterSolver = new RectangleConstraintSolver(origin, horizon);
 			HashMap<String, RectangularRegion> getVariableByName = new HashMap<String, RectangularRegion>();
-			
+
 			Vector<MultiBinaryConstraint> addedGeneralKn = new Vector<MultiBinaryConstraint>();
 			for (int i = 0; i < this.rules.length; i++) {
 
@@ -936,12 +1011,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
 					AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
 
-//					//This part is for the Allen intervals do not have any bounds e.g., Equals
-//					if((this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
-//						xAllenCon = (AllenIntervalConstraint)(this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
-//					if((this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
-//						yAllenCon = (AllenIntervalConstraint)(this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
-					
+					//					//This part is for the Allen intervals do not have any bounds e.g., Equals
+					//					if((this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
+					//						xAllenCon = (AllenIntervalConstraint)(this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
+					//					if((this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
+					//						yAllenCon = (AllenIntervalConstraint)(this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
+
 					RectangleConstraint uConsBinary = new RectangleConstraint(xAllenCon, yAllenCon);
 
 					if (getVariableByName.get(this.rules[i].getFrom()) != null)
@@ -971,17 +1046,17 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();
 
 			for (RectangularRegion Metavar : targetRecs) {
-				
+
 				//skip those fluents which is not mention in general spatial knowledge
 				if(iterCN.get(Metavar.getName()) == null) continue;
-				
+
 				RectangularRegion var = (RectangularRegion) iterSolver.createVariable();
 				var.setName(Metavar.getName());
-				
 
-//				System.out.println("Metavar.getName(): " + Metavar.getName());
-//				System.out.println("iterCN: " + iterCN);
-				
+
+				//				System.out.println("Metavar.getName(): " + Metavar.getName());
+				//				System.out.println("iterCN: " + iterCN);
+
 				Bounds[] atBounds = new Bounds[iterCN.get(Metavar.getName()).length];
 				for (int j = 0; j < atBounds.length; j++) {
 					Bounds at = new Bounds(
@@ -1006,10 +1081,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 								new AllenIntervalConstraint(
 										AllenIntervalConstraint.Type.Equals,
 										AllenIntervalConstraint.Type.Equals
-												.getDefaultBounds()),
-								new AllenIntervalConstraint(
-										AllenIntervalConstraint.Type.Equals,
-										AllenIntervalConstraint.Type.Equals
+										.getDefaultBounds()),
+										new AllenIntervalConstraint(
+												AllenIntervalConstraint.Type.Equals,
+												AllenIntervalConstraint.Type.Equals
 												.getDefaultBounds()));
 
 						assertion.setFrom(((RectangularRegion) metaVaribales.get(j)));
@@ -1020,8 +1095,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					}
 				}
 			}
-			
-//			System.out.println("assertionList: " + assertionList);
+
+			//			System.out.println("assertionList: " + assertionList);
 
 			boolean isConsistent = true;
 
@@ -1033,31 +1108,31 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 			double rigidityavg = ((double) (((AllenIntervalNetworkSolver) iterSolver
 					.getConstraintSolvers()[0]).getRigidityNumber()) + (double) (((AllenIntervalNetworkSolver) iterSolver
-					.getConstraintSolvers()[1]).getRigidityNumber())) / 2;
+							.getConstraintSolvers()[1]).getRigidityNumber())) / 2;
 
-//			System.out.println("rigidityAvg:" + rigidityavg);
-			
-			
+			//			System.out.println("rigidityAvg:" + rigidityavg);
+
+
 			if (isConsistent) {
-//				System.out.println("THIS IS CONSISTENT");
-//				sortingCN.put(iterSolver.getConstraintNetwork(), new ConstraintNetworkSortingCritera(rigidityavg,permutation.get(iterCN)));
-//				cnToInitPose.put(iterSolver.getConstraintNetwork(), iterCN);
-//				System.out.println("level: " + permutation.get(iterCN));
+				//				System.out.println("THIS IS CONSISTENT");
+				//				sortingCN.put(iterSolver.getConstraintNetwork(), new ConstraintNetworkSortingCritera(rigidityavg,permutation.get(iterCN)));
+				//				cnToInitPose.put(iterSolver.getConstraintNetwork(), iterCN);
+				//				System.out.println("level: " + permutation.get(iterCN));
 				sortingCN.put(counter, new ConstraintNetworkSortingCritera(rigidityavg,permutation.get(iterCN)));
 				cnToInitPose.put(counter, iterCN);
 				levelTracker.put(permutation.get(iterCN), true);
 			}
 			counter++;
-			
 
-			
-//			System.out.println(iterSolver.getConstraintNetwork());
-//			 System.out.println(iterSolver.extractBoundingBoxesFromSTPs("cup1").getAlmostCentreRectangle());
-//			
-//			 System.out.println("_______________________________________________________________________________");
+
+
+			//			System.out.println(iterSolver.getConstraintNetwork());
+			//			 System.out.println(iterSolver.extractBoundingBoxesFromSTPs("cup1").getAlmostCentreRectangle());
+			//			
+			//			 System.out.println("_______________________________________________________________________________");
 
 		}
-		
+
 		ArrayList as = new ArrayList(sortingCN.keySet());
 		Collections.sort(as, new Comparator() {
 			public int compare(Object o1, Object o2) {
@@ -1084,32 +1159,32 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		Iterator i = as.iterator();
 		while (i.hasNext()) {
 			int ct = (Integer) i.next();
-//			HashMap<String, BoundingBox> strToBBs = new HashMap<String, BoundingBox>();
-//			for (int j = 0; j < ct.getVariables().length; j++) {
-//				BoundingBox bb = new BoundingBox(new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getEST(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getLST()), 
-//						new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getEET(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getLET()), 
-//						new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getEST(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getLST()), 
-//						new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getEET(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getLET()));
-//				
-//				strToBBs.put(((RectangularRegion)ct.getVariables()[j]).getName(), bb);
-//			}
-//			newRectangularRegion.add(strToBBs);
+			//			HashMap<String, BoundingBox> strToBBs = new HashMap<String, BoundingBox>();
+			//			for (int j = 0; j < ct.getVariables().length; j++) {
+			//				BoundingBox bb = new BoundingBox(new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getEST(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getLST()), 
+			//						new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getEET(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[0]).getLET()), 
+			//						new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getEST(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getLST()), 
+			//						new Bounds(((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getEET(), ((AllenInterval)((RectangularRegion)ct.getVariables()[j]).getInternalVariables()[1]).getLET()));
+			//				
+			//				strToBBs.put(((RectangularRegion)ct.getVariables()[j]).getName(), bb);
+			//			}
+			//			newRectangularRegion.add(strToBBs);
 			alternativeSets.add(cnToInitPose.get(ct));
 
 		}
 		return alternativeSets;
 
 	}
-	
+
 	private ConstraintNetwork[] completePeakCollection(HashMap<Activity, SpatialFluent> aTOsf) {
 		Vector<Activity> activities = new Vector<Activity>();
 		for (Activity act : aTOsf.keySet()) {
 			activities.add(act);
 		}
-		
+
 		if (activities != null && !activities.isEmpty()) {
 			logger.finest("Doing complete peak collection with " + activities.size() + " activities...");
-			
+
 			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);			
 			Vector<Long> discontinuities = new Vector<Long>();
 			for (Activity a : groundVars) {
@@ -1118,10 +1193,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				if (!discontinuities.contains(start)) discontinuities.add(start);
 				if (!discontinuities.contains(end)) discontinuities.add(end);
 			}
-			
+
 			Long[] discontinuitiesArray = discontinuities.toArray(new Long[discontinuities.size()]);
 			Arrays.sort(discontinuitiesArray);
-			
+
 			HashSet<HashSet<Activity>> superPeaks = new HashSet<HashSet<Activity>>();
 
 			for (int i = 0; i < discontinuitiesArray.length-1; i++) {
@@ -1136,9 +1211,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					}
 				}
 			}
-			
-			
-			
+
+
+
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			for (HashSet<Activity> superSet : superPeaks) {
 				for (Set<Activity> s : powerSet(superSet)) {
@@ -1149,22 +1224,22 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					}
 				}
 			}
-			
-//			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//			for (int i = 0; i < ret.size(); i++) {
-//				System.out.println(ret.get(i));
-//				System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//			}
-//			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-			
+
+			//			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			//			for (int i = 0; i < ret.size(); i++) {
+			//				System.out.println(ret.get(i));
+			//				System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			//			}
+			//			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
 			logger.finest("Done peak sampling");
 			return ret.toArray(new ConstraintNetwork[ret.size()]);			
 		} 
-		
+
 		return (new ConstraintNetwork[0]);
 	}
 
-	
+
 	private void generateCombinantion(Vector<UnaryRectangleConstraint> atConstraints) {
 
 		Vector<UnaryRectangleConstraint> boundedUnaryCons = new Vector<UnaryRectangleConstraint>();
@@ -1185,13 +1260,13 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				boundedUnaryCons.add((UnaryRectangleConstraint) atConstraints.get(i));
 			}
 			else {				
-//				if (((RectangularRegion) ((UnaryRectangleConstraint) atConstraints.get(i)).getFrom()).getOntologicalProp().isMovable())
-//					initialUnboundedObjName.add(((RectangularRegion) ((UnaryRectangleConstraint) atConstraints.get(i)).getFrom()).getName());
+				//				if (((RectangularRegion) ((UnaryRectangleConstraint) atConstraints.get(i)).getFrom()).getOntologicalProp().isMovable())
+				//					initialUnboundedObjName.add(((RectangularRegion) ((UnaryRectangleConstraint) atConstraints.get(i)).getFrom()).getName());
 				unboundedUnaryCons.add((UnaryRectangleConstraint) atConstraints.get(i));
 			}
 		}
-		
-		
+
+
 		PermutationsWithRepetition gen = new PermutationsWithRepetition(2, boundedUnaryCons.size());
 		int[][] v = gen.getVariations();
 		for (int i = 0; i < v.length; i++) {
@@ -1202,9 +1277,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					UnaryRectangleConstraint utmp = new UnaryRectangleConstraint(
 							UnaryRectangleConstraint.Type.At, new Bounds(0,
 									APSPSolver.INF), new Bounds(0,
-									APSPSolver.INF), new Bounds(0,
-									APSPSolver.INF), new Bounds(0,
-									APSPSolver.INF));
+											APSPSolver.INF), new Bounds(0,
+													APSPSolver.INF), new Bounds(0,
+															APSPSolver.INF));
 					utmp.setFrom(boundedUnaryCons.get(j).getFrom());
 					utmp.setTo(boundedUnaryCons.get(j).getTo());
 					tmpboundedUnaryCons.add(utmp);
@@ -1216,9 +1291,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			}
 			rank.put(tmpboundedUnaryCons, culpritNumber);
 		}
-		
 
-		 
+
+
 
 		for (Vector<UnaryRectangleConstraint> cc : rank.keySet()) {
 			HashMap<String, Bounds[]> culprit = new HashMap<String, Bounds[]>();
@@ -1255,7 +1330,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			}
 			permutation.put(culprit, rank.get(cc));
 		}
-				
+
 		//sort permutation
 		HashMap<HashMap<String, Bounds[]>, Integer> tempPermutation = sortHashMapByValues(permutation);
 		permutation.clear();
@@ -1310,7 +1385,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				}
 				if (getVariableByName.get(this.rules[i].getTo()) != null)
 					uConsSize
-							.setTo(getVariableByName.get(this.rules[i].getTo()));
+					.setTo(getVariableByName.get(this.rules[i].getTo()));
 				else {
 					RectangularRegion var = (RectangularRegion) solver
 							.createVariable();
@@ -1329,9 +1404,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					Bounds bx = new Bounds(
 							(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0]
 									.getBounds()[j].min, (this.rules[i]
-									.getBinaryRAConstraint())
-									.getInternalAllenIntervalConstraints()[0]
-									.getBounds()[j].max);
+											.getBinaryRAConstraint())
+											.getInternalAllenIntervalConstraints()[0]
+													.getBounds()[j].max);
 					allenBoundsX[j] = bx;
 				}
 
@@ -1342,9 +1417,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					Bounds by = new Bounds(
 							(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1]
 									.getBounds()[j].min, (this.rules[i]
-									.getBinaryRAConstraint())
-									.getInternalAllenIntervalConstraints()[1]
-									.getBounds()[j].max);
+											.getBinaryRAConstraint())
+											.getInternalAllenIntervalConstraints()[1]
+													.getBounds()[j].max);
 					allenBoundsY[j] = by;
 				}
 
@@ -1384,18 +1459,18 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 		return ret;
 	}
-	
+
 	private void setPermutationHashMAP(Vector<SpatialFluent> conflictvars, Vector<RectangularRegion> targetRecs){
-		
+
 		Vector<UnaryRectangleConstraint> atConstraints = new Vector<UnaryRectangleConstraint>();
 		HashMap<String, SpatialFluent> currentFluent = new HashMap<String, SpatialFluent>();
-//		Vector<RectangularRegion> targetRecs = new Vector<RectangularRegion>();
+		//		Vector<RectangularRegion> targetRecs = new Vector<RectangularRegion>();
 
 		for (int i = 0; i < conflictvars.size(); i++) {
 			currentFluent.put(conflictvars.get(i).getName(), conflictvars.get(i));
 		}
-		
- 
+
+
 		// Add at constraint
 		RectangleConstraintSolver iterSolver = new RectangleConstraintSolver(origin, horizon);
 		Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();
@@ -1412,9 +1487,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				for (int j = 0; j < atBounds.length; j++) {
 					Bounds b = new Bounds(
 							sAssertionalRels.get(i).getUnaryAtRectangleConstraint()
-									.getBounds()[j].min, sAssertionalRels.get(i)
-									.getUnaryAtRectangleConstraint()
-									.getBounds()[j].max);
+							.getBounds()[j].min, sAssertionalRels.get(i)
+							.getUnaryAtRectangleConstraint()
+							.getBounds()[j].max);
 					atBounds[j] = b;
 				}
 
@@ -1429,18 +1504,18 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			}
 
 			if (sAssertionalRels.get(i).getOntologicalProp() != null){
-//				sf.getRectangularRegion().setOntologicalProp(sAssertionalRels[i].getOntologicalProp());
+				//				sf.getRectangularRegion().setOntologicalProp(sAssertionalRels[i].getOntologicalProp());
 				var.setOntologicalProp(sAssertionalRels.get(i).getOntologicalProp());
-			// targetRecs.add(sf);
+				// targetRecs.add(sf);
 			}
 		}
 
 		generateCombinantion(atConstraints);
 
-		
+
 	}
 
-	
+
 	private static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
 		ArrayList mapKeys = new ArrayList(passedMap.keySet());
 		ArrayList mapValues = new ArrayList(passedMap.values());
@@ -1471,8 +1546,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		return sortedMap;
 	}
 
-	
-	
+
+
 	@Override
 	public ConstraintSolver getGroundSolver() {
 		// TODO Auto-generated method stub

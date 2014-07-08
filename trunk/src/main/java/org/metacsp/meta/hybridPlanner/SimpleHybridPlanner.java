@@ -27,6 +27,7 @@ import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.spatial.reachability.ReachabilityConstraint;
 
 public class SimpleHybridPlanner extends MetaConstraintSolver {
 
@@ -46,7 +47,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private HashMap<String, Integer> conflictRanking = null;
 	
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
-		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 
+		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class, ReachabilityConstraint.class}, 
 				animationTime, new SpatialFluentSolver(origin, horizon)	);
 		this.horizon = horizon;
 	}
