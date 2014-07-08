@@ -114,6 +114,10 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	private boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> activityToFluent) {
 		
 		if(peak.length == 1) return false;
+		for (int i = 0; i < peak.length; i++) {
+			if(peak[i].getSymbolicVariable().getSymbols()[0].contains("manipulationArea")) return false;
+		}
+		
 		
 //		System.out.println("_________________________________________________");
 //		for (int i = 0; i < peak.length; i++) {
