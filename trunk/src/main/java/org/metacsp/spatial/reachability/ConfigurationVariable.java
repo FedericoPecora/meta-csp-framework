@@ -18,9 +18,9 @@ public class ConfigurationVariable extends Variable{
 	}
 
 	@Override
-	public int compareTo(Variable o) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int compareTo(Variable arg0) {
+		
+		return this.getID() - arg0.getID();
 	}
 
 	@Override

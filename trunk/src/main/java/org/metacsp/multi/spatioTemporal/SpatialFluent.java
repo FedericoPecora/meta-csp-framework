@@ -2,6 +2,7 @@ package org.metacsp.multi.spatioTemporal;
 
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
+import org.metacsp.spatial.reachability.ConfigurationVariable;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
@@ -59,7 +60,8 @@ public class SpatialFluent extends MultiVariable{
 	@Override
 	public String toString() {
 //		String ret="<" + " Rectangle Variable: " + this.rectangularRegion + ", "+ "Activty: " + this.activity + ">";
-		String ret="<" + " Rectangle Variable: " + this.getInternalVariables()[0] + ", "+ "Activty: " + this.getInternalVariables()[1] + ">";
+		String ret="<" + " Rectangle Variable: " + this.getInternalVariables()[0] + ", "+ "Activty: " + this.getInternalVariables()[1] + ", "+ 
+				" Configurationvariable " + this.getInternalVariables()[2]+ ">";
 		return ret;
 	}
 	
@@ -71,6 +73,11 @@ public class SpatialFluent extends MultiVariable{
 	public RectangularRegion getRectangularRegion() {
 		//return rectangularRegion;
 		return (RectangularRegion)this.getInternalVariables()[0];
+	}
+	
+	public ConfigurationVariable getConfigurationVariable(){
+		
+		return (ConfigurationVariable)this.getInternalVariables()[2];
 	}
 
 }

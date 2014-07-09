@@ -1,7 +1,12 @@
 package org.metacsp.meta.hybridPlanner;
 
+import java.awt.Rectangle;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
@@ -13,12 +18,23 @@ import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
+import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.spatial.reachability.ConfigurationVariable;
+import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
+import org.metacsp.spatial.utility.SpatialRule;
+import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class MetaInverseReachabilityConstraint extends MetaConstraint{
 
+	private long origin = 0, horizon = 100000;
 	public MetaInverseReachabilityConstraint(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
 		// TODO Auto-generated constructor stub
@@ -29,6 +45,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 
 
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+		ConstraintNetwork nw = new ConstraintNetwork(null);
 		for (int i = 0; i < getGroundSolver().getVariables().length; i++) {
 			SpatialFluent manFlunet = ((SpatialFluent)getGroundSolver().getVariables()[i]);
 			AllenInterval intervalX = ((AllenInterval)manFlunet.getRectangularRegion().getInternalVariables()[0]);
@@ -38,13 +55,12 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 			if(isUnboundedBoundingBox(
 					new Bounds(intervalX.getEST(), intervalX.getLST()), new Bounds(intervalX.getEET(), intervalX.getLET()), 
 					new Bounds(intervalY.getEST(), intervalY.getLST()), new Bounds(intervalY.getEET(), intervalY.getLET()))){
-				System.out.println("SPATIALLY UNBOUND Manipulation Fluent: " + manFlunet);
-				ConstraintNetwork nw = new ConstraintNetwork(null);
+				System.out.println("SPATIALLY UNBOUND Manipulation Fluent: " + manFlunet);				
 				nw.addVariable(manFlunet);
-				ret.add(nw);				
+				break;		
 			}
 		}
-
+		ret.add(nw);
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
@@ -61,15 +77,226 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 	}
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
-		// TODO Auto-generated method stub
+
+		Vector<SpatialRule> srules = new Vector<SpatialRule>();
+		HashMap<ConfigurationVariable, SpatialFluent> confvarToSpatialFleunt = new HashMap<ConfigurationVariable, SpatialFluent>();
+
+		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
+			SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i];
+			confvarToSpatialFleunt.put(sf.getConfigurationVariable(), sf);
+
+		}
+
+		
+		//constraint is like this from obj to manipulationArea
+		SpatialFluent objecSpatialFleunt = null;
+		SpatialFluent conflict = (SpatialFluent)metaVariable.getConstraintNetwork().getVariables()[0];
+		System.out.println("@@@@@@@@CONFLICT@@@@@@@@@@" + conflict);
+		ReachabilityContraintSolver rchCs = (ReachabilityContraintSolver)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[2];
+		for (int j = 0; j < rchCs.getConstraints().length; j++) {			
+			if(((ConfigurationVariable)rchCs.getConstraints()[j].getScope()[1]).compareTo((conflict.getConfigurationVariable()))== 0){
+				objecSpatialFleunt = confvarToSpatialFleunt.get(((ConfigurationVariable)rchCs.getConstraints()[j].getScope()[0]));
+				System.out.println("00000000000000000000000 " + objecSpatialFleunt);
+			}
+		}
+		
+		getSpatialKnowledge(srules);
+		for (int i = 1; i < srules.size(); i++) {
+		
+			Vector<Constraint> allConstraints = new Vector<Constraint>();
+			RectangleConstraintSolver iterSolver = new RectangleConstraintSolver(origin, horizon);
+			RectangularRegion objRec = (RectangularRegion) iterSolver.createVariable();
+			objRec.setName("object");
+			RectangularRegion manRec = (RectangularRegion) iterSolver.createVariable();
+			manRec.setName("manipulationArea");
+			
+			//size
+			Bounds[] sizeBounds = new Bounds[srules.get(0).getUnaryRAConstraint().getBounds().length];
+			for (int j = 0; j < sizeBounds.length; j++) {
+				Bounds bSize = new Bounds(
+						srules.get(0).getUnaryRAConstraint().getBounds()[j].min,
+						srules.get(0).getUnaryRAConstraint().getBounds()[j].max);
+				sizeBounds[j] = bSize;
+			}
+			UnaryRectangleConstraint sizemanp = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, sizeBounds);
+			sizemanp.setFrom(manRec);
+			sizemanp.setTo(manRec);
+			allConstraints.add(sizemanp);
+			
+			//general rule
+			Bounds[] allenBoundsX = new Bounds[(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length];
+			for (int j = 0; j < allenBoundsX.length; j++) {
+				Bounds bx = new Bounds(
+						(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].min, (srules.get(i)
+								.getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].max);
+				allenBoundsX[j] = bx;
+			}
+
+			Bounds[] allenBoundsY = new Bounds[(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length];
+			for (int j = 0; j < allenBoundsY.length; j++) {
+				Bounds by = new Bounds(
+						(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1]
+								.getBounds()[j].min, (srules.get(i).getBinaryRAConstraint())
+								.getInternalAllenIntervalConstraints()[1].getBounds()[j].max);
+				allenBoundsY[j] = by;
+			}
+
+			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
+			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(
+					(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+
+
+			//This part is for the Allen intervals do not have any bounds e.g., Equals
+			if((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
+				xAllenCon = (AllenIntervalConstraint)(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
+			if((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
+				yAllenCon = (AllenIntervalConstraint)(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
+
+
+			RectangleConstraint infrontof = new RectangleConstraint(xAllenCon, yAllenCon);
+			infrontof.setFrom(manRec);
+			infrontof.setTo(objRec);
+			allConstraints.add(infrontof);
+			
+			
+			//unary at constraint
+			RectangularRegion objInstance = (RectangularRegion)iterSolver.createVariable();
+			objInstance.setName(objecSpatialFleunt.getName());
+			
+			
+			
+			AllenInterval intervalX = ((AllenInterval)objecSpatialFleunt.getRectangularRegion().getInternalVariables()[0]);
+			AllenInterval intervalY = ((AllenInterval)objecSpatialFleunt.getRectangularRegion().getInternalVariables()[1]);
+					
+			
+			UnaryRectangleConstraint atObjInstance = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, new Bounds(intervalX.getEST(), intervalX.getLST()), new Bounds(intervalX.getEET(), intervalX.getLET()), 
+					new Bounds(intervalY.getEST(), intervalY.getLST()), new Bounds(intervalY.getEET(), intervalY.getLET()));
+			atObjInstance.setFrom(objInstance);
+			atObjInstance.setTo(objInstance);
+			allConstraints.add(atObjInstance);
+			
+			RectangularRegion manpInstance = (RectangularRegion)iterSolver.createVariable();
+			manpInstance.setName(conflict.getName());
+			UnaryRectangleConstraint atManipInstance = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF));
+			atManipInstance.setFrom(manpInstance);
+			atManipInstance.setTo(manpInstance);
+			allConstraints.add(atManipInstance);
+			
+			
+			//Assertional Rule
+			RectangleConstraint manAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+			manAssertion.setFrom(manpInstance);
+			manAssertion.setTo(manRec);
+			allConstraints.add(manAssertion);
+
+			RectangleConstraint objAssertion = new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals), new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals));
+			objAssertion.setFrom(objInstance);
+			objAssertion.setTo(objRec);
+			allConstraints.add(objAssertion);
+			
+			Constraint[] allConstraintsArray = allConstraints.toArray(new Constraint[allConstraints.size()]);
+			iterSolver.addConstraints(allConstraintsArray);
+			
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" );
+			HashMap<String, Rectangle> recs = new HashMap<String, Rectangle>(); 
+			for (String str : iterSolver.extractAllBoundingBoxesFromSTPs().keySet()) {				
+					System.out.println(str + " --> " +iterSolver.extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
+					recs.put( str,iterSolver.extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
+			}   
+			
+			BufferedWriter finalPlot = null;
+			String finalLayoutPlot = "";
+			finalLayoutPlot =iterSolver.drawAlmostCentreRectangle(500, recs);	
+			String PATH_FINAL_PLOT = "/home/iran/Desktop/manArea/";
+			try{
+				
+				finalPlot = new BufferedWriter(new FileWriter(PATH_FINAL_PLOT + i+ "_final"+".dat", false));
+				finalPlot.write(finalLayoutPlot);
+				finalPlot.newLine();
+				finalPlot.flush();
+			}				
+			catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" );
+			
+		}
+		
+		
+		
+		
+		//compute the position
+		
+		//remove those who have intersection with static obstacel (which is added in the program)
+
+
+		//		ConstraintNetwork conflict = metaVariable.getConstraintNetwork();
+		//		for (int i = 0; i < conflict.getVariables().length; i++) {
+		//			SpatialFluent manFluent = (SpatialFluent)conflict.getVariables()[i];
+		//			for (int j = 0; j < getGroundSolver().getVariables().length; j++) {
+		//				
+		//			}
+		//			
+		//		}
+
+
+
+
+
 		return null;
 	}
 
+	
+
+	
+	private static void getSpatialKnowledge(Vector<SpatialRule> srules){
+
+		Bounds manArea_size_x = new Bounds(60, 60);
+		Bounds manArea_size_y = new Bounds(60, 60);
+
+
+
+		SpatialRule r1 = new SpatialRule("manipulationArea", "manipulationArea", 
+				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, manArea_size_x, manArea_size_y));
+		srules.add(r1);
+
+		////
+		
+		SpatialRule r2 = new SpatialRule("manipulationArea", "Object", 
+				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.After , new Bounds(20,25)),
+				new AllenIntervalConstraint(AllenIntervalConstraint.Type.Contains, AllenIntervalConstraint.Type.Contains.getDefaultBounds()))
+				);
+		srules.add(r2);
+
+		SpatialRule r3 = new SpatialRule("manipulationArea", "Object", 
+				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Contains , AllenIntervalConstraint.Type.Contains.getDefaultBounds()),
+				new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(20, 25)))
+
+				);
+		srules.add(r3);
+
+		SpatialRule r4 = new SpatialRule("manipulationArea", "Object", 
+				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(20, 25)),
+				new AllenIntervalConstraint(AllenIntervalConstraint.Type.Contains , AllenIntervalConstraint.Type.Contains.getDefaultBounds()))
+				);
+		srules.add(r4);
+
+		SpatialRule r5 = new SpatialRule("manipulationArea", "Object", 
+				new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Contains , AllenIntervalConstraint.Type.Contains.getDefaultBounds()),
+				new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, new Bounds(20, 25)))
+
+				);
+		srules.add(r5);
+
+
+	}
+
+	
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
 			int initial_time) {
 		// TODO Auto-generated method stub
-		return null;
+		return getMetaValues(metaVariable);
 	}
 
 	@Override
@@ -113,7 +340,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 
 
 }
