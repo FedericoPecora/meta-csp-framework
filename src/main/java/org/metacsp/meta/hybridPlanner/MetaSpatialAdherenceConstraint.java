@@ -519,7 +519,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			rc1.setTo(((ConfigurationVariable)newmanFlunetPick.getInternalVariables()[2]));
 			actNetwork.addConstraint(rc1);
 			
-			System.out.println("----------------! " + rc1);
+//			System.out.println("----------------! " + rc1);
 			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			//the another flunet with the same name, in case, the position of the objects are different, should be two different 
 			SpatialFluent newmanFlunetPlace = null;			
@@ -537,7 +537,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			rc2.setFrom(((ConfigurationVariable)newgoalFlunet.getInternalVariables()[2]));
 			rc2.setTo(((ConfigurationVariable)newmanFlunetPlace.getInternalVariables()[2]));
 			actNetwork.addConstraint(rc2);
-			System.out.println("----------------" + rc2);
+//			System.out.println("----------------" + rc2);
 			
 			////////////////////////////////////////////////
 			//Put before constraint to seprate manipulation Area for pick and Place of the same Objects
