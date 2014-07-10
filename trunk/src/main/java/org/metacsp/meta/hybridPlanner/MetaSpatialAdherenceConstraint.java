@@ -764,6 +764,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			}
 		}
 
+
+		
 		if (!iterSolver.addConstraints(addedGeneralKn.toArray(new MultiBinaryConstraint[addedGeneralKn.size()])))
 			System.out.println("Failed to general knowledge add");
 		// ####################################################################################
@@ -1040,7 +1042,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			}
 
 			if (!iterSolver.addConstraints(addedGeneralKn.toArray(new MultiBinaryConstraint[addedGeneralKn.size()])))
-				System.out.println("Failed to general knowledge add");
+				System.out.println("Failed to add general knowledge");
 
 			// Att At cpnstraint
 			Vector<RectangularRegion> metaVaribales = new Vector<RectangularRegion>();
