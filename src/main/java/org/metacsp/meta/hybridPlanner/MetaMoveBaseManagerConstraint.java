@@ -1,5 +1,6 @@
 package org.metacsp.meta.hybridPlanner;
 
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -15,7 +16,10 @@ import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.APSPSolver;
@@ -36,6 +40,7 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
+		
 		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 		Vector<Activity> activities = new Vector<Activity>();
 		for (int i = 0; i < getGroundSolver().getVariables().length; i++) {
@@ -79,7 +84,7 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
-					if (bi.max + 1 == bj.min || bj.max + 1 == bi.min ){
+					if (bi.max + 1 == bj.min  && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
 //						System.out.println("___________________________________");
 //						System.out.println(groundVars[i]);
 //						System.out.println(groundVars[j]);
@@ -88,8 +93,6 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 //						System.out.println("bi" + bi);
 //						System.out.println("bj" + bj);
 //						System.out.println("===================================");
-					}
-					if (bi.max + 1 == bj.min  && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
 						ConstraintNetwork cn = new ConstraintNetwork(null);
 						cn.addVariable(groundVars[i]);
 						cn.addVariable(groundVars[j]);
@@ -108,12 +111,39 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 	private boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> aTOsf) {
 		if(peak.length == 1) return false;
 		
+		
+		Rectangle[] recs = new Rectangle[peak.length];
+		for (int i = 0; i < peak.length; i++) {
+			RectangularRegion r = aTOsf.get(peak[i]).getRectangularRegion();
+			AllenInterval intervalX = (AllenInterval)r.getInternalVariables()[0];
+			AllenInterval intervalY = ((AllenInterval)r.getInternalVariables()[1]);
+			
+			BoundingBox manipulationBB = new BoundingBox(new Bounds(intervalX.getEST(), intervalX.getLST()), new Bounds(intervalX.getEET(), intervalX.getLET()), 
+					new Bounds(intervalY.getEST(), intervalY.getLST()), new Bounds(intervalY.getEET(), intervalY.getLET()));
+			recs[i] = manipulationBB.getAlmostCentreRectangle(); 
+		}
+
+		//since it is binary sampling it should be just two
+		//it has to be more complicated, this is very simple..it should be overlapped a lot otherwise the robot has to be moved
+		//both center of two area has to be in the intersection, otherwise it has to be moved
+		
+		if((recs[0].height == 0 && recs[0].width == 0) || (recs[1].height == 0 && recs[1].width == 0)) //the position is not assigned yet		
+			return false;
+		
+		System.out.println("++++ rec1 ++++ " + recs[0]);
+		System.out.println("++++ rec2 ++++ " + recs[1]);
+		if(!recs[0].intersects(recs[1])){
+			System.out.println("they dont intersect");
+			return true;
+		}
+			
+		
 		return false;
 	}
 
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
-
+		
 		ConstraintNetwork conflict = metaVariable.getConstraintNetwork();
 		//we know that is the result of binary conflict! so it is safe not to enumerate all, and hard coded
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
@@ -130,10 +160,10 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 
 		if(act1.getTemporalVariable().getEST() < act2.getTemporalVariable().getEST()){
 			Activity move = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable("RobotAction");
-			String extract = act2.getSymbolicVariable().getSymbols()[0].substring(8);
+			String extract = act2.getSymbolicVariable().getSymbols()[0].substring(9);			
 			String actname = "moveTo" + extract;
 			move.setSymbolicDomain(actname);
-			move.setMarking(markings.JUSTIFIED);
+			move.setMarking(markings.UNJUSTIFIED);
 			AllenIntervalConstraint moveMetByManFluent = new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds());
 			moveMetByManFluent.setFrom(act2);
 			moveMetByManFluent.setTo(move);
@@ -145,10 +175,10 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 		}
 		else{
 			Activity move = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable("RobotAction");
-			String extract = act1.getSymbolicVariable().getSymbols()[0].substring(8);
+			String extract = act1.getSymbolicVariable().getSymbols()[0].substring(9);
 			String actname = "moveTo" + extract;
 			move.setSymbolicDomain(actname);
-			move.setMarking(markings.JUSTIFIED);
+			move.setMarking(markings.UNJUSTIFIED);
 			AllenIntervalConstraint moveMetByManFluent = new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds());
 			moveMetByManFluent.setFrom(act1);
 			moveMetByManFluent.setTo(move);
@@ -159,10 +189,22 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 			ret.add(resolver0);
 		}
 		
+//		System.out.println("%%%%%%% RET %%%%%%%%%%%" + ret);
+		
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 		
 	}
 
+	private boolean isUnboundedBoundingBox(Bounds xLB, Bounds xUB, Bounds yLB, Bounds yUB) {
+
+		long horizon = ((ActivityNetworkSolver)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]).getHorizon();
+
+		if( (xLB.min == 0 && xLB.max == horizon) && (xUB.min == 0&& xUB.max == horizon) &&
+				(yLB.min == 0 && yLB.max == horizon) &&(yLB.min == 0 && yUB.max == horizon))
+			return true;
+
+		return false;
+	}
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
 			int initial_time) {
@@ -191,7 +233,7 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return null;
+		return "MetaMoveBaseManagerConstraint";
 	}
 
 	@Override
