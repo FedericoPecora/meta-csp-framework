@@ -366,7 +366,6 @@ public class SimpleDomain extends MetaConstraint {
 							unifiedAct = (Activity)unifications[i].getVariables()[j];
 					}
 					if(!unificationTrack.keySet().contains(unifiedAct)){						
-//						retPossibleConstraintNetworks.add(unifications[i]);
 						unificationConsNetwork.add(unifications[i]);
 						unificationTrack.put(problematicActivity, unifiedAct);
 //						System.out.println("UNIFIED: " + unifiedAct);

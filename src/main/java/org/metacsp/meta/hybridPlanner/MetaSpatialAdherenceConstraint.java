@@ -565,6 +565,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 //				((RectangularRegion)originalGoalmanFlunetPlace.getInternalVariables()[0]).setName(originalGoalManFleuntName);
 //				mvalue.addVariable(originalGoalmanFlunetPlace);
 //				
+//				
+//				ReachabilityConstraint rc3 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
+//				rc3.setFrom(((ConfigurationVariable)activityToFluent.get(originalGoals.get(j)).getInternalVariables()[2]));
+//				rc3.setTo(((ConfigurationVariable)originalGoalmanFlunetPlace.getInternalVariables()[2]));
+//				actNetwork.addConstraint(rc3);
+//				
 //			}
 
 			
