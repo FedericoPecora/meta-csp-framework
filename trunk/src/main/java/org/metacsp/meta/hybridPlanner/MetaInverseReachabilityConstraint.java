@@ -53,8 +53,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 	
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-
-
+		
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		ConstraintNetwork nw = new ConstraintNetwork(null);
 		for (int i = 0; i < getGroundSolver().getVariables().length; i++) {

@@ -84,15 +84,15 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
-					if (bi.max + 1 == bj.min  && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
-//						System.out.println("___________________________________");
-//						System.out.println(groundVars[i]);
-//						System.out.println(groundVars[j]);
-//						System.out.println("___________________________________");
-//						System.out.println("===================================");
-//						System.out.println("bi" + bi);
-//						System.out.println("bj" + bj);
-//						System.out.println("===================================");
+					if (bi.max + 1 == bj.min || bj.max + 1 == bi.min  && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
+						System.out.println("___________________________________");
+						System.out.println(groundVars[i]);
+						System.out.println(groundVars[j]);
+						System.out.println("___________________________________");
+						System.out.println("===================================");
+						System.out.println("bi" + bi);
+						System.out.println("bj" + bj);
+						System.out.println("===================================");
 						ConstraintNetwork cn = new ConstraintNetwork(null);
 						cn.addVariable(groundVars[i]);
 						cn.addVariable(groundVars[j]);
@@ -111,6 +111,9 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 	private boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> aTOsf) {
 		if(peak.length == 1) return false;
 		
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		System.out.println("peak1: " + peak[0]);
+		System.out.println("peak1: " + peak[1]);
 		
 		Rectangle[] recs = new Rectangle[peak.length];
 		for (int i = 0; i < peak.length; i++) {
@@ -127,17 +130,23 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 		//it has to be more complicated, this is very simple..it should be overlapped a lot otherwise the robot has to be moved
 		//both center of two area has to be in the intersection, otherwise it has to be moved
 		
-		if((recs[0].height == 0 && recs[0].width == 0) || (recs[1].height == 0 && recs[1].width == 0)) //the position is not assigned yet		
+		if((recs[0].height == 0 && recs[0].width == 0) || (recs[1].height == 0 && recs[1].width == 0)) {
+			//the position is not assigned yet
+			System.out.println("Height of ZERO");
 			return false;
+		}
+			
 		
 		System.out.println("++++ rec1 ++++ " + recs[0]);
 		System.out.println("++++ rec2 ++++ " + recs[1]);
 		if(!recs[0].intersects(recs[1])){
 			System.out.println("they dont intersect");
+			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			return true;
 		}
 			
-		
+		System.out.println("they intersect");
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		return false;
 	}
 
