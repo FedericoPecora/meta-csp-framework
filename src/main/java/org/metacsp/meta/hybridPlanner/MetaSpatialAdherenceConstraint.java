@@ -504,7 +504,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			
 			String extractedNameAndSupport = st.substring(3); //remove at_
 			String manFluentsName = "at_robot1_manipulationArea_" + extractedNameAndSupport + "()";
-			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
+//			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
 			newmanFlunetPick = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
 					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
 			newmanFlunetPick.setName(manFluentsName);
@@ -523,7 +523,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			//the another flunet with the same name, in case, the position of the objects are different, should be two different 
 			SpatialFluent newmanFlunetPlace = null;			
-			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
+//			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
 			newmanFlunetPlace = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
 					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
 			newmanFlunetPlace.setName(manFluentsName);
