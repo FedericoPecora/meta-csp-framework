@@ -43,6 +43,9 @@ import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
+import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.spatial.reachability.ConfigurationVariable;
+import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
@@ -76,10 +79,10 @@ public class SimpleDomain extends MetaConstraint {
 	private Vector<String> sensors = new Vector<String>();
 	private Vector<String> contextVars = new Vector<String>();
 	private Vector<String> controllables = new Vector<String>();
-	private HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
+	protected HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
-	private boolean activeFreeArmHeuristic = false;
+	
 	private boolean addedNegationofInitialsituation = true;
 	private Vector<String> objParams;
 	
@@ -154,7 +157,7 @@ public class SimpleDomain extends MetaConstraint {
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
-	private ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
+	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
 		logger.finest("Expanding operator " + possibleOperator.getHead());
 		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver(); //(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
@@ -299,7 +302,7 @@ public class SimpleDomain extends MetaConstraint {
 		return false;
 	}
 
-	private ConstraintNetwork[] getUnifications(Activity activity) {
+	protected ConstraintNetwork[] getUnifications(Activity activity) {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Variable[] acts = groundSolver.getVariables();
 				
@@ -351,13 +354,13 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		
 		
-//		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
 		if (isControllable(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
 //			System.out.println("I AM AT LEAST CONTRAOLLABLE");
 			if(unifications != null){
-//				System.out.println("TRYING: " + problematicActivity);
+				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
 					//add if it is not the key and is true					
 					Activity unifiedAct = null;
@@ -368,16 +371,16 @@ public class SimpleDomain extends MetaConstraint {
 					if(!unificationTrack.keySet().contains(unifiedAct)){						
 						unificationConsNetwork.add(unifications[i]);
 						unificationTrack.put(problematicActivity, unifiedAct);
-//						System.out.println("UNIFIED: " + unifiedAct);
+						System.out.println("UNIFIED: " + unifiedAct);
 					}
 					else{						
-//						System.out.println("SKIPED: " +unifiedAct);						
+						System.out.println("SKIPED: " +unifiedAct);						
 					}
 				}
 			}
 		}
 
-//		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		
 		
 		
@@ -447,27 +450,16 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
-		activeFreeArmHeuristic = false;
-		if(!activeFreeArmHeuristic ){			
-			retPossibleConstraintNetworks.addAll(unificationConsNetwork);
-			retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				
-		}
-		else{
-			retPossibleConstraintNetworks.addAll(unificationConsNetwork);		
-			HashMap<ConstraintNetwork, Integer> sortedResolvers = new HashMap<ConstraintNetwork, Integer>();
-			for (int j = 0; j < operatorsConsNetwork.size(); j++) {
-				if(operatorsConsNetwork.get(j).getSpecilizedAnnotation() != null)
-					sortedResolvers.put(operatorsConsNetwork.get(j), operatorsLevels.get(operatorsConsNetwork.get(j).getSpecilizedAnnotation()));
-			}
-			//sortedResolvers.putAll(rankedUnification);
-			sortedResolvers = sortHashMapByValues(sortedResolvers);
-//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-//			System.out.println(sortedResolvers);
-//			System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-			retPossibleConstraintNetworks.addAll(sortedResolvers.keySet());
-		}
+
+			
+		retPossibleConstraintNetworks.addAll(unificationConsNetwork);
+		retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				
 
 
+		
+		System.out.println("============================================");
+		System.out.println("..." + retPossibleConstraintNetworks);
+		System.out.println("============================================");
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
 		else if (isControllable(problematicActivity.getComponent())) {
@@ -951,9 +943,7 @@ public class SimpleDomain extends MetaConstraint {
 		return sortedMap;
 	}
 
-	public void activeHeuristic(boolean active){
-		this.activeFreeArmHeuristic = active;
-	}
+
 	
 	
 }
