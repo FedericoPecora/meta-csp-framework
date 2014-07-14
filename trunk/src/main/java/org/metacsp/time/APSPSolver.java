@@ -224,6 +224,8 @@ public class APSPSolver extends ConstraintSolver {
 			tPoints[0].setOut(i,conO);
 			tPoints[i].setOut(1,conH);
 		}
+		
+//		System.out.println("Init print:\n" + this.printDist());
 	}
 
 	//TP creation
@@ -239,12 +241,17 @@ public class APSPSolver extends ConstraintSolver {
 			} else i++;
 		}
 		for (int l = 2; l <= MAX_USED; l++) {
-			distance[i][l] = H;//APSPSolver.INF;
-			distance[l][i] = H;//APSPSolver.INF;				
+			distance[i][l] = H;
+			distance[l][i] = H;			
 		}
+		
 		distance[i][i] = 0;
 		distance[i][0] = 0;
 		distance[i][1] = H;//APSPSolver.INF;
+		
+		distance[0][i] = H; // Needed for bookmark/revert (Uwe)
+		distance[1][i] = 0; // Needed for bookmark/revert (Uwe)
+		
 		return i;
 	}
 
@@ -714,17 +721,27 @@ public class APSPSolver extends ConstraintSolver {
 
 		if (distance[to][from] != APSPSolver.INF && sum(i.max,distance[to][from]) < 0) return false;
 		if (distance[from][to] != APSPSolver.INF && sum(-i.min,distance[from][to]) < 0) return false;
-
+		
+//		System.out.println("a)" + sum(i.max,distance[to][from]));
+//		System.out.println("b)" + sum(-i.min,distance[from][to]));
+		
+		long sum1;
+		long sum2;
+		long sum3;
+		long sum4;
+		long temp;
+		
 		for (int u = 0; u < MAX_USED+1; u++) {
 			if (tPoints[u].isUsed()) {
 				for (int v = 0; v < MAX_USED+1;v++) {
 					if (tPoints[v].isUsed()) {
 						//min{distance[u][v];(distance[u][from]+i.max+distance[to][v]);(distance[u][to]-i.minl+distance[from][v])}
-						long sum1 = sum(distance[u][to],-i.min);
-						long sum2 = sum(sum1,distance[from][v]);
-						long sum3 = sum(distance[u][from],i.max);
-						long sum4 = sum(sum3,distance[to][v]);
-						long temp = Math.min(sum2,sum4);
+						sum1 = sum(distance[u][to],-i.min);
+						sum2 = sum(sum1,distance[from][v]);
+						sum3 = sum(distance[u][from],i.max);
+						sum4 = sum(sum3,distance[to][v]);
+						temp = Math.min(sum2,sum4);
+												
 						if (distance[u][v] > temp) {
 							//long oldD = distance[u][v];
 							distance[u][v] = temp;
@@ -738,9 +755,7 @@ public class APSPSolver extends ConstraintSolver {
 				}
 			}
 		}
-
 		return true;
-
 	}
 
 
@@ -812,7 +827,7 @@ public class APSPSolver extends ConstraintSolver {
 						toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
 						toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
 					}
-					cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
+//					cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
 					return false;
 				}
 			}
@@ -990,16 +1005,20 @@ public class APSPSolver extends ConstraintSolver {
 
 		rigidity = new double[this.getVariables().length];
 		for (int i = 0; i < this.getVariables().length; i++) {
+			if ( ((TimePoint)this.getVariables()[i]).isUsed() ) {
 			rigidity[i] = (
 					((double)1 / 
 							((double)(1 + ((TimePoint)this.getVariables()[i]).getUpperBound() - ((TimePoint)this.getVariables()[i]).getLowerBound()))
 							));
 			//System.out.println(i + " " + j + " -> " + distance[this.getVariables()[i].getID()][this.getVariables()[j].getID()]);
 			//System.out.println(i + " " + j + " -> " + rigidity[i][j]);
+			}
 		}
 		double sigma = 0;
 		for (int i = 0; i < this.getVariables().length; i++) {
-			sigma += Math.pow(rigidity[i], 2.0);
+			if ( ((TimePoint)this.getVariables()[i]).isUsed() ) {
+				sigma += Math.pow(rigidity[i], 2.0);
+			}
 		}			
 
 		return Math.sqrt(((double)sigma) * ((double)2/(this.getVariables().length * (this.getVariables().length + 1))));
@@ -1015,6 +1034,8 @@ public class APSPSolver extends ConstraintSolver {
 	}
 
 	public int bookmark() {
+		logger.fine("Bookmark #"+this.distanceRollback.size()+" MAX_USED="+this.MAX_USED);
+		
 		long[][] distanceSnapshot = new long[this.distance.length][this.distance[0].length];
 		TimePoint[] tPointSnapshot = new TimePoint[this.tPoints.length];
 
@@ -1024,6 +1045,12 @@ public class APSPSolver extends ConstraintSolver {
 		}		
 
 
+//		for ( int i = 0 ; i < this.MAX_TPS ; i++ ) {
+//			for ( int j = 0 ; j < this.MAX_TPS ; j++ ) {
+//				distanceSnapshot[i][j] = distance[i][j];
+//			}
+//		}
+		
 		for ( int i = 0 ; i < this.MAX_USED+1 ; i++ ) {
 			for ( int j = 0 ; j < this.MAX_USED+1 ; j++ ) {
 				distanceSnapshot[i][j] = distance[i][j];
@@ -1043,7 +1070,7 @@ public class APSPSolver extends ConstraintSolver {
 		this.maxUsedRollback.remove(i);
 	}
 
-	public void revert( int i ) {
+	public void revert( int i ) {		
 		this.distance = this.distanceRollback.get(i);	
 		this.tPoints = this.tPointsRollback.get(i);
 		this.MAX_USED = this.maxUsedRollback.get(i).intValue();
@@ -1053,6 +1080,7 @@ public class APSPSolver extends ConstraintSolver {
 			this.tPointsRollback.remove(j);
 			this.maxUsedRollback.remove(j);
 		}
+		logger.fine("Reverting to #"+this.distanceRollback.size()+" MAX_USED="+this.MAX_USED);
 	}
 
 	public int numBookmarks() {
@@ -1070,8 +1098,8 @@ public class APSPSolver extends ConstraintSolver {
 
 	public String printDist() {
 		String s = "";
-		for ( int i = 0 ; i < this.MAX_USED+5; i++ ) {
-			for ( int j = 0 ; j < this.MAX_USED+5; j ++ ) {
+		for ( int i = 0 ; i < this.MAX_USED+1; i++ ) {
+			for ( int j = 0 ; j < this.MAX_USED+1; j ++ ) {
 				s +=  printLong(distance[i][j]) + " ";
 			}
 			s += "\n";
@@ -1091,8 +1119,8 @@ public class APSPSolver extends ConstraintSolver {
 			s += "=============================\n";
 			s += "= " + (ci++) + "\n";
 			s += "=============================\n";
-			for ( int i = 0 ; i < this.MAX_USED ; i++ ) {
-				for ( int j = 0 ; j < this.MAX_USED ; j ++ ) {
+			for ( int i = 0 ; i < this.MAX_USED+1 ; i++ ) {
+				for ( int j = 0 ; j < this.MAX_USED+1 ; j ++ ) {
 					s +=  printLong(distance[i][j]) + " ";
 				}
 				s += "\n";

@@ -59,7 +59,7 @@ public abstract class Schedulable extends MetaConstraint {
 		this.beforeParameter = beforeParameter;
 	}
 
-	protected long beforeParameter = 1;
+	protected long beforeParameter = 0;
 
 	public PEAKCOLLECTION getPeakCollectionStrategy() {
 		return peakCollectionStrategy;
@@ -283,7 +283,7 @@ public abstract class Schedulable extends MetaConstraint {
 		}
 		
 		for (MCSData mcs : mcsinfo) {
-			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(this.beforeParameter, APSPSolver.INF));
+			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.BeforeOrMeets, new Bounds(this.beforeParameter, APSPSolver.INF));
 			before.setFrom(mcs.mcsActFrom);			
 			before.setTo(mcs.mcsActTo);
 			ConstraintNetwork resolver = new ConstraintNetwork(mcs.mcsActFrom.getConstraintSolver());

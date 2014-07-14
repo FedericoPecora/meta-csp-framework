@@ -128,6 +128,10 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		
 		DuringOrEqualsOrStartsOrFinishes(0L, APSPSolver.INF,   0L, APSPSolver.INF),
 		
+		
+		MeetsOrOverlapsOrFinishedByOrContains(0L, APSPSolver.INF),		// PDDL at start
+		ContainsOrStartedByOrOverlappedByOrMetBy(0L, APSPSolver.INF),		// PDDL at end
+		
 		EndsDuring(0),
 		@Deprecated
 		EndEnd(0L, APSPSolver.INF),
@@ -896,6 +900,45 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				Constraint[] ret = {first,second};
 				return ret;
 			}
+			
+			
+			if (types[0].equals(Type.MeetsOrOverlapsOrFinishedByOrContains)) {
+				TimePoint fs = from.getStart();
+				TimePoint ts = to.getStart();
+				TimePoint fe = from.getEnd();
+//				TimePoint te = to.getEnd();
+				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
+				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
+				first.setMinimum(1);
+				first.setMaximum(APSPSolver.INF);
+				first.setFrom(fs);
+				first.setTo(ts);
+				second.setMinimum(bounds[0].min);
+				second.setMaximum(bounds[0].max);
+				second.setFrom(ts);
+				second.setTo(fe);
+				Constraint[] ret = {first,second};
+				return ret;
+			}
+			
+			if (types[0].equals(Type.ContainsOrStartedByOrOverlappedByOrMetBy)) {
+				TimePoint fs = from.getStart();
+//				TimePoint ts = to.getStart();
+				TimePoint fe = from.getEnd();
+				TimePoint te = to.getEnd();
+				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
+				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
+				first.setMinimum(1);
+				first.setMaximum(APSPSolver.INF);
+				first.setFrom(te);
+				first.setTo(fe);
+				second.setMinimum(bounds[0].min);
+				second.setMaximum(bounds[0].max);
+				second.setFrom(fs);
+				second.setTo(te);
+				Constraint[] ret = {first,second};
+				return ret;
+			}			
 			
 			if (types[0].equals(Type.StartStart)) {
 				TimePoint fs = from.getStart();
