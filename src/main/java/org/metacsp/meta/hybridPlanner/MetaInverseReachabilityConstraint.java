@@ -15,6 +15,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
@@ -96,6 +97,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 		Vector<SpatialRule> srules = new Vector<SpatialRule>();
 		HashMap<ConfigurationVariable, SpatialFluent> confvarToSpatialFleunt = new HashMap<ConfigurationVariable, SpatialFluent>();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+		ConstraintNetwork nwAlter = new ConstraintNetwork(null);
 		
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i];
@@ -242,20 +244,20 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 					recs.put( str,iterSolver.extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
 			}   
 			
-			BufferedWriter finalPlot = null;
-			String finalLayoutPlot = "";
-			finalLayoutPlot =iterSolver.drawAlmostCentreRectangle(500, recs);	
-			String PATH_FINAL_PLOT = "/home/iran/Desktop/manArea/";
-			try{
-				
-				finalPlot = new BufferedWriter(new FileWriter(PATH_FINAL_PLOT + i+ "_final"+".dat", false));
-				finalPlot.write(finalLayoutPlot);
-				finalPlot.newLine();
-				finalPlot.flush();
-			}				
-			catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
+//			BufferedWriter finalPlot = null;
+//			String finalLayoutPlot = "";
+//			finalLayoutPlot =iterSolver.drawAlmostCentreRectangle(500, recs);	
+//			String PATH_FINAL_PLOT = "/home/iran/Desktop/manArea/";
+//			try{
+//				
+//				finalPlot = new BufferedWriter(new FileWriter(PATH_FINAL_PLOT + i+ "_final"+".dat", false));
+//				finalPlot.write(finalLayoutPlot);
+//				finalPlot.newLine();
+//				finalPlot.flush();
+//			}				
+//			catch (IOException ioe) {
+//				ioe.printStackTrace();
+//			}
 			
 			
 			//remove those rectangle which is overlapped by nonmovable area (e.g., chair, table)
@@ -289,13 +291,42 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 				nw.addConstraint(atCon);
 				ret.add(nw);
 			}
+			else if (i == 1){
+								
+				UnaryRectangleConstraint atCon = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, manipulationBB.getxLB(), manipulationBB.getxUB(),
+						manipulationBB.getyLB(), manipulationBB.getyUB());
+				atCon.setFrom(conflict.getRectangularRegion());
+				atCon.setTo(conflict.getRectangularRegion());
+				nwAlter.addConstraint(atCon);
 				
-//			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" );
-			
+				
+			}
+//			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" );			
 			
 		}
+		if(ret.size() == 0){
+			System.out.println("man injam");
+			System.out.println("_" +objecSpatialFleunt.getActivity());
+			Activity askHuman = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable("RobotAction");
+//			askHuman.setSymbolicDomain("ask_human_to_reachable_fork1_table1()");
+			askHuman.setSymbolicDomain("ask_human_to_reachable_cup1_table1()");
+			askHuman.setMarking(markings.UNJUSTIFIED);			
+//			AllenIntervalConstraint askHumanStartsunreachable = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts, AllenIntervalConstraint.Type.Starts.getDefaultBounds());
+			AllenIntervalConstraint askHumanStartsunreachable = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts, AllenIntervalConstraint.Type.Starts.getDefaultBounds());
+			askHumanStartsunreachable.setFrom(askHuman);
+			askHumanStartsunreachable.setTo(objecSpatialFleunt.getActivity());
+			nwAlter.addVariable(askHuman);
+			nwAlter.addConstraint(askHumanStartsunreachable);
+//			ret.add(nwAlter);
+		}
 		
-		return ret.toArray(new ConstraintNetwork[ret.size()]);
+		if (!ret.isEmpty()) {
+			return ret.toArray(new ConstraintNetwork[ret.size()]);			
+		}
+	
+		return (new ConstraintNetwork[0]);
+		
+		//return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
 	
@@ -306,10 +337,11 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 		Bounds manArea_size_x = new Bounds(60, 60);
 		Bounds manArea_size_y = new Bounds(60, 60);
 		
-		long min_distance = 30;
-		long max_distance = 35;
+//		long min_distance = 30;
+//		long max_distance = 35;
 		
-
+		long min_distance = 25;
+		long max_distance = 30;
 
 		SpatialRule r1 = new SpatialRule("manipulationArea", "manipulationArea", 
 				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, manArea_size_x, manArea_size_y));
