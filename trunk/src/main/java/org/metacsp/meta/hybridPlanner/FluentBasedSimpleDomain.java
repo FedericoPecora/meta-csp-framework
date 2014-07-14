@@ -219,9 +219,9 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		//}
 		
 		
-		System.out.println("============================================");
-		System.out.println("..." + retPossibleConstraintNetworks);
-		System.out.println("============================================");
+//		System.out.println("============================================");
+//		System.out.println("..." + retPossibleConstraintNetworks);
+//		System.out.println("============================================");
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
 		else if (isControllable(problematicActivity.getComponent())) {
