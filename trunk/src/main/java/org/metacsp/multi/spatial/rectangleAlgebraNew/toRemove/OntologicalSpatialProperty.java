@@ -26,6 +26,7 @@ public class OntologicalSpatialProperty {
 	
 	private boolean isGraspable = true;
 	private boolean isMovable = true;
+	private boolean isObstacle = false;
 	
 	public void setGraspable(boolean isGraspable) {
 		this.isGraspable = isGraspable;
@@ -35,11 +36,19 @@ public class OntologicalSpatialProperty {
 		this.isMovable = isMovable;
 	}
 	
+	public void setObstacle(boolean isObstacle) {
+		this.isObstacle = isObstacle;
+	}
+	
 	public boolean isGraspable() {
 		return isGraspable;
 	}
 	
 	public boolean isMovable() {
 		return isMovable;
+	}
+	
+	public boolean isObstacle() {
+		return isObstacle;
 	}
 }

@@ -96,8 +96,9 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 
 		Vector<SpatialRule> srules = new Vector<SpatialRule>();
 		HashMap<ConfigurationVariable, SpatialFluent> confvarToSpatialFleunt = new HashMap<ConfigurationVariable, SpatialFluent>();
-		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-		ConstraintNetwork nwAlter = new ConstraintNetwork(null);
+		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();		
+		Vector<ConstraintNetwork> alters = new Vector<ConstraintNetwork>();
+		HashMap<ConstraintNetwork, Rectangle> altersHashmap = new HashMap<ConstraintNetwork, Rectangle>();
 		
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i];
@@ -279,51 +280,83 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 						break;
 					}
 				}
-				
 			}
+			
 			if(!overlapped){
 //				System.out.println("selected: " + manipulationRec.getCenterX() + "--" + manipulationRec.getCenterY());
-				ConstraintNetwork nw = new ConstraintNetwork(null);				
+				ConstraintNetwork nw = new ConstraintNetwork(null);
 				UnaryRectangleConstraint atCon = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, manipulationBB.getxLB(), manipulationBB.getxUB(),
 						manipulationBB.getyLB(), manipulationBB.getyUB());
 				atCon.setFrom(conflict.getRectangularRegion());
 				atCon.setTo(conflict.getRectangularRegion());
 				nw.addConstraint(atCon);
-				ret.add(nw);
+				ret.add(nw);				
 			}
-			else if (i == 1){
-								
+			else{
+
+				ConstraintNetwork nw = new ConstraintNetwork(null);
 				UnaryRectangleConstraint atCon = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, manipulationBB.getxLB(), manipulationBB.getxUB(),
 						manipulationBB.getyLB(), manipulationBB.getyUB());
 				atCon.setFrom(conflict.getRectangularRegion());
 				atCon.setTo(conflict.getRectangularRegion());
-				nwAlter.addConstraint(atCon);
-				
+				nw.addConstraint(atCon);
+				altersHashmap.put(nw, manipulationRec);
 				
 			}
-//			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" );			
+			
 			
 		}
+		
+		
+		
+		//if the unreachable situation happens and we have to ask for human
 		if(ret.size() == 0){
-			System.out.println("man injam");
-			System.out.println("_" +objecSpatialFleunt.getActivity());
-			Activity askHuman = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable("RobotAction");
-//			askHuman.setSymbolicDomain("ask_human_to_reachable_fork1_table1()");
-			askHuman.setSymbolicDomain("ask_human_to_reachable_cup1_table1()");
-			askHuman.setMarking(markings.UNJUSTIFIED);			
-//			AllenIntervalConstraint askHumanStartsunreachable = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts, AllenIntervalConstraint.Type.Starts.getDefaultBounds());
-			AllenIntervalConstraint askHumanStartsunreachable = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts, AllenIntervalConstraint.Type.Starts.getDefaultBounds());
-			askHumanStartsunreachable.setFrom(askHuman);
-			askHumanStartsunreachable.setTo(objecSpatialFleunt.getActivity());
-			nwAlter.addVariable(askHuman);
-			nwAlter.addConstraint(askHumanStartsunreachable);
-//			ret.add(nwAlter);
+			System.out.println("altersHashmap" + altersHashmap);
+			for (ConstraintNetwork conNW : altersHashmap.keySet()) {
+				
+				boolean overlappedFurniture = false;
+				for (int j = 0; j < sAssertionalRels.size(); j++) {
+					if(!sAssertionalRels.get(j).getOntologicalProp().isMovable() && sAssertionalRels.get(j).getOntologicalProp().isObstacle()){
+						BoundingBox bb = new BoundingBox(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[0], 
+								sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[1],
+								sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[2],
+								sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[3]);
+						if(altersHashmap.get(conNW).intersects(bb.getAlmostCentreRectangle())){
+							overlappedFurniture = true;
+							break; //we only need to know this manArea is overlapped with furniture or not
+						}
+					}
+				}
+				
+				if(!overlappedFurniture){					
+//					System.out.println("_" +objecSpatialFleunt.getActivity());
+					Activity askHuman = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable("RobotAction");
+					String extractNameObject = objecSpatialFleunt.getName().substring(3);
+					askHuman.setSymbolicDomain("ask_human_to_reachable_" + extractNameObject + "()");
+//					askHuman.setSymbolicDomain("ask_human_to_reachable_cup1_table1()");
+					askHuman.setMarking(markings.UNJUSTIFIED);			
+					AllenIntervalConstraint askHumanStartsunreachable = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts, AllenIntervalConstraint.Type.Starts.getDefaultBounds());
+//					AllenIntervalConstraint askHumanStartsunreachable = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, AllenIntervalConstraint.Type.After.getDefaultBounds());
+					askHumanStartsunreachable.setFrom(askHuman);
+					askHumanStartsunreachable.setTo(objecSpatialFleunt.getActivity());
+					
+					alters.add(conNW);
+					alters.lastElement().addVariable(askHuman);
+					alters.lastElement().addConstraint(askHumanStartsunreachable);
+					break;
+				}
+			}
+			
 		}
+		
 		
 		if (!ret.isEmpty()) {
 			return ret.toArray(new ConstraintNetwork[ret.size()]);			
 		}
-	
+		if (!alters.isEmpty()) {
+			return alters.toArray(new ConstraintNetwork[alters.size()]);			
+		}
+
 		return (new ConstraintNetwork[0]);
 		
 		//return ret.toArray(new ConstraintNetwork[ret.size()]);
@@ -335,13 +368,14 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 	private static void getSpatialKnowledge(Vector<SpatialRule> srules){
 
 		Bounds manArea_size_x = new Bounds(60, 60);
-		Bounds manArea_size_y = new Bounds(60, 60);
+		Bounds manArea_size_y = new Bounds(60, 60);		
+		long min_distance = 30;
+		long max_distance = 35;
 		
-//		long min_distance = 30;
-//		long max_distance = 35;
-		
-		long min_distance = 25;
-		long max_distance = 30;
+//		Bounds manArea_size_x = new Bounds(60, 60);
+//		Bounds manArea_size_y = new Bounds(60, 60);		
+//		long min_distance = 25;
+//		long max_distance = 30;
 
 		SpatialRule r1 = new SpatialRule("manipulationArea", "manipulationArea", 
 				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, manArea_size_x, manArea_size_y));
