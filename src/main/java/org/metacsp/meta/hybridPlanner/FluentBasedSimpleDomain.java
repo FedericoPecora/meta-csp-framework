@@ -242,15 +242,20 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		String sym = ((Activity)task).getSymbolicVariable().getSymbols()[0];
 		
 		if(sym.contains("hold")){
-			ret = sym.substring(sym.indexOf("_")+1, sym.indexOf("("));
+			ret = sym.substring(sym.indexOf("_")+6, sym.indexOf("(")).concat("_table1");
 		}
 		else if(sym.contains("sensing")){
-			ret = sym.substring(sym.indexOf("_")+1, sym.indexOf("("));
+			ret = sym.substring(sym.indexOf("_")+16, sym.indexOf("("));
+		}
+		else if(sym.contains("manipulationArea")){
+			ret = sym.substring(sym.indexOf("_")+25, sym.indexOf("("));
 		}
 		else{
 			String first_ = sym.substring(sym.indexOf("_")+1, sym.length());
 			ret = first_.substring(0, first_.indexOf("_"));
 		}
+		
+//		System.out.println("task: " + task + " -- " + ret);
 		
 		return ret;
 	}

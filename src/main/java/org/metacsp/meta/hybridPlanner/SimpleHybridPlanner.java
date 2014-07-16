@@ -78,40 +78,40 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		conflictRanking = new HashMap<String, Integer>();
 		
 		//this has to be commented
-//		if(observation != null){
-////			System.out.println("obs: " + observation);
-//			for (String recNew : recs.keySet()) {
-//				if(recNew.compareTo("table1") == 0) continue;
-//				if(recs.get(recNew).getWidth() == 0) break; //the bounds are not updated since the spatiak adherence is not called
-//				Vector<String> ovr = new Vector<String>();
-//				for (String recOld : observation.keySet()) {
-//					if(recOld.compareTo("table1") == 0) continue;
-//					if(recOld.compareTo(recNew) == 0) continue;
-//					if(recs.get(recNew).intersects(observation.get(recOld))){
-//						ovr.add(recOld);
-//					}
-//					
-//				}
-//				//if(ovr.size() > 0)
-//					overlappedPairs.put(recNew, ovr);
-//			}
-//
-////			System.out.println("overlappedPairs" + overlappedPairs);
-//			
-//			for (String st : overlappedPairs.keySet()) {
-//				if(conflictRanking.get(st) == null){
-//					conflictRanking.put(st, 1);
-//				}
-//				for (int i = 0; i < overlappedPairs.get(st).size(); i++) {
-//					if(conflictRanking.get(overlappedPairs.get(st).get(i)) != null){
-//						int rank = conflictRanking.get(st); 
-//						conflictRanking.put(overlappedPairs.get(st).get(i), ++rank);
-//					}else{
-//						conflictRanking.put(overlappedPairs.get(st).get(i), 1);
-//					}					
-//				}
-//			}
-//		}
+		if(observation != null){
+//			System.out.println("obs: " + observation);
+			for (String recNew : recs.keySet()) {
+				if(recNew.compareTo("at_table1_table1") == 0) continue;
+				if(recs.get(recNew).getWidth() == 0) break; //the bounds are not updated since the spatiak adherence is not called
+				Vector<String> ovr = new Vector<String>();
+				for (String recOld : observation.keySet()) {
+					if(recOld.compareTo("at_table1_table1") == 0) continue;
+					if(recOld.compareTo(recNew) == 0) continue;
+					if(recs.get(recNew).intersects(observation.get(recOld))){
+						ovr.add(recOld);
+					}
+					
+				}
+				//if(ovr.size() > 0)
+					overlappedPairs.put(recNew, ovr);
+			}
+
+//			System.out.println("overlappedPairs" + overlappedPairs);
+			
+			for (String st : overlappedPairs.keySet()) {
+				if(conflictRanking.get(st) == null){
+					conflictRanking.put(st, 1);
+				}
+				for (int i = 0; i < overlappedPairs.get(st).size(); i++) {
+					if(conflictRanking.get(overlappedPairs.get(st).get(i)) != null){
+						int rank = conflictRanking.get(st); 
+						conflictRanking.put(overlappedPairs.get(st).get(i), ++rank);
+					}else{
+						conflictRanking.put(overlappedPairs.get(st).get(i), 1);
+					}					
+				}
+			}
+		}
 		
 //		System.out.println("rank: " + conflictRanking);
 
