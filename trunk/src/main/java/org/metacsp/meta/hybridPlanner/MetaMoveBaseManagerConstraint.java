@@ -1,7 +1,11 @@
 package org.metacsp.meta.hybridPlanner;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
@@ -22,6 +26,7 @@ import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 
@@ -41,6 +46,23 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		
+//		System.out.println("===================================================");
+//
+//		ActivityNetworkSolver actSolver = ((ActivityNetworkSolver)((SpatialFluentSolver)getGroundSolver()).getConstraintSolvers()[1]);
+//		
+//		HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
+//		for (int i = 0; i < actSolver.getVariables().length; i++) {
+//			starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
+//		}
+//
+//		//          Collections.sort(starttimes.values());
+//		starttimes =  sortHashMapByValuesD(starttimes);
+//		for (Activity act : starttimes.keySet()) {
+//			System.out.println(act + " --> " + starttimes.get(act));
+//		}
+//		
+//		System.out.println("===================================================");
+
 		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 		Vector<Activity> activities = new Vector<Activity>();
 		for (int i = 0; i < getGroundSolver().getVariables().length; i++) {
@@ -178,9 +200,18 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 			moveMetByManFluent.setFrom(act2);
 			moveMetByManFluent.setTo(move);
 			ConstraintNetwork resolver0 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-			resolver0.addVariable((Activity) conflict.getVariables()[0]);
-			resolver0.addVariable((Activity) conflict.getVariables()[1]);
+			resolver0.addVariable(act1);
+			resolver0.addVariable(act2);
+			resolver0.addVariable(move);
 			resolver0.addConstraint(moveMetByManFluent);
+
+			
+//			AllenIntervalConstraint moveMetByManFluent1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds());
+//			moveMetByManFluent1.setFrom(move);
+//			moveMetByManFluent1.setTo(act1);
+//			resolver0.addConstraint(moveMetByManFluent1);
+			
+			
 			ret.add(resolver0);
 		}
 		else{
@@ -193,9 +224,16 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 			moveMetByManFluent.setFrom(act1);
 			moveMetByManFluent.setTo(move);
 			ConstraintNetwork resolver0 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-			resolver0.addVariable((Activity) conflict.getVariables()[0]);
-			resolver0.addVariable((Activity) conflict.getVariables()[1]);
+			resolver0.addVariable(act1);
+			resolver0.addVariable(act2);
+			resolver0.addVariable(move);
 			resolver0.addConstraint(moveMetByManFluent);
+			
+//			AllenIntervalConstraint moveMetByManFluent1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds());
+//			moveMetByManFluent1.setFrom(move);
+//			moveMetByManFluent1.setTo(act1);
+//			resolver0.addConstraint(moveMetByManFluent1);
+			
 			ret.add(resolver0);
 		}
 		
@@ -262,6 +300,35 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 	public boolean isEquivalent(Constraint c) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private static LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
+		ArrayList mapKeys = new ArrayList(passedMap.keySet());
+		ArrayList mapValues = new ArrayList(passedMap.values());
+		Collections.sort(mapValues);
+		Collections.sort(mapKeys);
+
+		LinkedHashMap sortedMap =  new LinkedHashMap();
+
+		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
+		while (valueIt.hasNext()) {
+			long val = (Long) valueIt.next();
+			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
+
+			while (keyIt.hasNext()) {
+				Activity key = (Activity) keyIt.next();
+				long comp1 = (Long) passedMap.get(key);
+				long comp2 = val;
+
+				if (comp1 == comp2){
+					passedMap.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put(key, val);
+					break;
+				}
+			}
+		}
+		return sortedMap;
 	}
 
 }

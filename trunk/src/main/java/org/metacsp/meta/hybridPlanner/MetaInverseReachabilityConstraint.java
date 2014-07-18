@@ -118,6 +118,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 			}
 		}
 		
+		
 		getSpatialKnowledge(srules);
 		for (int i = 1; i < srules.size(); i++) {
 		
@@ -260,6 +261,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 //				ioe.printStackTrace();
 //			}
 			
+
 			
 			//remove those rectangle which is overlapped by nonmovable area (e.g., chair, table)
 			AllenInterval x = (AllenInterval)manpInstance.getInternalVariables()[0];
@@ -281,6 +283,7 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 					}
 				}
 			}
+			
 			
 			if(!overlapped){
 //				System.out.println("selected: " + manipulationRec.getCenterX() + "--" + manipulationRec.getCenterY());
@@ -376,6 +379,8 @@ public class MetaInverseReachabilityConstraint extends MetaConstraint{
 //		Bounds manArea_size_y = new Bounds(60, 60);		
 //		long min_distance = 25;
 //		long max_distance = 30;
+
+
 
 		SpatialRule r1 = new SpatialRule("manipulationArea", "manipulationArea", 
 				new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, manArea_size_x, manArea_size_y));
