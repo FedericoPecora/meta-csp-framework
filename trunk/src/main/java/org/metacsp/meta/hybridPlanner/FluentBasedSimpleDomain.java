@@ -214,10 +214,10 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		//this is hard coded, it has to be unhard coded
 		//this is for the situation we have to force unification of manipulation activity with spatial flunets and avoid self unification (like duration)
 		//ReachabilityContraintSolver rchCs = (ReachabilityContraintSolver)((SpatialFluentSolver)this.getGroundSolver()).getConstraintSolvers()[2];
-		if(problematicActivity.getSymbolicVariable().getSymbols()[0].contains("at_robot1_manipulationArea")) {
-//			System.out.println("*****" + retPossibleConstraintNetworks.get(retPossibleConstraintNetworks.size() - 1));
-			retPossibleConstraintNetworks.removeElementAt(retPossibleConstraintNetworks.size() - 1);
-		}
+//		if(problematicActivity.getSymbolicVariable().getSymbols()[0].contains("at_robot1_manipulationArea")) {
+////			System.out.println("*****" + retPossibleConstraintNetworks.get(retPossibleConstraintNetworks.size() - 1));
+//			retPossibleConstraintNetworks.removeElementAt(retPossibleConstraintNetworks.size() - 1);
+//		}
 
 		
 		

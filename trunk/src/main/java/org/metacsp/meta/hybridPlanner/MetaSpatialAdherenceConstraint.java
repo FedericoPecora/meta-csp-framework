@@ -17,12 +17,15 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
+import org.metacsp.meta.simplePlanner.SimpleReusableResource;
+import org.metacsp.meta.symbolsAndTime.ReusableResource;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityComparator;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -61,8 +64,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	//	private HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 	//	private HashMap<Activity, SpatialFluent> activityToFluent;
 	//	protected Vector<Activity> activities;
-	private long totalTime = 0; 
-
+	private long totalTime = 0;
+	
+	private SimpleReusableResource manAreaResource = null;
+	
 	public long getCulpritDetectionTime(){
 		return totalTime;
 	}
@@ -531,6 +536,36 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
 			((RectangularRegion)newmanFlunetPlace.getInternalVariables()[0]).setName(manFluentsName);
 			mvalue.addVariable(newmanFlunetPlace);
+			
+			//BOOKMARK
+			
+			FluentBasedSimpleDomain fbsd = null;
+			for (MetaConstraint mc : metaCS.getMetaConstraints()) {
+				if (mc instanceof FluentBasedSimpleDomain) fbsd = (FluentBasedSimpleDomain)mc;
+			}
+			
+			if (manAreaResource == null) {
+				
+				VariableOrderingH varOH = new VariableOrderingH() {
+					@Override
+					public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
+						return arg1.getVariables().length - arg0.getVariables().length;
+					}
+					@Override
+					public void collectData(ConstraintNetwork[] allMetaVariables) { }
+				};
+				// no value ordering
+				ValueOrderingH valOH = new ValueOrderingH() {
+					@Override
+					public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
+				};
+				
+				manAreaResource = new SimpleReusableResource(varOH, valOH, 2, fbsd, "manAreaResource");
+				fbsd.addResrouceUtilizers(manAreaResource, new HashMap<Variable, Integer>());
+			}
+			
+			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPick.getActivity(), 1);
+			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPlace.getActivity(), 1);			
 			
 			////////////////////////////////////////////////////////////////////////////////////////
 			ReachabilityConstraint rc2 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
