@@ -128,7 +128,15 @@ public class SimpleDomain extends MetaConstraint {
 		// for every SRR just created, couple it with a vector of variables
 		for (SimpleReusableResource rr : resourcesMap.values()) currentResourceUtilizers.put(rr,new HashMap<Variable, Integer>());
 	}
+	
+	public void addResrouceUtilizers(SimpleReusableResource rr, HashMap<Variable, Integer> hm) {
+		currentResourceUtilizers.put(rr,hm);
+	}
 
+	public void addResrouceUtilizer(SimpleReusableResource rr, Variable var, Integer amount) {
+		currentResourceUtilizers.get(rr).put(var,amount);
+	}
+	
 	public void addOperator(SimpleOperator r) {
 		operators.add(r);
 	}
