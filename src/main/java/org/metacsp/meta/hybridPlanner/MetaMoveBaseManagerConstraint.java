@@ -104,7 +104,7 @@ public class MetaMoveBaseManagerConstraint extends MetaConstraint{
 				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
-					if ((bi.max + 1 == bj.min || bj.max + 1 == bi.min)  && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
+					if (((bi.max  == bj.min || bj.max  == bi.min) || (bi.max + 1 == bj.min || bj.max +1  == bi.min))  && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
 //						System.out.println("===================================");
 //						System.out.println(groundVars[i]);
 //						System.out.println(groundVars[j]);

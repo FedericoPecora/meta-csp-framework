@@ -29,6 +29,8 @@ import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.spatial.reachability.ReachabilityConstraint;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+
 public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 
@@ -204,6 +206,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		}
 
 	
+
+		
 		boolean isRtractingSpatialRelations = false;
 		for (int i = 0; i < metaValue.getVariables().length; i++) {
 			if(metaValue.getVariables()[i] instanceof RectangularRegion ){
@@ -274,6 +278,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 
+		Vector<Activity> manAreaActs = new Vector<Activity>();
+		
 		//Make real variables from variable prototypes
 		for (Variable v :  metaValue.getVariables()) {
 			if (v instanceof VariablePrototype) {
@@ -288,6 +294,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				tailActivity.setMarking(v.getMarking());
 				metaValue.addSubstitution((VariablePrototype)v, tailActivity);					
 
+				if(symbol.contains("manipulationArea")){
+					manAreaActs.add(tailActivity);
+				}
 			}
 		}
 
@@ -308,7 +317,6 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		}
 
 
-
 		for (Variable v : metaValue.getVariables()) {
 			for (int j = 0; j < this.metaConstraints.size(); j++) {
 				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
@@ -319,7 +327,18 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				}
 			}
 		}
-
+		
+		
+		for (int i = 0; i < manAreaActs.size(); i++) {
+			for (int j = 0; j < this.metaConstraints.size(); j++) {
+				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
+					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
+					SimpleReusableResource rr = metaCausalConatraint.getResources().get("manAreaResource");
+					metaCausalConatraint.addResrouceUtilizer(rr, manAreaActs.get(i), 1);
+					rr.setUsage(manAreaActs.get(i));
+				}
+			}			
+		}
 
 		return true;
 	}
