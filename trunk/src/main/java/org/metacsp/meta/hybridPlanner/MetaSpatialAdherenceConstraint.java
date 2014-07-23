@@ -26,6 +26,7 @@ import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
 import org.metacsp.meta.simplePlanner.SimpleReusableResource;
 import org.metacsp.meta.symbolsAndTime.ReusableResource;
+import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityComparator;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -544,28 +545,33 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				if (mc instanceof FluentBasedSimpleDomain) fbsd = (FluentBasedSimpleDomain)mc;
 			}
 			
-			if (manAreaResource == null) {
-				
-				VariableOrderingH varOH = new VariableOrderingH() {
-					@Override
-					public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
-						return arg1.getVariables().length - arg0.getVariables().length;
-					}
-					@Override
-					public void collectData(ConstraintNetwork[] allMetaVariables) { }
-				};
-				// no value ordering
-				ValueOrderingH valOH = new ValueOrderingH() {
-					@Override
-					public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
-				};
-				
-				manAreaResource = new SimpleReusableResource(varOH, valOH, 2, fbsd, "manAreaResource");
-				fbsd.addResrouceUtilizers(manAreaResource, new HashMap<Variable, Integer>());
-			}
+//			if (manAreaResource == null) {
+//				
+//				VariableOrderingH varOH = new VariableOrderingH() {
+//					@Override
+//					public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
+//						return arg1.getVariables().length - arg0.getVariables().length;
+//					}
+//					@Override
+//					public void collectData(ConstraintNetwork[] allMetaVariables) { }
+//				};
+//				// no value ordering
+//				ValueOrderingH valOH = new ValueOrderingH() {
+//					@Override
+//					public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
+//				};
+//				manAreaResource = new SimpleReusableResource(varOH, valOH, 1, fbsd, "manAreaResource");
+//				fbsd.addResrouceUtilizers(manAreaResource, new HashMap<Variable, Integer>());
+//			}
+//			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPick.getActivity(), 1);
+//			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPlace.getActivity(), 1);				
 			
-			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPick.getActivity(), 1);
-			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPlace.getActivity(), 1);			
+			
+//			fbsd.addResrouceUtilizer(fbsd.getResources().get("manAreaResource"), newmanFlunetPick.getActivity(), 1);
+//			fbsd.addResrouceUtilizer(fbsd.getResources().get("manAreaResource"), newmanFlunetPlace.getActivity(), 1);
+			
+//			for (Schedulable sch : fbsd.getSchedulingMetaConstraints()) this.metaCS.addMetaConstraint(sch);
+
 			
 			////////////////////////////////////////////////////////////////////////////////////////
 			ReachabilityConstraint rc2 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
