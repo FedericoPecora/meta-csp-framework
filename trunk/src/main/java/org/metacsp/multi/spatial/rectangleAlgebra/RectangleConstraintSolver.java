@@ -48,16 +48,19 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	 */
 	private static final long serialVersionUID = -6694598836324746725L;
 	private int IDs = 0;
+	private long horizon = 0;
 	
 	private HashMap<Integer, Variable> getVaribaleById = new HashMap<Integer, Variable>();
 	public enum Dimension  {X, Y};
 
 	public RectangleConstraintSolver(long origin, long horizon) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
+		this.horizon = horizon;
 	}
 
 	public RectangleConstraintSolver(long origin, long horizon, int maxRectangles) {
 		super(new Class[] {RectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
+		this.horizon = horizon;
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxRectangles) {
@@ -205,6 +208,9 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 		return ret;
 	}
 
-
+	
+	public long getHorizon(){
+		return horizon;
+	}
 }
 	

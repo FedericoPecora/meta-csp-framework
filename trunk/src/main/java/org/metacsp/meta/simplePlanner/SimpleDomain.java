@@ -170,6 +170,121 @@ public class SimpleDomain extends MetaConstraint {
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
+	
+	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity, VariablePrototype manipulationAreaPrototype) {
+		logger.finest("Expanding operator " + possibleOperator.getHead());
+		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver(); //(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+
+		String possibleOperatorHead = possibleOperator.getHead();
+		String possibleOperatorHeadSymbol = possibleOperatorHead.substring(possibleOperatorHead.indexOf("::")+2, possibleOperatorHead.length());
+		String possibleOperatorHeadComponent = possibleOperatorHead.substring(0, possibleOperatorHead.indexOf("::"));
+		Variable headActivity = null;
+
+		boolean problematicActIsEffect = false;
+		Variable[] operatorTailActivitiesToInsert = new Variable[0];
+
+		if (possibleOperator.getRequirementActivities() != null) {
+			operatorTailActivitiesToInsert = new Variable[possibleOperator.getRequirementActivities().length];
+
+			for (int i = 0; i < possibleOperator.getRequirementActivities().length; i++) {
+				String possibleOperatorTail = possibleOperator.getRequirementActivities()[i];
+				String possibleOperatorTailComponent = possibleOperatorTail.substring(0, possibleOperatorTail.indexOf("::"));				
+				String possibleOperatorTailSymbol = possibleOperatorTail.substring(possibleOperatorTail.indexOf("::")+2, possibleOperatorTail.length());
+
+				//If this req is the prob act, then insert prob act
+				if (possibleOperatorTailComponent.equals(problematicActivity.getComponent()) && possibleOperatorTailSymbol.equals(problematicActivity.getSymbolicVariable().getSymbols()[0])) {
+					operatorTailActivitiesToInsert[i] = problematicActivity;
+					problematicActIsEffect = true;
+				}
+				//else make a new var prototype and insert it
+				else {
+					VariablePrototype tailActivity = new VariablePrototype(groundSolver, possibleOperatorTailComponent, possibleOperatorTailSymbol);
+					operatorTailActivitiesToInsert[i] = tailActivity;
+					if(possibleOperatorTailSymbol.contains("manipulationArea"))
+						manipulationAreaPrototype = tailActivity;
+					if (possibleOperator instanceof PlanningOperator) {
+						if (((PlanningOperator)possibleOperator).isEffect(possibleOperatorTail)) {
+							tailActivity.setMarking(markings.JUSTIFIED);
+						}
+						else {
+							tailActivity.setMarking(markings.UNJUSTIFIED);
+						}
+					}
+					else {
+						tailActivity.setMarking(markings.UNJUSTIFIED);
+					}
+				}
+			}
+
+			//Also add head if the prob activity was unified with an effect
+			if (problematicActIsEffect) {
+				headActivity = new VariablePrototype(groundSolver, possibleOperatorHeadComponent, possibleOperatorHeadSymbol);
+				headActivity.setMarking(markings.JUSTIFIED);
+			}
+
+			Vector<AllenIntervalConstraint> allenIntervalConstraintsToAdd = new Vector<AllenIntervalConstraint>();
+
+			for (int i = 0; i < possibleOperator.getRequirementConstraints().length; i++) {
+				if (possibleOperator.getRequirementConstraints()[i] != null) {
+					AllenIntervalConstraint con = (AllenIntervalConstraint)possibleOperator.getRequirementConstraints()[i].clone();
+					if (problematicActIsEffect) con.setFrom(headActivity);
+					else con.setFrom(problematicActivity);
+					con.setTo(operatorTailActivitiesToInsert[i]);
+					allenIntervalConstraintsToAdd.add(con);
+				}
+			}
+			for (AllenIntervalConstraint con : allenIntervalConstraintsToAdd) activityNetworkToReturn.addConstraint(con);
+		}
+
+		Vector<AllenIntervalConstraint> toAddExtra = new Vector<AllenIntervalConstraint>();
+		for (int i = 0; i < operatorTailActivitiesToInsert.length+1; i++) {
+			AllenIntervalConstraint[][] ec = possibleOperator.getExtraConstraints();
+			if (ec != null) {
+				AllenIntervalConstraint[] con = ec[i];
+				for (int j = 0; j < con.length; j++) {
+					if (con[j] != null) {
+						AllenIntervalConstraint newCon = (AllenIntervalConstraint) con[j].clone();
+						if (i == 0) {
+							if (problematicActIsEffect) newCon.setFrom(headActivity);
+							else newCon.setFrom(problematicActivity);
+						}
+						else {
+							newCon.setFrom(operatorTailActivitiesToInsert[i-1]);
+						}
+						if (j == 0) {
+							if (problematicActIsEffect) newCon.setTo(headActivity);
+							else newCon.setTo(problematicActivity);
+						}
+						else {
+							newCon.setTo(operatorTailActivitiesToInsert[j-1]);
+						}
+						toAddExtra.add(newCon);
+					}
+				}
+			}
+		}
+
+		for (Variable v : operatorTailActivitiesToInsert) activityNetworkToReturn.addVariable(v);
+		if (!toAddExtra.isEmpty()) {
+			for (AllenIntervalConstraint con : toAddExtra) activityNetworkToReturn.addConstraint(con);
+		}
+
+		int[] usages = possibleOperator.getUsages();
+		if (usages != null) {
+			for (int i = 0; i < usages.length; i++) {
+				if (usages[i] != 0) {
+					HashMap<Variable, Integer> utilizers = currentResourceUtilizers.get(resourcesMap.get(resourceNames[i]));
+					if (problematicActIsEffect) utilizers.put(headActivity, usages[i]);
+					else utilizers.put(problematicActivity, usages[i]);
+					activityNetworkToReturn.addVariable(problematicActivity);
+				}
+			}
+		}
+		return activityNetworkToReturn;						
+	}
+
+	
 	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
 		logger.finest("Expanding operator " + possibleOperator.getHead());
 		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);

@@ -502,117 +502,59 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			//			System.out.println("newOnAfteroldOn" + newOnAfteroldOn);
 
 
-			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			//it generates manipulationFluent for corresponding new goal fluent
-			//the name of fluent comes from parsing the operator with certain relations :
-			//it generate for example, atLocation::at_robot1_manipulationArea_fork1_table1()) for at_fork1_table1() 
-			SpatialFluent newmanFlunetPick = null;
-			
-			String extractedNameAndSupport = st.substring(3); //remove at_
-			String manFluentsName = "at_robot1_manipulationArea_" + extractedNameAndSupport + "()";
-//			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
-			newmanFlunetPick = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
-					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
-			newmanFlunetPick.setName(manFluentsName);
-			((Activity)newmanFlunetPick.getInternalVariables()[1]).setSymbolicDomain(manFluentsName);
-			((Activity)newmanFlunetPick.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
-			((RectangularRegion)newmanFlunetPick.getInternalVariables()[0]).setName(manFluentsName);
-			mvalue.addVariable(newmanFlunetPick);
-			
-			////////////////////////////////////////////////////////////////////////////////////////
-			ReachabilityConstraint rc1 = new ReachabilityConstraint(ReachabilityConstraint.Type.basePickingupReachable);
-			rc1.setFrom(((ConfigurationVariable)activityToFluent.get(culpritActivities.get(st)).getInternalVariables()[2]));
-			rc1.setTo(((ConfigurationVariable)newmanFlunetPick.getInternalVariables()[2]));
-			actNetwork.addConstraint(rc1);
-			
-//			System.out.println("----------------! " + rc1);
-			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			//the another flunet with the same name, in case, the position of the objects are different, should be two different 
-			SpatialFluent newmanFlunetPlace = null;			
-//			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
-			newmanFlunetPlace = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
-					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
-			newmanFlunetPlace.setName(manFluentsName);
-			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setSymbolicDomain(manFluentsName);
-			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
-			((RectangularRegion)newmanFlunetPlace.getInternalVariables()[0]).setName(manFluentsName);
-			mvalue.addVariable(newmanFlunetPlace);
-			
-			//BOOKMARK
-			
-			FluentBasedSimpleDomain fbsd = null;
-			for (MetaConstraint mc : metaCS.getMetaConstraints()) {
-				if (mc instanceof FluentBasedSimpleDomain) fbsd = (FluentBasedSimpleDomain)mc;
-			}
-			
-//			if (manAreaResource == null) {
-//				
-//				VariableOrderingH varOH = new VariableOrderingH() {
-//					@Override
-//					public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
-//						return arg1.getVariables().length - arg0.getVariables().length;
-//					}
-//					@Override
-//					public void collectData(ConstraintNetwork[] allMetaVariables) { }
-//				};
-//				// no value ordering
-//				ValueOrderingH valOH = new ValueOrderingH() {
-//					@Override
-//					public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
-//				};
-//				manAreaResource = new SimpleReusableResource(varOH, valOH, 1, fbsd, "manAreaResource");
-//				fbsd.addResrouceUtilizers(manAreaResource, new HashMap<Variable, Integer>());
-//			}
-//			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPick.getActivity(), 1);
-//			fbsd.addResrouceUtilizer(manAreaResource, newmanFlunetPlace.getActivity(), 1);				
-			
-			
-//			fbsd.addResrouceUtilizer(fbsd.getResources().get("manAreaResource"), newmanFlunetPick.getActivity(), 1);
-//			fbsd.addResrouceUtilizer(fbsd.getResources().get("manAreaResource"), newmanFlunetPlace.getActivity(), 1);
-			
-//			for (Schedulable sch : fbsd.getSchedulingMetaConstraints()) this.metaCS.addMetaConstraint(sch);
+//			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//			//it generates manipulationFluent for corresponding new goal fluent
+//			//the name of fluent comes from parsing the operator with certain relations :
+//			//it generate for example, atLocation::at_robot1_manipulationArea_fork1_table1()) for at_fork1_table1() 
+//			SpatialFluent newmanFlunetPick = null;
+//			
+//			String extractedNameAndSupport = st.substring(3); //remove at_
+//			String manFluentsName = "at_robot1_manipulationArea_" + extractedNameAndSupport + "()";
+////			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
+//			newmanFlunetPick = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
+//					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
+//			newmanFlunetPick.setName(manFluentsName);
+//			((Activity)newmanFlunetPick.getInternalVariables()[1]).setSymbolicDomain(manFluentsName);
+//			((Activity)newmanFlunetPick.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+//			((RectangularRegion)newmanFlunetPick.getInternalVariables()[0]).setName(manFluentsName);
+//			mvalue.addVariable(newmanFlunetPick);
+//			
+//			////////////////////////////////////////////////////////////////////////////////////////
+//			ReachabilityConstraint rc1 = new ReachabilityConstraint(ReachabilityConstraint.Type.basePickingupReachable);
+//			rc1.setFrom(((ConfigurationVariable)activityToFluent.get(culpritActivities.get(st)).getInternalVariables()[2]));
+//			rc1.setTo(((ConfigurationVariable)newmanFlunetPick.getInternalVariables()[2]));
+//			actNetwork.addConstraint(rc1);
+//			
+////			System.out.println("----------------! " + rc1);
+//			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//			//the another flunet with the same name, in case, the position of the objects are different, should be two different 
+//			SpatialFluent newmanFlunetPlace = null;			
+////			System.out.println("---NEWNMANFLUNT--" + manFluentsName);
+//			newmanFlunetPlace = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
+//					.createVariable(culpritActivities.get(st).getComponent()); //e.g., at_location
+//			newmanFlunetPlace.setName(manFluentsName);
+//			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setSymbolicDomain(manFluentsName);
+//			((Activity)newmanFlunetPlace.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+//			((RectangularRegion)newmanFlunetPlace.getInternalVariables()[0]).setName(manFluentsName);
+//			mvalue.addVariable(newmanFlunetPlace);
+//			
+//			////////////////////////////////////////////////////////////////////////////////////////
+//			ReachabilityConstraint rc2 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
+//			rc2.setFrom(((ConfigurationVariable)newgoalFlunet.getInternalVariables()[2]));
+//			rc2.setTo(((ConfigurationVariable)newmanFlunetPlace.getInternalVariables()[2]));
+//			actNetwork.addConstraint(rc2);
+////			System.out.println("----------------" + rc2);
+//			
+//			////////////////////////////////////////////////
+//			//Put before constraint to seprate manipulation Area for pick and Place of the same Objects
+//			///////////////////////////////////////////////
+//			AllenIntervalConstraint beforeForSeprationOfManFleunts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before,
+//					AllenIntervalConstraint.Type.Before.getDefaultBounds());
+//			beforeForSeprationOfManFleunts.setFrom(((Activity)newmanFlunetPick.getInternalVariables()[1]));
+//			beforeForSeprationOfManFleunts.setTo(((Activity)newmanFlunetPlace.getInternalVariables()[1]));
+//			actNetwork.addConstraint(beforeForSeprationOfManFleunts);	
 
-			
-			////////////////////////////////////////////////////////////////////////////////////////
-			ReachabilityConstraint rc2 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
-			rc2.setFrom(((ConfigurationVariable)newgoalFlunet.getInternalVariables()[2]));
-			rc2.setTo(((ConfigurationVariable)newmanFlunetPlace.getInternalVariables()[2]));
-			actNetwork.addConstraint(rc2);
-//			System.out.println("----------------" + rc2);
-			
-			////////////////////////////////////////////////
-			//Put before constraint to seprate manipulation Area for pick and Place of the same Objects
-			///////////////////////////////////////////////
-			AllenIntervalConstraint beforeForSeprationOfManFleunts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before,
-					AllenIntervalConstraint.Type.Before.getDefaultBounds());
-			beforeForSeprationOfManFleunts.setFrom(((Activity)newmanFlunetPick.getInternalVariables()[1]));
-			beforeForSeprationOfManFleunts.setTo(((Activity)newmanFlunetPlace.getInternalVariables()[1]));
-			actNetwork.addConstraint(beforeForSeprationOfManFleunts);	
 
-			////////////////////////////////////////////////
-			//create manipulationArea for orginal goal
-			///////////////////////////////////////////////
-//			for (int j = 0; j < originalGoals.size(); j++) {
-//				
-//				String extractOriginalFlunet = originalGoals.get(j).getSymbolicVariable().getSymbols()[0].substring(3);
-//				String originalGoalManFleuntName =  "at_robot1_manipulationArea_" + extractOriginalFlunet;
-//				SpatialFluent originalGoalmanFlunetPlace = null;			
-//				System.out.println("---NEWNMANFLUNT--" + originalGoalManFleuntName);
-//				originalGoalmanFlunetPlace = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
-//						.createVariable(originalGoals.get(j).getComponent()); //e.g., at_location
-//				originalGoalmanFlunetPlace.setName(originalGoalManFleuntName);
-//				((Activity)originalGoalmanFlunetPlace.getInternalVariables()[1]).setSymbolicDomain(originalGoalManFleuntName);
-//				((Activity)originalGoalmanFlunetPlace.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
-//				((RectangularRegion)originalGoalmanFlunetPlace.getInternalVariables()[0]).setName(originalGoalManFleuntName);
-//				mvalue.addVariable(originalGoalmanFlunetPlace);
-//				
-//				
-//				ReachabilityConstraint rc3 = new ReachabilityConstraint(ReachabilityConstraint.Type.baseplacingReachable);
-//				rc3.setFrom(((ConfigurationVariable)activityToFluent.get(originalGoals.get(j)).getInternalVariables()[2]));
-//				rc3.setTo(((ConfigurationVariable)originalGoalmanFlunetPlace.getInternalVariables()[2]));
-//				actNetwork.addConstraint(rc3);
-//				
-//			}
 
 			
 			

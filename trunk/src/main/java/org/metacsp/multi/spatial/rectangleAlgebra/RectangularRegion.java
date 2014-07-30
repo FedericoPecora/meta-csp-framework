@@ -23,7 +23,11 @@
 package org.metacsp.multi.spatial.rectangleAlgebra;
 
 
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.spatial.rectangleAlgebraNew.toRemove.OntologicalSpatialProperty;
+import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.time.Bounds;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
@@ -94,5 +98,25 @@ public class RectangularRegion extends MultiVariable {
 	public void setOntologicalProp(OntologicalSpatialProperty ontologicalProp) {
 		this.ontologicalProp = ontologicalProp;
 	}
+	
+	public boolean isUnbounded(){
+		
+		AllenInterval intervalX = ((AllenInterval)this.getInternalVariables()[0]);
+		AllenInterval intervalY = ((AllenInterval)this.getInternalVariables()[1]);
+		
+		Bounds xLB =  new Bounds(intervalX.getEST(), intervalX.getLST());
+		Bounds xUB = new Bounds(intervalX.getEET(), intervalX.getLET());
+		Bounds yLB = new Bounds(intervalY.getEST(), intervalY.getLST()); 
+		Bounds yUB = new Bounds(intervalY.getEET(), intervalY.getLET());
+		long horizon = ((RectangleConstraintSolver)this.solver).getHorizon();
+		
+		if( (xLB.min == 0 && xLB.max == horizon) && (xUB.min == 0&& xUB.max == horizon) &&
+				(yLB.min == 0 && yLB.max == horizon) &&(yLB.min == 0 && yUB.max == horizon))
+		return true;
 
+		return false;
+		
+		
+	}
+	
 }
