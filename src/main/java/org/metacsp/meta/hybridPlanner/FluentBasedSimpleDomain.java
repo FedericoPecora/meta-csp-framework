@@ -3,9 +3,11 @@ package org.metacsp.meta.hybridPlanner;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
+import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.PlanningOperator;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
@@ -13,19 +15,29 @@ import org.metacsp.meta.simplePlanner.SimpleOperator;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
+import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
+import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.spatial.reachability.ConfigurationVariable;
 import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
+import org.metacsp.spatial.utility.SpatialRule;
+import org.metacsp.time.Bounds;
 
 
 public class FluentBasedSimpleDomain extends SimpleDomain {
 	
 	private long timeNow = -1;
 	private boolean activeFreeArmHeuristic = false;
+	private ManipulationAreaDomain manipulationAreaDomain = null;
 	public FluentBasedSimpleDomain(int[] capacities, String[] resourceNames,
 			String domainName) {
 		super(capacities, resourceNames, domainName);
-		// TODO Auto-generated constructor stub
+		manipulationAreaDomain = new ManipulationAreaDomain();
 	}
 
 	/**
@@ -150,7 +162,9 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		}
 		
 		
+
 		
+		VariablePrototype manipulationAreaPrototype = null;
 		
 		//Find all expansions
 		for (SimpleOperator r : operators) {
@@ -160,13 +174,21 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 			String operatorHeadSymbol = operatorHead.substring(operatorHead.indexOf("::")+2, operatorHead.length());
 			if (opeatorHeadComponent.equals(problematicActivity.getComponent())) {
 				if (problematicActivitySymbolicDomain.contains(operatorHeadSymbol)) {
-					ConstraintNetwork newResolver = super.expandOperator(r,problematicActivity);
+					ConstraintNetwork newResolver = super.expandOperator(r,problematicActivity, manipulationAreaPrototype);
 					newResolver.setAnnotation(1);
 					newResolver.setSpecilizedAnnotation(r);
 					operatorsConsNetwork.add(newResolver);
 					//retPossibleConstraintNetworks.add(newResolver);					
 				}
 			}
+			
+			
+			
+//			if(problematicActivity.getComponent().compareTo("RobotAction") == 0){
+//				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);
+//				operatorsConsNetwork.lastElement().join(spatialConstraintNet);
+//			}
+			
 			
 //			System.out.println("__________________________________");
 //			System.out.println(operatorsConsNetwork);
@@ -238,6 +260,170 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	
 
 	
+	private ConstraintNetwork getSpatialConstraintNet(Activity problematicActivity, VariablePrototype manipulationAreaPrototype) {
+		
+		ConstraintNetwork ret = new ConstraintNetwork(null);
+		String mainString = problematicActivity.getSymbolicVariable().getSymbols()[0];
+//		//place_fork1_LA_west_table
+		String obj = getParameter(problematicActivity);
+		
+		int last_index = mainString.lastIndexOf("_", mainString.length());
+		String armAndDirection = mainString.substring(mainString.indexOf(obj)+obj.length()+1,last_index-1); //e.g., LA_north
+		String supporter = mainString.substring(last_index+1, mainString.length()-2); //e.g., table1
+		
+		//we can extract relevant spatial fluent in two ways: based on the temporal or spatial relation
+		//for spatial: bounded rectangle are those in future and unbounded in the past
+		SpatialFluent objectFleunt = null;
+		SpatialFluent supportFluent = null;
+		for (int i = 0; i < ((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
+			SpatialFluent tempFluent = ((SpatialFluent)((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]).getVariables()[i]);
+			if(tempFluent.getName().compareTo("at_"+supporter+"_"+supporter) == 0){
+				supportFluent = tempFluent;
+			}
+			if(mainString.contains("pick")){
+				if(tempFluent.getName().compareTo("at_"+obj+"_"+supporter) == 0 && 	
+				tempFluent.getActivity().getTemporalVariable().getEST() == tempFluent.getActivity().getTemporalVariable().getLST()){ 
+					//it is observed but it has be the last spatial fluent which has this property in case of online pick and place  						
+					objectFleunt = tempFluent;
+					System.out.println("pick --->" + tempFluent);
+				}
+			}
+			else if(mainString.contains("place")){
+				if(tempFluent.getName().compareTo("at_"+obj+"_"+supporter) == 0 && 
+						tempFluent.getActivity().getTemporalVariable().getEST() != tempFluent.getActivity().getTemporalVariable().getLST()){ 
+					//it is observed but it has be the last spatial fluent which has this property in case of online pick and place  						
+					objectFleunt = tempFluent;
+					System.out.println("place --->" + tempFluent);
+				}
+			}
+			
+		}
+		RectangleConstraintSolver recSolver = (RectangleConstraintSolver)((SpatialFluentSolver) this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[0];
+		RectangularRegion placingRecVar = (RectangularRegion) recSolver.createVariable();
+		placingRecVar.setName("placingArea");
+		ret.addVariable(placingRecVar);
+		
+		
+		Vector<Constraint> allConstraints = new Vector<Constraint>();
+		Vector<SpatialRule> srules = manipulationAreaDomain.getSpatialRulesByRelation(armAndDirection);
+		
+		
+		
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		//creating spatial constraint
+		//the order is fixed and based on the fixed order which manipulation domain has defined
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		//"manipulationArea", "manipulationArea",
+		Bounds[] sizeBounds = new Bounds[srules.get(0).getUnaryRAConstraint().getBounds().length];
+		for (int j = 0; j < sizeBounds.length; j++) {
+			Bounds bSize = new Bounds(
+					srules.get(0).getUnaryRAConstraint().getBounds()[j].min,
+					srules.get(0).getUnaryRAConstraint().getBounds()[j].max);
+			sizeBounds[j] = bSize;
+		}
+		UnaryRectangleConstraint sizemanipulationArea = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, sizeBounds);
+		sizemanipulationArea.setFrom(manipulationAreaPrototype);
+		sizemanipulationArea.setTo(manipulationAreaPrototype);
+		allConstraints.add(sizemanipulationArea);
+
+		//"placingArea", "placingArea", 
+		Bounds[] sizeBoundsPlacing = new Bounds[srules.get(1).getUnaryRAConstraint().getBounds().length];
+		for (int j = 0; j < sizeBoundsPlacing.length; j++) {
+			Bounds bSize = new Bounds(
+					srules.get(1).getUnaryRAConstraint().getBounds()[j].min,
+					srules.get(1).getUnaryRAConstraint().getBounds()[j].max);
+			sizeBoundsPlacing[j] = bSize;
+		}
+		UnaryRectangleConstraint sizePlacingArea = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.Size, sizeBoundsPlacing);
+		sizePlacingArea.setFrom(placingRecVar);
+		sizePlacingArea.setTo(placingRecVar);
+		allConstraints.add(sizePlacingArea);
+		
+		
+		for (int i = 2; i < srules.size(); i++) {
+			
+			//general rule
+			Bounds[] allenBoundsX = new Bounds[(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length];
+			for (int j = 0; j < allenBoundsX.length; j++) {
+				Bounds bx = new Bounds(
+						(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].min, (srules.get(i)
+								.getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].max);
+				allenBoundsX[j] = bx;
+			}
+
+			Bounds[] allenBoundsY = new Bounds[(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length];
+			for (int j = 0; j < allenBoundsY.length; j++) {
+				Bounds by = new Bounds(
+						(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1]
+								.getBounds()[j].min, (srules.get(i).getBinaryRAConstraint())
+								.getInternalAllenIntervalConstraints()[1].getBounds()[j].max);
+				allenBoundsY[j] = by;
+			}
+
+			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
+			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(
+					(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+
+
+			//This part is for the Allen intervals do not have any bounds e.g., Equals
+			if((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
+				xAllenCon = (AllenIntervalConstraint)(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
+			if((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
+				yAllenCon = (AllenIntervalConstraint)(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
+			
+			
+			//"placingArea", "manipulationArea",
+			if(i == 2){
+				RectangleConstraint placingAreaTOmanipulationArea = new RectangleConstraint(xAllenCon, yAllenCon);
+				placingAreaTOmanipulationArea.setFrom(placingRecVar);
+				placingAreaTOmanipulationArea.setTo(manipulationAreaPrototype);
+				allConstraints.add(placingAreaTOmanipulationArea);
+				
+			}
+
+			
+			//"object", "placingArea", 
+			else if(i == 3){
+				RectangleConstraint objectToPlacingArea = new RectangleConstraint(xAllenCon, yAllenCon);
+				objectToPlacingArea.setFrom(objectFleunt.getRectangularRegion());
+				objectToPlacingArea.setTo(placingRecVar);
+				allConstraints.add(objectToPlacingArea);
+				
+			}
+			
+			//"manipulationArea", "table", 
+			else if(i == 4){
+				RectangleConstraint manipulationAreaTOtable = new RectangleConstraint(xAllenCon, yAllenCon);
+				manipulationAreaTOtable.setFrom(manipulationAreaPrototype);
+				manipulationAreaTOtable.setTo(supportFluent.getRectangularRegion());
+				allConstraints.add(manipulationAreaTOtable);
+				
+			}
+
+			
+		}
+		
+		//add at constraint in the fluent belongs to past, it will affect on how the occuoiedConstraintWork
+		if(objectFleunt.getRectangularRegion().isUnbounded()){			
+			for (String str : ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().keySet()) {
+				if(objectFleunt.getName().compareTo(str) == 0){
+					BoundingBox unboundBB = ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().get(str);
+					UnaryRectangleConstraint atObjInstance = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, 
+							unboundBB.getxLB(), unboundBB.getxUB(), 
+							unboundBB.getyLB(), unboundBB.getyUB());
+					atObjInstance.setFrom(objectFleunt);
+					atObjInstance.setTo(objectFleunt);
+					allConstraints.add(atObjInstance);					}
+			}			
+		}
+		
+		
+		for (Constraint con : allConstraints) ret.addConstraint(con);
+		
+		
+		return ret;
+	}
+
 	private String getParameter(Variable task) {
 		
 		String ret = "";

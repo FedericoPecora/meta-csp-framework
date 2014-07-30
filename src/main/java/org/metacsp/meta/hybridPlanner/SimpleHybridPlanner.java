@@ -328,16 +328,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 		
-		for (int i = 0; i < manAreaActs.size(); i++) {
-			for (int j = 0; j < this.metaConstraints.size(); j++) {
-				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){					
-					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
-					SimpleReusableResource rr = metaCausalConatraint.getResources().get("manAreaResource");
-					metaCausalConatraint.addResrouceUtilizer(rr, manAreaActs.get(i), 1);
-					rr.setUsage(manAreaActs.get(i));
-				}
-			}			
-		}
+//		for (int i = 0; i < manAreaActs.size(); i++) {
+//			for (int j = 0; j < this.metaConstraints.size(); j++) {
+//				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){					
+//					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
+//					SimpleReusableResource rr = metaCausalConatraint.getResources().get("manAreaResource");
+//					metaCausalConatraint.addResrouceUtilizer(rr, manAreaActs.get(i), 1);
+//					rr.setUsage(manAreaActs.get(i));
+//				}
+//			}			
+//		}
+		
 		return true;
 	}
 
