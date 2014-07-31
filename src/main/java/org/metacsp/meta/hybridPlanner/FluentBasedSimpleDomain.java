@@ -174,20 +174,23 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 			String operatorHeadSymbol = operatorHead.substring(operatorHead.indexOf("::")+2, operatorHead.length());
 			if (opeatorHeadComponent.equals(problematicActivity.getComponent())) {
 				if (problematicActivitySymbolicDomain.contains(operatorHeadSymbol)) {
-					ConstraintNetwork newResolver = super.expandOperator(r,problematicActivity, manipulationAreaPrototype);
+					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+					for (int i = 0; i < newResolver.getVariables().length; i++) {
+						if(newResolver.getVariables()[i] instanceof VariablePrototype){
+							String symbol = (String)((VariablePrototype) newResolver.getVariables()[i]).getParameters()[1];
+							if(symbol.contains("manipulationArea")){
+								System.out.println("symbol: " + symbol);
+								manipulationAreaPrototype = ((VariablePrototype) newResolver.getVariables()[i]);
+								break;
+							}							
+						}
+					}
 					newResolver.setAnnotation(1);
 					newResolver.setSpecilizedAnnotation(r);
 					operatorsConsNetwork.add(newResolver);
 					//retPossibleConstraintNetworks.add(newResolver);					
 				}
 			}
-			
-			
-			
-//			if(problematicActivity.getComponent().compareTo("RobotAction") == 0){
-//				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);
-//				operatorsConsNetwork.lastElement().join(spatialConstraintNet);
-//			}
 			
 			
 //			System.out.println("__________________________________");
@@ -210,6 +213,13 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 						}
 					}
 				}
+			}
+		}
+		
+		if(problematicActivity.getComponent().compareTo("RobotAction") == 0){
+			if(manipulationAreaPrototype != null){
+				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);
+				operatorsConsNetwork.lastElement().join(spatialConstraintNet);
 			}
 		}
 		
@@ -264,11 +274,11 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		String mainString = problematicActivity.getSymbolicVariable().getSymbols()[0];
-//		//place_fork1_LA_west_table
+//		//place_cup1_RA_west_table
 		String obj = getParameter(problematicActivity);
 		
 		int last_index = mainString.lastIndexOf("_", mainString.length());
-		String armAndDirection = mainString.substring(mainString.indexOf(obj)+obj.length()+1,last_index-1); //e.g., LA_north
+		String armAndDirection = mainString.substring(mainString.indexOf(obj)+obj.length()+1,last_index); //e.g., LA_north
 		String supporter = mainString.substring(last_index+1, mainString.length()-2); //e.g., table1
 		
 		//we can extract relevant spatial fluent in two ways: based on the temporal or spatial relation
@@ -418,7 +428,10 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		}
 		
 		
-		for (Constraint con : allConstraints) ret.addConstraint(con);
+		for (Constraint con : allConstraints) {
+//			System.out.println("con: " + con);
+			ret.addConstraint(con);
+		}
 		
 		
 		return ret;
@@ -453,7 +466,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		return ((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 	}
 	
-
+		
 	public void updateTimeNow(long timeNow) {
 		this.timeNow = timeNow;
 	}
