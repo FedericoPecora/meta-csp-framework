@@ -13,6 +13,7 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
 import org.metacsp.meta.simplePlanner.SimpleReusableResource;
@@ -44,17 +45,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private Vector<Activity> goals = new Vector<Activity>();//this contains original goals (not sub goal)
 	private Vector<Activity> varInvolvedInOccupiedMetaConstraints = new Vector<Activity>();
 	private boolean learningFromfailure = false;
-	
+
 	private HashMap<String, Rectangle> observation = new HashMap<String, Rectangle>();
 	private HashMap<String, Integer> conflictRanking = null;
-	
+
 	public SimpleHybridPlanner(long origin, long horizon, long animationTime) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class, AllenIntervalConstraint.class, SymbolicValueConstraint.class, ReachabilityConstraint.class}, 
 				animationTime, new SpatialFluentSolver(origin, horizon)	);
 		this.horizon = horizon;
 	}
-	
-	
+
+
 
 	@Override
 	public void preBacktrack() {
@@ -70,18 +71,18 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 								.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
 					}
 				}
-				
-//				System.out.println("recs: " + recs);
+
+				//				System.out.println("recs: " + recs);
 			}
 		}
-		
+
 
 		HashMap<String,  Vector<String>> overlappedPairs = new HashMap<String, Vector<String>>();
 		conflictRanking = new HashMap<String, Integer>();
-		
+
 		//this has to be commented
 		if(observation != null){
-//			System.out.println("obs: " + observation);
+			//			System.out.println("obs: " + observation);
 			for (String recNew : recs.keySet()) {
 				if(recNew.compareTo("at_table1_table1") == 0) continue;
 				if(recs.get(recNew).getWidth() == 0) break; //the bounds are not updated since the spatiak adherence is not called
@@ -92,14 +93,14 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					if(recs.get(recNew).intersects(observation.get(recOld))){
 						ovr.add(recOld);
 					}
-					
+
 				}
 				//if(ovr.size() > 0)
-					overlappedPairs.put(recNew, ovr);
+				overlappedPairs.put(recNew, ovr);
 			}
 
-//			System.out.println("overlappedPairs" + overlappedPairs);
-			
+			//			System.out.println("overlappedPairs" + overlappedPairs);
+
 			for (String st : overlappedPairs.keySet()) {
 				if(conflictRanking.get(st) == null){
 					conflictRanking.put(st, 1);
@@ -114,17 +115,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				}
 			}
 		}
-		
-//		System.out.println("rank: " + conflictRanking);
+
+		//		System.out.println("rank: " + conflictRanking);
 
 	}
-	
+
 
 	@Override
 	public void postBacktrack(MetaVariable mv) {
 
-		
-		
+
+
 		if (mv.getMetaConstraint() instanceof FluentBasedSimpleDomain){
 			for (Variable v : mv.getConstraintNetwork().getVariables()) {
 				v.setMarking(markings.UNJUSTIFIED);
@@ -143,11 +144,11 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 
-		
+
 		if (mv.getMetaConstraint() instanceof MetaOccupiedConstraint){
 			for (Variable v : mv.getConstraintNetwork().getVariables()) {
 				if(!varInvolvedInOccupiedMetaConstraints.contains((Activity)v)){
-//					System.out.println("== occupied constraints == " + (Activity)v);
+					//					System.out.println("== occupied constraints == " + (Activity)v);
 					varInvolvedInOccupiedMetaConstraints.add((Activity)v);	
 				}
 			}
@@ -159,15 +160,15 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 
-		
-		
-		
+
+
+
 	}
 
 	public boolean learningFromFailure(){
 		return learningFromfailure;
 	}
-	
+
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 
@@ -180,20 +181,30 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 		Vector<Variable> activityToRemove = new Vector<Variable>();
+		Vector<Variable> fluentToRemove = new Vector<Variable>();
 
 		for (Variable v : metaValue.getVariables()) {
 			if (!metaVariable.containsVariable(v)) {
 				if (v instanceof VariablePrototype) {
-					Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
-					if (vReal != null) {
+//					if(((String)((VariablePrototype)v).getParameters()[1]).contains("manipulationArea")){
+//						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
+//						if (vReal != null) {
+//							fluentToRemove.add(vReal);
+//						}						
+//					}
+//					else{
+						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
+						if (vReal != null) {
 							activityToRemove.add(vReal);
-					}
+						
+						}						
+//					}
 				}
 			}
 		}
-		
-		
-		
+
+
+
 
 		for (int j = 0; j < this.metaConstraints.size(); j++){ 
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
@@ -206,7 +217,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 
-		
+
 		boolean isRtractingSpatialRelations = false;
 		for (int i = 0; i < metaValue.getVariables().length; i++) {
 			if(metaValue.getVariables()[i] instanceof RectangularRegion ){
@@ -214,7 +225,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				break;
 			}
 		}
-	
+
 
 		if(isRtractingSpatialRelations){
 			Vector<SpatialFluent> spatialFluentToBeRemoved = new Vector<SpatialFluent>();
@@ -227,7 +238,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					//					System.out.println((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]);
 				}
 			}
-		
+
 			for (int i = 0; i < this.metaConstraints.size(); i++){
 				if(this.metaConstraints.get(i) instanceof MetaSpatialAdherenceConstraint ){	
 					for (int j = 0; j < ((MetaSpatialAdherenceConstraint)this.metaConstraints.get(i)).getsAssertionalRels().size(); j++) {
@@ -239,10 +250,12 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					}			
 				}
 			}
+			System.out.println(spatialFluentToBeRemoved);
 			((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(spatialFluentToBeRemoved.toArray(new Variable[spatialFluentToBeRemoved.size()]));
 		}
-
-	
+		
+//		System.out.println("fluentToBeRemoved: "+fluentToRemove );
+//		((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(fluentToRemove.toArray(new Variable[fluentToRemove.size()]));
 		groundSolver.removeVariables(activityToRemove.toArray(new Variable[activityToRemove.size()]));
 
 
@@ -271,14 +284,10 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 
-
-
-
-
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 
 		Vector<Activity> manAreaActs = new Vector<Activity>();
-		
+
 		//Make real variables from variable prototypes
 		for (Variable v :  metaValue.getVariables()) {
 			if (v instanceof VariablePrototype) {
@@ -286,34 +295,55 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				//	the symbol of the Activity to be instantiated
 				String component = (String)((VariablePrototype) v).getParameters()[0];
 				String symbol = (String)((VariablePrototype) v).getParameters()[1];
-				
-				Activity tailActivity = null;
-				tailActivity = (Activity)groundSolver.createVariable(component);
-				tailActivity.setSymbolicDomain(symbol);
-				tailActivity.setMarking(v.getMarking());
-				metaValue.addSubstitution((VariablePrototype)v, tailActivity);					
 
 				if(symbol.contains("manipulationArea")){
-					manAreaActs.add(tailActivity);
+					SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).createVariable(component);
+					sf.setName(symbol);
+					((RectangularRegion)sf.getInternalVariables()[0]).setName(symbol);
+					((Activity)sf.getInternalVariables()[1]).setSymbolicDomain(symbol);
+					((Activity)sf.getInternalVariables()[1]).setMarking((SimpleDomain.markings)v.getMarking());
+					metaValue.addSubstitution((VariablePrototype)v, sf);
 				}
+				else{				
+					Activity tailActivity = null;
+					tailActivity = (Activity)groundSolver.createVariable(component);
+					tailActivity.setSymbolicDomain(symbol);
+					tailActivity.setMarking(v.getMarking());
+					metaValue.addSubstitution((VariablePrototype)v, tailActivity);
+				}
+
 			}
 		}
 
 
-
+		//the idea behind this if is: if it is a constraint including manipulationArea, the rectangleConstaint has to be between two rectangle not between two fluent 
 		//Involve real variables in the constraints
 		for (Constraint con : metaValue.getConstraints()) {
 			Constraint clonedConstraint = (Constraint)con.clone();  
 			Variable[] oldScope = con.getScope();
 			Variable[] newScope = new Variable[oldScope.length];
 			for (int i = 0; i < oldScope.length; i++) {
-				if (oldScope[i] instanceof VariablePrototype) newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
-				else newScope[i] = oldScope[i];
+				if (oldScope[i] instanceof VariablePrototype) {
+					if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("manipulationArea"))
+						newScope[i] = (RectangularRegion)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getRectangularRegion();
+					else
+						newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
+				}
+				else{
+					if (oldScope[i] instanceof SpatialFluent) {
+						newScope[i] = ((SpatialFluent)oldScope[i]).getRectangularRegion();
+					}
+					else
+						newScope[i] = oldScope[i];
+				}
 			}
 			clonedConstraint.setScope(newScope);
 			metaValue.removeConstraint(con);
-			metaValue.addConstraint(clonedConstraint);
+//			System.out.println("clonedConstraint: " + clonedConstraint);
+			metaValue.addConstraint(clonedConstraint);				
 		}
+
+
 
 
 
@@ -327,18 +357,18 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				}
 			}
 		}
-		
-//		for (int i = 0; i < manAreaActs.size(); i++) {
-//			for (int j = 0; j < this.metaConstraints.size(); j++) {
-//				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){					
-//					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
-//					SimpleReusableResource rr = metaCausalConatraint.getResources().get("manAreaResource");
-//					metaCausalConatraint.addResrouceUtilizer(rr, manAreaActs.get(i), 1);
-//					rr.setUsage(manAreaActs.get(i));
-//				}
-//			}			
-//		}
-		
+
+		//		for (int i = 0; i < manAreaActs.size(); i++) {
+		//			for (int j = 0; j < this.metaConstraints.size(); j++) {
+		//				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){					
+		//					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
+		//					SimpleReusableResource rr = metaCausalConatraint.getResources().get("manAreaResource");
+		//					metaCausalConatraint.addResrouceUtilizer(rr, manAreaActs.get(i), 1);
+		//					rr.setUsage(manAreaActs.get(i));
+		//				}
+		//			}			
+		//		}
+
 		return true;
 	}
 
@@ -393,7 +423,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	public void addGoal(Activity act) {
 		goals.add(act);
 	}
-	
+
 	public Vector<Activity> getGoals(){
 		return goals;
 	}
@@ -416,5 +446,5 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	public HashMap<String, Integer> getConflictRanking(){
 		return conflictRanking;
 	}
- 
+
 }

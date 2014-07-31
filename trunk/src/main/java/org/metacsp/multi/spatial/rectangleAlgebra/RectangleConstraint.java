@@ -343,7 +343,7 @@ public class RectangleConstraint extends MultiBinaryConstraint {
 
 
 	@Override
-	protected Constraint[] createInternalConstraints(Variable from, Variable to) {
+	protected Constraint[] createInternalConstraints(Variable from, Variable to) {		
 		this.xConstraint.setFrom(((RectangularRegion)from).getInternalVariables()[0]);
 		this.xConstraint.setTo(((RectangularRegion)to).getInternalVariables()[0]);
 		this.yConstraint.setFrom(((RectangularRegion)from).getInternalVariables()[1]);
