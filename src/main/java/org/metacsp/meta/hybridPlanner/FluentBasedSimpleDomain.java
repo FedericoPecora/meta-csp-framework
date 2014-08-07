@@ -219,6 +219,9 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		if(problematicActivity.getComponent().compareTo("RobotAction") == 0){
 			if(manipulationAreaPrototype != null){
 				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);
+				System.out.println("IT has to be checked");
+				System.out.println(spatialConstraintNet);
+				System.out.println("_____________");
 				operatorsConsNetwork.lastElement().join(spatialConstraintNet);
 			}
 		}
@@ -295,7 +298,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 				tempFluent.getActivity().getTemporalVariable().getEST() == tempFluent.getActivity().getTemporalVariable().getLST()){ 
 					//it is observed but it has be the last spatial fluent which has this property in case of online pick and place  						
 					objectFleunt = tempFluent;
-					System.out.println("pick --->" + tempFluent);
+//					System.out.println("pick --->" + tempFluent);
 				}
 			}
 			else if(mainString.contains("place")){
@@ -303,7 +306,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 						tempFluent.getActivity().getTemporalVariable().getEST() != tempFluent.getActivity().getTemporalVariable().getLST()){ 
 					//it is observed but it has be the last spatial fluent which has this property in case of online pick and place  						
 					objectFleunt = tempFluent;
-					System.out.println("place --->" + tempFluent);
+//					System.out.println("place --->" + tempFluent);
 				}
 			}
 			
@@ -317,6 +320,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		Vector<Constraint> allConstraints = new Vector<Constraint>();
 		Vector<SpatialRule> srules = manipulationAreaDomain.getSpatialRulesByRelation(armAndDirection);
 		
+		System.out.println("== " + objectFleunt.getRectangularRegion());
 		
 		
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

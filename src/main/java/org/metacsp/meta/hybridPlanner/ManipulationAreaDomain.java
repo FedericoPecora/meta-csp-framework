@@ -17,7 +17,7 @@ public class ManipulationAreaDomain {
 
 	Bounds placingArea_size_max = new Bounds(40, 40);
 	Bounds placingArea_size_min = new Bounds(34, 34);	
-
+//	Bounds placingArea_size_min = new Bounds(40, 40);
 	
 	Bounds overlapped_max = new Bounds(30, 30);
 //	Bounds overlapped_min = new Bounds(10, 10);
@@ -127,7 +127,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy , AllenIntervalConstraint.Type.MetBy.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, overlapped_max))
+					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, overlapped_max))
 					);
 			srules.add(r2);
 
@@ -139,11 +139,28 @@ public class ManipulationAreaDomain {
 			srules.add(r3);
 
 			
+//			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
+//					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
+//					new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()))
+//					);
+//			srules.add(r4);
+			
+			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()))
+							new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Overlaps, AllenIntervalConstraint.Type.During, 
+									AllenIntervalConstraint.Type.OverlappedBy, AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.After))
 					);
 			srules.add(r4);
+			
+//			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
+//					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
+//							new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.OverlappedBy))									);
+//			srules.add(r4);
+			
+			
+					
+			
 		}
 		else if(relation.contains("LA_west")){
 			
@@ -303,6 +320,9 @@ public class ManipulationAreaDomain {
 
 	}
 
+//	private AllenIntervalConstraint getAllAllenRelation(){
+//		return 
+//	}
 	
 	
 }

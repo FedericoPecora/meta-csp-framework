@@ -93,7 +93,6 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					if(recs.get(recNew).intersects(observation.get(recOld))){
 						ovr.add(recOld);
 					}
-
 				}
 				//if(ovr.size() > 0)
 				overlappedPairs.put(recNew, ovr);
@@ -186,19 +185,19 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		for (Variable v : metaValue.getVariables()) {
 			if (!metaVariable.containsVariable(v)) {
 				if (v instanceof VariablePrototype) {
-//					if(((String)((VariablePrototype)v).getParameters()[1]).contains("manipulationArea")){
-//						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
-//						if (vReal != null) {
-//							fluentToRemove.add(vReal);
-//						}						
-//					}
-//					else{
+					if(((String)((VariablePrototype)v).getParameters()[1]).contains("manipulationArea")){
+						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
+						if (vReal != null) {
+							fluentToRemove.add(vReal);
+						}						
+					}
+					else{
 						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 						if (vReal != null) {
 							activityToRemove.add(vReal);
 						
 						}						
-//					}
+					}
 				}
 			}
 		}
@@ -209,6 +208,11 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		for (int j = 0; j < this.metaConstraints.size(); j++){ 
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 				FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)this.metaConstraints.get(j);
+				for (Variable v : fluentToRemove) {
+					for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)((SpatialFluent)v).getActivity())) {
+						rr.removeUsage((Activity)((SpatialFluent)v).getActivity());
+					}
+				}
 				for (Variable v : activityToRemove) {
 					for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
 						rr.removeUsage((Activity)v);
@@ -321,21 +325,41 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		for (Constraint con : metaValue.getConstraints()) {
 			Constraint clonedConstraint = (Constraint)con.clone();  
 			Variable[] oldScope = con.getScope();
-			Variable[] newScope = new Variable[oldScope.length];
-			for (int i = 0; i < oldScope.length; i++) {
-				if (oldScope[i] instanceof VariablePrototype) {
-					if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("manipulationArea"))
-						newScope[i] = (RectangularRegion)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getRectangularRegion();
-					else
-						newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
-				}
-				else{
-					if (oldScope[i] instanceof SpatialFluent) {
-						newScope[i] = ((SpatialFluent)oldScope[i]).getRectangularRegion();
+			Variable[] newScope = new Variable[oldScope.length];			
+			if(con instanceof AllenIntervalConstraint){
+				for (int i = 0; i < oldScope.length; i++) {
+					if (oldScope[i] instanceof VariablePrototype) {
+						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("manipulationArea"))
+							newScope[i] = (Activity)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getActivity();
+						else
+							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
 					}
-					else
-						newScope[i] = oldScope[i];
+					else{
+						if (oldScope[i] instanceof SpatialFluent) {
+							newScope[i] = ((SpatialFluent)oldScope[i]).getActivity();
+						}
+						else
+							newScope[i] = oldScope[i];
+					}
 				}
+	
+			}
+			else{ //if it is Rectangle Constraint
+				for (int i = 0; i < oldScope.length; i++) {
+					if (oldScope[i] instanceof VariablePrototype) {
+						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("manipulationArea"))
+							newScope[i] = (RectangularRegion)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getRectangularRegion();
+						else
+							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
+					}
+					else{
+						if (oldScope[i] instanceof SpatialFluent) {
+							newScope[i] = ((SpatialFluent)oldScope[i]).getRectangularRegion();
+						}
+						else
+							newScope[i] = oldScope[i];
+					}
+				}				
 			}
 			clonedConstraint.setScope(newScope);
 			metaValue.removeConstraint(con);
