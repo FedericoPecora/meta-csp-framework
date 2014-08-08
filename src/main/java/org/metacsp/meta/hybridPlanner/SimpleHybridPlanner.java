@@ -29,6 +29,7 @@ import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.spatial.reachability.ReachabilityConstraint;
+import org.metacsp.spatial.utility.SpatialAssertionalRelation;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
@@ -60,60 +61,60 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	@Override
 	public void preBacktrack() {
 
-		HashMap<String, Rectangle> recs = null;
-		for (int j = 0; j < this.metaConstraints.size(); j++){ 
-			if(this.metaConstraints.get(j) instanceof MetaSpatialAdherenceConstraint ){
-				recs = new HashMap<String, Rectangle>();  
-				for (String str : ((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0])
-						.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().keySet()) {
-					if(str.endsWith("1")){
-						recs.put( str,((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0])
-								.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
-					}
-				}
-
-				//				System.out.println("recs: " + recs);
-			}
-		}
-
-
-		HashMap<String,  Vector<String>> overlappedPairs = new HashMap<String, Vector<String>>();
-		conflictRanking = new HashMap<String, Integer>();
-
-		//this has to be commented
-		if(observation != null){
-			//			System.out.println("obs: " + observation);
-			for (String recNew : recs.keySet()) {
-				if(recNew.compareTo("at_table1_table1") == 0) continue;
-				if(recs.get(recNew).getWidth() == 0) break; //the bounds are not updated since the spatiak adherence is not called
-				Vector<String> ovr = new Vector<String>();
-				for (String recOld : observation.keySet()) {
-					if(recOld.compareTo("at_table1_table1") == 0) continue;
-					if(recOld.compareTo(recNew) == 0) continue;
-					if(recs.get(recNew).intersects(observation.get(recOld))){
-						ovr.add(recOld);
-					}
-				}
-				//if(ovr.size() > 0)
-				overlappedPairs.put(recNew, ovr);
-			}
-
-			//			System.out.println("overlappedPairs" + overlappedPairs);
-
-			for (String st : overlappedPairs.keySet()) {
-				if(conflictRanking.get(st) == null){
-					conflictRanking.put(st, 1);
-				}
-				for (int i = 0; i < overlappedPairs.get(st).size(); i++) {
-					if(conflictRanking.get(overlappedPairs.get(st).get(i)) != null){
-						int rank = conflictRanking.get(st); 
-						conflictRanking.put(overlappedPairs.get(st).get(i), ++rank);
-					}else{
-						conflictRanking.put(overlappedPairs.get(st).get(i), 1);
-					}					
-				}
-			}
-		}
+//		HashMap<String, Rectangle> recs = null;
+//		for (int j = 0; j < this.metaConstraints.size(); j++){ 
+//			if(this.metaConstraints.get(j) instanceof MetaSpatialAdherenceConstraint ){
+//				recs = new HashMap<String, Rectangle>();  
+//				for (String str : ((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0])
+//						.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().keySet()) {
+//					if(str.endsWith("1")){
+//						recs.put( str,((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0])
+//								.getConstraintSolvers()[0]).extractAllBoundingBoxesFromSTPs().get(str).getAlmostCentreRectangle());
+//					}
+//				}
+//
+//				//				System.out.println("recs: " + recs);
+//			}
+//		}
+//
+//
+//		HashMap<String,  Vector<String>> overlappedPairs = new HashMap<String, Vector<String>>();
+//		conflictRanking = new HashMap<String, Integer>();
+//
+//		//this has to be commented
+//		if(observation != null){
+//			//			System.out.println("obs: " + observation);
+//			for (String recNew : recs.keySet()) {
+//				if(recNew.compareTo("at_table1_table1") == 0) continue;
+//				if(recs.get(recNew).getWidth() == 0) break; //the bounds are not updated since the spatiak adherence is not called
+//				Vector<String> ovr = new Vector<String>();
+//				for (String recOld : observation.keySet()) {
+//					if(recOld.compareTo("at_table1_table1") == 0) continue;
+//					if(recOld.compareTo(recNew) == 0) continue;
+//					if(recs.get(recNew).intersects(observation.get(recOld))){
+//						ovr.add(recOld);
+//					}
+//				}
+//				//if(ovr.size() > 0)
+//				overlappedPairs.put(recNew, ovr);
+//			}
+//
+//			//			System.out.println("overlappedPairs" + overlappedPairs);
+//
+//			for (String st : overlappedPairs.keySet()) {
+//				if(conflictRanking.get(st) == null){
+//					conflictRanking.put(st, 1);
+//				}
+//				for (int i = 0; i < overlappedPairs.get(st).size(); i++) {
+//					if(conflictRanking.get(overlappedPairs.get(st).get(i)) != null){
+//						int rank = conflictRanking.get(st); 
+//						conflictRanking.put(overlappedPairs.get(st).get(i), ++rank);
+//					}else{
+//						conflictRanking.put(overlappedPairs.get(st).get(i), 1);
+//					}					
+//				}
+//			}
+//		}
 
 		//		System.out.println("rank: " + conflictRanking);
 
@@ -185,7 +186,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		for (Variable v : metaValue.getVariables()) {
 			if (!metaVariable.containsVariable(v)) {
 				if (v instanceof VariablePrototype) {
-					if(((String)((VariablePrototype)v).getParameters()[1]).contains("manipulationArea")){
+					if(((String)((VariablePrototype)v).getParameters()[1]).contains("at_robot1_manipulationArea")){
 						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 						if (vReal != null) {
 							fluentToRemove.add(vReal);
@@ -223,13 +224,18 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 
 		boolean isRtractingSpatialRelations = false;
-		for (int i = 0; i < metaValue.getVariables().length; i++) {
-			if(metaValue.getVariables()[i] instanceof RectangularRegion ){
-				isRtractingSpatialRelations = true;
-				break;
-			}
-		}
+//		for (int i = 0; i < metaValue.getVariables().length; i++) {
+//			if(metaValue.getVariables()[i] instanceof RectangularRegion ){
+//				isRtractingSpatialRelations = true;
+//				break;
+//			}
+//		}
 
+		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof Integer) {
+			isRtractingSpatialRelations = true;
+		}
+		
+		
 
 		if(isRtractingSpatialRelations){
 			Vector<SpatialFluent> spatialFluentToBeRemoved = new Vector<SpatialFluent>();
@@ -259,7 +265,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		}
 		
 //		System.out.println("fluentToBeRemoved: "+fluentToRemove );
-//		((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(fluentToRemove.toArray(new Variable[fluentToRemove.size()]));
+		((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(fluentToRemove.toArray(new Variable[fluentToRemove.size()]));
 		groundSolver.removeVariables(activityToRemove.toArray(new Variable[activityToRemove.size()]));
 
 
@@ -300,7 +306,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				String component = (String)((VariablePrototype) v).getParameters()[0];
 				String symbol = (String)((VariablePrototype) v).getParameters()[1];
 
-				if(symbol.contains("manipulationArea")){
+				if(symbol.contains("at_robot1_manipulationArea")){
 					SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).createVariable(component);
 					sf.setName(symbol);
 					((RectangularRegion)sf.getInternalVariables()[0]).setName(symbol);
@@ -329,7 +335,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			if(con instanceof AllenIntervalConstraint){
 				for (int i = 0; i < oldScope.length; i++) {
 					if (oldScope[i] instanceof VariablePrototype) {
-						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("manipulationArea"))
+						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("at_robot1_manipulationArea"))
 							newScope[i] = (Activity)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getActivity();
 						else
 							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
@@ -347,7 +353,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			else{ //if it is Rectangle Constraint
 				for (int i = 0; i < oldScope.length; i++) {
 					if (oldScope[i] instanceof VariablePrototype) {
-						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("manipulationArea"))
+						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("at_robot1_manipulationArea"))
 							newScope[i] = (RectangularRegion)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getRectangularRegion();
 						else
 							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);

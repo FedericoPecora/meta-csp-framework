@@ -628,7 +628,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 		actNetwork.join(mvalue);
 		ret.add(actNetwork);
-		actNetwork.annotation = this.currentAssertionalCons;
+		actNetwork.specilizedAnnotation = numberOfmisplaced;
 
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 
