@@ -76,7 +76,7 @@ public class ManipulationAreaDomain {
 
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During , AllenIntervalConstraint.Type.During.getDefaultBounds()),
+					new RectangleConstraint(getConvexifyBeforeAndAfter(),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Meets.getDefaultBounds()))
 					);
 			srules.add(r4);
@@ -108,7 +108,7 @@ public class ManipulationAreaDomain {
 
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During , AllenIntervalConstraint.Type.During.getDefaultBounds()),
+					new RectangleConstraint(getConvexifyBeforeAndAfter(),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Meets.getDefaultBounds()))
 					);
 			srules.add(r4);
@@ -148,19 +148,10 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
-							new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Overlaps, AllenIntervalConstraint.Type.During, 
-									AllenIntervalConstraint.Type.OverlappedBy, AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.After))
+							getConvexifyBeforeAndAfter())
 					);
 			srules.add(r4);
-			
-//			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
-//					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
-//							new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.OverlappedBy))									);
-//			srules.add(r4);
-			
-			
-					
-			
+						
 		}
 		else if(relation.contains("LA_west")){
 			
@@ -189,7 +180,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()))
+							getConvexifyBeforeAndAfter())
 					);
 			srules.add(r4);
 		}
@@ -219,7 +210,7 @@ public class ManipulationAreaDomain {
 			srules.add(r3);
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During , AllenIntervalConstraint.Type.During.getDefaultBounds()),
+					new RectangleConstraint(getConvexifyBeforeAndAfter(),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds()))
 					);
 			srules.add(r4);
@@ -249,7 +240,7 @@ public class ManipulationAreaDomain {
 			srules.add(r3);
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.During , AllenIntervalConstraint.Type.During.getDefaultBounds()),
+					new RectangleConstraint(getConvexifyBeforeAndAfter(),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds()))
 					);
 			srules.add(r4);
@@ -280,7 +271,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy , AllenIntervalConstraint.Type.MetBy.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()))
+							getConvexifyBeforeAndAfter())
 					);
 			srules.add(r4);
 		}
@@ -310,7 +301,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r4 = new SpatialRule("manipulationArea", "table", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy , AllenIntervalConstraint.Type.MetBy.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds()))
+							getConvexifyBeforeAndAfter())
 					);
 			srules.add(r4);
 		}
@@ -320,9 +311,11 @@ public class ManipulationAreaDomain {
 
 	}
 
-//	private AllenIntervalConstraint getAllAllenRelation(){
-//		return 
-//	}
+	public AllenIntervalConstraint getConvexifyBeforeAndAfter(){
+		return new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Overlaps, AllenIntervalConstraint.Type.During, 
+				AllenIntervalConstraint.Type.OverlappedBy, AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.After);
+
+	}
 	
 	
 }

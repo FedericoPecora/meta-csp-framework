@@ -178,8 +178,8 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 					for (int i = 0; i < newResolver.getVariables().length; i++) {
 						if(newResolver.getVariables()[i] instanceof VariablePrototype){
 							String symbol = (String)((VariablePrototype) newResolver.getVariables()[i]).getParameters()[1];
-							if(symbol.contains("manipulationArea")){
-								System.out.println("symbol: " + symbol);
+							if(symbol.contains("at_robot1_manipulationArea")){
+//								System.out.println("symbol: " + symbol);
 								manipulationAreaPrototype = ((VariablePrototype) newResolver.getVariables()[i]);
 								break;
 							}							
@@ -218,10 +218,9 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		
 		if(problematicActivity.getComponent().compareTo("RobotAction") == 0){
 			if(manipulationAreaPrototype != null){
-				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);
-				System.out.println("IT has to be checked");
-				System.out.println(spatialConstraintNet);
-				System.out.println("_____________");
+				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);				
+//				System.out.println(spatialConstraintNet);
+//				System.out.println("_____________");
 				operatorsConsNetwork.lastElement().join(spatialConstraintNet);
 			}
 		}
@@ -320,7 +319,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		Vector<Constraint> allConstraints = new Vector<Constraint>();
 		Vector<SpatialRule> srules = manipulationAreaDomain.getSpatialRulesByRelation(armAndDirection);
 		
-		System.out.println("== " + objectFleunt.getRectangularRegion());
+//		System.out.println("== " + objectFleunt.getRectangularRegion());
 		
 		
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -354,7 +353,53 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		allConstraints.add(sizePlacingArea);
 		
 		
-		for (int i = 2; i < srules.size(); i++) {
+		//"manipulationArea", "table", 		
+		RectangleConstraint manipulationAreaTOtable = null;
+		if(srules.get(4).getBinaryRAConstraint().getInternalAllenIntervalConstraints()[0].getTypes().length == 1){
+			
+			Bounds[] allenBoundsX = new Bounds[(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length];
+			for (int j = 0; j < allenBoundsX.length; j++) {
+				Bounds bx = new Bounds(
+						(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].min, (srules.get(4)
+								.getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].max);
+				allenBoundsX[j] = bx;
+			}
+			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
+			if((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
+				xAllenCon = (AllenIntervalConstraint)(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
+			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Overlaps, AllenIntervalConstraint.Type.During, 
+					AllenIntervalConstraint.Type.OverlappedBy, AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.After);
+
+			manipulationAreaTOtable = new RectangleConstraint(xAllenCon, yAllenCon);
+			
+		}
+		else{
+			
+			Bounds[] allenBoundsY = new Bounds[(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length];
+			for (int j = 0; j < allenBoundsY.length; j++) {
+				Bounds bx = new Bounds(
+						(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds()[j].min, (srules.get(4)
+								.getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds()[j].max);
+				allenBoundsY[j] = bx;
+			}
+			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+			if((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
+				yAllenCon = (AllenIntervalConstraint)(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
+			AllenIntervalConstraint xAllenCon = manipulationAreaDomain.getConvexifyBeforeAndAfter(); 
+//					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Overlaps, AllenIntervalConstraint.Type.During, 
+//					AllenIntervalConstraint.Type.OverlappedBy, AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.After);
+
+			manipulationAreaTOtable = new RectangleConstraint(xAllenCon, yAllenCon);
+
+			
+		}		
+		manipulationAreaTOtable.setFrom(manipulationAreaPrototype);
+		manipulationAreaTOtable.setTo(supportFluent.getRectangularRegion());
+		allConstraints.add(manipulationAreaTOtable);
+						
+		
+		
+		for (int i = 2; i < 4; i++) {
 			
 			//general rule
 			Bounds[] allenBoundsX = new Bounds[(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length];
@@ -404,16 +449,6 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 				allConstraints.add(objectToPlacingArea);
 				
 			}
-			
-			//"manipulationArea", "table", 
-			else if(i == 4){
-				RectangleConstraint manipulationAreaTOtable = new RectangleConstraint(xAllenCon, yAllenCon);
-				manipulationAreaTOtable.setFrom(manipulationAreaPrototype);
-				manipulationAreaTOtable.setTo(supportFluent.getRectangularRegion());
-				allConstraints.add(manipulationAreaTOtable);
-				
-			}
-
 			
 		}
 		
