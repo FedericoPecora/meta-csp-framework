@@ -224,13 +224,6 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 
 		boolean isRtractingSpatialRelations = false;
-//		for (int i = 0; i < metaValue.getVariables().length; i++) {
-//			if(metaValue.getVariables()[i] instanceof RectangularRegion ){
-//				isRtractingSpatialRelations = true;
-//				break;
-//			}
-//		}
-
 		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof Integer) {
 			isRtractingSpatialRelations = true;
 		}
@@ -267,8 +260,6 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 //		System.out.println("fluentToBeRemoved: "+fluentToRemove );
 		((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(fluentToRemove.toArray(new Variable[fluentToRemove.size()]));
 		groundSolver.removeVariables(activityToRemove.toArray(new Variable[activityToRemove.size()]));
-
-
 	}
 
 
