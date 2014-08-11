@@ -29,7 +29,7 @@ import org.metacsp.time.Bounds;
 
 public class MetaOccupiedConstraint extends MetaConstraint{
 
-	private int pad = 0;
+	protected int pad = 0;
 	private boolean freeArmHeuristic = false;
 	
 	public void activeHeuristic(boolean active){
@@ -59,9 +59,11 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 			}
 		}
 		
-//		System.out.println("===================================================");
-//		System.out.println("activities: " + activityToFluent);
-//		System.out.println("===================================================");
+		System.out.println("===================================================");		
+		for (Activity activity : activityToFluent.keySet()) {
+			System.out.println(activityToFluent.get(activity));
+		}
+		System.out.println("===================================================");
 		
 		return binaryPeakCollection(activityToFluent);
 	}
@@ -111,7 +113,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	}
 
 
-	private boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> activityToFluent) {
+	protected boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> activityToFluent) {
 		
 		if(peak.length == 1) return false;
 		for (int i = 0; i < peak.length; i++) {
@@ -137,7 +139,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 							new Bounds(((AllenInterval)activityToFluent.get(peak[i]).getRectangularRegion().getInternalVariables()[1]).getEET(), ((AllenInterval)activityToFluent.get(peak[i]).getRectangularRegion().getInternalVariables()[1]).getLET()))							
 							 //&& (((Activity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getEST() != ((Activity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getLST())
 							){//it was bouneded
-//					System.out.println("--isunbounded--: " + activityToFluent.get(peak[i]));
+					System.out.println("--isunbounded--: " + activityToFluent.get(peak[i]));
 				unboundedsf.add(activityToFluent.get(peak[i]));
 			}
 			else{ 
@@ -145,7 +147,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 					boundedsf.add(activityToFluent.get(peak[i]));
 //			}
 
-//				System.out.println("--isbounded--: " + activityToFluent.get(peak[i]));
+				System.out.println("--isbounded--: " + activityToFluent.get(peak[i]));
 				
 			}
 		}

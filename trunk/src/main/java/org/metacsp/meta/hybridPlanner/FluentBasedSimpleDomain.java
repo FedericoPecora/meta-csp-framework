@@ -462,7 +462,9 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 							unboundBB.getyLB(), unboundBB.getyUB());
 					atObjInstance.setFrom(objectFleunt);
 					atObjInstance.setTo(objectFleunt);
-					allConstraints.add(atObjInstance);					}
+					System.out.println("unary: " + atObjInstance);
+					allConstraints.add(atObjInstance);	
+				}
 			}			
 		}
 		
@@ -482,7 +484,12 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		String sym = ((Activity)task).getSymbolicVariable().getSymbols()[0];
 		
 		if(sym.contains("hold")){
-			ret = sym.substring(sym.indexOf("_")+6, sym.indexOf("(")).concat("_table1");
+			
+			if(sym.lastIndexOf("_") == sym.indexOf("_")){
+				ret = sym.substring(sym.indexOf("_"), sym.indexOf("(")).concat("_table1");
+			}else{
+				ret = sym.substring(sym.indexOf("_")+6, sym.indexOf("(")).concat("_table1");
+			}
 		}
 		else if(sym.contains("sensing")){
 			ret = sym.substring(sym.indexOf("_")+16, sym.indexOf("("));
