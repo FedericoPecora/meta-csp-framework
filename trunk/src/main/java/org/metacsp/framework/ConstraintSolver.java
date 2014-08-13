@@ -264,7 +264,7 @@ public abstract class ConstraintSolver implements Serializable {
 				logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
 			}
 			else {
-				logger.finest("Added constraints " + Arrays.toString(toAddArray) + " BUT DELAYED PROPAGATION (autoprop = " + autoprop + " )");
+				logger.finest("Added constraints " + Arrays.toString(toAddArray) + " BUT DELAYED PROPAGATION (autoprop = " + autoprop + ")");
 				return true;
 			}
 		}

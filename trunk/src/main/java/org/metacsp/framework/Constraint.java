@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * This class is used to represent n-ary constraints in the MetaCSP framework.
@@ -40,7 +41,7 @@ public abstract class Constraint implements Cloneable, Serializable {
 	
 	
 	private static final long serialVersionUID = 8278654163054138810L;
-	private ArrayList<ConstraintSolver> solversToSkip = new ArrayList<ConstraintSolver>();
+	private HashSet<ConstraintSolver> solversToSkip = null;
 
 	/**
 	 * Progressive ID of a constraint
@@ -62,7 +63,7 @@ public abstract class Constraint implements Cloneable, Serializable {
 	 * @param solvers Solvers that should not process this constraint.
 	 */
 	public void skipSolver(ConstraintSolver ... solvers) {
-		solversToSkip = new ArrayList<ConstraintSolver>();
+		if (solversToSkip == null) solversToSkip = new HashSet<ConstraintSolver>();
 		for (ConstraintSolver solver : solvers) solversToSkip.add(solver);
 	}
 	
@@ -72,7 +73,7 @@ public abstract class Constraint implements Cloneable, Serializable {
 	 * @return <code>true</code> iff the given solver will process this constraint.
 	 */
 	public boolean isSkippableSolver(ConstraintSolver cs) {
-		return solversToSkip.contains(cs);
+		return solversToSkip != null && solversToSkip.contains(cs);
 	}
 	
 	/**
