@@ -37,18 +37,19 @@ import org.metacsp.framework.Variable;
 public class TestActivityNetworkSolver {
 	
 	public static void main(String[] args) {
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500, new String[] {"A","B","C","D","E","F"});
-		Activity act1 = (Activity)solver.createVariable();
-		//act1.setSymbolicDomain("A", "B", "C");
-		Activity act2 = (Activity)solver.createVariable();
-		//act2.setSymbolicDomain("B", "C", "D");
 		
-		ConstraintNetwork.draw(solver.getConstraintNetwork());
-
 		MetaCSPLogging.setLevel(Level.FINEST);
 //		MetaCSPLogging.setLevel(solver.getClass(), Level.FINEST);
 //		MetaCSPLogging.setLevel(solver.getConstraintSolvers()[0].getClass(), Level.FINEST);
 
+		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500, new String[] {"A","B","C","D","E","F"});
+		Activity act1 = (Activity)solver.createVariable();
+		act1.setSymbolicDomain("A", "B", "C");
+		Activity act2 = (Activity)solver.createVariable();
+		act2.setSymbolicDomain("B", "C", "D");
+		
+		ConstraintNetwork.draw(solver.getConstraintNetwork());
+		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);
 		con1.setFrom(act1);
 		con1.setTo(act2);
@@ -78,7 +79,7 @@ public class TestActivityNetworkSolver {
 		con5a.setFrom(act2);
 		con5a.setTo(act2);
 
-		Constraint[] cons = new Constraint[]{con1,con2,con3,con4,con5,con5a,con1a};
+		Constraint[] cons = new Constraint[]{con1a,con2,con3,con4,con5,con5a};
 		solver.addConstraints(cons);
 				
 //		try {

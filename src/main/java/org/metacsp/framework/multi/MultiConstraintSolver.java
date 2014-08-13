@@ -69,7 +69,6 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	public static enum OPTIONS {ALLOW_INCONSISTENCIES,FORCE_CONSISTENCY};
 	
 	private boolean allowInconsistencies = false;
-	
 	protected ConstraintSolver[] constraintSolvers;
 	protected int[] ingredients;
 	private HashMap<Constraint,Constraint> newConstraintMapping = new HashMap<Constraint,Constraint>();
@@ -116,8 +115,9 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 						if (!sortedCons.containsKey(cs)) {
 							sortedCons.put(cs, new ArrayList<Constraint>());
 						}
-						if (mc.getInternalConstraints() != null) {
-							for (Constraint ic : mc.getInternalConstraints()) {
+						Constraint[] internalCons = mc.getInternalConstraints();
+						if (internalCons != null) {
+							for (Constraint ic : internalCons) {
 								if (!ic.isSkippableSolver(cs)) sortedCons.get(cs).add(ic);
 							}
 						}
@@ -128,17 +128,24 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 
 		HashMap<ConstraintSolver, ArrayList<Constraint>> sortedConsRetract = new HashMap<ConstraintSolver, ArrayList<Constraint>>();
 		for (ConstraintSolver cs : sortedCons.keySet()) {
-			if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) {
-				logger.finest("Added sub-constraints " + sortedCons.get(cs));
-				sortedConsRetract.put(cs, sortedCons.get(cs));
+			//if caller is noprop do not prop
+			if (!this.skipPropagation) {
+				if (cs.addConstraints(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]))) {
+					logger.finest("Added sub-constraints " + sortedCons.get(cs));
+					sortedConsRetract.put(cs, sortedCons.get(cs));
+				}
+				else {
+					for (ConstraintSolver cs1 : sortedConsRetract.keySet()) {
+						logger.finest("Removing internal constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
+						cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
+					}
+					logger.finest("Failed to add sub-constraints " + Arrays.toString(c));
+					return false;
+				}				
 			}
 			else {
-				for (ConstraintSolver cs1 : sortedConsRetract.keySet()) {
-					logger.finest("Removing internal constraints (" + this.getClass().getSimpleName() + ") " + sortedConsRetract.get(cs1));
-					cs1.removeConstraints(sortedConsRetract.get(cs1).toArray(new Constraint[sortedConsRetract.get(cs1).size()]));
-				}
-				logger.finest("Failed to add sub-constraints " + Arrays.toString(c));
-				return false;
+				cs.addConstraintsNoPropagation(sortedCons.get(cs).toArray(new Constraint[sortedCons.get(cs).size()]));
+				logger.finest("Added sub-constraints " + sortedCons.get(cs) + " (but DELAYED propagation)");
 			}
 		}
 
@@ -374,9 +381,10 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			}
 		}
 		for (Entry<ConstraintSolver, Vector<Constraint>> es : solvers2Constraints.entrySet()) {
-			if (!es.getKey().addConstraints(es.getValue().toArray(new Constraint[es.getValue().size()])))
+			//if we are called from addconstraintsnoprop, call addconsnoprop on the internals, otherwise call normal addconstraints
+			if (!es.getKey().addConstraintsNoPropagation(es.getValue().toArray(new Constraint[es.getValue().size()])))
 				throw new Error("Malformed internal constraints: " + es.getValue());
-			else logger.finest("Added " + es.getValue().size() + " internal constraints to " + es.getKey().getClass().getSimpleName());
+			else logger.finest("Added " + es.getValue().size() + " internal constraints to " + es.getKey().getClass().getSimpleName() + " (but DELAYED propagation)");
 		}
 		return ret;
 	}
