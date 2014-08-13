@@ -63,7 +63,7 @@ public abstract class Domain implements Comparable<Object>, Serializable {
 			valueChoiceFunctions.put(specificDomain, oneClassVcfs);
 		}
 		oneClassVcfs.put(name, vcf);
-		MetaCSPLogging.getLogger(Domain.class).finest("Registered value choice function " + name);
+		//MetaCSPLogging.getLogger(Domain.class).finest("Registered value choice function " + name);
 	}
 	
 	/**

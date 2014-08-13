@@ -254,7 +254,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		catch (TimeoutException e1) { e1.printStackTrace(); }
 		
 		if (!allModels.isEmpty()) {
-			logger.info("allmodels[0].length: " + allModels.firstElement().length);
+			logger.finest("allmodels[0].length: " + allModels.firstElement().length);
 			for (Variable var : this.getConstraintNetwork().getVariables()) {
 				BooleanVariable bv = (BooleanVariable)var;
 				bv.setDomain(new BooleanDomain(bv,false,false));					
@@ -263,6 +263,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 			updateCurrentModels(allModels.toArray(new int[allModels.size()][]));
 		}
 		else { resetCurrentModels(); }
+		
 		return true;
 	}
 

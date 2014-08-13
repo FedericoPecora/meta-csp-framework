@@ -33,22 +33,18 @@ public class SymbolicVariable extends MultiVariable {
 
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
-		// TODO Auto-generated method stub
-		// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT LEAST ONE SYMBOL!
+		// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT EXACTLY ONE SYMBOL!
 		if (variables == null || variables.length == 0) return null;
 		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols() == null) return null;
 		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols().length == 0) return null;
 		String wff = "(";
-		for (int i = 0; i < variables.length; i++) {
-			if (i != variables.length-1) wff += "w" + (i+1) + " v (";
-			else wff += "w" + (i+1);
+		Vector<BooleanConstraint> cons = new Vector<BooleanConstraint>();
+		for (int i = 0; i < variables.length-1; i++) {
+			BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
+			cons.add(c);
 		}
-		for (int i = 0; i < variables.length; i++) wff += ")";
-		logger.finest("Generated internal WFF for variable " + this.getID() + ": " + wff);
-		BooleanVariable[] bvs = new BooleanVariable[variables.length];
-		for (int i = 0; i < bvs.length; i++) bvs[i] = (BooleanVariable)variables[i];
-		BooleanConstraint[] ret = BooleanConstraint.createBooleanConstraints(bvs, wff);
-		return ret;
+		
+		return cons.toArray(new BooleanConstraint[cons.size()]);
 	}
 
 	@Override
