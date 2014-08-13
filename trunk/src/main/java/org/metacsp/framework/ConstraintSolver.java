@@ -76,18 +76,27 @@ public abstract class ConstraintSolver implements Serializable {
 	 * 
 	 * <ul>
 	 * <li> {@code AUTO_PROPAGATE}: if set, the constraint solver will call (user implemented) propagate method
-	 * automatically.  Do not set if propagations must be dealt with in a more sophisticated way (e.g., incremental propagators).
+	 * automatically.  Set {@code MANUAL_PROPAGATE} if propagations must be dealt with in a more sophisticated way (e.g., incremental propagators).
 	 * Default is {@code false}.
+	 * </li>
+	 * <li> {@code MANUAL_PROPAGATE}: if set, the constraint solver will NOT call (user implemented) propagate method
+	 * automatically.  Set {@code AUTO_PROPAGATE} if propagation should happen always in the same way.
+	 * Default is {@code false}.
+	 * </li>
+	 * <li> {@code NO_PROP_ON_VAR_CREATION}: if set, the constraint solver will NOT call (user implemented) propagate method
+	 * automatically when variables are created.  This is useful with {@code AUTO_PROPAGATE}, so that propagation is automatic, but only when constraints are added.
+	 * Default is {@code false} (propagation occurs when variables are created).
 	 * </li>
 	 * <li> {@code DOMAINS_AUTO_INSTANTIATED}: if set, the constraint solver will not check whether domains
 	 * are instantiated before propagation. Default is {@code false}.
 	 * </li>
 	 * </ul>
 	 */
-	public static enum OPTIONS {AUTO_PROPAGATE,MANUAL_PROPAGATE,DOMAINS_AUTO_INSTANTIATED,DOMAINS_MANUALLY_INSTANTIATED};
+	public static enum OPTIONS {AUTO_PROPAGATE,NO_PROP_ON_VAR_CREATION,MANUAL_PROPAGATE,DOMAINS_AUTO_INSTANTIATED,DOMAINS_MANUALLY_INSTANTIATED};
 
 	//internal options
 	protected boolean autoprop = false;
+	protected boolean noPropOnVarCreation = false;
 	private boolean domainsAutoInstantiated = false;
 	
 	//have domains been instantiated? if not, propagation will be delayed...
@@ -117,6 +126,7 @@ public abstract class ConstraintSolver implements Serializable {
 	public void setOptions(OPTIONS ...ops) {
 		for (OPTIONS op : ops)
 			if (op.equals(OPTIONS.AUTO_PROPAGATE)) autoprop = true;
+			else if (op.equals(OPTIONS.NO_PROP_ON_VAR_CREATION)) noPropOnVarCreation = true;
 			else if (op.equals(OPTIONS.MANUAL_PROPAGATE)) autoprop = false;
 		    else if (op.equals(OPTIONS.DOMAINS_AUTO_INSTANTIATED)) domainsAutoInstantiated = true;
 			else if (op.equals(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) domainsAutoInstantiated = false;
@@ -128,6 +138,7 @@ public abstract class ConstraintSolver implements Serializable {
 	 */
 	public boolean getOption(OPTIONS op) {
 		if (op.equals(OPTIONS.AUTO_PROPAGATE)) return autoprop;
+		else if (op.equals(OPTIONS.NO_PROP_ON_VAR_CREATION)) return noPropOnVarCreation;
 		else if (op.equals(OPTIONS.MANUAL_PROPAGATE)) return !autoprop;
 		else if (op.equals(OPTIONS.DOMAINS_AUTO_INSTANTIATED)) return domainsAutoInstantiated;
 		else if (op.equals(OPTIONS.DOMAINS_MANUALLY_INSTANTIATED)) return !domainsAutoInstantiated;
@@ -340,7 +351,7 @@ public abstract class ConstraintSolver implements Serializable {
 		if (ret == null) return null;
 		//need to add all to network so if sth goes wrong I can delete all of them concurrently
 		for (Variable v : ret) this.theNetwork.addVariable(v);
-		if (autoprop && checkDomainsInstantiated()) this.propagate();
+		if (autoprop && checkDomainsInstantiated() && !noPropOnVarCreation) this.propagate();
 		logger.finest("Created variables " + Arrays.toString(ret));
 		return ret;
 	}
