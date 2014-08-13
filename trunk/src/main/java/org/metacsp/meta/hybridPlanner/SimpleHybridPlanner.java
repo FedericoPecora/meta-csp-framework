@@ -31,8 +31,6 @@ import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.spatial.reachability.ReachabilityConstraint;
 import org.metacsp.spatial.utility.SpatialAssertionalRelation;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 
