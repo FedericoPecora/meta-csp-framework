@@ -171,18 +171,17 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
-
+		
 		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof SimpleOperator) {
 			this.operatorsAlongBranch.remove(operatorsAlongBranch.size()-1);
 			//			System.out.println("-------------------> popped " + metaValue.specilizedAnnotation);
 		}
 
-
-
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 		Vector<Variable> activityToRemove = new Vector<Variable>();
 		Vector<Variable> fluentToRemove = new Vector<Variable>();
-
+		Vector<Variable> rectangleToRemove = new Vector<Variable>();
+		
 		for (Variable v : metaValue.getVariables()) {
 			if (!metaVariable.containsVariable(v)) {
 				if (v instanceof VariablePrototype) {
@@ -190,7 +189,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 						if (vReal != null) {
 							fluentToRemove.add(vReal);
-						}						
+						}
 					}
 					else{
 						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
@@ -200,9 +199,14 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 						}						
 					}
 				}
+				else if(v instanceof RectangularRegion){
+					if(((RectangularRegion)v).getName().contains("placingArea") ||
+							((RectangularRegion)v).getName().contains("pickingArea")){						
+						rectangleToRemove.add(v);
+					}
+				}					
 			}
 		}
-
 
 
 
@@ -260,6 +264,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 //		System.out.println("fluentToBeRemoved: "+fluentToRemove );
 		((SpatialFluentSolver)this.getConstraintSolvers()[0]).removeVariables(fluentToRemove.toArray(new Variable[fluentToRemove.size()]));
 		groundSolver.removeVariables(activityToRemove.toArray(new Variable[activityToRemove.size()]));
+		((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[0]).removeVariables(rectangleToRemove.toArray(new Variable[rectangleToRemove.size()]));
+		
+		
 	}
 
 
@@ -277,8 +284,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		//this if handles the cases when the controllables are not unified and there is no operators which can be activated
 		//then we annotated as false to force it to be failed rather than return null constraint network 
 		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof Boolean) {
-			System.out.println("metaValue: " + metaValue);
-			System.out.println("Annotation: " + (Boolean)metaValue.getSpecilizedAnnotation());
+//			System.out.println("Annotation: " + (Boolean)metaValue.getSpecilizedAnnotation());
 			if (!(Boolean)metaValue.getSpecilizedAnnotation()) {
 				System.out.println(">>>>>>>>>>>>>>>>>");
 				return false;
@@ -379,16 +385,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			}
 		}
 
-		//		for (int i = 0; i < manAreaActs.size(); i++) {
-		//			for (int j = 0; j < this.metaConstraints.size(); j++) {
-		//				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){					
-		//					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
-		//					SimpleReusableResource rr = metaCausalConatraint.getResources().get("manAreaResource");
-		//					metaCausalConatraint.addResrouceUtilizer(rr, manAreaActs.get(i), 1);
-		//					rr.setUsage(manAreaActs.get(i));
-		//				}
-		//			}			
-		//		}
+
 
 		return true;
 	}

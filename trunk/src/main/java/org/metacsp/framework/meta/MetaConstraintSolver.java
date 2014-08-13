@@ -8,8 +8,10 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.metacsp.meta.TCSP.TCSPSolver;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.utility.UI.SearchTreeFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import edu.uci.ics.jung.graph.DelegateForest;
@@ -437,7 +439,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
 	
 
-	protected final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {
+	protected final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {		
 		if (!this.addResolverSub(metaVarConstraintNetwork, resolverNetwork)) return false;
 		Constraint[] resolverNetworkConstraints = resolverNetwork.getConstraints();
 		HashMap<ConstraintSolver, Vector<Constraint>> solvers2constraints = 
@@ -478,7 +480,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				solvers2constraints.put(c.getScope()[0].getConstraintSolver(), newVec);
 			}
 			solvers2constraints.get(c.getScope()[0].getConstraintSolver()).add(c);
-		}			
+		}
 		for (ConstraintSolver cs : solvers2constraints.keySet()) {
 			Constraint[] toAddOneSolver = solvers2constraints.get(cs).toArray(new Constraint[solvers2constraints.get(cs).size()]);
 			cs.removeConstraints(toAddOneSolver);
