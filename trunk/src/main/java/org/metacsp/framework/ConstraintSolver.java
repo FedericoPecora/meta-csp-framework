@@ -98,6 +98,7 @@ public abstract class ConstraintSolver implements Serializable {
 	protected boolean autoprop = false;
 	protected boolean noPropOnVarCreation = false;
 	private boolean domainsAutoInstantiated = false;
+	protected boolean skipPropagation = false;
 	
 	//have domains been instantiated? if not, propagation will be delayed...
 	private boolean domainsInstantiated = false;
@@ -173,6 +174,19 @@ public abstract class ConstraintSolver implements Serializable {
 	}
 	
 	/**
+	 * Add a constraint between {@link Variable}s, without propagation.
+	 * @param c The constraint to add.
+	 * @return <code>true</code>.
+	 */
+	public final boolean addConstraintNoPropagation(Constraint c) {
+		this.skipPropagation = true;
+		this.addConstraints(c);
+		this.skipPropagation = false;
+		return true;
+	}
+
+	
+	/**
 	 * Add a batch of constraints between {@link Variable}s.  This method is
 	 * NOT implemented so as to perform only one propagation, rather it adds all constraints
 	 * sequentially, and returns the first constraint that fails, {@code null} if no constraint
@@ -193,6 +207,19 @@ public abstract class ConstraintSolver implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Add a batch of constraints between {@link Variable}s, but do not propagate. This method always returns {@code true},
+	 * hence if the constraint(s) to add are inconsistent, this will result in propagation failure the next time
+	 * a constraint is added and propagation occurs.
+	 * @param c The constraints to add.
+	 * @return {@code true}
+	 */
+	public final boolean addConstraintsNoPropagation(Constraint... c) {
+		this.skipPropagation = true;
+		this.addConstraints(c);
+		this.skipPropagation = false;
+		return true;
+	}
 	/**
 	 * Add a batch of constraints between {@link Variable}s.  This method is
 	 * implemented so as to perform only one propagation, thus being more convenient than
@@ -225,7 +252,7 @@ public abstract class ConstraintSolver implements Serializable {
 			//NOTE: must add new cons before attempting propagation, because some solvers call
 			//constraint network methods in their implementation of propagate()... 
 			for (Constraint con : toAddArray) this.theNetwork.addConstraint(con);
-			if (autoprop && checkDomainsInstantiated()) { 
+			if (!skipPropagation && autoprop && checkDomainsInstantiated()) { 
 				if (this.propagate()) {
 					logger.finest("Added and propagated constraints " + Arrays.toString(toAddArray));
 					return true;
@@ -237,12 +264,12 @@ public abstract class ConstraintSolver implements Serializable {
 				logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
 			}
 			else {
-				logger.finest("Added constraints " + Arrays.toString(toAddArray));
+				logger.finest("Added constraints " + Arrays.toString(toAddArray) + " BUT DELAYED PROPAGATION (autoprop = " + autoprop + " )");
 				return true;
 			}
 		}
 		//... and finally re-propagate if not successful to put everything back the way it was
-		if (autoprop && checkDomainsInstantiated()) this.propagate();
+		if (!skipPropagation && autoprop && checkDomainsInstantiated()) this.propagate();
 		return false;
 	}	
 
@@ -290,7 +317,7 @@ public abstract class ConstraintSolver implements Serializable {
 			
 			removeConstraintsSub(toRemoveArray);
 			for (Constraint con : toRemove) this.theNetwork.removeConstraint(con);
-			if (autoprop && checkDomainsInstantiated()) this.propagate();
+			if (!skipPropagation && autoprop && checkDomainsInstantiated()) this.propagate();
 			logger.finest("Removed constraints " + toRemove);
 		}
 	}
@@ -351,7 +378,7 @@ public abstract class ConstraintSolver implements Serializable {
 		if (ret == null) return null;
 		//need to add all to network so if sth goes wrong I can delete all of them concurrently
 		for (Variable v : ret) this.theNetwork.addVariable(v);
-		if (autoprop && checkDomainsInstantiated() && !noPropOnVarCreation) this.propagate();
+		if (!skipPropagation && autoprop && checkDomainsInstantiated() && !noPropOnVarCreation) this.propagate();
 		logger.finest("Created variables " + Arrays.toString(ret));
 		return ret;
 	}
@@ -418,7 +445,7 @@ public abstract class ConstraintSolver implements Serializable {
 		for (ArrayList<Variable> vec : components.values()) {
 			vec.removeAll(Arrays.asList(v));
 		}
-		if (autoprop && checkDomainsInstantiated()) this.propagate();
+		if (!skipPropagation && autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Removed variables " + Arrays.toString(v));
 	}
 

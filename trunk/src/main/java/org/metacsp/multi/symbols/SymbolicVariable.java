@@ -37,7 +37,6 @@ public class SymbolicVariable extends MultiVariable {
 		if (variables == null || variables.length == 0) return null;
 		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols() == null) return null;
 		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols().length == 0) return null;
-		String wff = "(";
 		Vector<BooleanConstraint> cons = new Vector<BooleanConstraint>();
 		for (int i = 0; i < variables.length-1; i++) {
 			BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
@@ -79,7 +78,8 @@ public class SymbolicVariable extends MultiVariable {
 			equalsCon.setFrom(this);
 			equalsCon.setTo(this);
 			equalsCon.setAutoRemovable(true);
-			this.solver.addConstraint(equalsCon);
+			//this.solver.addConstraint(equalsCon);
+			this.solver.addConstraintNoPropagation(equalsCon);
 		}
 		
 		nonSolverDomain = nonSolverDomainVec.toArray(new String[nonSolverDomainVec.size()]);
