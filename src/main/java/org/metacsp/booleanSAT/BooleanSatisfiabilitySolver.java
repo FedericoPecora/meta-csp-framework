@@ -80,7 +80,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		this.maxVars = MAX_SAT_VARS;
 		this.maxClauses = MAX_SAT_CLAUSES;
 		initSat4JSolver();
-		this.setOptions(OPTIONS.AUTO_PROPAGATE);
+		this.setOptions(OPTIONS.AUTO_PROPAGATE, OPTIONS.NO_PROP_ON_VAR_CREATION);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		this.maxVars = maxVars;
 		this.maxClauses = maxClauses;
 		initSat4JSolver();
-		this.setOptions(OPTIONS.AUTO_PROPAGATE);
+		this.setOptions(OPTIONS.AUTO_PROPAGATE, OPTIONS.NO_PROP_ON_VAR_CREATION);
 	}
 
 	private void initSat4JSolver() {
@@ -173,53 +173,6 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		}
 	}
 	
-//	@Override
-//	public boolean propagate() {
-//		logger.info("Solving SAT problem...");
-//		try {
-//			boolean unsat = true;
-//			Vector<IConstr> tempClauses = new Vector<IConstr>();
-//			Vector<int[]> allModels = new Vector<int[]>();
-//			while (sat4JSolver.isSatisfiable()) {
-//				unsat = false;
-//				int[] oneModel = sat4JSolver.model();
-//				if (oneModel.length == 0) break;
-//				allModels.add(oneModel);
-//				//logger.info("Model: " + Arrays.toString(oneModel));
-//				int[] negClause = new int[oneModel.length];
-//				for (int i = 0; i < oneModel.length; i++) {
-//					negClause[i] = -oneModel[i];
-//				}
-//				try { tempClauses.add(sat4JSolver.addClause(new VecInt(negClause))); }
-//				catch (ContradictionException e) {
-//					resetSat4JSolver();
-//					tempClauses = new Vector<IConstr>();
-//					break;
-//				}
-//			}
-//			if (!unsat) {
-//				if (!allModels.isEmpty()) {
-//					logger.info("allmodels[0].length: " + allModels.firstElement().length);
-//					for (Variable var : this.getConstraintNetwork().getVariables()) {
-//						BooleanVariable bv = (BooleanVariable)var;
-//						bv.setDomain(new BooleanDomain(bv,false,false));					
-//					}
-//					for (IConstr ic : tempClauses) {
-//						sat4JSolver.removeConstr(ic);
-//					}
-//					updateDomains(allModels.toArray(new int[allModels.size()][]));
-//					updateCurrentModels(allModels.toArray(new int[allModels.size()][]));
-//				}
-//				else { resetCurrentModels(); }
-//				return true;
-//			}
-//			resetSat4JSolver();
-//			return false;
-//		}
-//		catch (TimeoutException e) { throw new Error(e.getMessage()); }
-//	}
-
-	
 	@Override
 	public boolean propagate() {
 		
@@ -267,51 +220,6 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		return true;
 	}
 
-//	@Override
-//	protected boolean addConstraintsSub(Constraint[] c) {
-//		boolean newVariablesUsed = false;
-//		HashMap<VecInt,BooleanConstraint> newClauses = new HashMap<VecInt, BooleanConstraint>();
-//		for (Constraint con : c) {
-//			BooleanConstraint bc = (BooleanConstraint)con;
-////			try {
-//				VecInt literals = bc.getLiterals();
-//				for (int i = 0; i < literals.size(); i++) {
-//					if (!usedSat4JVariables.contains(Math.abs(literals.get(i)))) {
-//						usedSat4JVariables.add(Math.abs(literals.get(i)));
-//						newVariablesUsed = true;
-//					}
-//				}
-//				newClauses.put(literals,bc);
-////				IConstr clause = sat4JSolver.addClause(literals);
-////				constraintsToICons.put(bc, clause);
-////				iConsToConstraints.put(clause,bc);
-////			}
-////			catch (ContradictionException e) {
-////				logger.info("Contraddiction - resetting!");
-////				resetSat4JSolver();
-////				return false;
-////			}
-//		}
-//		if (newVariablesUsed) {
-//			logger.info("NEW VARS USED!!");
-//			resetSat4JSolver();
-//		}
-//		for (Entry<VecInt, BooleanConstraint> entry : newClauses.entrySet()) {
-//			try {
-//				IConstr clause = sat4JSolver.addClause(entry.getKey());
-//				constraintsToICons.put(entry.getValue(), clause);
-//				iConsToConstraints.put(clause,entry.getValue());
-//			}
-//			catch (ContradictionException e) {
-//				logger.info("Contraddiction - resetting!");
-//				resetSat4JSolver();
-//				return false;
-//			}
-//		}
-//		tempConstraints = c;
-//		return true;
-//	}
-
 	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
 		return true;
@@ -319,30 +227,6 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 
 	@Override
 	protected void removeConstraintsSub(Constraint[] c) { /* do nothing */ }
-	
-	private void generateDefaultModels(Variable[] vars) {
-		int numVars = vars.length;
-		int numModels = (int)Math.pow(2, numVars);
-		boolean[][] defaultModels = new boolean[numModels][];
-		for (int i = 0; i < numModels; i++) {
-		    String bin = Integer.toBinaryString(i);
-		    while (bin.length() < numVars)
-		        bin = "0" + bin;
-		    defaultModels[i] = new boolean[bin.length()];
-		    for (int j = 0; j < bin.length(); j++) {
-		    	defaultModels[i][j] = (bin.charAt(j) == '0') ? false : true;
-		    }
-		}
-
-		for (int i = 0; i < defaultModels.length; i++) {
-			HashMap<BooleanVariable,Boolean> defaultModel = new HashMap<BooleanVariable,Boolean>();
-			currentModels.add(defaultModel);
-			for (int j = 0; j < defaultModels[i].length; j++) {
-				defaultModel.put((BooleanVariable)vars[j], defaultModels[i][j]);
-			}
-		}
-		registerValueChoiceFunctions();
-	}
 
 	@Override
 	protected BooleanVariable[] createVariablesSub(int num) {
@@ -350,9 +234,6 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		for (int i = 0; i < num; i++) {
 			ret.add(new BooleanVariable(this,BVIDs++));
 		}
-//		if (currentModels.isEmpty()) {
-//			generateDefaultModels(ret.toArray(new Variable[ret.size()]));
-//		}
 		return ret.toArray(new BooleanVariable[ret.size()]);
 	}
 

@@ -39,9 +39,9 @@ public class TestActivityNetworkSolver {
 	public static void main(String[] args) {
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500, new String[] {"A","B","C","D","E","F"});
 		Activity act1 = (Activity)solver.createVariable();
-		act1.setSymbolicDomain("A", "B", "C");
+		//act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable();
-		act2.setSymbolicDomain("B", "C", "D");
+		//act2.setSymbolicDomain("B", "C", "D");
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 
@@ -56,7 +56,7 @@ public class TestActivityNetworkSolver {
 		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.UNARYEQUALS);
 		con1a.setFrom(act1);
 		con1a.setTo(act1);
-		con1a.setUnaryValue(new boolean[] {false,true,false,false,false,false});
+		con1a.setUnaryValue(new boolean[] {false,true,true,false,false,false});
 
 		AllenIntervalConstraint con2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(10, 20));
 		con2.setFrom(act1);
