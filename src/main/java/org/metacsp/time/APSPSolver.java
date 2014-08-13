@@ -827,7 +827,7 @@ public class APSPSolver extends ConstraintSolver {
 						toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
 						toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
 					}
-//					cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
+					cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
 					return false;
 				}
 			}

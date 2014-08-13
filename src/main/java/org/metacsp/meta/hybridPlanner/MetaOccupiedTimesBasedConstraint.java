@@ -96,7 +96,7 @@ public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{
 				new Bounds(((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[0]).getEET(), ((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[0]).getLET()), 
 				new Bounds(((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getEST(), ((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getLST()), 
 				new Bounds(((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getEET(), ((AllenInterval)boundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getLET())).getAlmostCentreRectangle();
-		System.out.println("rec1 -- boundedsf: " + rec1);
+//		System.out.println("rec1 -- boundedsf: " + rec1);
 
 		
 		Rectangle rec2 = new BoundingBox(
@@ -104,7 +104,7 @@ public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{
 				new Bounds(((AllenInterval)unboundedsf.get(0).getRectangularRegion().getInternalVariables()[0]).getEET(), ((AllenInterval)unboundedsf.get(0).getRectangularRegion().getInternalVariables()[0]).getLET()), 
 				new Bounds(((AllenInterval)unboundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getEST(), ((AllenInterval)unboundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getLST()), 
 				new Bounds(((AllenInterval)unboundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getEET(), ((AllenInterval)unboundedsf.get(0).getRectangularRegion().getInternalVariables()[1]).getLET())).getAlmostCentreRectangle();
-		System.out.println("rec1 -- unboundedsf: " + rec2);
+//		System.out.println("rec1 -- unboundedsf: " + rec2);
 
 		
 		Rectangle r1new = new Rectangle(((int)rec1.getMinX()) - pad, ((int)rec1.getMinY()) - pad, (int)rec1.getWidth() + (2 * pad), (int)rec1.getHeight() + (2 * pad));

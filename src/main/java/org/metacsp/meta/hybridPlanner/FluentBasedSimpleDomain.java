@@ -218,10 +218,13 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		
 		if(problematicActivity.getComponent().compareTo("RobotAction") == 0){
 			if(manipulationAreaPrototype != null){
-				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);				
-//				System.out.println(spatialConstraintNet);
-//				System.out.println("_____________");
-				operatorsConsNetwork.lastElement().join(spatialConstraintNet);
+				ConstraintNetwork spatialConstraintNet = getSpatialConstraintNet(problematicActivity, manipulationAreaPrototype);
+				if(spatialConstraintNet == null) {
+					operatorsConsNetwork.lastElement().setSpecilizedAnnotation(false);;
+				}
+				else{
+					operatorsConsNetwork.lastElement().join(spatialConstraintNet);	
+				}
 			}
 		}
 		
@@ -287,6 +290,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		//for spatial: bounded rectangle are those in future and unbounded in the past
 		SpatialFluent objectFleunt = null;
 		SpatialFluent supportFluent = null;
+		boolean isPlace = true;
 		for (int i = 0; i < ((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			SpatialFluent tempFluent = ((SpatialFluent)((SpatialFluentSolver)metaCS.getConstraintSolvers()[0]).getVariables()[i]);
 			if(tempFluent.getName().compareTo("at_"+supporter+"_"+supporter) == 0){
@@ -297,6 +301,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 				tempFluent.getActivity().getTemporalVariable().getEST() == tempFluent.getActivity().getTemporalVariable().getLST()){ 
 					//it is observed but it has be the last spatial fluent which has this property in case of online pick and place  						
 					objectFleunt = tempFluent;
+					isPlace = false;
 //					System.out.println("pick --->" + tempFluent);
 				}
 			}
@@ -310,16 +315,22 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 			}
 			
 		}
-		RectangleConstraintSolver recSolver = (RectangleConstraintSolver)((SpatialFluentSolver) this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[0];
-		RectangularRegion placingRecVar = (RectangularRegion) recSolver.createVariable();
-		placingRecVar.setName("placingArea");
-		ret.addVariable(placingRecVar);
 		
-		
+		if(objectFleunt == null) return null;
+		ret.addVariable(objectFleunt);
+		ret.addVariable(supportFluent);
+
 		Vector<Constraint> allConstraints = new Vector<Constraint>();
 		Vector<SpatialRule> srules = manipulationAreaDomain.getSpatialRulesByRelation(armAndDirection);
 		
-//		System.out.println("== " + objectFleunt.getRectangularRegion());
+		RectangleConstraintSolver recSolver = (RectangleConstraintSolver)((SpatialFluentSolver) this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[0];
+		RectangularRegion placingRecVar = (RectangularRegion) recSolver.createVariable();
+		if(isPlace)
+			placingRecVar.setName("placingArea_"+obj+"_"+armAndDirection);
+		else
+			placingRecVar.setName("pickingArea_"+obj+"_"+armAndDirection);
+			
+		ret.addVariable(placingRecVar);
 		
 		
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -367,9 +378,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
 			if((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
 				xAllenCon = (AllenIntervalConstraint)(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
-			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Overlaps, AllenIntervalConstraint.Type.During, 
-					AllenIntervalConstraint.Type.OverlappedBy, AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.After);
-
+			AllenIntervalConstraint yAllenCon = manipulationAreaDomain.getConvexifyBeforeAndAfter(); 
 			manipulationAreaTOtable = new RectangleConstraint(xAllenCon, yAllenCon);
 			
 		}
@@ -398,7 +407,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		allConstraints.add(manipulationAreaTOtable);
 						
 		
-		
+		//we already the order of the rules, from manipulation domain description
 		for (int i = 2; i < 4; i++) {
 			
 			//general rule
@@ -452,17 +461,22 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 			
 		}
 		
+		
 		//add at constraint in the fluent belongs to past, it will affect on how the occuoiedConstraintWork
-		if(objectFleunt.getRectangularRegion().isUnbounded()){			
+		if(objectFleunt.getRectangularRegion().isUnbounded() ){
+//				|| objectFleunt.getRectangularRegion().getBoundingBox().getAlmostCentreRectangle().getWidth() == 0 || 
+//				objectFleunt.getRectangularRegion().getBoundingBox().getAlmostCentreRectangle().getHeight() == 0){
 			for (String str : ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().keySet()) {
 				if(objectFleunt.getName().compareTo(str) == 0){
 					BoundingBox unboundBB = ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().get(str);
+					Bounds xLB = new Bounds(unboundBB.getxLB().min, unboundBB.getxLB().max);
+					Bounds xUB = new Bounds(unboundBB.getxUB().min, unboundBB.getxUB().max);
+					Bounds yLB = new Bounds(unboundBB.getyLB().min, unboundBB.getyLB().max);
+					Bounds yUB = new Bounds(unboundBB.getyUB().min, unboundBB.getyUB().max);
 					UnaryRectangleConstraint atObjInstance = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, 
-							unboundBB.getxLB(), unboundBB.getxUB(), 
-							unboundBB.getyLB(), unboundBB.getyUB());
+							xLB, xUB, yLB, yUB);
 					atObjInstance.setFrom(objectFleunt);
 					atObjInstance.setTo(objectFleunt);
-					System.out.println("unary: " + atObjInstance);
 					allConstraints.add(atObjInstance);	
 				}
 			}			

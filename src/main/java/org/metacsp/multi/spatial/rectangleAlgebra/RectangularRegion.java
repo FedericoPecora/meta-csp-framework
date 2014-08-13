@@ -112,11 +112,24 @@ public class RectangularRegion extends MultiVariable {
 		
 		if( (xLB.min == 0 && xLB.max == horizon) && (xUB.min == 0&& xUB.max == horizon) &&
 				(yLB.min == 0 && yLB.max == horizon) &&(yLB.min == 0 && yUB.max == horizon))
-		return true;
+			return true;
 
 		return false;
 		
 		
+	}
+	
+	public BoundingBox getBoundingBox(){
+
+		AllenInterval intervalX = ((AllenInterval)this.getInternalVariables()[0]);
+		AllenInterval intervalY = ((AllenInterval)this.getInternalVariables()[1]);
+		
+		Bounds xLB =  new Bounds(intervalX.getEST(), intervalX.getLST());
+		Bounds xUB = new Bounds(intervalX.getEET(), intervalX.getLET());
+		Bounds yLB = new Bounds(intervalY.getEST(), intervalY.getLST()); 
+		Bounds yUB = new Bounds(intervalY.getEET(), intervalY.getLET());
+
+		return new BoundingBox(xLB, xUB, yLB, yUB);
 	}
 	
 }

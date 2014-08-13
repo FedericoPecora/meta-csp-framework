@@ -59,11 +59,12 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 			}
 		}
 		
-		System.out.println("===================================================");		
-		for (Activity activity : activityToFluent.keySet()) {
-			System.out.println(activityToFluent.get(activity));
-		}
-		System.out.println("===================================================");
+//		System.out.println("===================================================");		
+//		for (Activity activity : activityToFluent.keySet()) {
+//			System.out.println(activityToFluent.get(activity).getName());
+//			System.out.println(activityToFluent.get(activity));
+//		}
+//		System.out.println("===================================================");
 		
 		return binaryPeakCollection(activityToFluent);
 	}
