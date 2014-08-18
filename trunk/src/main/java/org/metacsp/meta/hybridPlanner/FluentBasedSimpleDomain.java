@@ -281,6 +281,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		String mainString = problematicActivity.getSymbolicVariable().getSymbols()[0];
 //		//place_cup1_RA_west_table
 		String obj = getParameter(problematicActivity);
+
 		
 		int last_index = mainString.lastIndexOf("_", mainString.length());
 		String armAndDirection = mainString.substring(mainString.indexOf(obj)+obj.length()+1,last_index); //e.g., LA_north
@@ -317,8 +318,8 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		}
 		
 		if(objectFleunt == null) return null;
-		ret.addVariable(objectFleunt);
-		ret.addVariable(supportFluent);
+		//ret.addVariable(objectFleunt);
+		//ret.addVariable(supportFluent);
 
 		Vector<Constraint> allConstraints = new Vector<Constraint>();
 		Vector<SpatialRule> srules = manipulationAreaDomain.getSpatialRulesByRelation(armAndDirection);
@@ -462,30 +463,32 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		}
 		
 		
+		boolean skip = false;
 		//add at constraint in the fluent belongs to past, it will affect on how the occuoiedConstraintWork
 		if(objectFleunt.getRectangularRegion().isUnbounded() ){
-//				|| objectFleunt.getRectangularRegion().getBoundingBox().getAlmostCentreRectangle().getWidth() == 0 || 
-//				objectFleunt.getRectangularRegion().getBoundingBox().getAlmostCentreRectangle().getHeight() == 0){
-			for (String str : ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().keySet()) {
-				if(objectFleunt.getName().compareTo(str) == 0){
-					BoundingBox unboundBB = ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().get(str);
-					Bounds xLB = new Bounds(unboundBB.getxLB().min, unboundBB.getxLB().max);
-					Bounds xUB = new Bounds(unboundBB.getxUB().min, unboundBB.getxUB().max);
-					Bounds yLB = new Bounds(unboundBB.getyLB().min, unboundBB.getyLB().max);
-					Bounds yUB = new Bounds(unboundBB.getyUB().min, unboundBB.getyUB().max);
-					UnaryRectangleConstraint atObjInstance = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, 
-							xLB, xUB, yLB, yUB);
-					atObjInstance.setFrom(objectFleunt);
-					atObjInstance.setTo(objectFleunt);
-					allConstraints.add(atObjInstance);	
-				}
-			}			
+			if(((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion()!= null){
+				for (String str : ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().keySet()) {
+					if(objectFleunt.getName().compareTo(str) == 0){
+						BoundingBox unboundBB = ((SimpleHybridPlanner)this.metaCS).getOldRectangularRegion().get(str);
+						Bounds xLB = new Bounds(unboundBB.getxLB().min, unboundBB.getxLB().max);
+						Bounds xUB = new Bounds(unboundBB.getxUB().min, unboundBB.getxUB().max);
+						Bounds yLB = new Bounds(unboundBB.getyLB().min, unboundBB.getyLB().max);
+						Bounds yUB = new Bounds(unboundBB.getyUB().min, unboundBB.getyUB().max);
+						UnaryRectangleConstraint atObjInstance = new UnaryRectangleConstraint(UnaryRectangleConstraint.Type.At, 
+								xLB, xUB, yLB, yUB);
+						atObjInstance.setFrom(objectFleunt);
+						atObjInstance.setTo(objectFleunt);
+						allConstraints.add(atObjInstance);						
+					}
+				}			
+			}else skip = true;
 		}
 		
-		
-		for (Constraint con : allConstraints) {
-//			System.out.println("con: " + con);
-			ret.addConstraint(con);
+		if(!skip){
+			for (Constraint con : allConstraints) {
+	//			System.out.println("con: " + con);
+				ret.addConstraint(con);
+			}
 		}
 		
 		

@@ -66,12 +66,13 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	//	private HashMap<Activity, SpatialFluent> activityToFluent;
 	//	protected Vector<Activity> activities;
 	private long totalTime = 0;
+	private Vector<Vector<Integer>> conflictTracking = new Vector<Vector<Integer>>();
 	
 	private SimpleReusableResource manAreaResource = null;
 	
 	public long getCulpritDetectionTime(){
 		return totalTime;
-	}
+	}	
 
 	private int numberOfmisplaced = 0;
 	public int getNumberofMisplaced(){
@@ -311,12 +312,15 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		//#######################################################################################################
 		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
 		Vector<Activity> activities = new Vector<Activity>();
+		Vector<Integer> metaVarIds = new Vector<Integer>();
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			activities.add(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity());
 			activityToFluent.put(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity(), 
 					((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]));
+			metaVarIds.add(activities.lastElement().getID());
 
 		}
+		conflictTracking.add(metaVarIds);
 		//########################################################################################################
 		permutation = new HashMap<HashMap<String, Bounds[]>, Integer>();
 		potentialCulprit = new Vector<String>();
@@ -645,17 +649,42 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		// TODO Auto-generated method stub
 	}
 
+
+	
 	public boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> aTOsf) {
 
 		if(peak.length == 1) return false;
 
-		//		System.out.println("------------------------------------------------------------");
-		//		for (int i = 0; i < peak.length; i++) {
-		////			System.out.println(peak[i]);
-		//			System.out.println(aTOsf.get(peak[i]));
-		//		}
-		//		System.out.println("------------------------------------------------------------");
+//		System.out.println("------------------------------------------------------------");
+//		for (int i = 0; i < peak.length; i++) {
+//			//			System.out.println(peak[i]);
+//			System.out.println(aTOsf.get(peak[i]));					
+//		}
+//		System.out.println("------------------------------------------------------------");
+				
+		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 
+		//filter sampling which is irrelevant to the theory
+		for (int i = 0; i < peak.length; i++) {
+			if(aTOsf.get(peak[i]).getName().contains(((SimpleHybridPlanner)this.metaCS).getManipulationAreaEncoding())) return false;
+		}
+		
+		//filter the sample which already captured as conflict and will not be anymore conflict
+		//this is not the case in general ...
+		boolean observed = true;
+		if(conflictTracking.size() !=0){
+			for (int i = 0; i < peak.length; i++) {
+				for (int j = 0; j < conflictTracking.size(); j++) {
+					if(!conflictTracking.get(j).contains(peak[i].getID()))
+						observed = false;
+				}
+				if(!observed) break;
+			}
+			
+			if(observed) return false;
+			
+		}
+		
 		Vector<UnaryRectangleConstraint> atConstraints = new Vector<UnaryRectangleConstraint>();
 		HashMap<String, SpatialFluent> currentFluent = new HashMap<String, SpatialFluent>();
 		Vector<RectangularRegion> targetRecs = new Vector<RectangularRegion>();
@@ -849,8 +878,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		}
 
 		boolean isConsistent = true;
-
-
+		
 		// MetaCSPLogging.setLevel(Level.FINE);
 		if (!iterSolver.addConstraints(assertionList.toArray(new RectangleConstraint[assertionList.size()])))
 			isConsistent = false;

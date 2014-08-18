@@ -49,18 +49,21 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	private static final long serialVersionUID = -6694598836324746725L;
 	private int IDs = 0;
 	private long horizon = 0;
+	private Vector<BoundingBox> filteringboxes = new Vector<BoundingBox>();
 	
 	private HashMap<Integer, Variable> getVaribaleById = new HashMap<Integer, Variable>();
 	public enum Dimension  {X, Y};
 
 	public RectangleConstraintSolver(long origin, long horizon) {
-		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});
+		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});		
 		this.horizon = horizon;
+		super.autoprop = true;
 	}
 
 	public RectangleConstraintSolver(long origin, long horizon, int maxRectangles) {
 		super(new Class[] {RectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
 		this.horizon = horizon;
+		super.autoprop = true;
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxRectangles) {
@@ -208,9 +211,12 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 		return ret;
 	}
 
-	
 	public long getHorizon(){
 		return horizon;
+	}
+	
+	public void setFilteringArea(Vector<BoundingBox> boxes){		
+		this.filteringboxes = boxes;
 	}
 }
 	
