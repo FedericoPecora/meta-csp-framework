@@ -8,10 +8,9 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.hamcrest.core.IsInstanceOf;
+
 import org.metacsp.meta.TCSP.TCSPSolver;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
-import org.metacsp.multi.activity.Activity;
 import org.metacsp.utility.UI.SearchTreeFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import edu.uci.ics.jung.graph.DelegateForest;

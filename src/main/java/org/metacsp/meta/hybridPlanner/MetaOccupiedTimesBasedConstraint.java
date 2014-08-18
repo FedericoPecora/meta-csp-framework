@@ -24,7 +24,7 @@ public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{
 		
 		if(peak.length == 1) return false;
 		for (int i = 0; i < peak.length; i++) {
-			if(peak[i].getSymbolicVariable().getSymbols()[0].contains("manipulationArea")) return false;
+			if(peak[i].getSymbolicVariable().getSymbols()[0].contains(((SimpleHybridPlanner)this.metaCS).getManipulationAreaEncoding())) return false;
 		}
 		
 		

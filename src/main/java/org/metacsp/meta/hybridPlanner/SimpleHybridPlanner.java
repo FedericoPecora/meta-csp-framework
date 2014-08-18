@@ -183,7 +183,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		for (Variable v : metaValue.getVariables()) {
 			if (!metaVariable.containsVariable(v)) {
 				if (v instanceof VariablePrototype) {
-					if(((String)((VariablePrototype)v).getParameters()[1]).contains("at_robot1_manipulationArea")){
+					if(((String)((VariablePrototype)v).getParameters()[1]).contains(manipulationAreaEncoding)){
 						Variable vReal = metaValue.getSubstitution((VariablePrototype)v);
 						if (vReal != null) {
 							fluentToRemove.add(vReal);
@@ -301,7 +301,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				String component = (String)((VariablePrototype) v).getParameters()[0];
 				String symbol = (String)((VariablePrototype) v).getParameters()[1];
 
-				if(symbol.contains("at_robot1_manipulationArea")){
+				if(symbol.contains(manipulationAreaEncoding)){
 					SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).createVariable(component);
 					sf.setName(symbol);
 					((RectangularRegion)sf.getInternalVariables()[0]).setName(symbol);
@@ -330,7 +330,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			if(con instanceof AllenIntervalConstraint){
 				for (int i = 0; i < oldScope.length; i++) {
 					if (oldScope[i] instanceof VariablePrototype) {
-						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("at_robot1_manipulationArea"))
+						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains(manipulationAreaEncoding))
 							newScope[i] = (Activity)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getActivity();
 						else
 							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
@@ -348,7 +348,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			else{ //if it is Rectangle Constraint
 				for (int i = 0; i < oldScope.length; i++) {
 					if (oldScope[i] instanceof VariablePrototype) {
-						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains("at_robot1_manipulationArea"))
+						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains(manipulationAreaEncoding))
 							newScope[i] = (RectangularRegion)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getRectangularRegion();
 						else
 							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
@@ -463,4 +463,26 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 		return conflictRanking;
 	}
 
+	private String manipulationAreaEncoding = "";
+	public void setManipulationAreasEncoding(String manipulationAreaEncoding){
+		this.manipulationAreaEncoding = manipulationAreaEncoding;
+	}
+	
+	public String getManipulationAreaEncoding(){
+		return manipulationAreaEncoding;
+	}
+	
+	public void setObstacles(Vector<SpatialAssertionalRelation> sAssertionalRels){
+		Vector<BoundingBox> bbs = new Vector<BoundingBox>();
+		for (int j = 0; j < sAssertionalRels.size(); j++) {
+			if(sAssertionalRels.get(j).getOntologicalProp().isObstacle()){
+				BoundingBox bb = new BoundingBox(sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[0], 
+						sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[1],
+						sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[2],
+						sAssertionalRels.get(j).getUnaryAtRectangleConstraint().getBounds()[3]);
+				bbs.add(bb);
+			}
+		}				
+		((RectangleConstraintSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[0]).setFilteringArea(bbs);
+	}
 }
