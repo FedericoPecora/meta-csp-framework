@@ -258,9 +258,10 @@ public abstract class ConstraintSolver implements Serializable {
 					return true;
 				}
 				//... and then remove new cons if propagation not successful...
-				for (Constraint con : toAddArray) {
-					this.theNetwork.removeConstraint(con);
-				}
+				this.removeConstraints(toAddArray);
+//				for (Constraint con : toAddArray) {
+//					this.theNetwork.removeConstraint(con);
+//				}
 				logger.finest("Failed to add constraints " + Arrays.toString(toAddArray));
 			}
 			else {
