@@ -600,7 +600,7 @@ public class SimpleDomain extends MetaConstraint {
 			Vector<Bounds> bounds = null;
 			if (conElement.contains("[")) {
 				constraintName = conElement.substring(0,conElement.indexOf("[")).trim();
-				String boundsString = conElement.substring(conElement.indexOf("["),conElement.indexOf("]")+1);
+				String boundsString = conElement.substring(conElement.indexOf("["),conElement.lastIndexOf("]")+1);
 				String[] splitBounds = boundsString.split("\\[");
 				bounds = new Vector<Bounds>();
 				for (String oneBound : splitBounds) {
@@ -633,7 +633,9 @@ public class SimpleDomain extends MetaConstraint {
 			}
 
 			AllenIntervalConstraint con = null;
-			if (bounds != null) con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName),bounds.toArray(new Bounds[bounds.size()]));
+			if (bounds != null) {
+				con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName),bounds.toArray(new Bounds[bounds.size()]));
+			}
 			else con = new AllenIntervalConstraint(AllenIntervalConstraint.Type.valueOf(constraintName));
 			constraints.add(con);
 			froms.add(from);
