@@ -203,7 +203,10 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 			hyperEdges.put(c, dv);
 			graph.addVertex(dv);
 			for (Variable var : c.getScope()) {
-				this.graph.addEdge(new DummyConstraint(""), dv, var);
+				DummyConstraint dm = new DummyConstraint("");
+				dm.setScope(new Variable[] {dv, var});
+				this.graph.addEdge(dm, dv, var);
+				
 			}
 			logger.finest("Added constraint " + c);
 		}
@@ -220,11 +223,14 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 			logger.finest("Removed binary constraint " + c);
 		}
 		else {
-			DummyVariable dv = hyperEdges.get(c);
-			for (Constraint auxCon : graph.getIncidentEdges(dv)) this.graph.removeEdge(auxCon);
-			graph.removeVertex(dv);
-			hyperEdges.remove(c);
-			logger.finest("Removed constraint " + c);
+			if (!(c instanceof DummyConstraint)) {
+				DummyVariable dv = hyperEdges.get(c);
+				Collection<Constraint> incident = graph.getIncidentEdges(dv);
+				for (Constraint auxCon : incident) this.graph.removeEdge(auxCon);
+				graph.removeVertex(dv);
+				hyperEdges.remove(c);
+				logger.finest("Removed constraint " + c);
+			}
 		}
 	}
 

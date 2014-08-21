@@ -27,13 +27,22 @@ public class DummyConstraint extends Constraint {
 
 	@Override
 	public Object clone() {
-		return new DummyConstraint(this.edgeLabel);
+		DummyConstraint dc = new DummyConstraint(this.edgeLabel);
+		dc.setScope(this.scope);
+		dc.setAutoRemovable(this.isAutoRemovable());
+		return dc;
 	}
 
 	@Override
 	public boolean isEquivalent(Constraint c) {
 		if (!(c instanceof DummyConstraint)) return false;
 		return this.edgeLabel.equals(((DummyConstraint)c).getEdgeLabel());
+	}
+	
+	public DummyVariable getDummyVariable() { 
+		for (Variable v : this.scope)
+			if (v instanceof DummyVariable) return (DummyVariable)v;
+		return null;
 	}
 
 }
