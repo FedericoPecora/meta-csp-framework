@@ -162,15 +162,17 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		for (int[] oneModel : allModels) {
 			for (int i : oneModel) {
 				BooleanVariable bv = (BooleanVariable)this.getConstraintNetwork().getVariable(Math.abs(i));
-				if (i < 0) bv.allowFalse();
-				else bv.allowTrue();
-				allVars.remove(bv);
+				if (bv != null) {
+					if (i < 0) bv.allowFalse();
+					else bv.allowTrue();
+				}
+//				allVars.remove(bv);
 			}
 		}
-		for (Variable var : allVars) {
-			((BooleanVariable)var).allowFalse();
-			((BooleanVariable)var).allowTrue();
-		}
+//		for (Variable var : allVars) {
+//			((BooleanVariable)var).allowFalse();
+//			((BooleanVariable)var).allowTrue();
+//		}
 	}
 	
 	@Override

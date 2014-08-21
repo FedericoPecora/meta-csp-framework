@@ -40,7 +40,8 @@ public class SymbolicVariable extends MultiVariable {
 		Vector<BooleanConstraint> cons = new Vector<BooleanConstraint>();
 		for (int i = 0; i < variables.length-1; i++) {
 			BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
-			cons.add(c);
+			c.setAutoRemovable(true);
+//			cons.add(c);
 		}
 		
 		// === FROM R296 ===
@@ -54,6 +55,7 @@ public class SymbolicVariable extends MultiVariable {
 		BooleanVariable[] bvs = new BooleanVariable[variables.length];
 		for (int i = 0; i < bvs.length; i++) bvs[i] = (BooleanVariable)variables[i];
 		for (BooleanConstraint c : BooleanConstraint.createBooleanConstraints(bvs, wff)) {
+			c.setAutoRemovable(true);
 			cons.add(c);
 		}
 		// ====================

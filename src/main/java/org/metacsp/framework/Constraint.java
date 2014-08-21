@@ -54,7 +54,7 @@ public abstract class Constraint implements Cloneable, Serializable {
 	
 	protected Object annotation;
 	
-	private boolean autoRemovable = false;
+	protected boolean autoRemovable = false;
 	
 	protected Paint color= Color.black;
 	

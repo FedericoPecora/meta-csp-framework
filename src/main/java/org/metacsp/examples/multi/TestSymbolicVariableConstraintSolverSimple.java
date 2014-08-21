@@ -44,23 +44,56 @@ public class TestSymbolicVariableConstraintSolverSimple {
 		
 		String[] symbols = new String[] {"A","B","C","D","E","F","G"};
 		SymbolicVariableConstraintSolver solver = new SymbolicVariableConstraintSolver(symbols, 100);
-		Variable[] vars = solver.createVariables(2);
-		
-		((SymbolicVariable)vars[0]).setDomain(new String[] {"B", "D", "F"});
-		BooleanVariable bv = (BooleanVariable)solver.getConstraintSolvers()[0].getConstraintNetwork().getVariable(1);
+		Variable[] vars = solver.createVariables(3);
 
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
-		System.out.println("x1: " + ((BooleanDomain)bv.getDomain()).canBeTrue());
+
+		logger.info("Created variables " + Arrays.toString(vars));
+
 		
-		try { Thread.sleep(2000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
+		((SymbolicVariable)vars[0]).setDomain(new String[] {"B", "D", "F"});
+
+//		BooleanVariable bv = (BooleanVariable)solver.getConstraintSolvers()[0].getConstraintNetwork().getVariable(1);
+//
+//		ConstraintNetwork.draw(solver.getConstraintNetwork());
+//		System.out.println("x1: " + ((BooleanDomain)bv.getDomain()).canBeTrue());
+		
+//		try { Thread.sleep(2000); }
+//		catch (InterruptedException e) { e.printStackTrace(); }
 		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(Type.EQUALS);
 		con1.setFrom(vars[0]);
 		con1.setTo(vars[1]);
-
 		logger.info("Added con1? " + solver.addConstraint(con1));
-		System.out.println("x1: " + ((BooleanDomain)bv.getDomain()).canBeTrue());
+		
+//		System.out.println("x1: " + ((BooleanDomain)bv.getDomain()).canBeTrue());
+//		
+//		logger.info("Removing con1");
+//		solver.removeConstraint(con1);
+		
+		System.out.println("Pausing...");
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		logger.info("Removing variable " + vars[2]);
+		solver.removeVariable(vars[2]);
+		logger.info("Done!");
+
+		System.out.println("Pausing...");
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		logger.info("Removing constraint " + con1);
+		solver.removeConstraint(con1);
+		logger.info("Done!");
 
 	}
 

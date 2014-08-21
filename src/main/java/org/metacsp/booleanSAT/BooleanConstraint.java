@@ -282,7 +282,10 @@ public class BooleanConstraint extends Constraint {
 
 	@Override
 	public Object clone() {
-		return new BooleanConstraint((BooleanVariable[])this.getScope(), this.positive);
+		BooleanConstraint ret = new BooleanConstraint((BooleanVariable[])this.getScope(), this.positive);
+		ret.autoRemovable = autoRemovable;
+		return ret;
+		
 	}
 
 	@Override

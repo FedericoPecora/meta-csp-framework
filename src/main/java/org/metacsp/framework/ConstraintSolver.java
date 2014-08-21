@@ -29,6 +29,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -426,19 +428,46 @@ public abstract class ConstraintSolver implements Serializable {
 		this.removeVariables(new Variable[] {v});
 	} 
 		
+	
+	private Constraint removeDummyConstraint(DummyConstraint c) {
+		DummyVariable dv = c.getDummyVariable();
+		Constraint toReturn = null;
+		for (Entry<Constraint,DummyVariable> e : this.getConstraintNetwork().hyperEdges.entrySet()) {
+			if (e.getValue().equals(dv)) {
+				toReturn = e.getKey();
+				break;
+			}
+		}
+		
+//		for (Constraint c1 : this.getConstraintNetwork().getIncidentEdges(dv)) this.getConstraintNetwork().removeConstraint(c1);
+
+		return toReturn;
+	}
+	
 	/**
 	 * Remove a batch of {@link Variable}s from this {@link ConstraintSolver}.
 	 * @param v The batch of {@link Variable}s to remove.
 	 */
 	public final void removeVariables(Variable[] v) throws VariableNotFound, IllegalVariableRemoval {
+		
+		HashSet<Constraint> incidentRevised = new HashSet<Constraint>();
+		
 		for (Variable var : v) {
 			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
 			Constraint[] incident = this.theNetwork.getIncidentEdges(var);
-			for (Constraint con : incident) 
-				if (!con.isAutoRemovable()) 
+			for (Constraint con : incident) {
+				if ((!con.isAutoRemovable() && !(con instanceof DummyConstraint))) 
 					throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
-			this.removeConstraints(incident);
+				else if (con instanceof DummyConstraint) {
+					Constraint toRemove = this.removeDummyConstraint((DummyConstraint)con);
+					if (toRemove != null) incidentRevised.add(toRemove);
+				}
+				else incidentRevised.add(con);
+			}
 		}
+		
+		this.removeConstraints(incidentRevised.toArray(new Constraint[incidentRevised.size()]));
+
 		removeVariablesSub(v);
 		for (Variable var : v) {
 			this.theNetwork.removeVariable(var);
