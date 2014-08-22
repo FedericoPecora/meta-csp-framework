@@ -110,7 +110,7 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		//Add the normal metavariables for planning (UNJUSTIFIED activities)
 		ConstraintNetwork[] ret = super.getMetaVariables();
 		Vector<ConstraintNetwork> newRet = new Vector<ConstraintNetwork>();
-		for (ConstraintNetwork cn : ret) newRet.add(cn);
+		if (ret != null) for (ConstraintNetwork cn : ret) newRet.add(cn);
 		if (!triggered) {
 			triggered = true;
 			//Add a null constraint network to signal that context inference should be done
