@@ -279,6 +279,14 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			operatorsAlongBranch.add((SimpleOperator)metaValue.specilizedAnnotation);
 		}
 
+		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof SimpleOperator) {
+			if (operatorsAlongBranch.contains((metaValue.specilizedAnnotation))) {
+				return false;					
+			}
+			operatorsAlongBranch.add((SimpleOperator)metaValue.specilizedAnnotation);
+		}
+
+		
 		//this if handles the cases when the controllables are not unified and there is no operators which can be activated
 		//then we annotated as false to force it to be failed rather than return null constraint network 
 		if (metaValue.specilizedAnnotation != null && metaValue.specilizedAnnotation instanceof Boolean) {
