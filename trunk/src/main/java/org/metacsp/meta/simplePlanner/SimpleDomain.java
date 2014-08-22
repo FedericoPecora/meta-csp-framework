@@ -158,15 +158,17 @@ public class SimpleDomain extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
-		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+		Vector<ConstraintNetwork> ret = null;
 		// for every variable that is marked as UNJUSTIFIED a ConstraintNetwork is built
 		for (Variable task : groundSolver.getVariables()) {
 			if (task.getMarking().equals(markings.UNJUSTIFIED)) {
 				ConstraintNetwork nw = new ConstraintNetwork(null);
 				nw.addVariable(task);
+				if (ret == null) ret = new Vector<ConstraintNetwork>();
 				ret.add(nw);
 			}
 		}
+		if (ret == null) return null;
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
