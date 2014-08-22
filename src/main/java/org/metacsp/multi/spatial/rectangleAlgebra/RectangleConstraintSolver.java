@@ -57,13 +57,13 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	public RectangleConstraintSolver(long origin, long horizon) {
 		super(new Class[] {RectangleConstraint.class, UnaryRectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, -1), new int[] {1,1});		
 		this.horizon = horizon;
-		super.autoprop = true;
+		this.setOptions(org.metacsp.framework.ConstraintSolver.OPTIONS.AUTO_PROPAGATE);
 	}
 
 	public RectangleConstraintSolver(long origin, long horizon, int maxRectangles) {
 		super(new Class[] {RectangleConstraint.class}, RectangularRegion.class, createConstraintSolvers(origin, horizon, maxRectangles), new int[] {1,1});
 		this.horizon = horizon;
-		super.autoprop = true;
+		this.setOptions(org.metacsp.framework.ConstraintSolver.OPTIONS.AUTO_PROPAGATE);
 	}
 
 	private static ConstraintSolver[] createConstraintSolvers(long origin, long horizon, int maxRectangles) {
@@ -85,6 +85,19 @@ public class RectangleConstraintSolver extends MultiConstraintSolver {
 	@Override
 	public boolean propagate() {
 		// Do nothing, AllenIntervalNetworkSolver takes care of propagation...
+		if(filteringboxes.size() != 0){
+//			System.out.println("___________________________________");
+			for (int i = 0; i < this.getVariables().length; i++) {
+//				System.out.println(this.getVariables()[i]);
+				for (int j = 0; j < filteringboxes.size();j++) {
+					if(((RectangularRegion)this.getVariables()[i]).getBoundingBox().getAlmostCentreRectangle().intersects(filteringboxes.get(j).getAlmostCentreRectangle())){
+//						System.out.println("00000000000000000000" + ((RectangularRegion)this.getVariables()[i]));
+						return false;
+					}
+				}
+			}
+//			System.out.println("___________________________________");
+		}
 		return true;
 	}
 
