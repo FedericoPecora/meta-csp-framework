@@ -41,7 +41,7 @@ public class SymbolicVariable extends MultiVariable {
 		for (int i = 0; i < variables.length-1; i++) {
 			BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
 			c.setAutoRemovable(true);
-//			cons.add(c);
+			cons.add(c);
 		}
 		
 		// === FROM R296 ===
