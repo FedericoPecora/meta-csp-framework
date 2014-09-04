@@ -634,4 +634,6 @@ public abstract class ConstraintSolver implements Serializable {
 	
 	public abstract void registerValueChoiceFunctions();
 	
+	public void setConstraintNetwork(ConstraintNetwork newCS) { this.theNetwork = newCS; } 
+	
 }

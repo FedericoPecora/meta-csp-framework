@@ -24,11 +24,18 @@ package org.metacsp.framework;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.metacsp.framework.multi.MultiVariable;
-
 import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
@@ -40,12 +47,29 @@ import org.metacsp.utility.logging.MetaCSPLogging;
  * @author Federico Pecora
  *
  */
-public abstract class Variable implements Comparable<Variable>,Serializable{
+public abstract class Variable implements Comparable<Variable>, Serializable {
+	
+	public static HashMap<FieldOfObject,Object> backupForSerialization = new HashMap<FieldOfObject,Object>();
+	private class FieldOfObject {
+		private Field field;
+		private int ID;
+		private FieldOfObject(Field field) {
+			this.ID = getID();
+			this.field = field;
+		}
+		public boolean equals(Object o) {
+			FieldOfObject foo = (FieldOfObject)o;
+			return (foo.ID == this.ID && foo.field.getName().equals(this.field.getName()));
+		}
+		public int hashCode() {
+			return this.toString().hashCode();
+		}
+		public String toString() {
+			return "FieldOfObject <" + ID + "," + field.getName() + ">";
+		}
+	}
 	
 	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
-	
-	
-	
 	
 	/**
 	 * ID generation is up to the implementing class.  No automatic generation provided.
@@ -197,6 +221,39 @@ public abstract class Variable implements Comparable<Variable>,Serializable{
 	public void setAttributes(Object attributes) {
 		this.attributes = attributes;
 	}
-
+	
+//	public static Vector<Field> getFieldsUpTo(Class<?> startClass, Class<?> exclusiveParent) {
+//		Vector<Field> currentClassFields = new Vector<Field>();
+//		for (Field f : startClass.getDeclaredFields()) currentClassFields.add(f);
+//		Class<?> parentClass = startClass.getSuperclass();
+//		if (parentClass != null && (exclusiveParent == null || !(parentClass.equals(exclusiveParent)))) {
+//			Vector<Field> parentClassFields = (Vector<Field>) getFieldsUpTo(parentClass, exclusiveParent);
+//			currentClassFields.addAll(parentClassFields);
+//		}
+//		return currentClassFields;
+//	}
+	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		for (Field f : Variable.class.getDeclaredFields()) {
+			if (Modifier.isTransient(f.getModifiers())) {
+				try { backupForSerialization.put(new FieldOfObject(f), f.get(this)); }
+				catch (IllegalArgumentException e) { e.printStackTrace(); }
+				catch (IllegalAccessException e) { e.printStackTrace(); }
+			}
+		}
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		for (Field f : Variable.class.getDeclaredFields()) {
+			if (Modifier.isTransient(f.getModifiers())) {
+				Object foo = backupForSerialization.get(new FieldOfObject(f));
+				try { f.set(this, foo); }
+				catch (IllegalArgumentException e) { e.printStackTrace(); }
+				catch (IllegalAccessException e) { e.printStackTrace(); }
+			}
+		}
+	}
 	
 }

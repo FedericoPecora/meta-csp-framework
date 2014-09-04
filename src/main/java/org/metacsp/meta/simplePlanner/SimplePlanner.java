@@ -75,6 +75,7 @@ public class SimplePlanner extends MetaConstraintSolver {
 		for (Variable v : activityToRemove) {
 			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
 				rr.removeUsage((Activity)v);
+				System.out.println("Removed res usage of " + v + " on RES " + rr);
 			}
 		}
 		

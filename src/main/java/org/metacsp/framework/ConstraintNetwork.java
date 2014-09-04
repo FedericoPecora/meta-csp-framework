@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,6 +40,26 @@ import org.metacsp.framework.multi.MultiBinaryConstraint;
 
 public class ConstraintNetwork implements Cloneable, Serializable {
 	
+	public static HashMap<FieldOfObject,Object> backupForSerialization = new HashMap<FieldOfObject,Object>();
+	private class FieldOfObject {
+		private Field field;
+		private int ID;
+		private FieldOfObject(Field field) {
+			this.ID = getID();
+			this.field = field;
+		}
+		public boolean equals(Object o) {
+			FieldOfObject foo = (FieldOfObject)o;
+			return (foo.ID == this.ID && foo.field.getName().equals(this.field.getName()));
+		}
+		public int hashCode() {
+			return this.toString().hashCode();
+		}
+		public String toString() {
+			return "FieldOfObject <" + ID + "," + field.getName() + ">";
+		}
+	}
+
 	protected ConstraintSolver solver;
 	protected ObservableGraph<Variable,Constraint> graph;
 	protected DirectedSparseMultigraph<Variable,Constraint> g;
@@ -46,7 +68,6 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	protected HashMap<VariablePrototype,Variable> substitutions = new HashMap<VariablePrototype, Variable>();
 	protected HashMap<Variable,VariablePrototype> substituted = new HashMap<Variable,VariablePrototype>();
 
-	
 	protected HashMap<Constraint,DummyVariable> hyperEdges = new HashMap<Constraint, DummyVariable>();
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
@@ -56,8 +77,12 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	
 	public transient Object annotation;
 	public transient Object specilizedAnnotation;
-	public transient ConstraintNetworkMarking marking; // to mark the ConstraintNetwork in the backtracking process
+	public ConstraintNetworkMarking marking; // to mark the ConstraintNetwork in the backtracking process
 	
+	public static int IDs = 0;
+	public int ID = IDs++;
+	
+	public int getID() { return this.ID; }
 
 	public Object getSpecilizedAnnotation() {
 		return specilizedAnnotation;
@@ -497,14 +522,14 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		return true;
 	}
 	
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.defaultWriteObject();
-	}
-
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
-		logger = MetaCSPLogging.getLogger(this.getClass());
-	}
+//	private void writeObject(ObjectOutputStream out) throws IOException {
+//		out.defaultWriteObject();
+//	}
+//
+//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//		in.defaultReadObject();
+//		logger = MetaCSPLogging.getLogger(this.getClass());
+//	}
 
 	/**
 	 * Weight associated to the {@link ConstraintNetwork} for some metrics.
@@ -579,6 +604,29 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	 */
 	Variable[] getNativeVariables(){
 		return this.substituted.keySet().toArray(new Variable[this.substituted.keySet().size()]);
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		for (Field f : ConstraintNetwork.class.getDeclaredFields()) {
+			if (Modifier.isTransient(f.getModifiers())) {
+				try { backupForSerialization.put(new FieldOfObject(f), f.get(this)); }
+				catch (IllegalArgumentException e) { e.printStackTrace(); }
+				catch (IllegalAccessException e) { e.printStackTrace(); }
+			}
+		}
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		for (Field f : ConstraintNetwork.class.getDeclaredFields()) {
+			if (Modifier.isTransient(f.getModifiers())) {
+				Object foo = backupForSerialization.get(new FieldOfObject(f));
+				try { f.set(this, foo); }
+				catch (IllegalArgumentException e) { e.printStackTrace(); }
+				catch (IllegalAccessException e) { e.printStackTrace(); }
+			}
+		}
 	}
 
 	

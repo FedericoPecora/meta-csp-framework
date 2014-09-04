@@ -1,9 +1,12 @@
 package org.metacsp.framework;
 
+import java.io.Serializable;
 
 
-public class ConstraintNetworkMarking {
+
+public class ConstraintNetworkMarking implements Serializable {
 	
+	private static final long serialVersionUID = 1979722716677315395L;
 	protected String networkState;
 
 	// the state has to be replaced by this
