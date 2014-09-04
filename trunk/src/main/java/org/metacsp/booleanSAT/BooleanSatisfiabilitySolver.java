@@ -166,13 +166,13 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 					if (i < 0) bv.allowFalse();
 					else bv.allowTrue();
 				}
-//				allVars.remove(bv);
+				allVars.remove(bv);
 			}
 		}
-//		for (Variable var : allVars) {
-//			((BooleanVariable)var).allowFalse();
-//			((BooleanVariable)var).allowTrue();
-//		}
+		for (Variable var : allVars) {
+			((BooleanVariable)var).allowFalse();
+			((BooleanVariable)var).allowTrue();
+		}
 	}
 	
 	@Override

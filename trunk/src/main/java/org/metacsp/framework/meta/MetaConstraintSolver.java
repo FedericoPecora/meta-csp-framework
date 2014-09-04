@@ -1,19 +1,29 @@
 package org.metacsp.framework.meta;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-
+import org.apache.commons.collections15.iterators.EntrySetMapIterator;
 import org.metacsp.meta.TCSP.TCSPSolver;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
 import org.metacsp.utility.UI.SearchTreeFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
+
 import edu.uci.ics.jung.graph.DelegateForest;
+
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -27,7 +37,7 @@ import org.metacsp.framework.multi.MultiConstraintSolver;
  * can be cast as meta-CSPs.  For instance, a resource scheduling problem is a meta-CSP whose
  * meta-variables are sets of possibly concurrent activities that over-consume a resource.  These
  * activities are themselves variables in a ground-CSP which decides their placement in time
- * according to temporal constraints.  The activities and temporal constraints are, repsectively,
+ * according to temporal constraints.  The activities and temporal constraints are, respectively,
  * the variables and constraints of the ground-CSP, while the sets of possibly overlapping
  * and over-consuming activities are meta-variables in the meta-CSP.  The constraints of the meta-CSP
  * (meta-constraints) are the resources themselves.
@@ -63,7 +73,9 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolversInverseMapping;
 	protected long animationTime = 0;
-	protected int counterMoves;
+	protected int counterMoves;	
+	
+	private Vector<HashMap<ConstraintSolver,byte[]>> backedUpCNs = new Vector<HashMap<ConstraintSolver,byte[]>>();
 	
 	//private Vector<HashMap<ConstraintSolver,ConstraintNetwork>> statesAlongCurrentBranch = new Vector<HashMap<ConstraintSolver,ConstraintNetwork>>(); 
 
@@ -127,7 +139,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		this.animationTime = animationTime;
 		this.resolvers = new HashMap<ConstraintNetwork,ConstraintNetwork>();
 		this.resolversInverseMapping = new HashMap<ConstraintNetwork,ConstraintNetwork>();
-
 		this.counterMoves=0;
 	}
 		
@@ -154,7 +165,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	}
 	
 	protected MetaVariable getConflict() {
-		
 		if(this.metaConstraints==null) return null;
 		for (MetaConstraint df : this.metaConstraints) {
 			ConstraintNetwork cn = df.getMetaVariable();
@@ -181,9 +191,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 * @return <code>true</code> iff a set of assignments to all {@link MetaVariable}s which
 	 * satisfies the {@link MetaConstraint}s was found.
 	 */
-//	public boolean backtrack() {
-//		return backtrack(0);
-//	}
 	public boolean backtrack() {
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		logger.info("Starting search...");
@@ -204,63 +211,13 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return true;
 	}
 	
-	/**
-	 * Initiates CSP-style backtracking search on the meta-CSP with intial time.  
-	 * @return <code>true</code> iff a set of assignments to all {@link MetaVariable}s which
-	 * satisfies the {@link MetaConstraint}s was found. The initial_time parameter constraints all the moves
-	 * of the constraint solvers to act after such instant
-	 */
-	//FPA: This method should be removed (poor maintainability, mixes time with non-temporal
-	//     resolution, backtracking should not depend on time.)  Fix: this behavior should be
-	//     implemented in specific metaconstraint solvers - see, e.g., how this is done in
-	//     the SimplePlanner.
-	@Deprecated	
-	public boolean backtrack(int initial_time) {
-		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
-		logger.info("Starting search...");
-//		preBacktrack();
-		MetaVariable conflict = null;
-		if ((conflict = this.getConflict()) != null) {
-			currentVertex = conflict;
-			if (backtrackHelper(conflict, initial_time)) {
-//				postBacktrack();
-				logger.info("... solution found");
-				return true;
-			}
-//			postBacktrack();
-			return false;
-		}
-//		postBacktrack();
-		logger.info("... no conflicts found");		
-		return true;
-	}
-		
-//	private boolean repeatedState() {
-//		HashMap<ConstraintSolver,ConstraintNetwork> currentState = new HashMap<ConstraintSolver, ConstraintNetwork>();
-//		for (ConstraintSolver cs : this.getConstraintSolvers()) {
-//			currentState.put(cs, (ConstraintNetwork)cs.getConstraintNetwork().clone());
-//		}
-//		for (HashMap<ConstraintSolver,ConstraintNetwork> oldState : statesAlongCurrentBranch) {
-//			for (ConstraintSolver cs : this.getConstraintSolvers()) {
-//				if (!oldState.get(cs).equals(currentState.get(cs))) return false;
-//			}
-//		}
-//		statesAlongCurrentBranch.add(currentState);
-//		return true;
-//	}
-	
 	//FPA: Is this used? Seems not... please remove! (Iran: it is used for hybrid planner benchmarking)
 	private boolean timeout = false;
 	public boolean getTimeOut(){
 		return timeout;
 	}
 	
-//	private boolean backtrackHelper(MetaVariable metaVariable) {
-//		return backtrackHelper(metaVariable,0);
-//	}
-	
 	private boolean backtrackHelper(MetaVariable metaVariable) {
-		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
@@ -281,13 +238,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
 				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
 				logger.fine("Trying value: " + valString);
-
-//				//******************************************************************
-//				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
-//					timeout = true;
-//					return false;
-//				}
-//				//******************************************************************
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
@@ -326,98 +276,132 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		postBacktrack(metaVariable);
 		return false;
 	}
-	
-	protected boolean processSolution(MetaVariable metaVariable,ConstraintNetwork value){
-		this.g.addEdge(value, currentVertex, new TerminalNode(true));
-		breakSearch = false;
-//		this.retractResolver(mostProblematicNetwork, value);
-//		this.counterMoves--;
-//		return false;
-		return true;
+
+	/**
+	 * Service method for backtracking with serialization-based saving of {@link ConstraintNetwork}s.
+	 * This method backs up {@link ConstraintNetwork}s before branching. 
+	 */
+	private HashMap<ConstraintSolver,byte[]> backupCNs(MultiConstraintSolver conSol) {
+		//Here we want to save the CNs
+		ByteArrayOutputStream bos = null;
+		ObjectOutputStream oos = null;
+		HashMap<ConstraintSolver,byte[]> currentLevel = new HashMap<ConstraintSolver,byte[]>();
+		try {
+			bos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(bos);
+			for (ConstraintSolver cs : conSol.getConstraintSolvers()) {
+				logger.finest("Backing up CN of " + cs.getClass().getSimpleName());
+				ConstraintNetwork cn = cs.getConstraintNetwork();
+				oos.writeObject(cn);
+				byte[] backup = bos.toByteArray();
+		        currentLevel.put(cs,backup);
+		        if (cs instanceof MultiConstraintSolver) {
+		        	//System.out.println("RECURSIVE on " + cs.getClass().getSimpleName());
+		        	HashMap<ConstraintSolver,byte[]> lower = backupCNs((MultiConstraintSolver)cs);
+		        	currentLevel.putAll(lower);
+		        }
+			}
+	        return currentLevel;
+		}
+		catch (NotSerializableException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }
+		return null;
+	}
+
+	/**
+	 * Service method for backtracking with serialization-based saving of {@link ConstraintNetwork}s.
+	 * This method reinstates old {@link ConstraintNetwork}s after backtraking. 
+	 */
+	private void restoreCNs() {
+		//REINSTATE OLD CNs
+		HashMap<ConstraintSolver,byte[]> backup = backedUpCNs.lastElement();
+		for (Entry<ConstraintSolver,byte[]> entry : backup.entrySet()) {
+			byte[] backedUpNetwork = entry.getValue();
+			ConstraintSolver cs = entry.getKey();
+			logger.finest("Restoring CN of " + cs.getClass().getSimpleName());
+			ByteArrayInputStream bis = new ByteArrayInputStream(backedUpNetwork);
+	        ObjectInputStream in = null;
+			try {
+				in = new ObjectInputStream(bis);
+		        ConstraintNetwork old = (ConstraintNetwork)in.readObject();
+		        cs.setConstraintNetwork(old);
+			}
+			catch (IOException e) { e.printStackTrace(); }
+			catch (ClassNotFoundException e) { e.printStackTrace(); }
+		}
+		backedUpCNs.remove(backup);
+		backup.clear();
+		logger.info("backup queue: " + (backedUpCNs.size()+1) + " --> " + backedUpCNs.size());
 	}
 	
-	//FPA: This method should be removed (poor maintainability, mixes time with non-temporal
-	//     resolution, backtracking should not depend on time.)  Fix: this behavior should be
-	//     implemented in specific metaconstraint solvers - see, e.g., how this is done in
-	//     the SimplePlanner.
-	@Deprecated
-	protected boolean backtrackHelper(MetaVariable metaVariable, int initial_time) {
-		
-		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
-
+	/**
+	 * This backtrack method uses serialization to back up {@link ConstraintNetwork}s before branching.  This allows to
+	 * backtrack without propagation - but is very memory intensive.  In practice, this does not work on reasonably
+	 * sized problems.
+	 */
+	private boolean backtrackHelperWithSerialization(MetaVariable metaVariable) {
 		preBacktrack();
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
-		//FPA: if this is important, please make proper logging message
-		//logger.finest("WWWWWWWWWWWWWWWWWW  METACS G LEN "+ this.getVariables().length);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
 		logger.fine("Solving conflict: " + metaVariable);
-		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable, initial_time);	
-		if (metaVariable.getMetaConstraint().valOH != null && values!=null){
-			Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
-		}
+		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable);	
+		if (metaVariable.getMetaConstraint().valOH != null && values!=null) Arrays.sort(values, metaVariable.getMetaConstraint().valOH);
 		if (values == null || values.length == 0) {
 			this.g.addEdge(new NullConstraintNetwork(null), currentVertex, new TerminalNode(false));
 			logger.fine("Failure (1)...");		
 		}
 		else {
-			//FPA: if this is important, please make proper logging message
-			//logger.finest("FOUND " + values.length+" MOVES");
 			for (ConstraintNetwork value : values) {
 				if (animationTime != 0) {
 					try { Thread.sleep(animationTime); }
 					catch (InterruptedException e) { e.printStackTrace(); }
 				}
-				logger.fine("Trying value: " + Arrays.toString(value.getConstraints()));		
+				String valString = "";
+				if (value.getVariables().length != 0) valString += "Vars = " + Arrays.toString(value.getVariables());
+				if (value.getConstraints().length != 0) valString += " Cons = " + Arrays.toString(value.getConstraints());
+				logger.fine("Trying value: " + valString);
+								
+				this.backedUpCNs.add(backupCNs(this));
 				
-//				//******************************************************************
-//				if((Calendar.getInstance().getTimeInMillis()-timeNow) > 30000){ //iran
-//					timeout = true;
-//					return false;
-//				}
-//				//******************************************************************
+				/*** PRINT INFO ***/
+				/*
+				long sizeOfBackup = 0;
+				for (HashMap<ConstraintSolver,byte[]> oneHM : backedUpCNs) {
+					for (byte[] oneCN : oneHM.values())
+						sizeOfBackup += oneCN.length;
+				}
+				DecimalFormat df = new DecimalFormat("#.##");
+				logger.info("Current backup size: " + df.format((sizeOfBackup/1024.00)) + " KB");
+				*/
+				/*** END PRINT INFO ***/
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
 					this.resolversInverseMapping.put(value,mostProblematicNetwork);
-
 					this.counterMoves++;
-//					System.out.println("INCREMENTED COUNTERMOVES");
-//					logger.finest("I am incrementing the metaconstraintsolver counterMoves!!!: "+ this.counterMoves);
-					
 
 					logger.fine("Success...");		
 					
 					metaVariable.getMetaConstraint().markResolvedSub(metaVariable, value);
 					MetaVariable newConflict = this.getConflict();
 					
-					
-					
 					if (newConflict == null || breakSearch) {
-//						this.g.addEdge(value, currentVertex, new TerminalNode(true));
-//						breakSearch = false;
-////						this.retractResolver(mostProblematicNetwork, value);
-////						this.counterMoves--;
-////						return false;
-//						return true;
-						return processSolution(metaVariable,value);
-
+						this.g.addEdge(value, currentVertex, new TerminalNode(true));
+						breakSearch = false;
+						return true;
 					}
-//					if(newConflict.getConstraintNetwork().getVariables()[0].getID()>500){
-//						logger.severe("PLANNING VARIABLE GENERATION LIMIT SET TO 1000, plan failed");
-//						return false;
-//					}
-
 					// addEdege(e,v,v)
 					this.g.addEdge(value, currentVertex, newConflict);
 					currentVertex = newConflict;
-					if (backtrackHelper(newConflict, initial_time)) return true;					
-					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
-					this.retractResolver(mostProblematicNetwork, value);
-					this.resolvers.remove(mostProblematicNetwork);	
+					if (backtrackHelper(newConflict)) return true;					
+					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));
+					
+					//this.retractResolver(mostProblematicNetwork, value);
+					this.restoreCNs();
+					this.retractResolverSub(mostProblematicNetwork, value);
+					this.resolvers.remove(mostProblematicNetwork);
 					this.resolversInverseMapping.remove(value);
 					this.counterMoves--;
-					logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
-
 				}
 				else {
 					this.g.addEdge(value, currentVertex, new TerminalNode(false));
@@ -425,18 +409,11 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				}
 			}
 		}
-//		this.counterMoves--;
-//		logger.finest("I am decrementing the metaconstraintsolver counterMoves!!!"+ this.counterMoves);
-//		
-
-		
 		logger.fine("Backtracking...");
 		currentVertex = this.g.getParent(currentVertex);
 		postBacktrack(metaVariable);
 		return false;
 	}
-
-	
 
 	protected final boolean addResolver(ConstraintNetwork metaVarConstraintNetwork, ConstraintNetwork resolverNetwork) {		
 		if (!this.addResolverSub(metaVarConstraintNetwork, resolverNetwork)) return false;
@@ -669,7 +646,6 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		this.counterMoves=0;
 		this.g=new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.resolvers.clear();
-		
 	}
 
 	public int getCounterMoves() {

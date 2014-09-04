@@ -22,6 +22,12 @@
  ******************************************************************************/
 package org.metacsp.framework.multi;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.metacsp.multi.allenInterval.AllenInterval;
@@ -51,6 +57,26 @@ import org.metacsp.framework.Variable;
  *
  */
 public abstract class MultiVariable extends Variable {
+
+	public static HashMap<FieldOfObject,Object> backupForSerialization = new HashMap<FieldOfObject,Object>();
+	private class FieldOfObject {
+		private Field field;
+		private int ID;
+		private FieldOfObject(Field field) {
+			this.ID = getID();
+			this.field = field;
+		}
+		public boolean equals(Object o) {
+			FieldOfObject foo = (FieldOfObject)o;
+			return (foo.ID == this.ID && foo.field.getName().equals(this.field.getName()));
+		}
+		public int hashCode() {
+			return this.toString().hashCode();
+		}
+		public String toString() {
+			return "FieldOfObject <" + ID + "," + field.getName() + ">";
+		}
+	}
 
 	/**
 	 * 
@@ -148,6 +174,28 @@ public abstract class MultiVariable extends Variable {
 		}
 		return ret + "]]";
 	}
-
+	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		for (Field f : MultiVariable.class.getDeclaredFields()) {
+			if (Modifier.isTransient(f.getModifiers())) {
+				try { backupForSerialization.put(new FieldOfObject(f), f.get(this)); }
+				catch (IllegalArgumentException e) { e.printStackTrace(); }
+				catch (IllegalAccessException e) { e.printStackTrace(); }
+			}
+		}
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		for (Field f : MultiVariable.class.getDeclaredFields()) {
+			if (Modifier.isTransient(f.getModifiers())) {
+				Object foo = backupForSerialization.get(new FieldOfObject(f));
+				try { f.set(this, foo); }
+				catch (IllegalArgumentException e) { e.printStackTrace(); }
+				catch (IllegalAccessException e) { e.printStackTrace(); }
+			}
+		}
+	}
 
 }
