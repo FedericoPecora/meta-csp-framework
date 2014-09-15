@@ -214,8 +214,13 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 						//}
 					
 						if(svc.getType().equals(SymbolicValueConstraint.Type.DIFFERENT)){
-							allConPosib.add(getSup(svcArray[i], 0, 1));
-							allConPosib.add(getSup(svcArray[i], 1, 0));
+							if (svcArray.length == 1) {
+								allConPosib.add(0.0);
+							}
+							else {
+								allConPosib.add(getSup(svcArray[i], 0, 1));
+								allConPosib.add(getSup(svcArray[i], 1, 0));
+							}
 						}
 						if(svc.getType().equals(SymbolicValueConstraint.Type.EQUALS)){
 //							allConPosib.add(getInf(svcArray[i]));

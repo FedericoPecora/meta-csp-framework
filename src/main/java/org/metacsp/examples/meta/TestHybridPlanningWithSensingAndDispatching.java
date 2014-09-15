@@ -1,6 +1,5 @@
 package org.metacsp.examples.meta;
 
-import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,10 +21,7 @@ import org.metacsp.meta.hybridPlanner.MetaOccupiedConstraint;
 import org.metacsp.meta.hybridPlanner.MetaSpatialAdherenceConstraint;
 import org.metacsp.meta.hybridPlanner.SensingSchedulable;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
-import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
-import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;

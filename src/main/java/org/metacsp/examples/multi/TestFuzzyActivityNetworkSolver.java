@@ -82,8 +82,8 @@ public class TestFuzzyActivityNetworkSolver {
 					solver.removeConstraint(cons[i]);
 					System.out.println("Removed " + cons[i].getClass().getSimpleName() + " type");
 				}
-				System.out.println("Temporal Possibility:" + solver.getTemporalConsistency());
-				System.out.println("Value Possibility:" + solver.getValueConsistency());
+				System.out.println("Temporal Possibility: " + solver.getTemporalConsistency());
+				System.out.println("Value Possibility: " + solver.getValueConsistency());
 				System.out.println("---------------------------------");
 			}
 			add = !add;

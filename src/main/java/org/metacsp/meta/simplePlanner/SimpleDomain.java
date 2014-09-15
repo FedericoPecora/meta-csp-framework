@@ -44,6 +44,7 @@ import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.spatial.reachability.ConfigurationVariable;
 import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
 import org.metacsp.spatial.utility.SpatialRule;
@@ -171,9 +172,6 @@ public class SimpleDomain extends MetaConstraint {
 		if (ret == null) return null;
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
-
-	
-	
 
 	
 	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
@@ -326,7 +324,6 @@ public class SimpleDomain extends MetaConstraint {
 		Variable[] acts = groundSolver.getVariables();
 				
 		Vector<Activity> possibleUnifications = new Vector<Activity>();
-		Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
 		for (Variable var : acts) {
 			if (!var.equals(activity)) {
 				Activity act = (Activity)var;
@@ -344,18 +341,25 @@ public class SimpleDomain extends MetaConstraint {
 				}
 			}
 		}
-		
-		
+		return getUnifications(activity,possibleUnifications);
+	}
+	
+	private ConstraintNetwork[] getUnifications(Activity activity, Vector<Activity> possibleUnifications) {
+		Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
 		for (Activity act : possibleUnifications) {
+			ConstraintNetwork oneUnification = new ConstraintNetwork(null);
 			AllenIntervalConstraint equals = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals);
 			equals.setFrom(activity);
 			equals.setTo(act);
-			ConstraintNetwork oneUnification = new ConstraintNetwork(null);
 			oneUnification.addConstraint(equals);
+//			SymbolicValueConstraint eqValue = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);
+//			eqValue.setFrom(activity);
+//			eqValue.setTo(act);
+//			oneUnification.addConstraint(eqValue);
 			unifications.add(oneUnification);
 		}
 		if (unifications.isEmpty()) return null;
-		return unifications.toArray(new ConstraintNetwork[unifications.size()]);		
+		return unifications.toArray(new ConstraintNetwork[unifications.size()]);
 	}
 
 	@Override

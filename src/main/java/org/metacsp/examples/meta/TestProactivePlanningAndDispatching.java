@@ -26,23 +26,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
-import java.util.logging.Level;
 
 import org.metacsp.dispatching.DispatchingFunction;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
-import org.metacsp.meta.simplePlanner.SimpleDomain;
-import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;
-import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
