@@ -1,12 +1,7 @@
 package org.metacsp.meta.simplePlanner;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 
 import org.metacsp.framework.ConstraintNetwork;
@@ -14,45 +9,23 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.VariablePrototype;
-import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
-import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
-import org.metacsp.utility.PowerSet;
-
-import cern.colt.Arrays;
 
 public class ProactivePlanningDomain extends SimpleDomain {
 
 	private boolean triggered = false;
-	private Activity[] oldInference = null;
 	private HashMap<String,Activity> oldInferences = new HashMap<String,Activity>();
 	private long timeNow = -1;
 	
 	public void setOldInference(String component, Activity oldInf) {
 		oldInferences.put(component,oldInf);
 	}
-	
-//	public void setOldInference(Activity[] oldInf) {
-//		Vector<Activity> oldAndNew = new Vector<Activity>();
-//		for (Activity oldOldAct : oldInference) {
-//			boolean found = false;
-//			for (Activity oldAct : oldInf) {
-//				if (oldAct.getComponent().equals(oldOldAct.getComponent())) {
-//					found = true;
-//					break;
-//				}
-//			}
-//			if (!found) oldAndNew.add(oldOldAct);
-//		}
-//		for (Activity oldAct : oldInf) oldAndNew.add(oldAct);
-//		this.oldInference = oldAndNew.toArray(new Activity[oldAndNew.size()]);
-//	}
-	
+		
 	public ProactivePlanningDomain(int[] capacities, String[] resourceNames, String domainName) {
 		super(capacities, resourceNames, domainName);
 	}
@@ -150,16 +123,6 @@ public class ProactivePlanningDomain extends SimpleDomain {
 				before.setTo(oneGoal);
 				cn.addConstraint(before);
 			}
-//			if (oldInference != null) {
-//				for (Activity oldVar : oldInference) {
-//					if (oneGoal.getParameters()[0].equals(oldVar.getComponent())) {
-//						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-//						before.setFrom(oldVar);
-//						before.setTo(oneGoal);
-//						cn.addConstraint(before);
-//					}
-//				}
-//			}
 			ret.add(cn);
 		}
 		if (ret.isEmpty()) return null;

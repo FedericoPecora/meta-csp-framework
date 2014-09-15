@@ -28,6 +28,7 @@ import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.fuzzySetActivity.FuzzySetActivityNetworkSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
@@ -75,7 +76,6 @@ public class SimplePlanner extends MetaConstraintSolver {
 		for (Variable v : activityToRemove) {
 			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
 				rr.removeUsage((Activity)v);
-				System.out.println("Removed res usage of " + v + " on RES " + rr);
 			}
 		}
 		
