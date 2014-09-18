@@ -27,6 +27,11 @@ import java.util.Arrays;
 import org.metacsp.framework.BinaryConstraint;
 import org.metacsp.framework.Constraint;
 
+/**
+ * Implementation of RCC-8 (Region Connection Calculus) constraints.
+ * @author Masoumeh Mansouri
+ *
+ */
 public class RCCConstraint extends BinaryConstraint{
 
 	//protected Type type;
@@ -92,7 +97,7 @@ public class RCCConstraint extends BinaryConstraint{
 		NTPP, //Non-Tangential Proper Part
 		TPPI, //Inverse of Tangential Proper Part
 		NTPPI, //inverse of Non-Tangential Proper Part
-		EQ, //EQual
+		EQ //EQual
 	};
 	//Type.DC, Type.EC, Type.PO, Type.TPP, Type.NTPP, Type.TPPI, Type.NTPPI, Type.EQ
 	public static Type[][][] transitionTable = {

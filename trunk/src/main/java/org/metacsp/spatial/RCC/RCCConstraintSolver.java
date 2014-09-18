@@ -30,8 +30,8 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 
 /**
- * This {@link ConstraintSolver} implements a  path consistency 
- * algorithm, to check the consistency of constraint network based of on RCC (Region Connection calculi) constraints
+ * This {@link ConstraintSolver} implements a path consistency algorithm
+ * to check the consistency of constraint networks with RCC-8 (Region Connection Calculus) constraints.
  * 
  * @author Iran Mansouri
  *
