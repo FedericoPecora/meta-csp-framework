@@ -1,12 +1,12 @@
 package org.metacsp.multi.spatioTemporal;
 
-import org.metacsp.multi.activity.Activity;
-import org.metacsp.multi.spatial.blockAlgebra.RectangularCuboidRegion;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.spatial.blockAlgebra.RectangularCuboidRegion;
 
 public class SpatialFluent2 extends MultiVariable{
 	

@@ -25,6 +25,8 @@ package org.metacsp.examples.multi;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
@@ -32,8 +34,6 @@ import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 
 public class TestRectangleConstraintSolver {
 

@@ -27,6 +27,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.Variable;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.SimpleDistanceConstraint;
+import org.metacsp.time.TimePoint;
+
 import prefuse.Constants;
 import prefuse.Display;
 import prefuse.Visualization;
@@ -56,11 +62,6 @@ import prefuse.visual.DecoratorItem;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
-import org.metacsp.time.APSPSolver;
-import org.metacsp.time.SimpleDistanceConstraint;
-import org.metacsp.time.TimePoint;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.Variable;
 
 public class PlotSTPTemporalModule extends Display {
 	

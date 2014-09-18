@@ -1,5 +1,7 @@
 package org.metacsp.multi.spatioTemporal;
 
+import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
@@ -8,9 +10,6 @@ import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.spatial.reachability.ReachabilityConstraint;
 import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 public class SpatialFluentSolver extends MultiConstraintSolver{
 	

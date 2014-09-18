@@ -24,16 +24,16 @@ package org.metacsp.multi.activity;
 
 import java.util.Vector;
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.Variable;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.utility.UI.PlotActivityNetworkGantt;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
-import org.metacsp.framework.Variable;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 public class ActivityNetworkSolver extends MultiConstraintSolver {
 

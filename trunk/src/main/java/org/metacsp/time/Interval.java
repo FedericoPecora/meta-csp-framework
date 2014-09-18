@@ -23,7 +23,6 @@
 package org.metacsp.time;
 
 import org.metacsp.framework.Domain;
-import org.metacsp.framework.ValueChoiceFunction;
 
 /**
  * Represents intervals of time described by a start and an end time. 

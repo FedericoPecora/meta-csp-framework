@@ -24,6 +24,8 @@ package org.metacsp.examples.meta;
 
 import java.util.logging.Level;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
@@ -37,8 +39,6 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 
 public class TestSimplePlanner {	
 	

@@ -1,7 +1,5 @@
 package org.metacsp.examples.multi;
 
-import java.util.Calendar;
-
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;

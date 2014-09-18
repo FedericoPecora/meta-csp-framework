@@ -1,13 +1,13 @@
 package org.metacsp.multi.spatioTemporal;
 
+import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.blockAlgebra.BlockAlgebraConstraint;
 import org.metacsp.multi.spatial.blockAlgebra.BlockConstraintSolver;
 import org.metacsp.multi.spatial.blockAlgebra.UnaryBlockConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.framework.ConstraintSolver;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 public class SpatialFluentSolver2 extends MultiConstraintSolver{
 	

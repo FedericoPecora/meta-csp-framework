@@ -22,12 +22,11 @@
  ******************************************************************************/
 package org.metacsp.framework.multi;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * This class is used to represent binay constraints among {@link MultiVariable}s.

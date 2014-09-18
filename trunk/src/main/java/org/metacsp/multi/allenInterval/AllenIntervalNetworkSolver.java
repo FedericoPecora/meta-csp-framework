@@ -24,13 +24,13 @@ package org.metacsp.multi.allenInterval;
 
 import java.util.ArrayList;
 
-import org.metacsp.time.APSPSolver;
-import org.metacsp.time.Bounds;
-import org.metacsp.time.TimePoint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
+import org.metacsp.time.TimePoint;
 
 public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	

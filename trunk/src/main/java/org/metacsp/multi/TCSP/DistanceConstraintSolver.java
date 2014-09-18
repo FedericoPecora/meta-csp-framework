@@ -22,11 +22,10 @@
  ******************************************************************************/
 package org.metacsp.multi.TCSP;
 
-import org.metacsp.time.APSPSolver;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.time.APSPSolver;
 
 public class DistanceConstraintSolver extends MultiConstraintSolver {
 

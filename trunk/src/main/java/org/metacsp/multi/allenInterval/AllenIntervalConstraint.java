@@ -25,14 +25,14 @@ package org.metacsp.multi.allenInterval;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.Variable;
+import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.throwables.time.MalformedBoundsException;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.time.TimePoint;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.Variable;
-import org.metacsp.framework.multi.MultiBinaryConstraint;
 
 public class AllenIntervalConstraint extends MultiBinaryConstraint {
 

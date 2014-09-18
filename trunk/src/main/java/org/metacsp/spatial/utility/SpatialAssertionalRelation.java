@@ -3,8 +3,6 @@ package org.metacsp.spatial.utility;
 import org.metacsp.multi.spatial.blockAlgebra.UnaryBlockConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebraNew.toRemove.OntologicalSpatialProperty;
-import org.metacsp.multi.spatioTemporal.SpatialFluent;
-import org.metacsp.multi.spatioTemporal.SpatialFluent2;
 
 
 public class SpatialAssertionalRelation extends AssertionalRelation{

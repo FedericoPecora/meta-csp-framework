@@ -24,15 +24,15 @@ package org.metacsp.multi.fuzzySetActivity;
 
 import java.util.Vector;
 
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.time.APSPSolver;
-import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.time.APSPSolver;
 
 
 public class FuzzySetActivityNetworkSolver extends MultiConstraintSolver {

@@ -24,10 +24,7 @@ package org.metacsp.multi.symbols;
 
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
-import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.framework.multi.MultiConstraintSolver;
 
 public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {

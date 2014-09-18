@@ -22,13 +22,13 @@
  ******************************************************************************/
 package org.metacsp.time.qualitative;
 
-import org.metacsp.multi.allenInterval.AllenInterval;
-import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenInterval;
+import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 
 /**
  * An implementation of the Allen interval variable.  This implementation is

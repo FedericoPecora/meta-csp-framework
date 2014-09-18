@@ -30,14 +30,14 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.metacsp.multi.allenInterval.AllenInterval;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
-import org.metacsp.time.TimePoint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.allenInterval.AllenInterval;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
+import org.metacsp.time.TimePoint;
 
 /**
  * A multi-variable is a variable "implemented" by several underlying lower-level {@link Variable}s.

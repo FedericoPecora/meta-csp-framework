@@ -28,12 +28,11 @@ import java.util.logging.Logger;
 
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanVariable;
-
-import org.metacsp.throwables.NoSymbolsException;
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
+import org.metacsp.throwables.NoSymbolsException;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class SymbolicValueConstraint extends MultiBinaryConstraint {
 

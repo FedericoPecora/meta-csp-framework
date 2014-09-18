@@ -22,11 +22,11 @@
  ******************************************************************************/
 package org.metacsp.multi.TCSP;
 
-import org.metacsp.time.Bounds;
-import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
+import org.metacsp.time.Bounds;
+import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.time.TimePoint;
 
 public class DistanceConstraint extends MultiBinaryConstraint {

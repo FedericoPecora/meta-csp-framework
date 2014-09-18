@@ -33,7 +33,6 @@ import java.awt.geom.Line2D;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.metacsp.multi.activity.Activity;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -41,6 +40,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.multi.activity.Activity;
 
 public class Floor2D extends Schedulable {
 

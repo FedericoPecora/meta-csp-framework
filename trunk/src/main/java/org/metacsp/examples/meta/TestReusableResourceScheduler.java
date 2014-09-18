@@ -24,6 +24,10 @@ package org.metacsp.examples.meta;
 
 
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.symbolsAndTime.ReusableResource;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
 import org.metacsp.multi.activity.Activity;
@@ -34,10 +38,6 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.Callback;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ValueOrderingH;
-import org.metacsp.framework.VariableOrderingH;
 
 public class TestReusableResourceScheduler {
 	

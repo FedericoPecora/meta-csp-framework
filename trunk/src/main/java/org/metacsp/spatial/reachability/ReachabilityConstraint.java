@@ -2,9 +2,6 @@ package org.metacsp.spatial.reachability;
 
 import org.metacsp.framework.BinaryConstraint;
 import org.metacsp.framework.Constraint;
-import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
-import org.metacsp.spatial.RCC.RCCConstraint;
-import org.metacsp.time.qualitative.QualitativeAllenIntervalConstraint.Type;
 
 public class ReachabilityConstraint extends BinaryConstraint{
 

@@ -1,13 +1,13 @@
 package org.metacsp.multi.spatioTemporal;
 
-import org.metacsp.multi.activity.Activity;
-import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
-import org.metacsp.spatial.reachability.ConfigurationVariable;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
+import org.metacsp.spatial.reachability.ConfigurationVariable;
 
 public class SpatialFluent extends MultiVariable{
 	

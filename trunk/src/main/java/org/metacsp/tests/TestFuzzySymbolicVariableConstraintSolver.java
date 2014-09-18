@@ -1,35 +1,14 @@
 package org.metacsp.tests;
 
-import java.util.Arrays;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
-import org.metacsp.meta.symbolsAndTime.Scheduler;
-import org.metacsp.multi.activity.Activity;
-import org.metacsp.multi.activity.ActivityNetworkSolver;
-import org.metacsp.multi.allenInterval.AllenInterval;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.time.APSPSolver;
-import org.metacsp.time.Bounds;
-import org.metacsp.time.SimpleDistanceConstraint;
-import org.metacsp.time.TimePoint;
-import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.booleanSAT.BooleanConstraint;
-import org.metacsp.booleanSAT.BooleanDomain;
-import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
-import org.metacsp.booleanSAT.BooleanVariable;
-import org.metacsp.examples.TestBooleanSatisfiabilitySolverSATAlternative1;
-import org.metacsp.examples.TestBooleanSatisfiabilitySolverSATNonCNF;
-import org.metacsp.examples.TestBooleanSatisfiabilitySolverUNSAT;
-import org.metacsp.examples.TestBooleanSatisfiabilitySolverUNSATNonCNF;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
+
 import org.metacsp.framework.Variable;
 import org.metacsp.fuzzySymbols.FuzzySymbolicVariable;
 import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestFuzzySymbolicVariableConstraintSolver extends TestCase {
 	

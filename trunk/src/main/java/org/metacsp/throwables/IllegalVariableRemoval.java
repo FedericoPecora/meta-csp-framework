@@ -23,6 +23,7 @@
 package org.metacsp.throwables;
 
 import java.util.Arrays;
+
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 

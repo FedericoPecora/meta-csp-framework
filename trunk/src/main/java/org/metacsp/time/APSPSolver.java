@@ -35,16 +35,16 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
-import org.metacsp.throwables.ConstraintNotFound;
-import org.metacsp.throwables.time.MalformedSimpleDistanceConstraint;
-import org.metacsp.utility.UI.PlotSTPTemporalModule;
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.ValueChoiceFunction;
 import org.metacsp.framework.Variable;
+import org.metacsp.throwables.ConstraintNotFound;
+import org.metacsp.throwables.time.MalformedSimpleDistanceConstraint;
+import org.metacsp.utility.UI.PlotSTPTemporalModule;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * Simple Temporal Problem solver which uses the Floyd-Warshall

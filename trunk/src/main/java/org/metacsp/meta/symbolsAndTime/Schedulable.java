@@ -29,6 +29,12 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.framework.Variable;
+import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.meta.MetaConstraint;
+import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityComparator;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -36,12 +42,6 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.PowerSet;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ValueOrderingH;
-import org.metacsp.framework.Variable;
-import org.metacsp.framework.VariableOrderingH;
-import org.metacsp.framework.meta.MetaConstraint;
-import org.metacsp.framework.meta.MetaVariable;
 
 public abstract class Schedulable extends MetaConstraint {
 	

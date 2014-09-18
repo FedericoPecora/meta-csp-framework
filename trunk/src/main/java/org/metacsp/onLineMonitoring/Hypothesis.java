@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 
-import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
-import org.metacsp.multi.fuzzyActivity.SimpleTimeline;
-import org.metacsp.time.APSPSolver;
-import org.metacsp.time.Bounds;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
+import org.metacsp.multi.fuzzyActivity.SimpleTimeline;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
 
 public class Hypothesis implements Comparable<Hypothesis> {
 	

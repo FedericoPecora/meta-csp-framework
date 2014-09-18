@@ -33,24 +33,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-import javax.sound.midi.Track;
-
-import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
-import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
-import org.metacsp.meta.simplePlanner.SimpleOperator.ReservedWord;
-import org.metacsp.meta.symbolsAndTime.Schedulable;
-import org.metacsp.multi.activity.Activity;
-import org.metacsp.multi.activity.ActivityNetworkSolver;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.spatial.reachability.ConfigurationVariable;
-import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
-import org.metacsp.spatial.utility.SpatialRule;
-import org.metacsp.time.APSPSolver;
-import org.metacsp.time.Bounds;
-import org.metacsp.utility.Matrix;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -61,9 +43,13 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
-import org.sat4j.specs.ContradictionException;
-
-import cern.colt.Arrays;
+import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
+import org.metacsp.meta.symbolsAndTime.Schedulable;
+import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.spatial.utility.SpatialRule;
+import org.metacsp.time.Bounds;
 
 public class SimpleDomain extends MetaConstraint {
 	/**

@@ -24,9 +24,9 @@ package org.metacsp.multi.fuzzyActivity;
 
 import java.util.LinkedHashMap;
 
+import org.metacsp.framework.Variable;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
-import org.metacsp.framework.Variable;
 
 public class SimpleTimeline {
 	

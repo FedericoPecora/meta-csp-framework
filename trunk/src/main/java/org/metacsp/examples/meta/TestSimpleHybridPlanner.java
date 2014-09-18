@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 
-
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ValueOrderingH;

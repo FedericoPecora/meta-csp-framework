@@ -27,12 +27,12 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.Variable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.Variable;
 
 public class MeltYourCPUTestCaseActivityNetworkSolver {
 	

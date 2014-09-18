@@ -22,7 +22,6 @@
  ******************************************************************************/
 package org.metacsp.time.qualitative;
 import org.metacsp.framework.Domain;
-import org.metacsp.framework.ValueChoiceFunction;
 
 /**
  * Represents intervals of time without metric extension. 

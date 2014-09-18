@@ -31,12 +31,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 /**
  * This {@link ConstraintSolver} solves CSPs where variables are fuzzy sets (see

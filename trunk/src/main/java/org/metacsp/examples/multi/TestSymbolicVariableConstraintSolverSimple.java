@@ -24,18 +24,15 @@ package org.metacsp.examples.multi;
 
 import java.util.logging.Logger;
 
-import org.metacsp.booleanSAT.BooleanDomain;
-import org.metacsp.booleanSAT.BooleanVariable;
-
-import cern.colt.Arrays;
-
-import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.multi.symbols.SymbolicVariable;
-import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
+import org.metacsp.multi.symbols.SymbolicVariable;
+import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
+import org.metacsp.utility.logging.MetaCSPLogging;
+
+import cern.colt.Arrays;
 
 public class TestSymbolicVariableConstraintSolverSimple {
 	

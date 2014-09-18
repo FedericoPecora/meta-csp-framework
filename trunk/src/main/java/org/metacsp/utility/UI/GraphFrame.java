@@ -47,6 +47,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
+import org.metacsp.framework.ConstraintNetwork;
+
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
@@ -64,7 +66,6 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.layout.LayoutTransition;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.util.Animator;
-import org.metacsp.framework.ConstraintNetwork;
 
 /**
  * A variation of AddNodeDemo that animates transitions between graph states.

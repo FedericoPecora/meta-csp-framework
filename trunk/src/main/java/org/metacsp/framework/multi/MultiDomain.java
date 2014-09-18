@@ -22,10 +22,10 @@
  ******************************************************************************/
 package org.metacsp.framework.multi;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import java.util.Arrays;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 

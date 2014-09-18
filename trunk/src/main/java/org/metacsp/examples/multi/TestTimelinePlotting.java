@@ -25,6 +25,8 @@ package org.metacsp.examples.multi;
 import java.util.Calendar;
 import java.util.logging.Level;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -33,8 +35,6 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 
 public class TestTimelinePlotting {
 	

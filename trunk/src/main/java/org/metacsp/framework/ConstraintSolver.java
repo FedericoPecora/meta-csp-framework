@@ -34,12 +34,12 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.metacsp.framework.multi.MultiConstraint;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.throwables.ConstraintNotFound;
 import org.metacsp.throwables.IllegalVariableRemoval;
 import org.metacsp.throwables.VariableNotFound;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.multi.MultiConstraint;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 /**
  * This class provides common infrastructure and functionality for

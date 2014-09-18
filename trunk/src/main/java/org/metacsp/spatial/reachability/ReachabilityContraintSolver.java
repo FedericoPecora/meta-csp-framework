@@ -3,8 +3,6 @@ package org.metacsp.spatial.reachability;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
-import org.metacsp.framework.ConstraintSolver.OPTIONS;
-import org.metacsp.spatial.RCC.Region;
 
 public class ReachabilityContraintSolver extends ConstraintSolver{
 

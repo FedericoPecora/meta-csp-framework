@@ -24,8 +24,8 @@ package org.metacsp.fuzzyAllenInterval;
 
 import java.util.HashMap;
 
-import org.metacsp.time.qualitative.QualitativeAllenIntervalConstraint;
 import org.metacsp.framework.Constraint;
+import org.metacsp.time.qualitative.QualitativeAllenIntervalConstraint;
 
 /**
  * This class represents fuzzy Allen Interval constraints.  Each constraint is a 

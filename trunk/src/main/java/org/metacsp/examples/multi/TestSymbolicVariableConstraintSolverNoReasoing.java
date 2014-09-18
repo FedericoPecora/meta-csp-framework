@@ -24,16 +24,14 @@ package org.metacsp.examples.multi;
 
 import java.util.logging.Logger;
 
-import cern.colt.Arrays;
-
-import org.metacsp.throwables.NoSymbolsException;
-import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.multi.symbols.SymbolicVariable;
-import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
+import org.metacsp.multi.symbols.SymbolicVariable;
+import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
+import org.metacsp.throwables.NoSymbolsException;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class TestSymbolicVariableConstraintSolverNoReasoing {
 	

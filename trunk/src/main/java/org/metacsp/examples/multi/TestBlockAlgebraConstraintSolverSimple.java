@@ -32,8 +32,6 @@ import org.metacsp.multi.spatial.blockAlgebra.BlockAlgebraConstraint;
 import org.metacsp.multi.spatial.blockAlgebra.BlockConstraintSolver;
 import org.metacsp.multi.spatial.blockAlgebra.RectangularCuboidRegion;
 import org.metacsp.multi.spatial.blockAlgebra.UnaryBlockConstraint;
-import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
-import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 

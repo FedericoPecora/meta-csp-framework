@@ -31,8 +31,6 @@ import java.text.NumberFormat;
 
 import javax.swing.JPanel;
 
-import org.metacsp.multi.activity.Timeline;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -50,6 +48,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.TextAnchor;
+import org.metacsp.multi.activity.Timeline;
 
 
 

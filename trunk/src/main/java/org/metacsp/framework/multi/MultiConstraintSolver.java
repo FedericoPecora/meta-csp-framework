@@ -30,12 +30,11 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.metacsp.throwables.ConstraintNotFound;
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
+import org.metacsp.throwables.ConstraintNotFound;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * This class extends the {@link ConstraintSolver} class providing functionality

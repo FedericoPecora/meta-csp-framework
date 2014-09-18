@@ -3,7 +3,8 @@ package org.metacsp.tests.multi;
 import java.util.logging.Level;
 
 import junit.framework.TestCase;
-import org.metacsp.meta.symbolsAndTime.Scheduler;
+
+import org.metacsp.framework.Constraint;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
@@ -12,7 +13,6 @@ import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.Constraint;
 
 public class TestAllenInterval extends TestCase {
 	

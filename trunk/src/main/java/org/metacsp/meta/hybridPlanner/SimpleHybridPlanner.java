@@ -2,15 +2,12 @@ package org.metacsp.meta.hybridPlanner;
 
 import java.awt.Rectangle;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Vector;
-
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariablePrototype;
-import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.SimpleDomain;

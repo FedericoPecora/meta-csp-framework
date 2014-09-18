@@ -10,7 +10,6 @@ import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
-import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 
 public class Dispatcher extends Thread {

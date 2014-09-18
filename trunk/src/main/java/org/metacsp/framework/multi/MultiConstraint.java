@@ -24,11 +24,11 @@ package org.metacsp.framework.multi;
 
 import java.util.logging.Logger;
 
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * A {@link MultiConstraint} is a constraint among {@link Variable}s that could be {@link MultiVariable}s.

@@ -25,8 +25,6 @@ package org.metacsp.meta.symbolsAndTime;
 import java.util.Arrays;
 import java.util.Vector;
 
-import org.metacsp.multi.activity.Activity;
-import org.metacsp.time.Interval;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -34,6 +32,8 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.multi.activity.Activity;
+import org.metacsp.time.Interval;
 
 public class StateVariable extends Schedulable {
 

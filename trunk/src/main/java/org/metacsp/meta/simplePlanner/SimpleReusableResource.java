@@ -22,14 +22,14 @@
  ******************************************************************************/
 package org.metacsp.meta.simplePlanner;
 
-import org.metacsp.meta.symbolsAndTime.Schedulable;
-import org.metacsp.multi.activity.Activity;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.meta.symbolsAndTime.Schedulable;
+import org.metacsp.multi.activity.Activity;
 
 
 
