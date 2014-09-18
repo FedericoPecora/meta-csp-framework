@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -16,19 +14,17 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.apache.commons.collections15.iterators.EntrySetMapIterator;
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.Variable;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.meta.TCSP.TCSPSolver;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
 import org.metacsp.utility.UI.SearchTreeFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
 import edu.uci.ics.jung.graph.DelegateForest;
-
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
-import org.metacsp.framework.Variable;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 /**
  * A meta-CSP is a high-level CSP whose variables and/or constraints are defined implicitly.  These

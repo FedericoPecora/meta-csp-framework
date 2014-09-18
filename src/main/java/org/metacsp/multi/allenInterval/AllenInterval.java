@@ -22,13 +22,13 @@
  ******************************************************************************/
 package org.metacsp.multi.allenInterval;
 
-import org.metacsp.time.Bounds;
-import org.metacsp.time.TimePoint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.time.Bounds;
+import org.metacsp.time.TimePoint;
 
 public class AllenInterval extends MultiVariable {
 	

@@ -22,8 +22,9 @@
  ******************************************************************************/
 package org.metacsp.throwables;
 
-import org.metacsp.fuzzySymbols.FuzzySymbolicDomain;
 import java.util.Arrays;
+
+import org.metacsp.fuzzySymbols.FuzzySymbolicDomain;
 
 public class PossibilityDegreeMismathcException extends Exception {
 	

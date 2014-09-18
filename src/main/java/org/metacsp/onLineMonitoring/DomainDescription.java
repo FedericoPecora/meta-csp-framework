@@ -27,16 +27,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.Variable;
+import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
 import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
 import org.metacsp.multi.fuzzyActivity.SimpleTimeline;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.PermutationsWithRepetition;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.Variable;
-import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 
 
 public class DomainDescription {

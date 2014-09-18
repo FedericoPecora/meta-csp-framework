@@ -3,13 +3,14 @@ package org.metacsp.multi.spatial.blockAlgebra;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.metacsp.multi.allenInterval.AllenInterval;
-import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
-import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
-import org.metacsp.time.Bounds;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.multi.allenInterval.AllenInterval;
+import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
+import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
+import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
+import org.metacsp.time.Bounds;
 
 /**
  * This class represents Block Algebra constraints. Each constraint represents three dimension Allen relations between spatial entities.    

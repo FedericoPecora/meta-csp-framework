@@ -22,13 +22,13 @@
  ******************************************************************************/
 package org.metacsp.meta.TCSP;
 
-import org.metacsp.multi.TCSP.DistanceConstraint;
-import org.metacsp.multi.TCSP.DistanceConstraintSolver;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.framework.multi.MultiConstraint;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.multi.TCSP.DistanceConstraint;
+import org.metacsp.multi.TCSP.DistanceConstraintSolver;
 
 public class TCSPSolver extends MetaConstraintSolver {
 

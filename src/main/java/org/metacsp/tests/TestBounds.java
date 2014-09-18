@@ -3,7 +3,7 @@ package org.metacsp.tests;
 import java.util.logging.Level;
 
 import junit.framework.TestCase;
-import org.metacsp.meta.symbolsAndTime.Scheduler;
+
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 

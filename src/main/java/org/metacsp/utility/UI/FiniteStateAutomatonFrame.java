@@ -47,8 +47,8 @@ import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
 import org.apache.commons.collections15.Transformer;
-
 import org.metacsp.time.Interval;
+
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;

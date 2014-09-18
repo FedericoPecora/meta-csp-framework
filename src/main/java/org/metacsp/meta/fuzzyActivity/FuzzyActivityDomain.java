@@ -25,17 +25,6 @@ package org.metacsp.meta.fuzzyActivity;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
-import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
-import org.metacsp.multi.fuzzyActivity.SimpleTimeline;
-import org.metacsp.onLineMonitoring.FuzzySensorEvent;
-import org.metacsp.onLineMonitoring.PhysicalSensor;
-import org.metacsp.onLineMonitoring.Requirement;
-import org.metacsp.onLineMonitoring.Rule;
-import org.metacsp.onLineMonitoring.Sensor;
-import org.metacsp.utility.PermutationsWithRepetition;
-
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -44,6 +33,16 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
+import org.metacsp.multi.fuzzyActivity.SimpleTimeline;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.onLineMonitoring.FuzzySensorEvent;
+import org.metacsp.onLineMonitoring.PhysicalSensor;
+import org.metacsp.onLineMonitoring.Requirement;
+import org.metacsp.onLineMonitoring.Rule;
+import org.metacsp.onLineMonitoring.Sensor;
+import org.metacsp.utility.PermutationsWithRepetition;
 
 
 /**

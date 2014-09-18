@@ -24,6 +24,9 @@ package org.metacsp.examples.meta;
 
 import java.util.logging.Level;
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.TCSP.MostConstrainedFirstVarOH;
 import org.metacsp.meta.TCSP.TCSPLabeling;
 import org.metacsp.meta.TCSP.TCSPSolver;
@@ -33,11 +36,7 @@ import org.metacsp.multi.TCSP.DistanceConstraintSolver;
 import org.metacsp.multi.TCSP.MultiTimePoint;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
-import org.metacsp.utility.logging.LoggerNotDefined;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ValueOrderingH;
-import org.metacsp.framework.VariableOrderingH;
 
 
 public class TestTCSPSolver {

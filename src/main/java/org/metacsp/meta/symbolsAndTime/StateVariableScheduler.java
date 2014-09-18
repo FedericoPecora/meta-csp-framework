@@ -23,12 +23,12 @@
 package org.metacsp.meta.symbolsAndTime;
 
 
-import org.metacsp.multi.activity.ActivityNetworkSolver;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 public class StateVariableScheduler extends MetaConstraintSolver {
 

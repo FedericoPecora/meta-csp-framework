@@ -24,11 +24,11 @@ package org.metacsp.examples;
 
 import java.util.logging.Level;
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.Variable;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.Variable;
 
 
 public class TestAPSPSolverSimple {

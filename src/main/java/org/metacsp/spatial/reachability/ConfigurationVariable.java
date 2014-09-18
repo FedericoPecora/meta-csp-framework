@@ -3,7 +3,6 @@ package org.metacsp.spatial.reachability;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
-import org.metacsp.time.qualitative.SimpleInterval;
 
 public class ConfigurationVariable extends Variable{
 

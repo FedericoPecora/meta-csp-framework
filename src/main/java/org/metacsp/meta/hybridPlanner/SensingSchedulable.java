@@ -1,6 +1,5 @@
 package org.metacsp.meta.hybridPlanner;
 
-import java.util.HashMap;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
@@ -12,7 +11,6 @@ import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;

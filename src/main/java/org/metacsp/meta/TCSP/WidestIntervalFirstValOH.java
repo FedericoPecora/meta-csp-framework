@@ -22,12 +22,12 @@
  ******************************************************************************/
 package org.metacsp.meta.TCSP;
 
-import org.metacsp.multi.TCSP.DistanceConstraint;
-import org.metacsp.time.APSPSolver;
-import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.multi.TCSP.DistanceConstraint;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.SimpleDistanceConstraint;
 
 public class WidestIntervalFirstValOH extends ValueOrderingH {
 

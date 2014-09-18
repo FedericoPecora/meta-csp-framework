@@ -25,12 +25,12 @@ package org.metacsp.framework.meta;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * A {@link MetaConstraint} is a generalization of the concept of constraint in classical CSPs.  Like variables in a metaCSP,

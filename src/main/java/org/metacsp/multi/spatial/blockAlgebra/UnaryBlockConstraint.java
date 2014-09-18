@@ -2,12 +2,12 @@ package org.metacsp.multi.spatial.blockAlgebra;
 
 import java.util.Arrays;
 
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.time.Bounds;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.time.Bounds;
 
 public class UnaryBlockConstraint extends MultiBinaryConstraint {
 

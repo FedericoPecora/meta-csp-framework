@@ -24,9 +24,6 @@ package org.metacsp.meta.TCSP;
 
 import java.util.Vector;
 
-import org.metacsp.multi.TCSP.DistanceConstraint;
-import org.metacsp.time.Bounds;
-import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -36,6 +33,9 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.framework.multi.MultiConstraint;
+import org.metacsp.multi.TCSP.DistanceConstraint;
+import org.metacsp.time.Bounds;
+import org.metacsp.time.SimpleDistanceConstraint;
 
 public class TCSPLabeling extends MetaConstraint {
 

@@ -24,9 +24,6 @@ package org.metacsp.meta.fuzzyActivity;
 
 import java.util.Vector;
 
-import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
-import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.meta.MetaConstraintSolver;
@@ -34,6 +31,9 @@ import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
 import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 /**
  * Provides a meta-CSP implementation of fuzzy context inference.  The solver

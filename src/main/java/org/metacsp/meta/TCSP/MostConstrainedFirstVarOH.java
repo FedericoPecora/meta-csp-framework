@@ -22,9 +22,9 @@
  ******************************************************************************/
 package org.metacsp.meta.TCSP;
 
-import org.metacsp.multi.TCSP.DistanceConstraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.multi.TCSP.DistanceConstraint;
 
 public class MostConstrainedFirstVarOH extends VariableOrderingH {
 

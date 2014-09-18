@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 import org.apache.commons.collections15.map.HashedMap;
+import org.metacsp.framework.meta.MetaConstraintSolver;
+import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.throwables.NonInstantiatedDomain;
 import org.metacsp.utility.UI.Callback;
 import org.metacsp.utility.UI.ConstraintNetworkFrame;
@@ -25,9 +27,6 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.ObservableGraph;
-
-import org.metacsp.framework.meta.MetaConstraintSolver;
-import org.metacsp.framework.multi.MultiBinaryConstraint;
 
 
 /**

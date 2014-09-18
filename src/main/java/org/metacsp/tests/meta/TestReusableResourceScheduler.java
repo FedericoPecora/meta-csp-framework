@@ -3,6 +3,11 @@ package org.metacsp.tests.meta;
 import java.util.logging.Level;
 
 import junit.framework.TestCase;
+
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ValueOrderingH;
+import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.symbolsAndTime.ReusableResource;
 import org.metacsp.meta.symbolsAndTime.Schedulable.PEAKCOLLECTION;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
@@ -14,10 +19,6 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ValueOrderingH;
-import org.metacsp.framework.VariableOrderingH;
 
 public class TestReusableResourceScheduler extends TestCase {
 	

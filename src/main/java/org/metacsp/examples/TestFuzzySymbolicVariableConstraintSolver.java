@@ -22,11 +22,11 @@
  ******************************************************************************/
 package org.metacsp.examples;
 
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.fuzzySymbols.FuzzySymbolicVariable;
-import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.fuzzySymbols.FuzzySymbolicVariable;
+import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 public class TestFuzzySymbolicVariableConstraintSolver {
 	

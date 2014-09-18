@@ -24,14 +24,13 @@ package org.metacsp.multi.fuzzyActivity;
 
 import java.util.Vector;
 
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
 import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalNetworkSolver;
+import org.metacsp.fuzzySymbols.FuzzySymbolicVariableConstraintSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 public class FuzzyActivityNetworkSolver extends MultiConstraintSolver {
 

@@ -22,14 +22,14 @@
  ******************************************************************************/
 package org.metacsp.examples.multi;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.multi.MultiConstraint;
 import org.metacsp.multi.TCSP.DistanceConstraint;
 import org.metacsp.multi.TCSP.DistanceConstraintSolver;
 import org.metacsp.multi.TCSP.MultiTimePoint;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.multi.MultiConstraint;
 
 
 public class TestDistanceConstraintSolver {

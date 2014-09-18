@@ -22,12 +22,11 @@
  ******************************************************************************/
 package org.metacsp.examples.multi;
 
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.multi.fuzzySetActivity.FuzzySetActivity;
 import org.metacsp.multi.fuzzySetActivity.FuzzySetActivityNetworkSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 
 public class TestFuzzySetActivityNetworkSolver {
 	

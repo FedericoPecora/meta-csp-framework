@@ -26,16 +26,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.metacsp.time.qualitative.SimpleAllenInterval;
-import org.metacsp.time.qualitative.SimpleInterval;
-
-import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.ValueChoiceFunction;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
+import org.metacsp.time.qualitative.SimpleAllenInterval;
+import org.metacsp.time.qualitative.SimpleInterval;
 
 
 /**

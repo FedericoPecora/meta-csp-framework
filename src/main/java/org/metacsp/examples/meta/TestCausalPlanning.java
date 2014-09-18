@@ -33,8 +33,6 @@ import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.sensing.ConstraintNetworkAnimator;
-import org.metacsp.sensing.Sensor;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;

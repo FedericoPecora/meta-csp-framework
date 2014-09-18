@@ -22,8 +22,8 @@
  ******************************************************************************/
 package org.metacsp.onLineMonitoring;
 
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 public class Requirement {
 	

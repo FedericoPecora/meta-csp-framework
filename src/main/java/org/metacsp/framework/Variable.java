@@ -31,8 +31,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.metacsp.framework.multi.MultiVariable;

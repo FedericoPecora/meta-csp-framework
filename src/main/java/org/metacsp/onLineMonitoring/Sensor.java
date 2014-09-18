@@ -22,9 +22,9 @@
  ******************************************************************************/
 package org.metacsp.onLineMonitoring;
 
+import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 import org.metacsp.multi.fuzzyActivity.FuzzyActivity;
 import org.metacsp.multi.fuzzyActivity.FuzzyActivityNetworkSolver;
-import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 
 
 public abstract class Sensor {

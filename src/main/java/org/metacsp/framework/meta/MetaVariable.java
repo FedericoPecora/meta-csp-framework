@@ -25,10 +25,10 @@ package org.metacsp.framework.meta;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * {@link MetaVariable}s are objects used by {@link MetaConstraintSolver}s for backtracking search.

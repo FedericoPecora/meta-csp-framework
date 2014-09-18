@@ -25,15 +25,14 @@ package org.metacsp.multi.spatial.rectangleAlgebra;
 
 import java.util.Arrays;
 
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.spatial.RCC.RCCConstraint;
-import org.metacsp.spatial.cardinal.CardinalConstraint;
-import org.metacsp.spatial.cardinal.CardinalConstraint.Type;
-import org.metacsp.spatial.reachability.ReachabilityConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.spatial.RCC.RCCConstraint;
+import org.metacsp.spatial.cardinal.CardinalConstraint;
+import org.metacsp.spatial.cardinal.CardinalConstraint.Type;
 
 public class RectangleConstraint extends MultiBinaryConstraint {
 

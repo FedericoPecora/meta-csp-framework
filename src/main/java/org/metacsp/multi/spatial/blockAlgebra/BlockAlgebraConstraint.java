@@ -2,14 +2,14 @@ package org.metacsp.multi.spatial.blockAlgebra;
 
 import java.util.Arrays;
 
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.spatial.RCC.RCCConstraint;
-import org.metacsp.spatial.cardinal.CardinalConstraint;
-import org.metacsp.spatial.cardinal.CardinalConstraint.Type;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.spatial.RCC.RCCConstraint;
+import org.metacsp.spatial.cardinal.CardinalConstraint;
+import org.metacsp.spatial.cardinal.CardinalConstraint.Type;
 
 public class BlockAlgebraConstraint extends MultiBinaryConstraint {
 

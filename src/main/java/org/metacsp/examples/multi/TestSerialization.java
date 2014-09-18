@@ -30,15 +30,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 public class TestSerialization {
 

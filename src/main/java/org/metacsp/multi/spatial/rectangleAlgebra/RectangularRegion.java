@@ -23,16 +23,14 @@
 package org.metacsp.multi.spatial.rectangleAlgebra;
 
 
-import org.metacsp.multi.activity.ActivityNetworkSolver;
-import org.metacsp.multi.allenInterval.AllenInterval;
-import org.metacsp.multi.spatial.rectangleAlgebraNew.toRemove.OntologicalSpatialProperty;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
-import org.metacsp.time.Bounds;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.allenInterval.AllenInterval;
+import org.metacsp.multi.spatial.rectangleAlgebraNew.toRemove.OntologicalSpatialProperty;
+import org.metacsp.time.Bounds;
 
 public class RectangularRegion extends MultiVariable {
 	

@@ -24,12 +24,6 @@ package org.metacsp.meta.simplePlanner;
 
 import java.util.Vector;
 
-import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.multi.activity.Activity;
-import org.metacsp.multi.activity.ActivityNetworkSolver;
-import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.fuzzySetActivity.FuzzySetActivityNetworkSolver;
-import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
@@ -37,6 +31,11 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
+import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 
 public class SimplePlanner extends MetaConstraintSolver {

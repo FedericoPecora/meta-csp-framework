@@ -50,6 +50,8 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.apache.commons.collections15.Transformer;
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.meta.MetaVariable;
 
 import edu.uci.ics.jung.algorithms.layout.PolarPoint;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
@@ -67,8 +69,6 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.layout.LayoutTransition;
 import edu.uci.ics.jung.visualization.util.Animator;
-import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.meta.MetaVariable;
 
 public class SearchTreeFrame extends JFrame {
 

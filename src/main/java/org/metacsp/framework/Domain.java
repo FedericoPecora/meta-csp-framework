@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import org.metacsp.throwables.IllegalValueChoiceFunction;
-import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * This class is used to represent domains of variables.  Its main capability is to provide functionality for choosing values

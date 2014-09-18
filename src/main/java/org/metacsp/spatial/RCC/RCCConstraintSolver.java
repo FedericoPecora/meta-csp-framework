@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
-import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 

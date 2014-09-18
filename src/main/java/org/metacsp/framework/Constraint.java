@@ -25,7 +25,6 @@ package org.metacsp.framework;
 import java.awt.Color;
 import java.awt.Paint;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**

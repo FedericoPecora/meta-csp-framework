@@ -22,12 +22,12 @@
  ******************************************************************************/
 package org.metacsp.multi.fuzzySetActivity;
 
-import org.metacsp.fuzzySymbols.FuzzySymbolicVariable;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.fuzzySymbols.FuzzySymbolicVariable;
 
 public class FuzzySetActivity extends MultiVariable {
 	

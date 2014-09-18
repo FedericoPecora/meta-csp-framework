@@ -32,7 +32,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ConcurrentModificationException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -40,6 +39,8 @@ import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
 import org.apache.commons.collections15.Transformer;
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.Variable;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -50,19 +51,15 @@ import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
 import edu.uci.ics.jung.algorithms.layout.util.VisRunner;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.ObservableGraph;
 import edu.uci.ics.jung.graph.event.GraphEvent;
 import edu.uci.ics.jung.graph.event.GraphEventListener;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.decorators.PickableEdgePaintTransformer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.layout.LayoutTransition;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.util.Animator;
-import org.metacsp.framework.Constraint;
-import org.metacsp.framework.Variable;
 
 /**
  * Based on variation of AddNodeDemo that animates transitions between graph states, by Tom Nelson.

@@ -12,7 +12,6 @@ import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.PlanningOperator;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
-import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -23,8 +22,6 @@ import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
-import org.metacsp.spatial.reachability.ConfigurationVariable;
-import org.metacsp.spatial.reachability.ReachabilityContraintSolver;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.Bounds;
 

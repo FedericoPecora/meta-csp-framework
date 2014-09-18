@@ -33,9 +33,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.metacsp.utility.UI.PlotBoxTLSmall;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.utility.UI.PlotBoxTLSmall;
 
 public abstract class Timeline {
 	

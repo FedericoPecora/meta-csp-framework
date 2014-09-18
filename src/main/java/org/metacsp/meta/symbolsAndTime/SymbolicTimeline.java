@@ -24,10 +24,10 @@ package org.metacsp.meta.symbolsAndTime;
 
 import java.util.Arrays;
 
+import org.metacsp.framework.Variable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.activity.Timeline;
-import org.metacsp.framework.Variable;
 
 public class SymbolicTimeline extends Timeline {
 

@@ -25,8 +25,8 @@ package org.metacsp.fuzzySymbols;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.metacsp.throwables.PossibilityDegreeMismathcException;
 import org.metacsp.framework.Domain;
+import org.metacsp.throwables.PossibilityDegreeMismathcException;
 
 /**
  * Class for representing fuzzy sets (domains of {@link FuzzySymbolicVariable}s).
