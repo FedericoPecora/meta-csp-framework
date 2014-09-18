@@ -552,10 +552,18 @@ public class SimpleDomain extends MetaConstraint {
 	}
 
 	/**
+	 * 
+	 * @param textualSpecification 
+	 * @return 
+	 */
+	
+	/**
 	 * Creates a {@link SimpleOperator} from a textual specification (used by the
-	 * domain parser {@link parseDomain}.
+	 * domain parser).
 	 * @param textualSpecification A textual specification of an operator
-	 * @return a {@link SimpleOperator} build according to the textual specification.
+	 * @param resources The resources (identifiers of {@link SimpleReusableResource}s) used in this operator.
+	 * @param planningOp Whether this is a {@link PlanningOperator} or a {@link SimpleOperator}.
+	 * @return A {@link SimpleOperator} build according to the textual specification.
 	 */
 	public static SimpleOperator parseOperator(String textualSpecification, String[] resources, boolean planningOp) {
 		HashMap<String,String> requiredStates = new HashMap<String, String>();
