@@ -59,7 +59,7 @@ public class RCCConstraintSolver extends ConstraintSolver{
 			getVaribaleById.put(this.getVariables()[i].getID(), this.getVariables()[i]);
 		}
 		Vector<Vector<RCCConstraint>> rccRels = createRCCCompleteNetwork(this.getConstraints());
-		System.out.println(PrintSpatialRelation(rccRels));
+		//System.out.println(PrintSpatialRelation(rccRels));
 		if(RCCPathConsistency(rccRels)) 
 			return true;
 		//RCCPathConsistency(rccRels);
