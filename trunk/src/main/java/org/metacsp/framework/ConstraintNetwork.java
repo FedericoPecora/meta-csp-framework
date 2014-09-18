@@ -110,8 +110,8 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	/**
 	 * Convenience method to keep track of correspondences between {@link VariablePrototype}s and {@link Variable}s (useful
 	 * when {@link ConstraintNetwork}s are used as meta-values in {@link MetaConstraintSolver}s).
-	 * @param vp2v: map of correspondences
-	 */
+	 * @param vp2v Mapping between {@link VariablePrototype}s and {@link Variable}s.
+	 */	
 	public void addSubstitutions(HashedMap<VariablePrototype,Variable> vp2v) {
 		
 		for(VariablePrototype vp: vp2v.keySet()){
@@ -143,7 +143,6 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	/**
 	 * Remove the {@link Variable} corresponding to a given {@link VariablePrototype} (see addSubstitution() method).
 	 * @param vp The {@link VariablePrototype} to look up.
-	 * @return The {@link Variable} corresponding to the given {@link VariablePrototype}.
 	 */
 	public void removeSubstitution(VariablePrototype vp) {
 		Variable v= this.substitutions.get(vp);
@@ -575,31 +574,46 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public void setAnnotation(Object ann) { this.annotation = ann; }
 
 	/**
-	 * Set the annotation for this {@link ConstraintNetwork}.
-	 * @param ann An object that used to annotate this {@link ConstraintNetwork}.
+	 * Get the annotation for this {@link ConstraintNetwork}.
+	 * @return An object that is used to annotate this {@link ConstraintNetwork}.
 	 */
 	public Object getAnnotation() { return this.annotation; }
 
+	/**
+	 * Get all the substitutions of {@link VariablePrototype}s to {@link Variable}s.
+	 * @return All the substitutions of {@link VariablePrototype}s to {@link Variable}s.
+	 */
 	public HashMap<VariablePrototype, Variable> getSubstitutions() {
 		return substitutions;
 	}
-	
+
+	/**
+	 * Get all the inverse substitutions of {@link VariablePrototype}s to {@link Variable}s.
+	 * @return All the inverse substitutions of {@link VariablePrototype}s to {@link Variable}s.
+	 */
 	public HashMap<Variable, VariablePrototype> getInverseSubstitutions() {
 		return substituted;
 	}
 
+	/**
+	 * Get the marking of this {@link ConstraintNetwork}.
+	 * @return The marking of this {@link ConstraintNetwork}.
+	 */
 	public ConstraintNetworkMarking getMarking() {
 		return marking;
 	}
-
+	/**
+	 * Set the marking of this {@link ConstraintNetwork}. 
+	 * @param marking The marking of this {@link ConstraintNetwork}.
+	 */
 	public void setMarking(ConstraintNetworkMarking marking) {
 		this.marking = marking;
 	}
 
 	/**
-	 * This method returns the variables which have been created into the network (i.e. the ones that first were var prototyped 
-	 * and then became activities) 
-	 * @return
+	 * This method returns the variables which have been created in the network based on {@link VariablePrototype}s (i.e.,
+	 * the ones that first were {@link VariablePrototype}s) 
+	 * @return The variables which have been created in the network based on {@link VariablePrototype}s. 
 	 */
 	Variable[] getNativeVariables(){
 		return this.substituted.keySet().toArray(new Variable[this.substituted.keySet().size()]);

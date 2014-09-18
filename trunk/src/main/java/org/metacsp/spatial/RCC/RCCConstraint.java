@@ -90,13 +90,44 @@ public class RCCConstraint extends BinaryConstraint{
 	
 	public static enum Type {
 		
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DISCONNECTED B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-dc.png> 
+		 */
 		DC, //DisConnected
+
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EXTERNALLY-CONNECTED B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-ec.png> 
+		 */
 		EC, //Externally Connected
+		
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A PARTIALLY-OVERLAPPING B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-po.png> 
+		 */
 		PO, //Partially Overlapping
+
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-tpp.png> 
+		 */
 		TPP, //Tangential Proper Part
+
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A NON-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-ntpp.png> 
+		 */
 		NTPP, //Non-Tangential Proper Part
+		
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A INVERSE-OF-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-tppi.png> 
+		 */
 		TPPI, //Inverse of Tangential Proper Part
+		
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A INVERSE-OF-NON-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-ntppi.png> 
+		 */
 		NTPPI, //inverse of Non-Tangential Proper Part
+		
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-e.png> 
+		 */
 		EQ //EQual
 	};
 	//Type.DC, Type.EC, Type.PO, Type.TPP, Type.NTPP, Type.TPPI, Type.NTPPI, Type.EQ

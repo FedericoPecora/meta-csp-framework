@@ -34,104 +34,105 @@ import org.metacsp.time.Bounds;
 import org.metacsp.time.SimpleDistanceConstraint;
 import org.metacsp.time.TimePoint;
 
+/**
+ * This class provides an implementation of Allen's Interval Algebra (see Allen, 1984).  It includes the 13 basic qualitative
+ * relations, as well as several tractable disjunctions.  Relations can also be provided with metric bounds - see
+ * {@link Type} enum for details.
+ * 
+ * @author Federico Pecora
+ *
+ */
 public class AllenIntervalConstraint extends MultiBinaryConstraint {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4010342193923812891L;
 
+	/**
+	 * The 13 basic qualitative relations in Allen's Interval Algebra, plus several tractable disjunctions.  Metric bounds
+	 * can be specified on basic relations.
+	 * 
+	 * @author Federico Pecora
+	 */
 	public static enum Type {
 		//Before,Meets,Overlaps,FinishedBy,Contains,StartedBy,Equals,Starts,During,Finishes,OverlappedBy,
 		//MetBy,After,
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/before.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-p.png> 
 		 */
 		Before(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MEETS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/meets.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MEETS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-m.png> 
 		 */
 		Meets(0),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/overlaps.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS [l,u][l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/aaia-o.png> 
 		 */
-		Overlaps(1L, APSPSolver.INF),
+		Overlaps(1L, APSPSolver.INF, 1L, APSPSolver.INF, 1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/finishedby.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-fi.png> 
 		 */
 		FinishedBy(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS [sl,su] [el,eu] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/contains.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS [l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-di.png> 
 		 */
 		Contains(1L, APSPSolver.INF,   1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/startedby.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-si.png> 
 		 */
 		StartedBy(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/equals.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-e.png> 
 		 */
 		Equals(0),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/starts.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-s.png> 
 		 */
 		Starts(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING [sl,su] [el,eu] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/during.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING [l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-d.png> 
 		 */
 		During(1L, APSPSolver.INF,   1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/finishes.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-f.png> 
 		 */
 		Finishes(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/overlappedby.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY [l,u][l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-oi.png> 
 		 */
-		OverlappedBy(1L, APSPSolver.INF),
-		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/after.png> 
-		 */
+		OverlappedBy(1L, APSPSolver.INF, 1L, APSPSolver.INF, 1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MET-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../images/metby.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-pi.png> 
+		 */
+		After(1L, APSPSolver.INF),
+		
+		/**
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MET-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-mi.png> 
 		 */
 		MetBy(0),
 		
-		After(1L, APSPSolver.INF),
-
 		Release(0L, APSPSolver.INF),
 		Deadline(0L, APSPSolver.INF),
 		
 		BeforeOrMeets(0L, APSPSolver.INF), 
-
 		MetByOrAfter(0L, APSPSolver.INF),
-
 		MetByOrOverlappedBy(0L, APSPSolver.INF),
-
 		MetByOrOverlappedByOrAfter(0),
-
 		MetByOrOverlappedByOrIsFinishedByOrDuring(0L, APSPSolver.INF),
-
 		MeetsOrOverlapsOrBefore(0),
-
 		DuringOrEquals(0L, APSPSolver.INF,   0L, APSPSolver.INF),
-		
 		DuringOrEqualsOrStartsOrFinishes(0L, APSPSolver.INF,   0L, APSPSolver.INF),
-		
-		
 		MeetsOrOverlapsOrFinishedByOrContains(0L, APSPSolver.INF),		// PDDL at start
 		ContainsOrStartedByOrOverlappedByOrMetBy(0L, APSPSolver.INF),		// PDDL at end
-		
 		EndsDuring(0),
 		@Deprecated
 		EndEnd(0L, APSPSolver.INF),
