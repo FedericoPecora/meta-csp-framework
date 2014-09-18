@@ -10,12 +10,14 @@ org.metacsp.fuzzyAllenInterval
 org.metacsp.fuzzySymbols
 org.metacsp.meta.TCSP
 org.metacsp.meta.fuzzyActivity
+org.metacsp.meta.hybridPlanner
 org.metacsp.meta.simplePlanner
 org.metacsp.meta.symbolsAndTime
 org.metacsp.multi.TCSP
 org.metacsp.multi.activity
 org.metacsp.multi.allenInterval
 org.metacsp.multi.fuzzyActivity
+org.metacsp.multi.fuzzySetActivity
 org.metacsp.multi.spatial.blockAlgebra
 org.metacsp.multi.spatial.rectangleAlgebra
 org.metacsp.multi.spatial.rectangleAlgebraNew.toRemove
@@ -25,6 +27,8 @@ org.metacsp.onLineMonitoring
 org.metacsp.sensing
 org.metacsp.spatial.RCC
 org.metacsp.spatial.cardinal
+org.metacsp.spatial.reachability
+org.metacsp.spatial.utility
 org.metacsp.tests
 org.metacsp.tests.meta
 org.metacsp.tests.multi
