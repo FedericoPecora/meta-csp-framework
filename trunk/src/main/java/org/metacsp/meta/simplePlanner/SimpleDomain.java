@@ -782,7 +782,7 @@ public class SimpleDomain extends MetaConstraint {
 	 * @param sp The {@link SimplePlanner} that will use this domain.
 	 * @param filename Text file containing the domain definition. 
 	 */
-	public static void parseDomain(MetaConstraintSolver sp, String filename, Class domainType) {
+	public static void parseDomain(MetaConstraintSolver sp, String filename, Class<?> domainType) {
 		String everything = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -852,9 +852,7 @@ public class SimpleDomain extends MetaConstraint {
 					dom.setValOH(valOH);
 					dom.setVarOH(varOH);
 				}
-				//SimpleDomain dom = new SimpleDomain(resourceCaps, resourceNames, name);
-				//ProactivePlanningDomain dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name);
-
+				
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String cont : controllable) dom.addControllable(cont);
 				for (String cv : contextVars) dom.addContextVar(cv);
