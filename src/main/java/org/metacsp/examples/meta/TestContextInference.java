@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.metacsp.examples.meta;
 
+import java.util.Calendar;
 import java.util.logging.Level;
 
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
@@ -38,8 +39,9 @@ public class TestContextInference {
 	
 	public static void main(String[] args) {
 
+		long origin = Calendar.getInstance().getTimeInMillis();
 		//Create planner
-		SimplePlanner planner = new SimplePlanner(0,100000,0);
+		SimplePlanner planner = new SimplePlanner(origin,origin+100000,0);
 		MetaCSPLogging.setLevel(planner.getClass(), Level.FINE);
 
 		ProactivePlanningDomain.parseDomain(planner, "domains/testContextInference.ddl", ProactivePlanningDomain.class);
@@ -49,8 +51,8 @@ public class TestContextInference {
 		Sensor sensorA = new Sensor("Location", animator);
 		Sensor sensorB = new Sensor("Stove", animator);
 		
-		sensorA.registerSensorTrace("sensorTraces/location.st");
-		sensorB.registerSensorTrace("sensorTraces/stove.st");
+		sensorA.registerSensorTrace("sensorTraces/location.st",origin);
+		sensorB.registerSensorTrace("sensorTraces/stove.st",origin);
 		
 		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "RFIDReader");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
