@@ -84,7 +84,7 @@ public class Sensor implements Serializable {
 		return ret;
 	}
 	
-	protected static HashMap<Long,String> parseSensorValue(String everything) {
+	protected static HashMap<Long,String> parseSensorValue(String everything, long delta) {
 		HashMap<Long,String> ret = new HashMap<Long,String>();
 		int lastSV = everything.lastIndexOf("SensorValue");
 		while (lastSV != -1) {
@@ -100,6 +100,7 @@ public class Sensor implements Serializable {
 			String element = everything.substring(bw,fw);
 			String value = element.substring(element.indexOf("SensorValue")+11).trim();
 			long time = Long.parseLong(value.substring(value.indexOf(" "),value.lastIndexOf(")")).trim());
+			time += delta;
 			value = value.substring(0,value.indexOf(" ")).trim();
 			ret.put(time,value);
 			everything = everything.substring(0,bw);
@@ -113,6 +114,10 @@ public class Sensor implements Serializable {
 	}
 
 	public void registerSensorTrace(String sensorTraceFile) {
+		this.registerSensorTrace(sensorTraceFile, 0);
+	}
+	
+	public void registerSensorTrace(String sensorTraceFile, long delta) {
 		String everything = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(sensorTraceFile));
@@ -129,7 +134,7 @@ public class Sensor implements Serializable {
 				everything = sb.toString();
 				String name = parseName(everything);
 				if (name.equals(this.name)) {
-					HashMap<Long,String> sensorValues = parseSensorValue(everything);
+					HashMap<Long,String> sensorValues = parseSensorValue(everything,delta);
 					animator.registerSensorValuesToDispatch(this, sensorValues);
 				}
 			}
