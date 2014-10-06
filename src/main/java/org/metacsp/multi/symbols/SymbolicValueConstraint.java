@@ -82,21 +82,38 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 			return cons;
 		}
 		
+//		if (this.type.equals(Type.DIFFERENT)) {
+//			BooleanVariable[] scope = new BooleanVariable[internalVarsFrom.length*2];
+//			String wff = "";
+//			for (int i = 0; i < internalVarsFrom.length*2; i+=2) {
+//				scope[i] = ((BooleanVariable)internalVarsFrom[i/2]);
+//				scope[i+1] = ((BooleanVariable)internalVarsTo[i/2]);
+//				//wff += ("(w" + (i+1) + " <-> ~w" + (i+2) + ")");
+//				if (i != 0) wff = "(" + wff + (" ^ (w" + (i+1) + " <-> ~w" + (i+2) + ")") + ")";
+//				else wff = ("(w" + (i+1) + " <-> ~w" + (i+2) + ")");
+//			}
+//			logger.finest("Generated WFF for DIFFERENT constraint: " + wff);
+//			logger.finest("\tscope: " + Arrays.toString(scope));
+//			BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(scope, wff);
+//			return cons;
+//		}
+		
 		if (this.type.equals(Type.DIFFERENT)) {
 			BooleanVariable[] scope = new BooleanVariable[internalVarsFrom.length*2];
 			String wff = "";
 			for (int i = 0; i < internalVarsFrom.length*2; i+=2) {
 				scope[i] = ((BooleanVariable)internalVarsFrom[i/2]);
 				scope[i+1] = ((BooleanVariable)internalVarsTo[i/2]);
-				//wff += ("(w" + (i+1) + " <-> ~w" + (i+2) + ")");
-				if (i != 0) wff = "(" + wff + (" ^ (w" + (i+1) + " <-> ~w" + (i+2) + ")") + ")";
-				else wff = ("(w" + (i+1) + " <-> ~w" + (i+2) + ")");
+				//wff += ("(~w" + (i+1) + " v ~w" + (i+2) + ")");
+				if (i != 0) wff = "(" + wff + (" ^ (~w" + (i+1) + " v ~w" + (i+2) + ")") + ")";
+				else wff = ("(~w" + (i+1) + " v ~w" + (i+2) + ")");
 			}
 			logger.finest("Generated WFF for DIFFERENT constraint: " + wff);
 			logger.finest("\tscope: " + Arrays.toString(scope));
 			BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(scope, wff);
 			return cons;
 		}
+
 		
 		if (this.type.equals(Type.UNARYEQUALS)) {
 			Vector<BooleanVariable> scope = new Vector<BooleanVariable>();

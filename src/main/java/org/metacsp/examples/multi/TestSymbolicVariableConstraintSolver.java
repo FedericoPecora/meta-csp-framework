@@ -48,7 +48,7 @@ public class TestSymbolicVariableConstraintSolver {
 		try { Thread.sleep(2000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 		
-		SymbolicValueConstraint con1 = new SymbolicValueConstraint(Type.EQUALS);
+		SymbolicValueConstraint con1 = new SymbolicValueConstraint(Type.DIFFERENT);
 		con1.setFrom(vars[0]);
 		con1.setTo(vars[1]);
 

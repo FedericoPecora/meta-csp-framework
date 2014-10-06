@@ -55,15 +55,19 @@ public class SymbolicVariable extends MultiVariable {
 
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
-		// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT EXACTLY ONE SYMBOL!
 		if (variables == null || variables.length == 0) return null;
 		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols() == null) return null;
 		if (((SymbolicVariableConstraintSolver)this.solver).getSymbols().length == 0) return null;
+		
 		Vector<BooleanConstraint> cons = new Vector<BooleanConstraint>();
-		for (int i = 0; i < variables.length-1; i++) {
-			BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
-			c.setAutoRemovable(true);
-			cons.add(c);
+		
+		if (((SymbolicVariableConstraintSolver)this.solver).getSingleValue()) {
+			// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT EXACTLY ONE SYMBOL!
+			for (int i = 0; i < variables.length-1; i++) {
+				BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
+				c.setAutoRemovable(true);
+				cons.add(c);
+			}
 		}
 		
 		// === FROM R296 ===

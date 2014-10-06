@@ -120,20 +120,17 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 
 	
 	/**
-	 * Create a {@link FuzzyAllenIntervalConstraint} given an array of constraint types
-	 * whose desired possibility is 1. 
+	 * Create a {@link QualitativeAllenIntervalConstraint} given an array of constraint types. 
 	 * @param types
 	 */
 	public QualitativeAllenIntervalConstraint(Type... types) {
 		this.types = types;
-		//this.isSensoryRelation = false;
 	}
 	
 	/**
-	 * Query whether this constraint's desired possibility for a given type is 1.
+	 * Query whether this constraint includes a specific type in its disjunction.
 	 * @param type The type to query.
-	 * @return <code>true</code> iff the constraint prescribes that the given type
-	 * has possibility 1. 
+	 * @return <code>true</code> iff the constraint prescribes the given type.
 	 */
 	public boolean containsType(Type type) {
 		for (Type t : types)
@@ -142,16 +139,16 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 	}
 	
 	/**
-	 * Get all types with desired possibility 1.
-	 * @return All types with desired possibility 1.
+	 * Get all types of this constraint.
+	 * @return All types of the constraint.
 	 */
 	public Type[] getTypes() {
 		return types;
 	}
 
 	/**
-	 * Set all types with desired possibility 1.
-	 * @param types The types whose desired possibility should be 1.
+	 * Set types of this constraint.
+	 * @param types The types of the constraint.
 	 */
 	public void setTypes(Type[] types) {
 		this.types = types;
@@ -175,7 +172,7 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 	}
 	
 	/**
-	 * The composition used for fuzzy path consistency.
+	 * The composition table used by path consistency.
 	 */
 	public static Type[][][] transitionTable = {
 		{
@@ -395,6 +392,18 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 	
 
 	/**
+	 * Get the inverse relation of a given set of Allen relations.
+	 * @param t The relations to invert.
+	 * @return The inverse of relations <code>t</code>.
+	 */
+	public static Type[] getInverseRelation(Type[] t) {
+		Type[] inverses = new Type[t.length];
+		for (int i = 0; i < inverses.length; i++) inverses[i] = getInverseRelation(t[i]);
+		return inverses;
+		
+	}
+	
+	/**
 	 * Get the inverse relation of a given Allen relation.
 	 * @param t The relation to invert.
 	 * @return The inverse of relation <code>t</code>.
@@ -437,8 +446,6 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 		return Type.values()[i];
 	}
 	
-
-
 	@Override
 	public boolean isEquivalent(Constraint c) {
 		// TODO Auto-generated method stub
