@@ -25,7 +25,9 @@ package org.metacsp.multi.symbols;
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
 import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
 
 public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 
@@ -35,10 +37,44 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	private static final long serialVersionUID = 4961558508886363042L;
 	protected int IDs = 0;
 	protected String[] symbols;
+	protected boolean singleValue = true;
+	protected static SymbolicVariableConstraintSolver thisSolver = null;
 	
 	public SymbolicVariableConstraintSolver(String[] symbols, int maxVars) {
 		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2)), new int[] {symbols.length});
 		this.symbols = symbols;
+		thisSolver = this;
+	}
+	
+	public static Variable union(Variable ... vars) {
+		SymbolicVariable ret = (SymbolicVariable)thisSolver.createVariable(vars[0].getComponent());
+		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.UNARYEQUALS);
+		boolean[] unaryValue = new boolean[thisSolver.symbols.length];
+		for (int i = 0; i < unaryValue.length; i++) unaryValue[i] = false;
+		for (int j = 0; j < vars.length; j++) {
+			String[] symb = ((SymbolicVariable)vars[j]).getSymbols();
+			for (int i = 0; i < symb.length; i++) {
+				for (int k = 0; k < thisSolver.symbols.length; k++) {
+					if (symb[i].equals(thisSolver.getSymbols()[k])) {
+						unaryValue[k] = true;
+						break;
+					}
+				}
+			}
+		}
+		unaryEquals.setUnaryValue(unaryValue);
+		unaryEquals.setFrom(ret);
+		unaryEquals.setTo(ret);
+		thisSolver.addConstraint(unaryEquals);
+		return ret;
+	}
+	
+	public void setSingleValue(boolean singleValue) {
+		this.singleValue = singleValue;
+	}
+	
+	public boolean getSingleValue() {
+		return singleValue;
 	}
 
 	public SymbolicVariableConstraintSolver() {

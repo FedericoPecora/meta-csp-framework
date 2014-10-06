@@ -143,6 +143,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		StartsOrStartedBy(0L, APSPSolver.INF),
 		Duration(0L, APSPSolver.INF),		
 		Forever(0),
+		NotBeforeAndNotAfter(0),
 		DisjunctionRelation;
 		
 		private static Bounds[] createDefaultBounds(Long... bounds) {
@@ -986,6 +987,25 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				first.setFrom(fe);
 				first.setTo(te);
 				Constraint[] ret = {first};
+				return ret;	
+			}
+			
+			if (types[0].equals(Type.NotBeforeAndNotAfter)) {
+				TimePoint fs = from.getStart();
+				TimePoint ts = to.getStart();
+				TimePoint fe = from.getEnd();
+				TimePoint te = to.getEnd();
+				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
+				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
+				first.setMinimum(0);
+				first.setMaximum(APSPSolver.INF);
+				second.setMinimum(0);
+				second.setMaximum(APSPSolver.INF);
+				first.setFrom(fs);
+				first.setTo(te);
+				second.setFrom(ts);
+				second.setTo(fe);
+				Constraint[] ret = {first,second};
 				return ret;	
 			}
 		}
