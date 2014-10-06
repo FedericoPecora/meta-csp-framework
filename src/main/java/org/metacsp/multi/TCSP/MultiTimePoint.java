@@ -78,5 +78,24 @@ public class MultiTimePoint extends MultiVariable {
 	public void setTimePoint(TimePoint tp) {
 		this.getInternalVariables()[0] = tp;
 	}
+	
+	/**
+	 * Get this time point's lower bound.
+	 * @return This time point's lower bound.
+	 */
+	public long getLowerBound(){
+		return ((TimePoint)this.getInternalVariables()[0]).getLowerBound();
+	}
 
-}
+
+
+	/**
+	 * Get this time point's upper bound.
+	 * @return This time point's upper bound.
+	 */
+	public long getUpperBound(){
+		return ((TimePoint)this.getInternalVariables()[0]).getUpperBound();
+	}
+
+}	
+
