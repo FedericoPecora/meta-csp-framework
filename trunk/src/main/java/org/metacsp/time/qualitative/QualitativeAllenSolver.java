@@ -22,6 +22,7 @@ public class QualitativeAllenSolver extends ConstraintSolver {
 	private static final long serialVersionUID = 9130340233823443991L;
 	private int IDs = 0;
 	private ConstraintNetwork completeNetwork = null;
+	private boolean successfulPropagation = false;
 	
 	public QualitativeAllenSolver() {
 		super(new Class[]{QualitativeAllenIntervalConstraint.class}, SimpleAllenInterval.class);
@@ -33,9 +34,19 @@ public class QualitativeAllenSolver extends ConstraintSolver {
 	public boolean propagate() {		
 		if(this.getConstraints().length == 0) return true;
 		createCompleteNetwork();
-		return pathConsistency(); 
+		successfulPropagation = false;
+		if (pathConsistency()) {
+			successfulPropagation = true;
+		}
+		return successfulPropagation;
 	}
 
+	@Override
+	public ConstraintNetwork getConstraintNetwork() {
+		if (successfulPropagation) return completeNetwork;
+		else return super.getConstraintNetwork();
+	}
+	
 	private void createCompleteNetwork() {
 		completeNetwork = new ConstraintNetwork(this);
 		ConstraintNetwork originalNetwork = this.getConstraintNetwork();
@@ -118,9 +129,9 @@ public class QualitativeAllenSolver extends ConstraintSolver {
 	
 	private QualitativeAllenIntervalConstraint getComposition(QualitativeAllenIntervalConstraint o1, QualitativeAllenIntervalConstraint o2) {
 		Vector<QualitativeAllenIntervalConstraint.Type> cmprelation =  new Vector<QualitativeAllenIntervalConstraint.Type>();
-		for (int t = 0; t < o1.types.length; t++) {
-			for (int t2 = 0; t2 < o2.types.length; t2++) {
-				QualitativeAllenIntervalConstraint.Type[] tmpType = QualitativeAllenIntervalConstraint.transitionTable[o1.types[t].ordinal()][o2.types[t2].ordinal()];
+		for (int t = 0; t < o1.getTypes().length; t++) {
+			for (int t2 = 0; t2 < o2.getTypes().length; t2++) {
+				QualitativeAllenIntervalConstraint.Type[] tmpType = QualitativeAllenIntervalConstraint.transitionTable[o1.getTypes()[t].ordinal()][o2.getTypes()[t2].ordinal()];
 				for(QualitativeAllenIntervalConstraint.Type t3: tmpType) {
 					if(!cmprelation.contains(t3)) cmprelation.add(t3);
 				}	

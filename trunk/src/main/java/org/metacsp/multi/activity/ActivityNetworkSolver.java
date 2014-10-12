@@ -169,7 +169,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return aSolver.numBookmarks();
 	}
 	
-	public Activity[] getActivitiesWithSymbol(String component, String[] values) {
+	public Activity[] getActivitiesWithSymbols(String component, String[] values) {
 		Variable[] vars = this.getConstraintNetwork().getVariables(component);
 		return getActivitiesWithSymbolsHelper(vars, values);
 	}

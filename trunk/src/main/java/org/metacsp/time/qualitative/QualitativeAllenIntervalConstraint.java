@@ -389,8 +389,8 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 			{Type.MetBy, Type.After}
 
 	};
-	
 
+	
 	/**
 	 * Get the inverse relation of a given set of Allen relations.
 	 * @param t The relations to invert.
