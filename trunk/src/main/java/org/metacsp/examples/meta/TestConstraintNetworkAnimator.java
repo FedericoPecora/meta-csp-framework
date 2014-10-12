@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.metacsp.examples.meta;
 
+import java.util.Calendar;
 import java.util.logging.Level;
 
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
@@ -35,27 +36,26 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-public class TestProactivePlanning {	
+public class TestConstraintNetworkAnimator {	
 	
 	public static void main(String[] args) {
 
-		//Create planner
-		SimplePlanner planner = new SimplePlanner(0,100000,0);
-		MetaCSPLogging.setLevel(planner.getClass(), Level.FINE);
+		long origin = Calendar.getInstance().getTimeInMillis();
+		//Create ActivityNetworkSolver, origin = current time
+		ActivityNetworkSolver ans = new ActivityNetworkSolver(origin,origin+100000);
+		MetaCSPLogging.setLevel(ans.getClass(), Level.FINE);
 
-		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
-
-		ActivityNetworkSolver ans = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
-		SimplePlannerInferenceCallback cb = new SimplePlannerInferenceCallback(planner);
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000, cb);
+		//Create animator and tell it to animate the ActivityNetworkSolver w/ period 1000 msec
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000);
 		
+		//Add some sensor traces, dispatch with offset from 'origin' (= current time)
 		Sensor sensorA = new Sensor("Location", animator);
 		Sensor sensorB = new Sensor("Stove", animator);
+		sensorA.registerSensorTrace("sensorTraces/location.st",origin);
+		sensorB.registerSensorTrace("sensorTraces/stove.st",origin);
 		
-		sensorA.registerSensorTrace("sensorTraces/location.st");
-		sensorB.registerSensorTrace("sensorTraces/stove.st");
-		
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
+		//Visualize progression
+		TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "Location", "Stove");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 

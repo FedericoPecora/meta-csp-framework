@@ -37,6 +37,10 @@ public class TCSPSolver extends MetaConstraintSolver {
 	 */
 	private static final long serialVersionUID = -9151396838845303080L;
 
+	public TCSPSolver(long origin, long horizon) {
+		super(new Class[] {DistanceConstraint.class}, 0, new DistanceConstraintSolver(origin, horizon));
+	}
+
 	public TCSPSolver(long origin, long horizon, long animationTime) {
 		super(new Class[] {DistanceConstraint.class}, animationTime, new DistanceConstraintSolver(origin, horizon));
 	}

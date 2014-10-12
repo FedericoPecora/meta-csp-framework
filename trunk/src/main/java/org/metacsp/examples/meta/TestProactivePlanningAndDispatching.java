@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
+import org.metacsp.meta.simplePlanner.SimplePlannerInferenceCallback;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
@@ -48,7 +49,9 @@ public class TestProactivePlanningAndDispatching {
 
 		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
 
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, 1000);
+		ActivityNetworkSolver ans = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
+		SimplePlannerInferenceCallback cb = new SimplePlannerInferenceCallback(planner);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000, cb);
 		
 		final Vector<Activity> executingActs = new Vector<Activity>();
 		DispatchingFunction df = new DispatchingFunction("Robot") {
@@ -59,7 +62,7 @@ public class TestProactivePlanningAndDispatching {
 			}
 		}; 
 		
-		animator.addDispatchingFunctions(planner, df);
+		animator.addDispatchingFunctions(ans, df);
 		
 		Sensor sensorA = new Sensor("Location", animator);
 		Sensor sensorB = new Sensor("Stove", animator);

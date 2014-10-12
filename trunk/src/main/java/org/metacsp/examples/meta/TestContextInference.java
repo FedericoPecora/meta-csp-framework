@@ -27,6 +27,7 @@ import java.util.logging.Level;
 
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
+import org.metacsp.meta.simplePlanner.SimplePlannerInferenceCallback;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;
@@ -46,7 +47,10 @@ public class TestContextInference {
 
 		ProactivePlanningDomain.parseDomain(planner, "domains/testContextInference.ddl", ProactivePlanningDomain.class);
 
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, 1000);
+		//ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(planner, 1000);
+		ActivityNetworkSolver ans = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
+		SimplePlannerInferenceCallback cb = new SimplePlannerInferenceCallback(planner);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000, cb);
 		
 		Sensor sensorA = new Sensor("Location", animator);
 		Sensor sensorB = new Sensor("Stove", animator);
@@ -54,7 +58,7 @@ public class TestContextInference {
 		sensorA.registerSensorTrace("sensorTraces/location.st",origin);
 		sensorB.registerSensorTrace("sensorTraces/stove.st",origin);
 		
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "RFIDReader");
+		TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "RFIDReader");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 

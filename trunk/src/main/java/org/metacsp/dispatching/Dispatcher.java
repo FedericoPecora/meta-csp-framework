@@ -4,12 +4,9 @@ import java.util.HashMap;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
-import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
-import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.Bounds;
 
 public class Dispatcher extends Thread {
@@ -23,8 +20,8 @@ public class Dispatcher extends Thread {
 	private HashMap<String,DispatchingFunction> dfs;
 	private Activity future;
 	
-	public Dispatcher(SimplePlanner planner, long period) {
-		ans = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
+	public Dispatcher(ActivityNetworkSolver ans, long period) {
+		this.ans = ans;
 		cn = ans.getConstraintNetwork();
 		this.period = period;
 		acts = new HashMap<Activity, ACTIVITY_STATE>();
@@ -41,23 +38,23 @@ public class Dispatcher extends Thread {
 		}
 	}
 	
-	public Dispatcher(SimpleHybridPlanner planner, long period) {
-		ans = (ActivityNetworkSolver)(((SpatialFluentSolver)planner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-		cn = ans.getConstraintNetwork();
-		this.period = period;
-		acts = new HashMap<Activity, ACTIVITY_STATE>();
-		overlapFutureConstraints = new HashMap<Activity, AllenIntervalConstraint>();
-		dfs = new HashMap<String, DispatchingFunction>();
-		for (Variable var : cn.getVariables()) {
-			if (var instanceof Activity) {
-				Activity candidateFuture = (Activity)var;
-				if (candidateFuture.getSymbolicVariable().getSymbols()[0].equals("Future")) {
-					future = candidateFuture;
-					break;
-				}
-			}
-		}
-	}
+//	public Dispatcher(SimpleHybridPlanner planner, long period) {
+//		ans = (ActivityNetworkSolver)(((SpatialFluentSolver)planner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
+//		cn = ans.getConstraintNetwork();
+//		this.period = period;
+//		acts = new HashMap<Activity, ACTIVITY_STATE>();
+//		overlapFutureConstraints = new HashMap<Activity, AllenIntervalConstraint>();
+//		dfs = new HashMap<String, DispatchingFunction>();
+//		for (Variable var : cn.getVariables()) {
+//			if (var instanceof Activity) {
+//				Activity candidateFuture = (Activity)var;
+//				if (candidateFuture.getSymbolicVariable().getSymbols()[0].equals("Future")) {
+//					future = candidateFuture;
+//					break;
+//				}
+//			}
+//		}
+//	}
 	
 	public void run() {
 		while (true) {

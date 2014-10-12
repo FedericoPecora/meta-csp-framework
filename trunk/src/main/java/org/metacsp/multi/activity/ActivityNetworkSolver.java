@@ -22,6 +22,8 @@
  ******************************************************************************/
 package org.metacsp.multi.activity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import org.metacsp.framework.ConstraintNetwork;
@@ -43,6 +45,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	private static final long serialVersionUID = 4961558508886363042L;
 	protected int IDs = 0;
 	protected long origin;
+	protected long horizon;
 	
 	protected static int MAX_ACTIVITIES = 500;
 	
@@ -59,21 +62,14 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	public long getHorizon() {
 		return horizon;
 	}
-
-	protected long horizon;
 	
-	
-	
-	protected ActivityNetworkSolver(Class<?>[] constraintTypes, Class<?> variableType, ConstraintSolver[] internalSolvers, int[] ingredients, long origin, long horizon) {
-		
+	protected ActivityNetworkSolver(Class<?>[] constraintTypes, Class<?> variableType, ConstraintSolver[] internalSolvers, int[] ingredients, long origin, long horizon) {		
 		super(constraintTypes,variableType,internalSolvers,ingredients);
 		this.origin=origin;
 		this.horizon=horizon;
 			
 	}
 
-	
-	
 	public ActivityNetworkSolver(long origin, long horizon) {
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
 		this.origin = origin;
@@ -146,28 +142,10 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		new PlotActivityNetworkGantt(this, selectedVariables, "Activity Network Gantt");
 	}
 		
-//	@Override
-//	protected Variable[] createVariablesSub(int num) {
-//		Variable[] ret = new Variable[num];
-//		for (int i = 0; i < num; i++)
-//			ret[i] = new Activity(this, IDs++, this.constraintSolvers); 
-//		// Has been moved to AllenIntervalNetworkSolver because it is bypassed 
-//		// if AllenIntervalNetworkSolver is used without ActivityIntervalNetworkSolver 
-////		Vector<Constraint> cons = new Vector<Constraint>();
-////		for (Variable ai : ret) {
-////			AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, AllenIntervalConstraint.Type.Duration.getDefaultBounds());
-////			dur.setFrom(ai);
-////			dur.setTo(ai);
-////			cons.add(dur);
-////		}
-////		this.addConstraints(cons.toArray(new Constraint[cons.size()]));
-//		return ret;
-//	}
-
 	@Override
 	public boolean propagate() {
-		// For now, does nothing.  Propagation is take care of by lower layers (ultimately, the underlying
-		// temporal constraints are propagated by the APSPSolver)  
+		// For now, does nothing.  Propagation is taken care of by lower layers (ultimately, the underlying
+		// temporal constraints are propagated by the APSPSolver)
 		return true;
 	}
 	
@@ -189,6 +167,31 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	public int numBookmarks() {		
 		AllenIntervalNetworkSolver aSolver = (AllenIntervalNetworkSolver)this.constraintSolvers[0];
 		return aSolver.numBookmarks();
+	}
+	
+	public Activity[] getActivitiesWithSymbol(String component, String[] values) {
+		Variable[] vars = this.getConstraintNetwork().getVariables(component);
+		return getActivitiesWithSymbolsHelper(vars, values);
+	}
+	
+	public Activity[] getActivitiesWithSymbols(String[] values) {
+		Variable[] vars = this.getConstraintNetwork().getVariables();
+		return getActivitiesWithSymbolsHelper(vars, values);
+	}
+	
+	private Activity[] getActivitiesWithSymbolsHelper(Variable[] vars, String[] values) {
+		Vector<Activity> ret = new Vector<Activity>();
+		for (Variable var : vars) {
+			Activity act = (Activity)var;
+			List<String> symbolList = Arrays.asList(act.getSymbolicVariable().getSymbols());
+			for (String value : values) {
+				if (symbolList.contains(value)) {
+					ret.add(act);
+					break;
+				}
+			}
+		}
+		return ret.toArray(new Activity[ret.size()]);		
 	}
 
 }
