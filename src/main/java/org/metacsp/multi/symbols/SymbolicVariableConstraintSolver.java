@@ -39,9 +39,13 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	protected String[] symbols;
 	protected boolean singleValue = true;
 	protected static SymbolicVariableConstraintSolver thisSolver = null;
-	
+
 	public SymbolicVariableConstraintSolver(String[] symbols, int maxVars) {
-		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2)), new int[] {symbols.length});
+		this(symbols,maxVars,false);
+	}
+
+	public SymbolicVariableConstraintSolver(String[] symbols, int maxVars, boolean propagateOnVarCreation) {
+		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2), propagateOnVarCreation), new int[] {symbols.length});
 		this.symbols = symbols;
 		thisSolver = this;
 	}
@@ -62,6 +66,38 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 				}
 			}
 		}
+		unaryEquals.setUnaryValue(unaryValue);
+		unaryEquals.setFrom(ret);
+		unaryEquals.setTo(ret);
+		thisSolver.addConstraint(unaryEquals);
+		return ret;
+	}
+	
+	public static Variable intersection(Variable ... vars) {
+		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.UNARYEQUALS);
+		boolean[] unaryValue = new boolean[thisSolver.symbols.length];
+		String[] allSymbols = thisSolver.symbols;
+		boolean atLeastOneValue = false;
+		for (int i = 0; i < allSymbols.length; i++) {
+			boolean found = true;
+			for (int j = 0; j < vars.length; j++) {
+				for (int k = 0; k < ((SymbolicVariable)vars[j]).getSymbols().length; k++) {
+					String oneSymbol = ((SymbolicVariable)vars[j]).getSymbols()[k];
+					if (oneSymbol.equals(allSymbols[i])) {
+						break;
+					}
+					if (k == ((SymbolicVariable)vars[j]).getSymbols().length-1) found = false;
+				}
+				if (!found) break;
+			}
+			if (found) {
+				unaryValue[i] = true;
+				atLeastOneValue = true;
+			}
+			else unaryValue[i] = false;
+		}
+		if (!atLeastOneValue) return null;
+		SymbolicVariable ret = (SymbolicVariable)thisSolver.createVariable(vars[0].getComponent());
 		unaryEquals.setUnaryValue(unaryValue);
 		unaryEquals.setFrom(ret);
 		unaryEquals.setTo(ret);
@@ -92,8 +128,8 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 		return null;
 	}
 
-	private static ConstraintSolver[] createConstraintSolvers(int maxSATVars, int maxSATClauses) {
-		ConstraintSolver[] ret = new ConstraintSolver[] {new BooleanSatisfiabilitySolver(maxSATVars, maxSATClauses)};
+	private static ConstraintSolver[] createConstraintSolvers(int maxSATVars, int maxSATClauses, boolean propagateOnVarCreation) {
+		ConstraintSolver[] ret = new ConstraintSolver[] {new BooleanSatisfiabilitySolver(maxSATVars, maxSATClauses, propagateOnVarCreation)};
 		return ret;
 	}
 	

@@ -3,8 +3,9 @@ package org.metacsp.spatial.reachability;
 import org.metacsp.framework.BinaryConstraint;
 import org.metacsp.framework.Constraint;
 
-public class ReachabilityConstraint extends BinaryConstraint{
+public class ReachabilityConstraint extends BinaryConstraint {
 
+	private static final long serialVersionUID = 2249830531603923184L;
 	public static enum Type {
 		none,
 		activityReachable,
