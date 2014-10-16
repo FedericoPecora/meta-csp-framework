@@ -4,8 +4,9 @@ import org.metacsp.framework.Domain;
 import org.metacsp.time.qualitative.SimpleInterval;
 
 
-public class ConfigurationDomain  extends Domain{
+public class ConfigurationDomain  extends Domain {
 
+	private static final long serialVersionUID = -6231986282649879013L;
 	private String configurationName;
 	
 	public ConfigurationDomain(ConfigurationVariable cv) {

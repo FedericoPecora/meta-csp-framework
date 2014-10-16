@@ -80,7 +80,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		this.maxVars = MAX_SAT_VARS;
 		this.maxClauses = MAX_SAT_CLAUSES;
 		initSat4JSolver();
-		this.setOptions(OPTIONS.AUTO_PROPAGATE, OPTIONS.NO_PROP_ON_VAR_CREATION);
+		this.setOptions(OPTIONS.AUTO_PROPAGATE /*, OPTIONS.NO_PROP_ON_VAR_CREATION*/);
 	}
 
 	/**
@@ -95,7 +95,23 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		this.maxVars = maxVars;
 		this.maxClauses = maxClauses;
 		initSat4JSolver();
-		this.setOptions(OPTIONS.AUTO_PROPAGATE, OPTIONS.NO_PROP_ON_VAR_CREATION);
+		this.setOptions(OPTIONS.AUTO_PROPAGATE /*, OPTIONS.NO_PROP_ON_VAR_CREATION*/);
+	}
+	
+	/**
+	 * Create a new {@link BooleanSatisfiabilitySolver}.  This solver will accept
+	 * at most <code>maxVars</code> {@link BooleanVariable}s and
+	 * <code>maxClauses</code> {@link BooleanConstraint}s.
+	 * @param maxVars
+	 * @param maxClauses
+	 */
+	public BooleanSatisfiabilitySolver(int maxVars, int maxClauses, boolean propagateOnVarCreation) {
+		super(new Class[] {BooleanConstraint.class}, BooleanVariable.class);
+		this.maxVars = maxVars;
+		this.maxClauses = maxClauses;
+		initSat4JSolver();
+		this.setOptions(OPTIONS.AUTO_PROPAGATE);
+		if (!propagateOnVarCreation) this.setOptions(OPTIONS.NO_PROP_ON_VAR_CREATION);
 	}
 
 	private void initSat4JSolver() {

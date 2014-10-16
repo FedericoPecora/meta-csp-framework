@@ -749,7 +749,7 @@ public class SimpleDomain extends MetaConstraint {
 				StringBuilder sb = new StringBuilder();
 				String line = br.readLine();
 				while (line != null) {
-					if (!line.startsWith("#")) {
+					if (!line.trim().startsWith("#")) {
 						sb.append(line);
 						sb.append('\n');
 					}

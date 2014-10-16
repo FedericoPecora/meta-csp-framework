@@ -4,8 +4,9 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 
-public class ReachabilityContraintSolver extends ConstraintSolver{
+public class ReachabilityContraintSolver extends ConstraintSolver {
 
+	private static final long serialVersionUID = -2701427250433845929L;
 	private int IDs = 0;
 	public ReachabilityContraintSolver() {
 		super(new Class[]{ReachabilityConstraint.class}, ConfigurationVariable.class);
