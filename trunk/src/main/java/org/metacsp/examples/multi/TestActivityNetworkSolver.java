@@ -53,7 +53,7 @@ public class TestActivityNetworkSolver {
 		con1.setFrom(act1);
 		con1.setTo(act2);
 
-		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.UNARYEQUALS);
+		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
 		con1a.setFrom(act1);
 		con1a.setTo(act1);
 		con1a.setUnaryValue(new boolean[] {false,true,true,false,false,false});

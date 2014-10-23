@@ -52,7 +52,7 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	
 	public static Variable union(Variable ... vars) {
 		SymbolicVariable ret = (SymbolicVariable)thisSolver.createVariable(vars[0].getComponent());
-		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.UNARYEQUALS);
+		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.VALUEEQUALS);
 		boolean[] unaryValue = new boolean[thisSolver.symbols.length];
 		for (int i = 0; i < unaryValue.length; i++) unaryValue[i] = false;
 		for (int j = 0; j < vars.length; j++) {
@@ -74,7 +74,7 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	}
 	
 	public static Variable intersection(Variable ... vars) {
-		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.UNARYEQUALS);
+		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.VALUEEQUALS);
 		boolean[] unaryValue = new boolean[thisSolver.symbols.length];
 		String[] allSymbols = thisSolver.symbols;
 		boolean atLeastOneValue = false;
