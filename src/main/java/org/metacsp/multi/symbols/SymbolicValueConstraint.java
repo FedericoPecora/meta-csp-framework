@@ -31,10 +31,12 @@ import org.metacsp.booleanSAT.BooleanVariable;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
+import org.metacsp.framework.multi.MultiConstraint;
 import org.metacsp.throwables.NoSymbolsException;
+import org.metacsp.throwables.WrongSymbolListException;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
-public class SymbolicValueConstraint extends MultiBinaryConstraint {
+public class SymbolicValueConstraint extends MultiConstraint {
 
 	/**
 	 * 
@@ -43,7 +45,7 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
-	public static enum Type {EQUALS, DIFFERENT, UNARYEQUALS, UNARYDIFFERENT};
+	public static enum Type {EQUALS, DIFFERENT, VALUEEQUALS, VALUEDIFFERENT};
 
 	private Type type;
 	private boolean[] unaryValue;
@@ -55,9 +57,9 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 	public void setUnaryValue(boolean[] unaryValue) {
 		this.unaryValue = unaryValue;
 	}
-		
-	@Override
-	protected Constraint[] createInternalConstraints(Variable f, Variable t) {
+
+	
+	private Constraint[] createInternalBinaryConstraints(Variable f, Variable t) {
 		if (!(f instanceof SymbolicVariable) || !(t instanceof SymbolicVariable)) return null;
 		SymbolicVariable svFrom = ((SymbolicVariable)f);
 		Variable[] internalVarsFrom = svFrom.getInternalVariables();
@@ -115,18 +117,24 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 		}
 
 		
-		if (this.type.equals(Type.UNARYEQUALS)) {
+		if (this.type.equals(Type.VALUEEQUALS)) {
 			Vector<BooleanVariable> scope = new Vector<BooleanVariable>();
 			String wff = "";
 			int counter = 0;
 			for (int i = 0; i < internalVarsFrom.length; i++) {
-				if (!unaryValue[i]) {
-					scope.add(((BooleanVariable)internalVarsFrom[i]));
-					//if (counter != 0) wff += " ^ ";
-					//wff += ("(~w" + (++counter) + ")");
-					if (counter != 0) wff = "(" + wff + (" ^ (~w" + (++counter) + ")") + ")";
-					else wff = ("(~w" + (++counter) + ")");
+				try {
+					if (!unaryValue[i]) {
+						scope.add(((BooleanVariable)internalVarsFrom[i]));
+						//if (counter != 0) wff += " ^ ";
+						//wff += ("(~w" + (++counter) + ")");
+						if (counter != 0) wff = "(" + wff + (" ^ (~w" + (++counter) + ")") + ")";
+						else wff = ("(~w" + (++counter) + ")");
+					}
 				}
+				catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					throw new WrongSymbolListException(unaryValue.length,internalVarsFrom.length);
+				}
+
 			}
 			logger.finest("Generated WFF for UNARYEQUALS constraint: " + wff);
 			logger.finest("\tscope: " + scope);
@@ -134,17 +142,22 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 			return cons;
 		}
 		
-		if (this.type.equals(Type.UNARYDIFFERENT)) {
+		if (this.type.equals(Type.VALUEDIFFERENT)) {
 			Vector<BooleanVariable> scope = new Vector<BooleanVariable>();
 			String wff = "";
 			int counter = 0;
 			for (int i = 0; i < internalVarsFrom.length; i++) {
-				if (unaryValue[i]) {
-					scope.add(((BooleanVariable)internalVarsFrom[i]));
-					//if (counter != 0) wff += " ^ ";
-					//wff += ("(~w" + (++counter) + ")");
-					if (counter != 0) wff = "(" + wff + (" ^ (~w" + (++counter) + ")") + ")";
-					else wff = ("(~w" + (++counter) + ")");
+				try {
+					if (unaryValue[i]) {
+						scope.add(((BooleanVariable)internalVarsFrom[i]));
+						//if (counter != 0) wff += " ^ ";
+						//wff += ("(~w" + (++counter) + ")");
+						if (counter != 0) wff = "(" + wff + (" ^ (~w" + (++counter) + ")") + ")";
+						else wff = ("(~w" + (++counter) + ")");
+					}
+				}
+				catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					throw new WrongSymbolListException(unaryValue.length,internalVarsFrom.length);
 				}
 			}
 			logger.finest("Generated WFF for UNARYDIFFERENT constraint: " + wff);
@@ -156,9 +169,10 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 		return null;
 	}
 
+
 	@Override
 	public String getEdgeLabel() {
-		if (this.type.equals(Type.UNARYDIFFERENT) || this.type.equals(Type.UNARYEQUALS))
+		if (this.type.equals(Type.VALUEDIFFERENT) || this.type.equals(Type.VALUEEQUALS))
 			return "" + this.type + " " + Arrays.toString(unaryValue);
 		return "" + this.type;
 	}
@@ -179,6 +193,40 @@ public class SymbolicValueConstraint extends MultiBinaryConstraint {
 
 	public Object getType() {
 		return this.type;
-	}	
+	}
+
+	@Override
+	protected Constraint[] createInternalConstraints(Variable[] variables) {
+		Vector<Constraint> cons = new Vector<Constraint>();
+		if (this.type.equals(Type.EQUALS) || this.type.equals(Type.DIFFERENT)) {
+			for (int i = 0; i < variables.length; i++) {
+				for (int j = i+1; j < variables.length; j++) {
+					for (Constraint con : this.createInternalBinaryConstraints(variables[i], variables[j])) cons.add(con);
+				}			
+			}
+		}
+		else {
+			for (int i = 0; i < variables.length; i++) {
+				for (Constraint con : this.createInternalBinaryConstraints(variables[i], variables[i])) cons.add(con);
+			}
+		}
+		return cons.toArray(new Constraint[cons.size()]);
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
+	public void setFrom(Variable f) {
+		if (this.scope == null) this.scope = new Variable[2];
+		this.scope[0] = f;
+	}
+
+	public void setTo(Variable t) {
+		if (this.scope == null) this.scope = new Variable[2];
+		this.scope[1] = t;
+	}
+
 }
