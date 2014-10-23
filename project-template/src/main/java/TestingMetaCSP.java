@@ -12,13 +12,13 @@ public class TestingMetaCSP {
 		SymbolicVariable var1 = (SymbolicVariable)solver.createVariable();
 		SymbolicVariable var2 = (SymbolicVariable)solver.createVariable();
 		
-		SymbolicValueConstraint con1 = new SymbolicValueConstraint(Type.UNARYDIFFERENT);
+		SymbolicValueConstraint con1 = new SymbolicValueConstraint(Type.VALUEDIFFERENT);
 		con1.setUnaryValue(new boolean[] {true,false});
 		con1.setFrom(var1);
 		con1.setTo(var1);
 		solver.addConstraint(con1);
 
-		SymbolicValueConstraint con2 = new SymbolicValueConstraint(Type.UNARYEQUALS);
+		SymbolicValueConstraint con2 = new SymbolicValueConstraint(Type.VALUEEQUALS);
 		con2.setUnaryValue(new boolean[] {true,false});
 		con2.setFrom(var2);
 		con2.setTo(var2);
