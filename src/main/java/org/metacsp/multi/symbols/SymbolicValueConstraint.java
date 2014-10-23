@@ -197,6 +197,8 @@ public class SymbolicValueConstraint extends MultiConstraint {
 
 	@Override
 	protected Constraint[] createInternalConstraints(Variable[] variables) {
+		if (variables == null || variables.length == 0) return null;
+		for (Variable var : variables) if (!(var instanceof SymbolicVariable)) return null;
 		Vector<Constraint> cons = new Vector<Constraint>();
 		if (this.type.equals(Type.EQUALS) || this.type.equals(Type.DIFFERENT)) {
 			for (int i = 0; i < variables.length; i++) {
