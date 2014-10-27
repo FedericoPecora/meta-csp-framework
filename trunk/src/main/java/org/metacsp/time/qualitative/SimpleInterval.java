@@ -30,7 +30,7 @@ import org.metacsp.framework.Domain;
  */
 public class SimpleInterval extends Domain {
 
-	
+	private static final long serialVersionUID = 2587480924590385981L;
 	private String intervalName;
 	
     /**

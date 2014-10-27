@@ -1,15 +1,12 @@
 package org.metacsp.time.qualitative;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
-import org.metacsp.framework.ConstraintSolver.OPTIONS;
 import org.metacsp.time.qualitative.QualitativeAllenIntervalConstraint.Type;
 
 

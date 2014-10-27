@@ -373,7 +373,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 								.getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds()[j].max);
 				allenBoundsX[j] = bx;
 			}
-			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
+			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getTypes()[0], allenBoundsX);
 			if((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
 				xAllenCon = (AllenIntervalConstraint)(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].clone();
 			AllenIntervalConstraint yAllenCon = manipulationAreaDomain.getConvexifyBeforeAndAfter(); 
@@ -389,7 +389,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 								.getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds()[j].max);
 				allenBoundsY[j] = bx;
 			}
-			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getTypes()[0], allenBoundsY);
 			if((srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getBounds().length == 0)
 				yAllenCon = (AllenIntervalConstraint)(srules.get(4).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].clone();
 			AllenIntervalConstraint xAllenCon = manipulationAreaDomain.getConvexifyBeforeAndAfter(); 
@@ -426,9 +426,9 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 				allenBoundsY[j] = by;
 			}
 
-			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
+			AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getTypes()[0], allenBoundsX);
 			AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(
-					(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+					(srules.get(i).getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getTypes()[0], allenBoundsY);
 
 
 			//This part is for the Allen intervals do not have any bounds e.g., Equals

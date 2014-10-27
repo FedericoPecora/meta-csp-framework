@@ -53,7 +53,8 @@ import org.metacsp.utility.logging.MetaCSPLogging;
  *
  */
 public abstract class MetaConstraint extends Constraint {
-		
+
+	private static final long serialVersionUID = 3972541057627681253L;
 	protected VariableOrderingH varOH;
 	protected ValueOrderingH valOH;
 	protected MetaConstraintSolver metaCS = null;
@@ -127,17 +128,6 @@ public abstract class MetaConstraint extends Constraint {
 	 * @return All meta values for the given {@link MetaVariable}.
 	 */
 	public abstract ConstraintNetwork[] getMetaValues(MetaVariable metaVariable);
-	
-	/**
-	 * Get all meta values for a given {@link MetaVariable}.  This method must be
-	 * implemented in the specific {@link MetaConstraint}. 
-	 * @param metaVariable The {@link MetaVariable} for which we seek meta values.
-	 * @return All meta values for the given {@link MetaVariable}.
-	 */
-	@Deprecated
-	//FPA: general backtracking search should not depend on there being a temporal network
-	//     at the ground level.
-	public abstract ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initial_time);
 
 	/**
 	 * Method to mark a {@link MetaVariable} as solved. This method is called by the

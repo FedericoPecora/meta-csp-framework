@@ -25,7 +25,6 @@ package org.metacsp.meta.simplePlanner;
 import java.util.Arrays;
 
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.throwables.InvalidActivityException;
 
 public class Axiom {
 

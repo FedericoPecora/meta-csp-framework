@@ -36,6 +36,8 @@ import org.metacsp.throwables.IllegalValueChoiceFunction;
  */
 public abstract class Domain implements Comparable<Object>, Serializable {
 
+	private static final long serialVersionUID = -1526153338750435200L;
+
 	private static HashMap<Class<?>,HashMap<String,ValueChoiceFunction>> valueChoiceFunctions = new HashMap<Class<?>, HashMap<String,ValueChoiceFunction>>();
 
 	protected Variable myVariable;

@@ -32,7 +32,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.metacsp.framework.meta.MetaConstraintSolver;
-import org.metacsp.framework.multi.MultiConstraintSolver;
 
 /**
  * <p>

@@ -69,14 +69,8 @@ public class TCSPLabeling extends MetaConstraint {
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
-	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initialTime) {
-		return getMetaValues(metaVariable);
-	}
-	
 	
 	@Override
-	//public ConstraintNetwork[] getMetaValues(ConstraintNetwork conflict) {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		ConstraintNetwork conflict = metaVariable.getConstraintNetwork();
 		Constraint[] cons = conflict.getConstraints();

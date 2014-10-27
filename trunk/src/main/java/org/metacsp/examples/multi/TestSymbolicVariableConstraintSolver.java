@@ -53,12 +53,14 @@ public class TestSymbolicVariableConstraintSolver {
 		con1.setTo(vars[1]);
 
 		SymbolicValueConstraint con2 = new SymbolicValueConstraint(Type.VALUEEQUALS);
-		con2.setUnaryValue(new boolean[] {false,true,false,true,false,true,true});
+		//con2.setUnaryValue(new boolean[] {false,true,false,true,false,true,true});
+		con2.setValue("B","D","F","G");
 		con2.setFrom(vars[0]);
 		con2.setTo(vars[0]);
 
 		SymbolicValueConstraint con3 = new SymbolicValueConstraint(Type.VALUEDIFFERENT);
-		con3.setUnaryValue(new boolean[] {false,true,false,false,false,true,false});
+		//con3.setUnaryValue(new boolean[] {false,true,false,false,false,true,false});
+		con3.setValue("B","F");
 		con3.setFrom(vars[1]);
 		con3.setTo(vars[1]);
 

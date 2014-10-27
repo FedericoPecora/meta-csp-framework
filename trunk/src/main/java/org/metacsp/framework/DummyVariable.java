@@ -10,6 +10,8 @@ public class DummyVariable extends Variable {
 	
 	private class DummyDomain extends Domain {
 
+		private static final long serialVersionUID = 4097176900671983140L;
+
 		protected DummyDomain(Variable v) {
 			super(v);
 			// TODO Auto-generated constructor stub
