@@ -36,7 +36,7 @@ public class ReusableResource extends Schedulable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3747575248501554970L;
-	private int capacity;
+	protected int capacity;
 	
 	public ReusableResource(VariableOrderingH varOH, ValueOrderingH valOH, int capacity) {
 		super(varOH, valOH);
@@ -89,10 +89,4 @@ public class ReusableResource extends Schedulable {
 		return null;
 	}
 
-	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 }
