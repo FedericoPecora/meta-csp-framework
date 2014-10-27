@@ -40,6 +40,7 @@ import edu.uci.ics.jung.graph.ObservableGraph;
 public class ConstraintNetwork implements Cloneable, Serializable {
 	
 	public static HashMap<FieldOfObject,Object> backupForSerialization = new HashMap<FieldOfObject,Object>();
+
 	private class FieldOfObject {
 		private Field field;
 		private int ID;
@@ -446,6 +447,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		//return this.graph.getEdges().toArray(new Constraint[this.graph.getEdgeCount()]);
 	}
 	
+	
 	/**
 	 * Query the network for the existence of a given {@link Constraint}. 
 	 * @param c The {@link Constraint} for the query. 
@@ -640,6 +642,83 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 				catch (IllegalAccessException e) { e.printStackTrace(); }
 			}
 		}
+	}
+	
+	/**
+	 * Get all {@link Variable}s that are directly connected to a given {@link Variable} through one {@link Constraint}.
+	 * @param var The {@link Variable} from which the connected {@link Variable}s are to be computed. 
+	 * @return All {@link Variable}s that are directly connected to a given {@link Variable} through one {@link Constraint}.
+	 */
+	public Variable[] getNeighboringVariables(Variable var) {
+		HashSet<Variable> ret = new HashSet<Variable>();
+		if (var instanceof DummyVariable) return ret.toArray(new Variable[ret.size()]);
+		Collection<Variable> neighbors = this.g.getNeighbors(var);
+		for (Variable neighbor : neighbors) {
+			if (neighbor instanceof DummyVariable) {
+				Collection<Variable> neighborsOfNeighbor = this.g.getNeighbors(neighbor);
+				ret.addAll(neighborsOfNeighbor);
+				ret.remove(var);
+			}
+			else {
+				ret.add(neighbor);
+			}
+		}
+		return ret.toArray(new Variable[ret.size()]);
+	}
+
+	
+	/**
+	 * Masks all {@link Constraint}s in this {@link ConstraintNetwork}.
+	 */
+	public void maskConstraints() {
+		for (Constraint con : this.getConstraints()) con.mask();
+	}
+	
+	/**
+	 * Unmasks all {@link Constraint}s in this {@link ConstraintNetwork}.
+	 */
+	public void unmaskConstraints() {
+		for (Constraint con : this.getConstraints()) con.unmask();
+	}
+	
+	/**
+	 * Masks all given {@link Constraint}s.
+	 * @param cons The {@link Constraint}s to mask.
+	 */
+	public static void maskConstraints(Constraint[] cons) {
+		for (Constraint con : cons) con.mask();
+	}
+	
+	/**
+	 * Unmasks all given {@link Constraint}s.
+	 * @param cons The {@link Constraint}s to unmask.
+	 */
+	public static void unmaskConstraints(Constraint[] cons) {
+		for (Constraint con : cons) con.unmask();
+	}
+	
+	/**
+	 * Get all {@link Constraint}s that are not masked.
+	 * @return All {@link Constraint}s that are not masked.
+	 */
+	public Constraint[] getUnmaskedConstraints() {
+		Vector<Constraint> ret = new Vector<Constraint>();
+		for (Constraint con : this.getConstraints()) {
+			if (!con.isMasked()) ret.add(con);
+		}
+		return ret.toArray(new Constraint[ret.size()]);
+	}
+	
+	/**
+	 * Get all {@link Constraint}s that are not masked.
+	 * @return All {@link Constraint}s that are not masked.
+	 */
+	public Constraint[] getMaskedConstraints() {
+		Vector<Constraint> ret = new Vector<Constraint>();
+		for (Constraint con : this.getConstraints()) {
+			if (con.isMasked()) ret.add(con);
+		}
+		return ret.toArray(new Constraint[ret.size()]);
 	}
 
 	

@@ -32,6 +32,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.metacsp.framework.meta.MetaConstraintSolver;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 
 /**
  * <p>
@@ -109,7 +110,7 @@ public final class MetaCSPLogging implements Serializable{
 	 * @param c The class within which the logger should be used.
 	 * @return A {@link Logger} that can be used to log messages in the given class.
 	 */
-	public static Logger getLogger(Class<?> c) {
+	public static Logger getLogger(final Class<?> c) {
 		if (loggers.get(c) == null) {
 			//System.out.println("Making new logger for " + c.getSimpleName());
 			final Logger logger = Logger.getLogger(c.getSimpleName());
@@ -119,6 +120,7 @@ public final class MetaCSPLogging implements Serializable{
 			h.setFormatter(new Formatter() {
 				@Override
 				public String format(LogRecord arg0) {
+					//TODO: Make indentation
 					return ("[" + logger.getName() + "] " + arg0.getMessage() + "\n");
 				}
 			});

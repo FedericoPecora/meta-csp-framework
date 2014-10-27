@@ -38,7 +38,6 @@ import java.util.HashSet;
  */
 public abstract class Constraint implements Cloneable, Serializable {
 	
-	
 	private static final long serialVersionUID = 8278654163054138810L;
 	private HashSet<ConstraintSolver> solversToSkip = null;
 
@@ -46,6 +45,8 @@ public abstract class Constraint implements Cloneable, Serializable {
 	 * Progressive ID of a constraint
 	 */
 	public static int numIDs = 0;
+	
+	protected boolean masked = false;
 	
 	protected int id;
 	
@@ -64,6 +65,34 @@ public abstract class Constraint implements Cloneable, Serializable {
 	public void skipSolver(ConstraintSolver ... solvers) {
 		if (solversToSkip == null) solversToSkip = new HashSet<ConstraintSolver>();
 		for (ConstraintSolver solver : solvers) solversToSkip.add(solver);
+	}
+	
+	/**
+	 * Returns <code>true</code> iff this {@link Constraint} is invisible to the solver (masked).
+	 * @return <code>true</code> iff this {@link Constraint} is invisible to the solver (masked).
+	 */
+	public boolean isMasked() { return masked; }
+	
+	/**
+	 * Makes this {@link Constraint} invisible to the solver (masked).
+	 */
+	public void mask() { this.masked = true; }
+
+	/**
+	 * Makes this {@link Constraint} invisible to the solver (masked).
+	 */
+	public void unmask() { this.masked = false; }
+
+	/**
+	 * Returns <code>true</code> iff this {@link Constraint}'s scope only refers to one {@link Variable}. 
+	 * @return <code>true</code> iff this {@link Constraint}'s scope only refers to one {@link Variable}.
+	 */
+	public boolean isUnary() {
+		Variable oneVar = this.scope[0];
+		for (int i = 1; i < this.scope.length; i++) {
+			if (!this.scope[i].equals(oneVar)) return false;
+		}
+		return true;
 	}
 	
 	/**

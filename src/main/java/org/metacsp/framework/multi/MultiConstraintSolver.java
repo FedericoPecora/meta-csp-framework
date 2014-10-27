@@ -72,7 +72,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	protected int[] ingredients;
 	private HashMap<Constraint,Constraint> newConstraintMapping = new HashMap<Constraint,Constraint>();
 	
-		
+
 	/**
 	 * The constructor of a extending class must call this constructor.
 	 * @param constraintTypes
@@ -154,7 +154,6 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 			logger.finest("Failed to instantiate lifted constraints " + Arrays.toString(c));
 			return false;
 		}
-		
 		return true;
 	
 	}

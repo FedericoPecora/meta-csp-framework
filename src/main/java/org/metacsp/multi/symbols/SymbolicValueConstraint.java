@@ -45,7 +45,7 @@ public class SymbolicValueConstraint extends MultiConstraint {
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
-	public static enum Type {EQUALS, DIFFERENT, VALUEEQUALS, VALUEDIFFERENT};
+	public static enum Type {EQUALS, DIFFERENT, VALUEEQUALS, VALUEDIFFERENT, CONTAINS};
 
 	private Type type;
 	private boolean[] unaryValue;
@@ -84,6 +84,26 @@ public class SymbolicValueConstraint extends MultiConstraint {
 			return cons;
 		}
 		
+		else if (this.type.equals(Type.CONTAINS)) {
+			BooleanVariable[] scope = new BooleanVariable[internalVarsFrom.length*2];
+			String wff = "";
+			// f1 f2 f3
+			// t1 t2 t3
+			// t1 -> f1, t2 -> f2, t3 -> f3
+			for (int i = 0; i < internalVarsFrom.length*2; i+=2) {
+				scope[i] = ((BooleanVariable)internalVarsTo[i/2]);
+				scope[i+1] = ((BooleanVariable)internalVarsFrom[i/2]);
+				//wff += ("(~w" + (i+1) + " v ~w" + (i+2) + ")");
+				if (i == 0) wff = ("(w" + (i+1) + " -> w" + (i+2) + ")");
+				else wff = "(" + wff + (" ^ (w" + (i+1) + " -> w" + (i+2) + ")") + ")";
+			}
+			logger.finest("Generated WFF for CONTAINS constraint: " + wff);
+			logger.finest("\tscope: " + Arrays.toString(scope));
+			BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(scope, wff);
+			return cons;
+		}
+
+		
 //		if (this.type.equals(Type.DIFFERENT)) {
 //			BooleanVariable[] scope = new BooleanVariable[internalVarsFrom.length*2];
 //			String wff = "";
@@ -121,9 +141,11 @@ public class SymbolicValueConstraint extends MultiConstraint {
 			Vector<BooleanVariable> scope = new Vector<BooleanVariable>();
 			String wff = "";
 			int counter = 0;
+			boolean allTrue = true;
 			for (int i = 0; i < internalVarsFrom.length; i++) {
 				try {
 					if (!unaryValue[i]) {
+						allTrue = false;
 						scope.add(((BooleanVariable)internalVarsFrom[i]));
 						//if (counter != 0) wff += " ^ ";
 						//wff += ("(~w" + (++counter) + ")");
@@ -136,7 +158,11 @@ public class SymbolicValueConstraint extends MultiConstraint {
 				}
 
 			}
-			logger.finest("Generated WFF for UNARYEQUALS constraint: " + wff);
+			if (allTrue) {
+				logger.finest("Ignored trivial VALUEEQUALS constraint (all values true)");
+				return new BooleanConstraint[0];
+			}
+			logger.finest("Generated WFF for VALUEEQUALS constraint: " + wff);
 			logger.finest("\tscope: " + scope);
 			BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(scope.toArray(new BooleanVariable[scope.size()]), wff);
 			return cons;
@@ -146,9 +172,11 @@ public class SymbolicValueConstraint extends MultiConstraint {
 			Vector<BooleanVariable> scope = new Vector<BooleanVariable>();
 			String wff = "";
 			int counter = 0;
+			boolean allFalse = true;
 			for (int i = 0; i < internalVarsFrom.length; i++) {
 				try {
 					if (unaryValue[i]) {
+						allFalse = false;
 						scope.add(((BooleanVariable)internalVarsFrom[i]));
 						//if (counter != 0) wff += " ^ ";
 						//wff += ("(~w" + (++counter) + ")");
@@ -160,7 +188,11 @@ public class SymbolicValueConstraint extends MultiConstraint {
 					throw new WrongSymbolListException(unaryValue.length,internalVarsFrom.length);
 				}
 			}
-			logger.finest("Generated WFF for UNARYDIFFERENT constraint: " + wff);
+			if (allFalse) {
+				logger.finest("Ignored trivial VALUEDIFFERENT constraint (all values false)");
+				return new BooleanConstraint[0];
+			}
+			logger.finest("Generated WFF for VALUEDIFFERENT constraint: " + wff);
 			logger.finest("\tscope: " + scope);
 			BooleanConstraint[] cons = BooleanConstraint.createBooleanConstraints(scope.toArray(new BooleanVariable[scope.size()]), wff);
 			return cons;
@@ -200,7 +232,7 @@ public class SymbolicValueConstraint extends MultiConstraint {
 		if (variables == null || variables.length == 0) return null;
 		for (Variable var : variables) if (!(var instanceof SymbolicVariable)) return null;
 		Vector<Constraint> cons = new Vector<Constraint>();
-		if (this.type.equals(Type.EQUALS) || this.type.equals(Type.DIFFERENT)) {
+		if (this.type.equals(Type.EQUALS) || this.type.equals(Type.DIFFERENT) || this.type.equals(Type.CONTAINS)) {
 			for (int i = 0; i < variables.length; i++) {
 				for (int j = i+1; j < variables.length; j++) {
 					for (Constraint con : this.createInternalBinaryConstraints(variables[i], variables[j])) cons.add(con);
@@ -217,8 +249,7 @@ public class SymbolicValueConstraint extends MultiConstraint {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getEdgeLabel() + " (" + (Arrays.toString(this.getScope()) + ")");
 	}
 	
 	public void setFrom(Variable f) {

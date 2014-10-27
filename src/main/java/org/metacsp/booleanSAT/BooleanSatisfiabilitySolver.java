@@ -24,10 +24,12 @@
 package org.metacsp.booleanSAT;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.apache.commons.beanutils.converters.BooleanConverter;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -70,6 +72,8 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 	
 	private int maxVars;
 	private int maxClauses;
+	
+	private boolean enumerateModels = true;
 		
 	/**
 	 * Create a new {@link BooleanSatisfiabilitySolver} that will accept at most <code>MAX_SAT_VARS</code>
@@ -114,11 +118,28 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		if (!propagateOnVarCreation) this.setOptions(OPTIONS.NO_PROP_ON_VAR_CREATION);
 	}
 
+	/**
+	 * Sets whether this {@link BooleanSatisfiabilitySolver} should enumerate models or not.
+	 * @param enumerateModels Whether this {@link BooleanSatisfiabilitySolver} should enumerate models or not.
+	 */
+	public void setEnumerateModels(boolean enumerateModels) {
+		this.enumerateModels = enumerateModels;
+	}
+	
+	/**
+	 * Returns whether this {@link BooleanSatisfiabilitySolver} enumerates models.
+	 * @return <code>true</code> iff this {@link BooleanSatisfiabilitySolver} enumerates models.
+	 */
+	public boolean enumeratesModels() {
+		return enumerateModels;
+	}
+	
 	private void initSat4JSolver() {
 		sat4JSolver = SolverFactory.newDefault();
 		sat4JSolver.newVar(maxVars);
 		sat4JSolver.setExpectedNumberOfClauses(maxClauses);
 		sat4JSolver.setDBSimplificationAllowed(false);
+		sat4JSolver.setKeepSolverHot(false);
 	}
 	
 	private void resetCurrentModels() {
@@ -182,6 +203,7 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 					if (i < 0) bv.allowFalse();
 					else bv.allowTrue();
 					if (allVars.contains(bv)) allVars.remove(bv);
+					//System.out.println("BV (" + i + ") " + bv);
 				}
 			}
 		}
@@ -193,12 +215,14 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 	
 	@Override
 	public boolean propagate() {
+		long start = Calendar.getInstance().getTimeInMillis();
 		
 		sat4JSolver.reset();
 		
 		logger.finest("Solving SAT problem...");
-		Constraint[] cons = this.getConstraintNetwork().getConstraints();
-		
+		Constraint[] cons = this.getConstraintNetwork().getUnmaskedConstraints();
+		//Constraint[] cons = this.getConstraintNetwork().getConstraints();
+				
 		for (Constraint con : cons) {
 			BooleanConstraint bc = (BooleanConstraint)con;
 			try { sat4JSolver.addClause(bc.getLiterals()); }
@@ -207,22 +231,32 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 		
 		Vector<int[]> allModels = new Vector<int[]>();
 		
-		try {
-			if (!sat4JSolver.isSatisfiable()) return false;
-			while (sat4JSolver.isSatisfiable()) {
-				int[] oneModel = sat4JSolver.model();
-				if (oneModel.length == 0) break;
-				allModels.add(oneModel);
-				//logger.info("Model: " + Arrays.toString(oneModel));
-				int[] negClause = new int[oneModel.length];
-				for (int i = 0; i < oneModel.length; i++) {
-					negClause[i] = -oneModel[i];
+		if (enumerateModels) {
+			try {
+				if (!sat4JSolver.isSatisfiable()) return false;
+				while (sat4JSolver.isSatisfiable()) {
+					int[] oneModel = sat4JSolver.model();
+					if (oneModel.length == 0) break;
+					allModels.add(oneModel);
+					//logger.info("Model: " + Arrays.toString(oneModel));
+					int[] negClause = new int[oneModel.length];
+					for (int i = 0; i < oneModel.length; i++) {
+						negClause[i] = -oneModel[i];
+					}
+					//Note: addBlockingClause seems to need neg clause (what's the difference with addClause?)
+					//Note: addClause and addBlockingClause seem to have same performance
+					try { sat4JSolver.addBlockingClause(new VecInt(negClause)); }
+					catch (ContradictionException e) { break; }				
 				}
-				try { sat4JSolver.addClause(new VecInt(negClause)); }
-				catch (ContradictionException e) { break; }				
 			}
+			catch (TimeoutException e1) { e1.printStackTrace(); }
 		}
-		catch (TimeoutException e1) { e1.printStackTrace(); }
+		else {
+			try { if (!sat4JSolver.isSatisfiable()) return false; }
+			catch (TimeoutException e) { return false; }
+			int[] oneModel = sat4JSolver.model();
+			allModels.add(oneModel);
+		}
 		
 		if (!allModels.isEmpty()) {
 			logger.finest("allmodels[0].length: " + allModels.firstElement().length);
@@ -234,6 +268,8 @@ public class BooleanSatisfiabilitySolver extends ConstraintSolver {
 			updateCurrentModels(allModels.toArray(new int[allModels.size()][]));
 		}
 		else { resetCurrentModels(); }
+					
+		logger.finest("Time spent for SAT solving: " + (Calendar.getInstance().getTimeInMillis()-start));
 		
 		return true;
 	}
