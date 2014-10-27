@@ -39,6 +39,8 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.time.TimePoint;
 
+import cern.colt.Arrays;
+
 /**
  * A multi-variable is a variable "implemented" by several underlying lower-level {@link Variable}s.
  * This class is used by {@link MultiConstraintSolver}s along with {@link MultiConstraint}s to
@@ -98,9 +100,9 @@ public abstract class MultiVariable extends Variable {
 		super(cs, id);
 		this.internalSolvers = internalSolvers;
 		this.variables = internalVars;
-		logger.finest("Set internal variables " + this.variables);		
+		logger.finest("Set internal variables " + (this.variables == null ? this.variables : Arrays.toString(this.variables)));		
 		this.constraints = this.createInternalConstraints(this.variables);
-		logger.finest("Created internal constraints " + this.constraints);
+		logger.finest("Created internal constraints " + ((this.constraints == null) ? this.constraints : Arrays.toString(this.constraints)));
 	}
 
 	/**

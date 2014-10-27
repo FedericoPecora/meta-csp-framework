@@ -22,12 +22,20 @@
  ******************************************************************************/
 package org.metacsp.multi.symbols;
 
+import java.util.HashSet;
+import java.util.Vector;
+
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
+import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
+
+import cern.colt.Arrays;
+
 
 public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 
@@ -38,8 +46,15 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	protected int IDs = 0;
 	protected String[] symbols;
 	protected boolean singleValue = true;
+	protected boolean enumerateSets = true;
 	protected static SymbolicVariableConstraintSolver thisSolver = null;
+	protected HashSet<Constraint> toMask = new HashSet<Constraint>();
 
+	public SymbolicVariableConstraintSolver() {
+		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(), new int[] {0});
+		this.symbols = new String[]{};
+	}
+	
 	public SymbolicVariableConstraintSolver(String[] symbols, int maxVars) {
 		this(symbols,maxVars,false);
 	}
@@ -48,6 +63,44 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(symbols.length*maxVars, (int)Math.pow(symbols.length*maxVars, 2), propagateOnVarCreation), new int[] {symbols.length});
 		this.symbols = symbols;
 		thisSolver = this;
+		this.setOptions(ConstraintSolver.OPTIONS.AUTO_PROPAGATE);
+		if (this.getEnumerateSets()) ((BooleanSatisfiabilitySolver)this.getConstraintSolvers()[0]).setEnumerateModels(true);
+		else ((BooleanSatisfiabilitySolver)this.getConstraintSolvers()[0]).setEnumerateModels(false);
+	}
+	
+	private HashSet<Variable> getConstrainedVariables(Constraint[] c) {
+		HashSet<Variable> ret = new HashSet<Variable>();
+		HashSet<Variable> unconstrainedVars = getUnconstrainedVariables(c);
+		for (Variable v : this.getConstraintNetwork().getVariables())
+			if (!unconstrainedVars.contains(v)) ret.add(v);
+		return ret;
+	}
+
+	private HashSet<Variable> getUnconstrainedVariables(Constraint[] c) {
+		HashSet<Variable> ret = new HashSet<Variable>();
+		for (Variable var : this.getConstraintNetwork().getVariables()) {
+			boolean skip  = false;
+			Variable[] connectedVars = this.getConstraintNetwork().getNeighboringVariables(var);
+			if (connectedVars.length == 0) {
+				for (Constraint con : c) {
+					if (skip) break;
+					for (Variable v : con.getScope()) {
+						if (v.equals(var)) {
+							skip = true;
+							break;
+						}
+					}
+				}
+				if (!skip) ret.add(var);
+			}
+		}
+		return ret;
+	}
+
+	private boolean isMeaningfulConstraint(HashSet<Variable> constrainedVariables, Constraint con) {
+		for (Variable var : con.getScope())
+			if (constrainedVariables.contains(var)) return true;
+		return false;
 	}
 	
 	public static Variable union(Variable ... vars) {
@@ -72,7 +125,7 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 		thisSolver.addConstraint(unaryEquals);
 		return ret;
 	}
-	
+		
 	public static Variable intersection(Variable ... vars) {
 		SymbolicValueConstraint unaryEquals = new SymbolicValueConstraint(Type.VALUEEQUALS);
 		boolean[] unaryValue = new boolean[thisSolver.symbols.length];
@@ -108,14 +161,19 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 	public void setSingleValue(boolean singleValue) {
 		this.singleValue = singleValue;
 	}
-	
+
+	public void setEnumerateSets(boolean enumerateSets) {
+		this.enumerateSets = enumerateSets;
+		if (enumerateSets) ((BooleanSatisfiabilitySolver)this.getConstraintSolvers()[0]).setEnumerateModels(true);
+		else ((BooleanSatisfiabilitySolver)this.getConstraintSolvers()[0]).setEnumerateModels(false);
+	}
+
 	public boolean getSingleValue() {
 		return singleValue;
 	}
-
-	public SymbolicVariableConstraintSolver() {
-		super(new Class[] {SymbolicValueConstraint.class}, SymbolicVariable.class, createConstraintSolvers(), new int[] {0});
-		this.symbols = new String[]{};
+	
+	public boolean getEnumerateSets() {
+		return enumerateSets;
 	}
 
 	public String[] getSymbols() { return this.symbols; }
@@ -140,9 +198,28 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 		
 	@Override
 	public boolean propagate() {
-		//Does nothing.  Propagation is taken care of
+		//Do nothing - propagation is taken care of
 		//by the underlying BooleanSatisfiabilitySolver
 		return true;
+	}
+	
+	@Override
+	public void maskConstraints(Constraint[] c) {
+		//Mask the internal constraints (BooleanConstraints) that model unary values for variables
+		//that have no neighbors - this makes the SAT solver much more efficient
+		HashSet<Variable> unconstrainedVariables = getUnconstrainedVariables(c);
+		for (Variable var : unconstrainedVariables) {
+			SymbolicVariable sv = (SymbolicVariable)var;
+			Constraint[] internalCons = sv.getInternalConstraints();
+			ConstraintNetwork.maskConstraints(internalCons);
+		}
+		logger.fine("Masked internal constraints");
+	}
+	
+	@Override
+	public void unmaskConstraints(Constraint[] c) {
+		this.getConstraintSolvers()[0].getConstraintNetwork().unmaskConstraints();
+		logger.finest("Unmasked internal constraints");
 	}
 		
 }

@@ -129,7 +129,7 @@ public class SymbolicVariable extends MultiVariable {
 	}
 
 	@Override
-	public String toString() { return Arrays.toString(this.getSymbols()); }
+	public String toString() { return this.id + ": " + Arrays.toString(this.getSymbols()); }
 	
 	public String[] getSymbols() {
 		Vector<String> ret = new Vector<String>();

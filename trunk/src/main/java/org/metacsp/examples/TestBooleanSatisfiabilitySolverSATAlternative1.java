@@ -15,7 +15,7 @@ public class TestBooleanSatisfiabilitySolverSATAlternative1 {
 	public static void main(String[] args) {
 		
 		BooleanSatisfiabilitySolver solver = new BooleanSatisfiabilitySolver(10, 10);
-		MetaCSPLogging.setLevel(BooleanSatisfiabilitySolver.class, Level.FINEST);
+		MetaCSPLogging.setLevel(Level.FINEST);
 		Logger logger = MetaCSPLogging.getLogger(TestBooleanSatisfiabilitySolverSATAlternative1.class);
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());

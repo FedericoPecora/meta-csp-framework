@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 /**
  * 
- * Generates r-permutations of n integers with repetition.
+ * Generates r-permutations of n integers without repetition.
  * The algorithm is from Applied Combinatorics, by Alan Tucker.
  * Based on code from <a href="http://koders.com">koders.com</a>.
  * 

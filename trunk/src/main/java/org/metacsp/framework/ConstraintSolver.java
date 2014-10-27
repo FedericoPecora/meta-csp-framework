@@ -121,7 +121,7 @@ public abstract class ConstraintSolver implements Serializable {
 		this.variableType = variableType;
 		this.registerValueChoiceFunctions();
 	}
-	
+
 	/**
 	 * Set options for this {@link ConstraintSolver}.
 	 * @param ops Options to set (see {@link OPTIONS}).
@@ -162,7 +162,7 @@ public abstract class ConstraintSolver implements Serializable {
 		
 	/**
 	 * Propagate the constraint network.
-	 * @return A boolean value indicating the results of the propagation.
+	 * @return A boolean value indicating whether propagation was successful.
 	 */
 	public abstract boolean propagate();
 
@@ -228,7 +228,8 @@ public abstract class ConstraintSolver implements Serializable {
 	 * performing {@code c.length} invocations of {@link #addConstraint(Constraint c)}.
 	 * In addition, all constraints are either accepted or rejected together.
 	 * @param c The constraints to add.
-	 * @return A boolean value indicating the success of adding the constraints.
+	 * @return Whether the resulting {@link ConstraintNetwork} is consistent.
+	 * If <code>false</code>, the {@link Constraint} are not added. 
 	 */
 	public final boolean addConstraints(Constraint... c) {
 		if (c == null || c.length == 0){ 
@@ -250,6 +251,7 @@ public abstract class ConstraintSolver implements Serializable {
 		Constraint[] toAddArray = toAdd.toArray(new Constraint[toAdd.size()]);
 
 		//call solver-specific procedures for adding constraints, then propagate
+		this.maskConstraints(c);
 		if (addConstraintsSub(toAddArray)) {
 			//NOTE: must add new cons before attempting propagation, because some solvers call
 			//constraint network methods in their implementation of propagate()... 
@@ -257,6 +259,7 @@ public abstract class ConstraintSolver implements Serializable {
 			if (!skipPropagation && autoprop && checkDomainsInstantiated()) { 
 				if (this.propagate()) {
 					logger.finest("Added and propagated constraints " + Arrays.toString(toAddArray));
+					this.unmaskConstraints(c);
 					return true;
 				}
 				//... and then remove new cons if propagation not successful...
@@ -268,11 +271,13 @@ public abstract class ConstraintSolver implements Serializable {
 			}
 			else {
 				logger.finest("Added constraints " + Arrays.toString(toAddArray) + " BUT DELAYED PROPAGATION (autoprop = " + autoprop + ")");
+				this.unmaskConstraints(c);
 				return true;
 			}
 		}
 		//... and finally re-propagate if not successful to put everything back the way it was
 		if (!skipPropagation && autoprop && checkDomainsInstantiated()) this.propagate();
+		this.unmaskConstraints(c);
 		return false;
 	}	
 
@@ -577,8 +582,8 @@ public abstract class ConstraintSolver implements Serializable {
 	}
 	
 	/**
-	 * Gets a description of this {@link MultiConstraintSolver} stating which variable and constraint types it supports.  
-	 * @return A description of this {@link MultiConstraintSolver} stating which variable and constraint types it supports.
+	 * Gets a description of this {@link ConstraintSolver} stating which variable and constraint types it supports.  
+	 * @return A description of this {@link ConstraintSolver} stating which variable and constraint types it supports.
 	 */
 	public String getDescription() {
 		String spacer = "";
@@ -634,6 +639,19 @@ public abstract class ConstraintSolver implements Serializable {
 	
 	public abstract void registerValueChoiceFunctions();
 	
-	public void setConstraintNetwork(ConstraintNetwork newCS) { this.theNetwork = newCS; } 
+	public void setConstraintNetwork(ConstraintNetwork newCS) { this.theNetwork = newCS; }
 	
+	/**
+	 * Method to mask constraints; does nothing, must be overridden; always called before propagation. 
+	 * @param constraints The constraints that are being added by this call to propagate.
+	 */
+	public void maskConstraints(Constraint[] constraints) {}
+
+	/**
+	 * Method to unmask constraints (reverse making done in maskConstraints() method); does nothing, must be overridden; always called after propagation.
+	 * @param constraints The constraints that were added by this call to propagate.
+	 */
+	public void unmaskConstraints(Constraint[] constraints) {}
+
+		
 }
