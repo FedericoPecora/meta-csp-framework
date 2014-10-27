@@ -292,12 +292,6 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	}
 
 	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
-			int initialTime) {
-		return getMetaValues(metaVariable);
-	}
-
-	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 
 		if (metaVariable == null)
@@ -742,9 +736,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 					allenBoundsY[j] = by;
 				}
 
-				AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
+				AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getTypes()[0], allenBoundsX);
 				AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(
-						(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+						(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getTypes()[0], allenBoundsY);
 
 
 				//This part is for the Allen intervals do not have any bounds e.g., Equals
@@ -1021,8 +1015,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 						allenBoundsY[j] = by;
 					}
 
-					AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getType(), allenBoundsX);
-					AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getType(), allenBoundsY);
+					AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0].getTypes()[0], allenBoundsX);
+					AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint((this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1].getTypes()[0], allenBoundsY);
 
 					//					//This part is for the Allen intervals do not have any bounds e.g., Equals
 					//					if((this.rules[i].getBinaryBAConstraint()).getInternalAllenIntervalConstraints()[0].getBounds().length == 0)
@@ -1438,10 +1432,10 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 				AllenIntervalConstraint xAllenCon = new AllenIntervalConstraint(
 						(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[0]
-								.getType(), allenBoundsX);
+								.getTypes()[0], allenBoundsX);
 				AllenIntervalConstraint yAllenCon = new AllenIntervalConstraint(
 						(this.rules[i].getBinaryRAConstraint()).getInternalAllenIntervalConstraints()[1]
-								.getType(), allenBoundsY);
+								.getTypes()[0], allenBoundsY);
 
 				RectangleConstraint uConsBinary = new RectangleConstraint(
 						xAllenCon, yAllenCon);

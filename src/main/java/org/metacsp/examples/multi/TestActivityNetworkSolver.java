@@ -56,7 +56,7 @@ public class TestActivityNetworkSolver {
 		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
 		con1a.setFrom(act1);
 		con1a.setTo(act1);
-		con1a.setUnaryValue(new boolean[] {false,true,true,false,false,false});
+		con1a.setValue(new boolean[] {false,true,true,false,false,false});
 
 		AllenIntervalConstraint con2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(10, 20));
 		con2.setFrom(act1);

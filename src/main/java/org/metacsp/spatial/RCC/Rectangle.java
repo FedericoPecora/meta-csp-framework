@@ -27,6 +27,7 @@ import org.metacsp.framework.Domain;
 
 public class Rectangle extends Domain {
 
+	private static final long serialVersionUID = 2967422378388107398L;
 	private int width = 0;
 	private int height = 0;
 	private String[] intervalName = new String[2]; 

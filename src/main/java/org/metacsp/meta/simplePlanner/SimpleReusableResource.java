@@ -118,10 +118,8 @@ public class SimpleReusableResource extends Schedulable {
 		return capacity;
 	}
 
-
 	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
-			int initial_time) {
+	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		// TODO Auto-generated method stub
 		return null;
 	}

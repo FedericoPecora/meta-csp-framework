@@ -197,11 +197,11 @@ public class Floor2D extends Schedulable {
 	}
 
 	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
-			int initial_time) {
+	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 
 }

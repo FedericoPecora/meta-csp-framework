@@ -26,6 +26,7 @@ import org.metacsp.time.Bounds;
 
 public class MetaOccupiedConstraint extends MetaConstraint{
 
+	private static final long serialVersionUID = 8666582498183851032L;
 	protected int pad = 0;
 	private boolean freeArmHeuristic = false;
 	
@@ -307,17 +308,9 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	}
 
 	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
-			int initial_time) {
-		
-		return getMetaValues(metaVariable);
-	}
-
-	@Override
 	public void markResolvedSub(MetaVariable metaVariable,
 			ConstraintNetwork metaValue) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

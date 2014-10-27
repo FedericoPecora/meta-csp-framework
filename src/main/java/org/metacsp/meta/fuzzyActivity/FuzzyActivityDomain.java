@@ -176,11 +176,6 @@ public class FuzzyActivityDomain extends MetaConstraint {
 
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
-
-	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initialTime) {
-		return getMetaValues(metaVariable);
-	}
 	
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {

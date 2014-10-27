@@ -38,6 +38,7 @@ import org.metacsp.framework.Variable;
  */
 public class MultiDomain extends Domain {
 
+	private static final long serialVersionUID = 6363060554334754226L;
 	protected Domain[] domains;
 	
 	/**

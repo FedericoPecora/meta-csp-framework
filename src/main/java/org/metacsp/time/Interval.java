@@ -35,6 +35,7 @@ import org.metacsp.framework.Domain;
  */
 public class Interval extends Domain {
 
+	private static final long serialVersionUID = -7079642733841249101L;
 	private Bounds bounds;
 
     /**

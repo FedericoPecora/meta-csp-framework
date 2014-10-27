@@ -109,13 +109,6 @@ public class SensingSchedulable extends MetaConstraint{
 	}
 
 	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable,
-			int initial_time) {
-		
-		return getMetaValues(metaVariable);
-	}
-
-	@Override
 	public void markResolvedSub(MetaVariable metaVariable,
 			ConstraintNetwork metaValue) {
 		// TODO Auto-generated method stub

@@ -116,8 +116,8 @@ public class SymbolicVariable extends MultiVariable {
 		}
 		
 		if (usesSolverSymbols) {
-			SymbolicValueConstraint equalsCon = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
-			equalsCon.setUnaryValue(solverSymbolsToMakeTrue);
+			SymbolicValueConstraint equalsCon = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUESUBSET);
+			equalsCon.setValue(solverSymbolsToMakeTrue);
 			equalsCon.setFrom(this);
 			equalsCon.setTo(this);
 			equalsCon.setAutoRemovable(true);

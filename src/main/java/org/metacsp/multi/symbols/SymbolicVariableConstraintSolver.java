@@ -23,7 +23,6 @@
 package org.metacsp.multi.symbols;
 
 import java.util.HashSet;
-import java.util.Vector;
 
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
 import org.metacsp.booleanSAT.BooleanVariable;
@@ -33,8 +32,6 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
-
-import cern.colt.Arrays;
 
 
 public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
@@ -119,7 +116,7 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 				}
 			}
 		}
-		unaryEquals.setUnaryValue(unaryValue);
+		unaryEquals.setValue(unaryValue);
 		unaryEquals.setFrom(ret);
 		unaryEquals.setTo(ret);
 		thisSolver.addConstraint(unaryEquals);
@@ -151,7 +148,7 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 		}
 		if (!atLeastOneValue) return null;
 		SymbolicVariable ret = (SymbolicVariable)thisSolver.createVariable(vars[0].getComponent());
-		unaryEquals.setUnaryValue(unaryValue);
+		unaryEquals.setValue(unaryValue);
 		unaryEquals.setFrom(ret);
 		unaryEquals.setTo(ret);
 		thisSolver.addConstraint(unaryEquals);

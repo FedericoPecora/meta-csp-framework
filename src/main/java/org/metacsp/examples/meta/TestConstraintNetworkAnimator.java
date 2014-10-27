@@ -25,9 +25,6 @@ package org.metacsp.examples.meta;
 import java.util.Calendar;
 import java.util.logging.Level;
 
-import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
-import org.metacsp.meta.simplePlanner.SimplePlanner;
-import org.metacsp.meta.simplePlanner.SimplePlannerInferenceCallback;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;

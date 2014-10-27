@@ -28,7 +28,6 @@ import java.util.Vector;
 
 import org.metacsp.framework.BinaryConstraint;
 import org.metacsp.framework.Constraint;
-import org.metacsp.fuzzyAllenInterval.FuzzyAllenIntervalConstraint;
 
 /**
  * There are 13 types of Allen interval constraints (see [Allen 1984]).

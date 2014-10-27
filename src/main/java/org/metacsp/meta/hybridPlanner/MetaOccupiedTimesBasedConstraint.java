@@ -14,6 +14,8 @@ import org.metacsp.time.Bounds;
 
 public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{
 
+	private static final long serialVersionUID = -4431153077664128759L;
+
 	public MetaOccupiedTimesBasedConstraint(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
 

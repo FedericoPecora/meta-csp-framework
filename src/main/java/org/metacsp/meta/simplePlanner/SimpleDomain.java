@@ -271,12 +271,6 @@ public class SimpleDomain extends MetaConstraint {
 		return activityNetworkToReturn;						
 	}
 
-
-	@Override
-	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable, int initialTime) {
-		return getMetaValues(metaVariable);
-	}
-
 	public void addSensor(String sensor) {
 		this.sensors.add(sensor);
 	}
