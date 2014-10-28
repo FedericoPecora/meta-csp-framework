@@ -59,7 +59,6 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		return valOH;
 	}
 	
-
 	private VariablePrototype[] generateGoals() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		SimpleOperator[] ops = this.getOperators();
@@ -101,7 +100,8 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			if (ret != null && ret.length > 0) {
 				//Add timeNow release to activity representing the metavariable
 				Variable flaw = mv.getVariables()[0];
-				if (!isContextVar(flaw.getComponent()) && !isSensor(flaw.getComponent())) {
+				//if (!isContextVar(flaw.getComponent()) && !isSensor(flaw.getComponent())) {
+				if ((isActuator(flaw.getComponent())) || (!isContextVar(flaw.getComponent()) && !isSensor(flaw.getComponent()))) {
 					AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,APSPSolver.INF));
 					release.setFrom(flaw);
 					release.setTo(flaw);
@@ -117,13 +117,20 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			ConstraintNetwork cn = new ConstraintNetwork(null);
 			cn.addVariable(oneGoal);
 			Activity oldInf = oldInferences.get(oneGoal.getParameters()[0]);
+			boolean skip = false;
 			if (oldInf != null) {
-				AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-				before.setFrom(oldInf);
-				before.setTo(oneGoal);
-				cn.addConstraint(before);
+				if (oldInf.getSymbolicVariable().getSymbols()[0].equals(oneGoal.getParameters()[1])) {
+					skip = true;
+					System.out.println("SKIPPING because of " + oldInf);
+				}
+				else {
+					AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+					before.setFrom(oldInf);
+					before.setTo(oneGoal);
+					cn.addConstraint(before);
+				}
 			}
-			ret.add(cn);
+			if (!skip) ret.add(cn);
 		}
 		if (ret.isEmpty()) return null;
 		return ret.toArray(new ConstraintNetwork[ret.size()]);

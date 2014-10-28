@@ -63,9 +63,10 @@ public class SimpleDomain extends MetaConstraint {
 
 	private String name;
 
-	private Vector<String> sensors = new Vector<String>();
-	private Vector<String> contextVars = new Vector<String>();
-	private Vector<String> controllables = new Vector<String>();
+	protected Vector<String> sensors = new Vector<String>();
+	protected Vector<String> actuators = new Vector<String>();
+	protected Vector<String> contextVars = new Vector<String>();
+	protected Vector<String> controllables = new Vector<String>();
 	protected HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
@@ -275,6 +276,10 @@ public class SimpleDomain extends MetaConstraint {
 		this.sensors.add(sensor);
 	}
 
+	public void addActuator(String actuator) {
+		this.actuators.add(actuator);
+	}
+
 	public void addControllable(String controllable){
 		this.controllables.add(controllable);
 	}
@@ -285,6 +290,11 @@ public class SimpleDomain extends MetaConstraint {
 
 	public boolean isSensor(String component) {
 		if (sensors.contains(component)) return true;
+		return false;
+	}
+	
+	public boolean isActuator(String component) {
+		if (actuators.contains(component)) return true;
 		return false;
 	}
 
@@ -735,7 +745,7 @@ public class SimpleDomain extends MetaConstraint {
 	 * @param sp The {@link SimplePlanner} that will use this domain.
 	 * @param filename Text file containing the domain definition. 
 	 */
-	public static void parseDomain(MetaConstraintSolver sp, String filename, Class<?> domainType) {
+	public static SimpleDomain parseDomain(MetaConstraintSolver sp, String filename, Class<?> domainType) {
 		String everything = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -759,6 +769,7 @@ public class SimpleDomain extends MetaConstraint {
 				String[] simpleOperators = parseKeyword("SimpleOperator", everything);
 				String[] planningOperators = parseKeyword("PlanningOperator", everything);
 				String[] sensors = parseKeyword("Sensor", everything);
+				String[] actuators = parseKeyword("Actuator", everything);
 				String[] controllable = parseKeyword("Controllable", everything);
 
 				String[] contextVars = parseKeyword("ContextVariable", everything);
@@ -807,6 +818,7 @@ public class SimpleDomain extends MetaConstraint {
 				}
 				
 				for (String sensor : sensors) dom.addSensor(sensor);
+				for (String act : actuators) dom.addActuator(act);
 				for (String cont : controllable) dom.addControllable(cont);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : simpleOperators) {
@@ -820,11 +832,13 @@ public class SimpleDomain extends MetaConstraint {
 
 				//This adds the domain as a meta-constraint of the SimplePlanner
 				sp.addMetaConstraint(dom);
+				return dom;
 			}
 			finally { br.close(); }
 		}
 		catch (FileNotFoundException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
+		return null;
 	}
 
 	public void applyFreeArmHeuristic(Vector<Activity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {

@@ -41,6 +41,8 @@ public class Sensor implements Serializable {
 		}
 	}
 	
+	public String getName() { return this.name; }
+	
 	public void modelSensorValue(String value, long timeNow) {
 		synchronized(ans) {
 			boolean makeNew = false;

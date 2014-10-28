@@ -136,24 +136,11 @@ public class ConstraintNetworkAnimator extends Thread {
 					for (long time : toRemove) values.remove(time);
 				}
 
-				//If there are registered controllable sensor traces, animate them too
-				//				for (Controllable controllable : controllableValues.keySet()) {
-				//					Vector<Long> toRemove = new Vector<Long>();
-				//					HashMap<Long,String> values = controllableValues.get(controllable);
-				//					for (long time : values.keySet()) {
-				//						if (time <= timeNow) {
-				//							controllable.modelSensorValue(values.get(time), time);
-				//							toRemove.add(time);
-				//						}
-				//					}
-				//					for (long time : toRemove) values.remove(time);
-				//				}
-
 				//If there is a registered InferenceCallback (e.g., call a planner), run it
 				if (this.cb != null) cb.doInference(timeNow);
 
 				//Print iteration number
-				logger.info("Iteration " + iteration++);
+				logger.info("Iteration " + iteration++ + " @" + timeNow);
 			}
 		}
 	}
