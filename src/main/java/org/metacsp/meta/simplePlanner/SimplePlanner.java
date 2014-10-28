@@ -46,7 +46,6 @@ public class SimplePlanner extends MetaConstraintSolver {
 	private static final long serialVersionUID = 4415954974488050840L;
 
 	public SimplePlanner(long origin, long horizon, long animationTime) {
-		// Through the constructor, the Scheduler is put in the "InternalSolver variable"
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, animationTime, new ActivityNetworkSolver(origin, horizon, 500));
 	}
 
