@@ -187,8 +187,10 @@ public class FuzzySymbolicVariableConstraintSolver extends ConstraintSolver {
 	
 	private void acPropagation(Constraint[] svcArray) {
 		HashMap<Integer, HashMap<String, Double>> var = new HashMap<Integer, HashMap<String, Double>>();
+//		System.out.println(this.getVariables().length);
 		for(int i = 0; i < this.getVariables().length; i++){
 			HashMap<String, Double> m = new HashMap<String, Double>();
+//			System.out.println(((FuzzySymbolicVariable)this.getVariables()[i]));
 			m.putAll(((FuzzySymbolicVariable)this.getVariables()[i]).getSymbolsAndPossibilities());
 			var.put(i, m);
 		}
