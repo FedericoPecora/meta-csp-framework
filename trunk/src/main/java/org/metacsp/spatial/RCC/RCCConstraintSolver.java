@@ -48,7 +48,6 @@ public class RCCConstraintSolver extends ConstraintSolver{
 	public RCCConstraintSolver() {
 		super(new Class[]{RCCConstraint.class}, Region.class);
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
