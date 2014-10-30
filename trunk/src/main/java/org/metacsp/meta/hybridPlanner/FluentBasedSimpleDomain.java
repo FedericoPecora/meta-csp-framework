@@ -1,6 +1,10 @@
 package org.metacsp.meta.hybridPlanner;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
@@ -28,6 +32,9 @@ import org.metacsp.time.Bounds;
 
 public class FluentBasedSimpleDomain extends SimpleDomain {
 	
+	private boolean addedNegationofInitialsituation = true;
+	private Vector<String> objParams;
+
 	private long timeNow = -1;
 	private boolean activeFreeArmHeuristic = false;
 	private ManipulationAreaDomain manipulationAreaDomain = null;
@@ -533,4 +540,91 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	public void activeHeuristic(boolean active){
 		this.activeFreeArmHeuristic = active;
 	}
+	
+	public void applyFreeArmHeuristic(Vector<Activity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {
+		
+		//get Parameter from activities
+		objParams = new Vector<String>();
+		for (int i = 0; i < varInvolvedInOccupiedMetaConstraints.size(); i++) {
+			String sym = varInvolvedInOccupiedMetaConstraints.get(i).getSymbolicVariable().getSymbols()[0];
+			String param = sym.substring(sym.indexOf("_")+1, sym.indexOf("_", sym.indexOf("_")+1));
+			objParams.add(param);
+		}
+		
+		HashMap<String, Vector<SimpleOperator>> paramsToOperators = new HashMap<String, Vector<SimpleOperator>>();
+		//separate the operators based on the object parameters involved in
+
+		for (int i = 0; i < objParams.size(); i++) {
+			Vector<SimpleOperator> ops = new Vector<SimpleOperator>();
+			for (int j = 0; j < operators.size(); j++) {
+				if(operators.get(j).getHead().contains(objParams.get(i))){
+					ops.add(operators.get(j));
+				}
+				paramsToOperators.put(objParams.get(i), ops);
+			}
+		}
+		
+		//set level on each operator based on whether the operator free the arm or not!
+		for (String param : paramsToOperators.keySet()) {
+			for (int i = 0; i < paramsToOperators.get(param).size(); i++) {
+				if(hasOperator( paramsToOperators.get(param).get(i), heursiticTerm)){
+					operatorsLevels.put(paramsToOperators.get(param).get(i), 0);
+				}
+				else{					
+					operatorsLevels.put(paramsToOperators.get(param).get(i), 1);
+				}				
+			}
+		}
+				
+		for (int i = 0; i < operators.size(); i++) {
+			if(!operatorsLevels.containsKey(operators.get(i))){
+				operatorsLevels.put(operators.get(i), 2);
+			}
+		}
+		
+	}
+
+	private boolean hasOperator(SimpleOperator simpleOperator, String heursiticTerm) {
+		
+		if(simpleOperator.getHead().contains(heursiticTerm)) return true;
+		
+		for (int i = 0; i < simpleOperator.getRequirementActivities().length; i++) {
+			if(simpleOperator.getRequirementActivities()[i].contains(heursiticTerm))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	
+	protected static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
+		ArrayList mapKeys = new ArrayList(passedMap.keySet());
+		ArrayList mapValues = new ArrayList(passedMap.values());
+		Collections.sort(mapValues, Collections.reverseOrder());
+		//Collections.sort(mapKeys);
+
+		LinkedHashMap sortedMap = 
+				new LinkedHashMap();
+
+		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
+		while (valueIt.hasNext()) {
+			int val = (Integer) valueIt.next();
+			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
+
+			while (keyIt.hasNext()) {
+				ConstraintNetwork key = (ConstraintNetwork) keyIt.next();
+				int comp1 = (Integer) passedMap.get(key);
+				int comp2 = val;
+
+				if (comp1 == comp2){
+					passedMap.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put(key, val);
+					break;
+				}
+			}
+		}
+		return sortedMap;
+	}
+
 }
