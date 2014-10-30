@@ -18,7 +18,7 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestContextInference)
+(Domain TestContextInference)
 
 (Sensor Location)
 (Sensor Stove)

@@ -56,7 +56,14 @@ public class TestSimplePlanner {
 		MetaCSPLogging.setLevel(SimpleDomain.class, Level.FINEST);
 				
 		SimpleDomain rd = new SimpleDomain(new int[] {6,6,6}, new String[] {"power", "usbport", "serialport"}, "TestDomain");
-			
+
+		//State which state variables are actions
+		rd.addActuator("Robot1");
+		rd.addActuator("Robot2");
+		rd.addActuator("LocalizationService");
+		rd.addActuator("RFIDReader1");
+		rd.addActuator("LaserScanner1");
+		
 		// Here I create two AllenIntervalConstraint for use in the operator I will define
 		AllenIntervalConstraint durationMoveTo = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(5,APSPSolver.INF));
 		AllenIntervalConstraint moveToDuringLocalization = new AllenIntervalConstraint(AllenIntervalConstraint.Type.During, AllenIntervalConstraint.Type.During.getDefaultBounds());

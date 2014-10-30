@@ -9,21 +9,23 @@
 #   SimpleOperator                                              #
 #   SimpleDomain                                                #
 #   Constraint                                                  #
-#   RequiredState												#
-#   AchievedState												#
-#   RequriedResoruce											#
+#   RequiredState						#
+#   AchievedState						#
+#   RequriedResoruce						#
 #   All AllenIntervalConstraint types                           #
 #   '[' and ']' should be used only for constraint bounds       #
 #   '(' and ')' are used for parsing                            #
 #                                                               #
 #################################################################
 
-(SimpleDomain TestProactivePlanning)
+(Domain TestProactivePlanning)
 
 (Sensor Location)
 (Sensor Stove)
 
 (ContextVariable Human)
+
+(Actuator Robot)
 
 (SimpleOperator
  (Head Human::Cooking())

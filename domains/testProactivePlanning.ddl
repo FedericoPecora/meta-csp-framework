@@ -18,7 +18,7 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestProactivePlanning)
+(Domain TestProactivePlanning)
 
 (Sensor Location)
 (Sensor Stove)
