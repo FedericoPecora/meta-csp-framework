@@ -116,4 +116,5 @@ public class ProactivePlanningDomain extends SimpleDomain {
 	public void updateTimeNow(long timeNow) {
 		this.timeNow = timeNow;
 	}
+	
 }

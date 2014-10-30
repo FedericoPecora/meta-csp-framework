@@ -67,16 +67,10 @@ public class SimpleDomain extends MetaConstraint {
 	protected Vector<String> sensors = new Vector<String>();
 	protected Vector<String> actuators = new Vector<String>();
 	protected Vector<String> contextVars = new Vector<String>();
-	//protected Vector<String> controllables = new Vector<String>();
 	protected HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
 	
-	private boolean addedNegationofInitialsituation = true;
-	private Vector<String> objParams;
-	
-	
-	//public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVABLE};
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVED_UNJ, OBSERVED_JUST, IMPOSSIBLE, 
 		COND_UNJUSTIFIED, COND_CURRENT_UNJUSTIFIED};
 
@@ -292,10 +286,6 @@ public class SimpleDomain extends MetaConstraint {
 		return this.actuators.toArray(new String[this.actuators.size()]);
 	}
 
-//	public void addControllable(String controllable){
-//		this.controllables.add(controllable);
-//	}
-
 	public void addContextVar(String cv) {
 		this.contextVars.add(cv);
 	}
@@ -313,12 +303,6 @@ public class SimpleDomain extends MetaConstraint {
 		if (actuators.contains(component)) return true;
 		return false;
 	}
-
-//	public boolean isControllable(String component) {
-//		if (controllables.contains(component)) return true;
-//		return false;
-//	}
-
 
 	public boolean isContextVar(String component) {
 		if (contextVars.contains(component)) return true;
@@ -474,8 +458,6 @@ public class SimpleDomain extends MetaConstraint {
 		}
 		logger.finest(problematicActivity.getComponent() + " HAS NO RESOLVERS, will FAIL!");
 		return null;
-//		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
-//		return new ConstraintNetwork[] {nullActivityNetwork};
 	}
 
 	@Override
@@ -797,8 +779,6 @@ public class SimpleDomain extends MetaConstraint {
 				}
 				everything = sb.toString();
 				String name = parseKeyword("Domain", everything)[0];
-				//if (nameArray.length != 0) name = nameArray[0];
-				//else name = parseKeyword("PlanningDomain", everything)[0];
 				String[] resourceElements = parseKeyword("Resource", everything);
 				HashMap<String,Integer> resources = processResources(resourceElements);
 				String[] simpleOperators = parseKeyword("SimpleOperator", everything);
@@ -837,13 +817,11 @@ public class SimpleDomain extends MetaConstraint {
 	                            if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
 	                            	int annotation1 = ((Integer)arg0.getAnnotation()).intValue();
 	                            	int annotation2 = ((Integer)arg1.getAnnotation()).intValue();
-	                            	//System.out.println("RETURNING (1): " + (annotation2-annotation1));
 	                            	return annotation2-annotation1;
 	                            }
 	                        }
 	                        //Return unifications first
 	                        //TODO: maybe this is superfluous...
-	                        //System.out.println("RETURNING (2): " + (arg1.getVariables().length - arg0.getVariables().length));
 	                        return arg0.getVariables().length - arg1.getVariables().length;
 	                    }
 	                };
@@ -863,7 +841,6 @@ public class SimpleDomain extends MetaConstraint {
 				
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String act : actuators) dom.addActuator(act);
-//				for (String cont : controllable) dom.addControllable(cont);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : simpleOperators) {
 					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames,false));
@@ -884,94 +861,5 @@ public class SimpleDomain extends MetaConstraint {
 		catch (IOException e) { e.printStackTrace(); }
 		return null;
 	}
-
-	public void applyFreeArmHeuristic(Vector<Activity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {
-		
-		//get Parameter from activities
-		objParams = new Vector<String>();
-		for (int i = 0; i < varInvolvedInOccupiedMetaConstraints.size(); i++) {
-			String sym = varInvolvedInOccupiedMetaConstraints.get(i).getSymbolicVariable().getSymbols()[0];
-			String param = sym.substring(sym.indexOf("_")+1, sym.indexOf("_", sym.indexOf("_")+1));
-			objParams.add(param);
-		}
-		
-		HashMap<String, Vector<SimpleOperator>> paramsToOperators = new HashMap<String, Vector<SimpleOperator>>();
-		//separate the operators based on the object parameters involved in
-
-		for (int i = 0; i < objParams.size(); i++) {
-			Vector<SimpleOperator> ops = new Vector<SimpleOperator>();
-			for (int j = 0; j < operators.size(); j++) {
-				if(operators.get(j).getHead().contains(objParams.get(i))){
-					ops.add(operators.get(j));
-				}
-				paramsToOperators.put(objParams.get(i), ops);
-			}
-		}
-		
-		//set level on each operator based on whether the operator free the arm or not!
-		for (String param : paramsToOperators.keySet()) {
-			for (int i = 0; i < paramsToOperators.get(param).size(); i++) {
-				if(hasOperator( paramsToOperators.get(param).get(i), heursiticTerm)){
-					operatorsLevels.put(paramsToOperators.get(param).get(i), 0);
-				}
-				else{					
-					operatorsLevels.put(paramsToOperators.get(param).get(i), 1);
-				}				
-			}
-		}
-				
-		for (int i = 0; i < operators.size(); i++) {
-			if(!operatorsLevels.containsKey(operators.get(i))){
-				operatorsLevels.put(operators.get(i), 2);
-			}
-		}
-		
-	}
-
-	private boolean hasOperator(SimpleOperator simpleOperator, String heursiticTerm) {
-		
-		if(simpleOperator.getHead().contains(heursiticTerm)) return true;
-		
-		for (int i = 0; i < simpleOperator.getRequirementActivities().length; i++) {
-			if(simpleOperator.getRequirementActivities()[i].contains(heursiticTerm))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	
-	protected static LinkedHashMap sortHashMapByValues(HashMap passedMap) {
-		ArrayList mapKeys = new ArrayList(passedMap.keySet());
-		ArrayList mapValues = new ArrayList(passedMap.values());
-		Collections.sort(mapValues, Collections.reverseOrder());
-		//Collections.sort(mapKeys);
-
-		LinkedHashMap sortedMap = 
-				new LinkedHashMap();
-
-		Iterator valueIt = ((java.util.List<SpatialRule>) mapValues).iterator();
-		while (valueIt.hasNext()) {
-			int val = (Integer) valueIt.next();
-			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
-
-			while (keyIt.hasNext()) {
-				ConstraintNetwork key = (ConstraintNetwork) keyIt.next();
-				int comp1 = (Integer) passedMap.get(key);
-				int comp2 = val;
-
-				if (comp1 == comp2){
-					passedMap.remove(key);
-					mapKeys.remove(key);
-					sortedMap.put(key, val);
-					break;
-				}
-			}
-		}
-		return sortedMap;
-	}
-
-
-	
 	
 }
