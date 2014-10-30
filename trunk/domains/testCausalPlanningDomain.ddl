@@ -19,7 +19,7 @@
 #                                                               #
 #################################################################
 
-(PlanningDomain TestCausalPlanning)
+(Domain TestCausalPlanning)
 
 (Resource power 6)
 (Resource usbport 6)

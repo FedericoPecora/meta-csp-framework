@@ -19,7 +19,7 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestSimpleHybridPlanningDomain)
+(Domain TestSimpleHybridPlanningDomain)
 
 #(Sensor RobotProprioception) #proprioception
 #(Sensor atLocation) #tabletop perception

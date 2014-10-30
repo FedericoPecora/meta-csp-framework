@@ -25,6 +25,7 @@ package org.metacsp.examples.meta;
 import java.util.logging.Level;
 
 import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
+import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.meta.simplePlanner.SimplePlannerInferenceCallback;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
@@ -43,7 +44,7 @@ public class TestProactivePlanning {
 		SimplePlanner planner = new SimplePlanner(0,100000,0);
 		MetaCSPLogging.setLevel(planner.getClass(), Level.FINE);
 
-		ProactivePlanningDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
+		SimpleDomain.parseDomain(planner, "domains/testProactivePlanningLucia.ddl", ProactivePlanningDomain.class);
 
 		ActivityNetworkSolver ans = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
 		SimplePlannerInferenceCallback cb = new SimplePlannerInferenceCallback(planner);

@@ -19,7 +19,7 @@
 #                                                               #
 #################################################################
 
-(SimpleDomain TestSensingDomain)
+(Domain TestSensingDom)
 
 #(Sensor RobotProprioception) #proprioception
 #(Sensor atLocation) #tabletop perception

@@ -60,13 +60,14 @@ public class SimpleDomain extends MetaConstraint {
 	protected String[] resourceNames;
 	protected HashMap<String,SimpleReusableResource> resourcesMap;
 	protected HashMap<SimpleReusableResource,HashMap<Variable,Integer>> currentResourceUtilizers;
+	private String everything = null;
 
 	private String name;
 
 	protected Vector<String> sensors = new Vector<String>();
 	protected Vector<String> actuators = new Vector<String>();
 	protected Vector<String> contextVars = new Vector<String>();
-	protected Vector<String> controllables = new Vector<String>();
+	//protected Vector<String> controllables = new Vector<String>();
 	protected HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
 	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
@@ -117,6 +118,10 @@ public class SimpleDomain extends MetaConstraint {
 		for (SimpleReusableResource rr : resourcesMap.values()) currentResourceUtilizers.put(rr,new HashMap<Variable, Integer>());
 	}
 	
+	protected SimpleDomain(int[] capacities, String[] resourceNames, String domainName, String everything) {
+		this(capacities, resourceNames, domainName);
+		this.everything = everything;
+	}
 	
 	public void addResrouceUtilizers(SimpleReusableResource rr, HashMap<Variable, Integer> hm) {
 		currentResourceUtilizers.put(rr,hm);
@@ -162,9 +167,8 @@ public class SimpleDomain extends MetaConstraint {
 
 	
 	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
-		logger.finest("Expanding operator " + possibleOperator.getHead());
 		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);
-		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver(); //(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();
 
 		String possibleOperatorHead = possibleOperator.getHead();
 		String possibleOperatorHeadSymbol = possibleOperatorHead.substring(possibleOperatorHead.indexOf("::")+2, possibleOperatorHead.length());
@@ -275,33 +279,45 @@ public class SimpleDomain extends MetaConstraint {
 	public void addSensor(String sensor) {
 		this.sensors.add(sensor);
 	}
+	
+	public String[] getSensors() {
+		return this.sensors.toArray(new String[this.sensors.size()]);
+	}
 
 	public void addActuator(String actuator) {
 		this.actuators.add(actuator);
 	}
 
-	public void addControllable(String controllable){
-		this.controllables.add(controllable);
+	public String[] getActuators() {
+		return this.actuators.toArray(new String[this.actuators.size()]);
 	}
+
+//	public void addControllable(String controllable){
+//		this.controllables.add(controllable);
+//	}
 
 	public void addContextVar(String cv) {
 		this.contextVars.add(cv);
+	}
+	
+	public String[] getContextVars() {
+		return this.contextVars.toArray(new String[this.contextVars.size()]);
 	}
 
 	public boolean isSensor(String component) {
 		if (sensors.contains(component)) return true;
 		return false;
 	}
-	
+		
 	public boolean isActuator(String component) {
 		if (actuators.contains(component)) return true;
 		return false;
 	}
 
-	public boolean isControllable(String component) {
-		if (controllables.contains(component)) return true;
-		return false;
-	}
+//	public boolean isControllable(String component) {
+//		if (controllables.contains(component)) return true;
+//		return false;
+//	}
 
 
 	public boolean isContextVar(String component) {
@@ -356,46 +372,22 @@ public class SimpleDomain extends MetaConstraint {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		Vector<ConstraintNetwork> retPossibleConstraintNetworks = new Vector<ConstraintNetwork>();
 		ConstraintNetwork problematicNetwork = metaVariable.getConstraintNetwork();
-		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
+		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0];
+		
+		logger.finest("Getting metavalues for " + problematicActivity);
 		
 		Vector<ConstraintNetwork> operatorsConsNetwork = new Vector<ConstraintNetwork>();
 		Vector<ConstraintNetwork> unificationConsNetwork = new Vector<ConstraintNetwork>();
 		
 		//If it's a sensor, it needs to be unified
 		if (isSensor(problematicActivity.getComponent())) {
-			return this.getUnifications(problematicActivity);
+			logger.finest(problematicActivity.getComponent() + " is a Sensor - adding unifications");
+			ConstraintNetwork[] unifications = this.getUnifications(problematicActivity);
+			if (unifications != null)
+				for (ConstraintNetwork cn : unifications) cn.setAnnotation(2);
+			return unifications;
 		}
-				
-		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
-		if (isControllable(problematicActivity.getComponent())) {
-			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
-			if(unifications != null){
-				for (int i = 0; i < unifications.length; i++) {
-					//add if it is not the key and is true					
-					Activity unifiedAct = null;
-					for (int j = 0; j < unifications[i].getVariables().length; j++) {
-						if(!((Activity)unifications[i].getVariables()[j]).equals(problematicActivity))
-							unifiedAct = (Activity)unifications[i].getVariables()[j];
-					}
-					if(!unificationTrack.keySet().contains(unifiedAct)){						
-						unificationConsNetwork.add(unifications[i]);
-						unificationTrack.put(problematicActivity, unifiedAct);
-					}
-				}
-			}
-		}
-		
-		//If it's a context var, it needs to be unified (or expanded, see later) 
-		if (isContextVar(problematicActivity.getComponent())) {
-			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
-			if (unifications != null) {
-				for (ConstraintNetwork oneUnification : unifications) {
-					retPossibleConstraintNetworks.add(oneUnification);
-					oneUnification.setAnnotation(2);
-				}
-			}
-		}
-		
+						
 		//Find all expansions
 		for (SimpleOperator r : operators) {
 			String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
@@ -405,6 +397,7 @@ public class SimpleDomain extends MetaConstraint {
 			if (opeatorHeadComponent.equals(problematicActivity.getComponent())) {
 				if (problematicActivitySymbolicDomain.contains(operatorHeadSymbol)) {
 					ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+					//middle priority
 					newResolver.setAnnotation(1);
 					newResolver.setSpecilizedAnnotation(r);
 					operatorsConsNetwork.add(newResolver);
@@ -421,6 +414,7 @@ public class SimpleDomain extends MetaConstraint {
 							if (problematicActivitySymbolicDomain.contains(operatorEffectSymbol)) {
 								ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
 								newResolver.annotation = r;
+								//middle priority
 								newResolver.setAnnotation(1);
 								retPossibleConstraintNetworks.add(newResolver);
 							}
@@ -430,18 +424,58 @@ public class SimpleDomain extends MetaConstraint {
 			}
 		}
 		
+		logger.finest(problematicActivity.getComponent() + " is not a Sensor - adding expansions");
+		
+		//If it's a context var, it needs to be unified (or expanded, see above) 
+		if (isContextVar(problematicActivity.getComponent())) {
+			//System.out.println("CONTEXTVAR: " + problematicActivity.getComponent());
+			logger.finest(problematicActivity.getComponent() + " is a ContextVariable - adding unifications");
+			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+			if (unifications != null) {
+				for (ConstraintNetwork oneUnification : unifications) {
+					retPossibleConstraintNetworks.add(oneUnification);
+					//highest priority
+					oneUnification.setAnnotation(2);
+				}
+			}
+		}
+		
+		//If it's a context var, it needs to be unified (or expanded, see above)
+		else if (isActuator(problematicActivity.getComponent())) {
+			//System.out.println("ACTUATOR: " + problematicActivity.getComponent());
+			logger.finest(problematicActivity.getComponent() + " is an Actuator - adding unifications");
+			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
+			if (unifications != null) {
+				for (ConstraintNetwork oneUnification : unifications) {
+					retPossibleConstraintNetworks.add(oneUnification);
+					//highest priority
+					oneUnification.setAnnotation(2);
+				}
+			}
+		}
+
 		retPossibleConstraintNetworks.addAll(unificationConsNetwork);
 		retPossibleConstraintNetworks.addAll(operatorsConsNetwork);				
 		
-		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
-		else if (isControllable(problematicActivity.getComponent())) {
-			ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
-			nullActivityNetwork.setSpecilizedAnnotation(false);
-			return new ConstraintNetwork[] {nullActivityNetwork};
-			
+		if (operatorsConsNetwork.isEmpty()) {
+			//Actuator, but no expansions available - so justified by default
+			if (isActuator(problematicActivity.getComponent())) {
+				logger.finest(problematicActivity.getComponent() + " is an Actuator but has no available expansions - activity is directly supported");
+				ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
+				nullActivityNetwork.setSpecilizedAnnotation(false);
+				//least priority
+				nullActivityNetwork.setAnnotation(0);
+				retPossibleConstraintNetworks.add(nullActivityNetwork);
+			}
 		}
-		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
-		return new ConstraintNetwork[] {nullActivityNetwork};
+		
+		if (!retPossibleConstraintNetworks.isEmpty()) {
+			return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
+		}
+		logger.finest(problematicActivity.getComponent() + " HAS NO RESOLVERS, will FAIL!");
+		return null;
+//		ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
+//		return new ConstraintNetwork[] {nullActivityNetwork};
 	}
 
 	@Override
@@ -513,12 +547,6 @@ public class SimpleDomain extends MetaConstraint {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	/**
-	 * 
-	 * @param textualSpecification 
-	 * @return 
-	 */
 	
 	/**
 	 * Creates a {@link SimpleOperator} from a textual specification (used by the
@@ -528,7 +556,7 @@ public class SimpleDomain extends MetaConstraint {
 	 * @param planningOp Whether this is a {@link PlanningOperator} or a {@link SimpleOperator}.
 	 * @return A {@link SimpleOperator} build according to the textual specification.
 	 */
-	public static SimpleOperator parseOperator(String textualSpecification, String[] resources, boolean planningOp) {
+	private static SimpleOperator parseOperator(String textualSpecification, String[] resources, boolean planningOp) {
 		HashMap<String,String> requiredStates = new HashMap<String, String>();
 		String head = null;
 		Vector<AllenIntervalConstraint> constraints = new Vector<AllenIntervalConstraint>();
@@ -695,7 +723,7 @@ public class SimpleDomain extends MetaConstraint {
 		for (AdditionalConstraint ac : acs) ac.addAdditionalConstraint(ret);
 		return ret;
 	}
-
+	
 	protected static String[] parseKeyword(String keyword, String everything) {
 		Vector<String> elements = new Vector<String>();
 		int lastElement = everything.lastIndexOf(keyword);
@@ -738,6 +766,14 @@ public class SimpleDomain extends MetaConstraint {
 		return ret;
 	}
 
+	/**
+	 * Parse a user-defined keyword in the domain, in the form <code>(UserKeyword value1 [value2 ... valueN])</code>
+	 * @param keyword The keyword to parse, i.e., <code>UserKeyword</code>
+	 * @return An array of value lists, one for each element with the user keyword, e.g., <code>["value11 value12", "value21 value22 value23", "value31", ...]</code>
+	 */
+	public String[] parseUserKeyword(String keyword) {
+		return parseKeyword(keyword, this.everything);
+	}
 
 	/**
 	 * Parses a domain file (see domains/testDomain.ddl for an example), instantiates
@@ -760,17 +796,16 @@ public class SimpleDomain extends MetaConstraint {
 					line = br.readLine();
 				}
 				everything = sb.toString();
-				String name = "";
-				String[] nameArray = parseKeyword("SimpleDomain", everything);
-				if (nameArray.length != 0) name = nameArray[0];
-				else name = parseKeyword("PlanningDomain", everything)[0];
+				String name = parseKeyword("Domain", everything)[0];
+				//if (nameArray.length != 0) name = nameArray[0];
+				//else name = parseKeyword("PlanningDomain", everything)[0];
 				String[] resourceElements = parseKeyword("Resource", everything);
 				HashMap<String,Integer> resources = processResources(resourceElements);
 				String[] simpleOperators = parseKeyword("SimpleOperator", everything);
 				String[] planningOperators = parseKeyword("PlanningOperator", everything);
 				String[] sensors = parseKeyword("Sensor", everything);
 				String[] actuators = parseKeyword("Actuator", everything);
-				String[] controllable = parseKeyword("Controllable", everything);
+				//String[] controllable = parseKeyword("Controllable", everything);
 
 				String[] contextVars = parseKeyword("ContextVariable", everything);
 
@@ -783,35 +818,44 @@ public class SimpleDomain extends MetaConstraint {
 					resourceCounter++;
 				}
 
+				System.out.println(domainType);
 				SimpleDomain dom = null;
 				if (domainType.equals(SimpleDomain.class)) {
-					dom = new SimpleDomain(resourceCaps, resourceNames, name);
+					dom = new SimpleDomain(resourceCaps, resourceNames, name, everything);
 				}
 				else if (domainType.equals(FluentBasedSimpleDomain.class)) {
-					dom = new FluentBasedSimpleDomain(resourceCaps, resourceNames, name);
+					dom = new FluentBasedSimpleDomain(resourceCaps, resourceNames, name, everything);
 				}
 				else if (domainType.equals(ProactivePlanningDomain.class)) {
-					dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name);
-					//Try to support most inferred activities first
-					ValueOrderingH valOH = new ValueOrderingH() {
-						@Override
-						public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
-							if (arg0.getAnnotation() != null && arg1.getAnnotation() != null) {
-								if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
-									return (Integer)arg1.getAnnotation()-(Integer)arg0.getAnnotation(); 
-								}
-							}
-							return arg1.getVariables().length - arg0.getVariables().length;
-						}
-					};
+					dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name, everything);
 
-					//No variable ordering
-					VariableOrderingH varOH = new VariableOrderingH() {
-						@Override
-						public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
-						@Override
-						public void collectData(ConstraintNetwork[] allMetaVariables) { }
-					};
+	                ValueOrderingH valOH = new ValueOrderingH() {
+	                    @Override
+	                    public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
+	                        //Return unifications first
+	                        if (arg0.getAnnotation() != null && arg1.getAnnotation() != null) {
+	                            if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
+	                            	int annotation1 = ((Integer)arg0.getAnnotation()).intValue();
+	                            	int annotation2 = ((Integer)arg1.getAnnotation()).intValue();
+	                            	//System.out.println("RETURNING (1): " + (annotation2-annotation1));
+	                            	return annotation2-annotation1;
+	                            }
+	                        }
+	                        //Return unifications first
+	                        //TODO: maybe this is superfluous...
+	                        //System.out.println("RETURNING (2): " + (arg1.getVariables().length - arg0.getVariables().length));
+	                        return arg0.getVariables().length - arg1.getVariables().length;
+	                    }
+	                };
+
+	                //No variable ordering
+	                VariableOrderingH varOH = new VariableOrderingH() {
+	                    @Override
+	                    public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
+	                    @Override
+	                    public void collectData(ConstraintNetwork[] allMetaVariables) { }
+	                };
+
 
 					dom.setValOH(valOH);
 					dom.setVarOH(varOH);
@@ -819,7 +863,7 @@ public class SimpleDomain extends MetaConstraint {
 				
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String act : actuators) dom.addActuator(act);
-				for (String cont : controllable) dom.addControllable(cont);
+//				for (String cont : controllable) dom.addControllable(cont);
 				for (String cv : contextVars) dom.addContextVar(cv);
 				for (String operator : simpleOperators) {
 					dom.addOperator(SimpleDomain.parseOperator(operator,resourceNames,false));

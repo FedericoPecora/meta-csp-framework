@@ -31,9 +31,8 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	private long timeNow = -1;
 	private boolean activeFreeArmHeuristic = false;
 	private ManipulationAreaDomain manipulationAreaDomain = null;
-	public FluentBasedSimpleDomain(int[] capacities, String[] resourceNames,
-			String domainName) {
-		super(capacities, resourceNames, domainName);
+	public FluentBasedSimpleDomain(int[] capacities, String[] resourceNames, String domainName, String everything) {
+		super(capacities, resourceNames, domainName, everything);
 		manipulationAreaDomain = new ManipulationAreaDomain();
 	}
 
@@ -106,7 +105,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		
 //		System.out.println("+++++++++++++++++++++++++++++++++++++++++");
 		//If it's a controllable sensor, it needs to be unified (or expanded, see later) 
-		if (isControllable(problematicActivity.getComponent())) {
+		if (isActuator(problematicActivity.getComponent())) {
 			ConstraintNetwork[] unifications = getUnifications(problematicActivity);
 //			System.out.println("I AM AT LEAST CONTRAOLLABLE");
 			if(unifications != null){
@@ -260,7 +259,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 //		System.out.println("============================================");
 		
 		if (!retPossibleConstraintNetworks.isEmpty()) return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
-		else if (isControllable(problematicActivity.getComponent())) {
+		else if (isActuator(problematicActivity.getComponent())) {
 			ConstraintNetwork nullActivityNetwork = new ConstraintNetwork(null);
 			nullActivityNetwork.setSpecilizedAnnotation(false);
 			return new ConstraintNetwork[] {nullActivityNetwork};

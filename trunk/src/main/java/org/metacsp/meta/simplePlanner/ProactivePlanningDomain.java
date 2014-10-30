@@ -25,39 +25,13 @@ public class ProactivePlanningDomain extends SimpleDomain {
 	public void setOldInference(String component, Activity oldInf) {
 		oldInferences.put(component,oldInf);
 	}
-		
-	public ProactivePlanningDomain(int[] capacities, String[] resourceNames, String domainName) {
-		super(capacities, resourceNames, domainName);
+	
+	//Should be created with SimpleDomain's factory method
+	protected ProactivePlanningDomain(int[] capacities, String[] resourceNames, String domainName, String everything) {
+		super(capacities, resourceNames, domainName, everything);
 	}
 
 	private static final long serialVersionUID = 5232380823036756902L;
-
-	private static VariableOrderingH getVariableOrderingH() {
-		//No variable ordering
-		VariableOrderingH varOH = new VariableOrderingH() {
-			@Override
-			public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
-			@Override
-			public void collectData(ConstraintNetwork[] allMetaVariables) { }
-		};
-		return varOH;
-	}
-
-	private static ValueOrderingH getValueOrderingH() {
-		//Try to support most inferred activities first
-		ValueOrderingH valOH = new ValueOrderingH() {
-			@Override
-			public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
-				if (arg0.getAnnotation() != null && arg1.getAnnotation() != null) {
-					if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
-						return (Integer)arg1.getAnnotation()-(Integer)arg0.getAnnotation(); 
-					}
-				}
-				return arg1.getVariables().length - arg0.getVariables().length;
-			}
-		};
-		return valOH;
-	}
 	
 	private VariablePrototype[] generateGoals() {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
@@ -94,14 +68,14 @@ public class ProactivePlanningDomain extends SimpleDomain {
 	
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		ConstraintNetwork mv = metaVariable.getConstraintNetwork();
+
 		//If this is not context inference, get metavalues as usual 
 		if (mv.getConstraints().length != 0 || mv.getVariables().length != 0) {
 			ConstraintNetwork[] ret = super.getMetaValues(metaVariable);
 			if (ret != null && ret.length > 0) {
-				//Add timeNow release to activity representing the metavariable
+				//If this is an actuator, add timeNow release to activity representing the metavariable
 				Variable flaw = mv.getVariables()[0];
-				//if (!isContextVar(flaw.getComponent()) && !isSensor(flaw.getComponent())) {
-				if ((isActuator(flaw.getComponent())) || (!isContextVar(flaw.getComponent()) && !isSensor(flaw.getComponent()))) {
+				if (isActuator(flaw.getComponent())) {
 					AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,APSPSolver.INF));
 					release.setFrom(flaw);
 					release.setTo(flaw);
@@ -110,6 +84,7 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			}
 			return ret;
 		}
+		
 		//We have a context inference metavariable - let's generate all possible worlds
 		VariablePrototype[] possibleGoals = generateGoals();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
@@ -118,10 +93,12 @@ public class ProactivePlanningDomain extends SimpleDomain {
 			cn.addVariable(oneGoal);
 			Activity oldInf = oldInferences.get(oneGoal.getParameters()[0]);
 			boolean skip = false;
+			//Do not re-infer the last thing that was inferred
+			//(prevents from having to "model" impossibility to infer something continuously as temporal constraints in the domain)
 			if (oldInf != null) {
 				if (oldInf.getSymbolicVariable().getSymbols()[0].equals(oneGoal.getParameters()[1])) {
 					skip = true;
-					System.out.println("SKIPPING because of " + oldInf);
+					logger.finest("Skipping " + oneGoal.getParameters()[1] + " because of " + oldInf);
 				}
 				else {
 					AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
