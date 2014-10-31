@@ -5,23 +5,25 @@ import org.metacsp.framework.Variable;
 
 public class Vertex extends Domain{
 
-	private static final int MAX_POLY_VERTEX_COUNT = 20;
-	private Vec2[] vertices = Vec2.arrayOf( MAX_POLY_VERTEX_COUNT );
+
+	private Vec2[] vertices; 
 	protected Vertex(Variable v) {
 		super(v);
-		// TODO Auto-generated constructor stub
+		vertices = Vec2.arrayOf( Polygon.MAX_POLY_VERTEX_COUNT );
 	}
 
 	@Override
 	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		String ret = "";
+		for (int i = 0; i < vertices.length; i++) {
+			ret += " (" +vertices[i].x + ", " +vertices[i].y +")";
+		}
+		return ret;
 	}
 
 	public void setVertices(Vec2[] vertices){
@@ -30,5 +32,13 @@ public class Vertex extends Domain{
 	
 	public Vec2[] getVertices(){
 		return this.vertices;
+	}
+	
+	public Vec2[] clone(){
+		Vec2[] verticesCopy = new Vec2[vertices.length];
+		for (int i = 0; i < vertices.length; i++) {
+			verticesCopy[i] = new Vec2(vertices[i].x, vertices[i].y);
+		}
+		return verticesCopy;
 	}
 }

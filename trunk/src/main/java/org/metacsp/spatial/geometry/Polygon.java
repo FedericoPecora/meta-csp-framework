@@ -14,8 +14,8 @@ public class Polygon extends Variable {
 	private static final long serialVersionUID = 3385252449426376306L;
 	private Domain dom;
 	
-	private static final int MAX_POLY_VERTEX_COUNT = 20;
-	public int vertexCount;
+	public static final int MAX_POLY_VERTEX_COUNT = 10;
+	private int vertexCount;
 //	private Vec2[] vertices = Vec2.arrayOf( MAX_POLY_VERTEX_COUNT );
 	public Vec2[] normals = Vec2.arrayOf( MAX_POLY_VERTEX_COUNT );
 	public Mat2 u = new Mat2();
@@ -29,9 +29,15 @@ public class Polygon extends Variable {
 	
 	protected Polygon(ConstraintSolver cs, int id) {
 		super(cs, id);
-		dom = new Vertex(this);
+		
 	}
 
+	
+	
+	public int getVertexCount(){
+		return vertexCount;
+	}
+	
 	@Override
 	public int compareTo(Variable arg0) {
 		// TODO Auto-generated method stub
@@ -50,10 +56,9 @@ public class Polygon extends Variable {
 	}
 	
 	public void setDomain(Vec2 ... verts){
+		dom = new Vertex(this);
 		vertexCount = verts.length;
 		this.setOrient(0.0f);
-//		System.out.println(getCentroid(orderVertex(verts)).x);
-//		System.out.println(getCentroid(orderVertex(verts)).y);
 		getPosition().set( getCentroid(orderVertex(verts)).x, getCentroid(orderVertex(verts)).y );
 		Vec2[] halfPoly = new Vec2[verts.length];
 		for (int i = 0; i < verts.length; i++) {
@@ -406,21 +411,40 @@ public class Polygon extends Variable {
 		this.position = position;
 	}
 	
-	public Vector<Vec2> getShiftedPolygon(){
+//	public Vector<Vec2> getShiftedPolygon(){
+//		
+//		Vector<Vec2> vecs = new Vector<Vec2>();
+////		System.out.println(position.x);
+////		System.out.println(position.y);
+//		System.out.println("-----------------------------------------");		
+//		for (int i = 0; i < vertexCount; i++){
+//			Vec2 v = new Vec2( ((Vertex)this.dom).getVertices()[i] );
+//			this.u.muli( v );
+//			v.addi( position );
+//			((Vertex)this.dom).getVertices()[i] = v;
+//			vecs.add(v);
+//			System.out.println("--> " +v.x + " " + v.y);
+//		}
+//		System.out.println("-----------------------------------------");
+//		return vecs;
+//	}
+	
+	public Vector<Vec2> getFullSpaceRepresentation(){
 		
 		Vector<Vec2> vecs = new Vector<Vec2>();
 //		System.out.println(position.x);
 //		System.out.println(position.y);
-		System.out.println("-----------------------------------------");		
+//		System.out.println("-----------------------------------------");		
 		for (int i = 0; i < vertexCount; i++){
 			Vec2 v = new Vec2( ((Vertex)this.dom).getVertices()[i] );
 			this.u.muli( v );
 			v.addi( position );
-			((Vertex)this.dom).getVertices()[i] = v;
+//			((Vertex)this.dom).getVertices()[i] = v;
 			vecs.add(v);
-			System.out.println("--> " +v.x + " " + v.y);
+//			System.out.println("--> " +v.x + " " + v.y);
 		}
-		System.out.println("-----------------------------------------");
+//		System.out.println("-----------------------------------------");
 		return vecs;
 	}
+	
 }

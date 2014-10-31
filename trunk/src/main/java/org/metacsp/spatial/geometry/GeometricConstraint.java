@@ -10,7 +10,7 @@ public class GeometricConstraint extends BinaryConstraint{
 	 * 
 	 */
 	private static final long serialVersionUID = -8113896844860210411L;
-	public static enum Type {DC, PP};
+	public static enum Type {DC, INSIDE};
 	
 	private Type type;
 	
