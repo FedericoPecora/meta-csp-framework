@@ -1,4 +1,5 @@
 package org.metacsp.spatial.geometry;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
@@ -12,7 +13,8 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 	 * 
 	 */
 	private static final long serialVersionUID = -1610027841057830885L;
-
+	private HashMap<GeometricConstraint, HashMap<Polygon, Vec2[]>> constraintTrack = new HashMap<GeometricConstraint, HashMap<Polygon,Vec2[]>>();
+	
 	public GeometricConstraintSolver() {
 		super(new Class[]{GeometricConstraint.class}, Polygon.class);
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
@@ -22,12 +24,16 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 	public boolean propagate() {
 		Constraint[] cons = this.getConstraints();		
 		for (int i = 0; i < cons.length; i++) {
-			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){	
-//				System.out.println((Polygon)((GeometricConstraint)cons[i]).getFrom());				
-				appltPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
+				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				if(!manifold.isSeparated()){
+					appltPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());	
+				}				
 			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
-//				System.out.println((Polygon)((GeometricConstraint)cons[i]).getFrom());
-				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				if(manifold.isSeparated()){
+					applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				}
 			}
 		}		
 		return true;
@@ -53,12 +59,33 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 
 	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
+		Constraint[] cons = c;		
+		for (int i = 0; i < cons.length; i++) {
+			HashMap<Polygon, Vec2[]> poly2Domain = new HashMap<Polygon, Vec2[]>();
+			for (int j = 0; j < this.getVariables().length; j++) {
+				poly2Domain.put((Polygon)this.getVariables()[j], ((Polygon)this.getVariables()[j]).getFullSpaceRepresentation()
+						.toArray(new Vec2[((Polygon)this.getVariables()[j]).getFullSpaceRepresentation().size()]));
+			}
+			constraintTrack.put((GeometricConstraint)c[i], poly2Domain);
+			
+			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){	
+				appltPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
+				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+			}
+		}		
 		return true;
 	}
 
 	@Override
 	protected void removeConstraintsSub(Constraint[] c) {
-		// TODO Auto-generated method stub
+		for (int i = 0; i < c.length; i++) {
+			HashMap<Polygon, Vec2[]> temp = constraintTrack.get((GeometricConstraint)c[i]);
+			for (Polygon p : temp.keySet()) {
+				p.setDomain(temp.get(p));
+			}
+			constraintTrack.remove(c);
+		}
 		
 	}
 
@@ -71,7 +98,6 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 
 	@Override
 	protected void removeVariablesSub(Variable[] v) {
-		// TODO Auto-generated method stub
 		
 	}
 

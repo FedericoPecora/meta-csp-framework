@@ -3,8 +3,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
-
-import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
 import org.metacsp.spatial.geometry.GeometricConstraint;
 import org.metacsp.spatial.geometry.GeometricConstraintSolver;
@@ -21,7 +19,7 @@ public class TestGeometricConstraintSolver {
 
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
 		Vector<Vector<Vec2>> toPlots = new Vector<Vector<Vec2>>();
-		Variable[] vars = solver.createVariables(2);
+		Variable[] vars = solver.createVariables(3);
 		
 		Polygon p1 = (Polygon)vars[0];
 		Vector<Vec2> vecs1 = new Vector<Vec2>();
@@ -39,10 +37,22 @@ public class TestGeometricConstraintSolver {
 		vecs.add(new Vec2(290,125));
 		p2.setDomain(vecs.toArray(new Vec2[vecs.size()]));
 
+		
+		Polygon p3 = (Polygon)vars[2];		
+		Vector<Vec2> vecs2 = new Vector<Vec2>();
+		vecs2.add(new Vec2(180,190));
+		vecs2.add(new Vec2(100,50));
+		vecs2.add(new Vec2(240,138));
+		vecs2.add(new Vec2(190,225));
+		p3.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
+		
+		//adding polygon for visualization
 		toPlots.add(p1.getFullSpaceRepresentation());
 		toPlots.add(p2.getFullSpaceRepresentation());
-
+		toPlots.add(p3.getFullSpaceRepresentation());
 		
+		
+		//adding constraint
 		GeometricConstraint dc = new GeometricConstraint(GeometricConstraint.Type.DC);
 		dc.setFrom(p1);
 		dc.setTo(p2);
@@ -52,20 +62,29 @@ public class TestGeometricConstraintSolver {
 		inside.setTo(p2);
 		
 		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
-		dc1.setFrom(p1);
+		dc1.setFrom(p3);
 		dc1.setTo(p2);
-		
-		
+				
 		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside1.setFrom(p1);
-		inside1.setTo(p2);
+		inside1.setFrom(p3);
+		inside1.setTo(p1);
 		
-		solver.addConstraints(new Constraint[]{inside, dc});
+//		solver.addConstraints(new Constraint[]{dc, inside});
+		
+		solver.addConstraint(inside);
+		solver.addConstraint(dc1);
+		solver.addConstraint(inside1);
+
+		solver.removeConstraint(inside1);
+//		solver.addConstraint(dc);
+		
+		
 		
 		toPlots.add(p1.getFullSpaceRepresentation());
+		toPlots.add(p3.getFullSpaceRepresentation());
 
-		
 		String PATH = "/home/iran/Desktop/";
+//		String PATH = "../../";
 		BufferedWriter initPlot = null;
 		String initLayoutPlot = "";
 		initLayoutPlot = GeometricConstraintSolver.drawPolygons(toPlots, 500);

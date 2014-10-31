@@ -25,6 +25,10 @@ public class Manifold {
 			return cpp.handleCollision( this, A, B );			
 		}
 
+		public boolean isSeparated() {			
+			return new CollisionPolygonPolygon().handleCollision( this, A, B );		
+		}
+		
 		public void positionalCorrection()
 		{
 			// const real k_slop = 0.05f; // Penetration allowance
@@ -44,5 +48,7 @@ public class Manifold {
 //			A.position.addsi( normal, -A.invMass * correction );
 //			B.position.addsi( normal, B.invMass * correction );
 		}
+
+
 
 }
