@@ -17,28 +17,13 @@ public class Manifold {
 		{
 			A = a;
 			B = b;
-			this.initialize();
 		}
 
-		public void solve()
+		public boolean  solve()
 		{
 			CollisionPolygonPolygon cpp = new CollisionPolygonPolygon();
-			cpp.handleCollision( this, A, B );			
+			return cpp.handleCollision( this, A, B );			
 		}
-
-		public void initialize()
-		{
-			for (int i = 0; i < contactCount; ++i)
-			{
-				// Calculate radii from COM to contact
-				// Vec2 ra = contacts[i] - A->position;
-				// Vec2 rb = contacts[i] - B->position;
-				Vec2 ra = contacts[i].sub( A.getPosition() );
-				Vec2 rb = contacts[i].sub( B.getPosition() );
-			}
-		}
-
-
 
 		public void positionalCorrection()
 		{
@@ -53,7 +38,7 @@ public class Manifold {
 //			float correction = StrictMath.max( penetration - ImpulseMath.PENETRATION_ALLOWANCE, 0.0f );
 			float correction = penetration;
 //			if(A.incident) 
-				A.getPosition().addsi( normal, -(correction * (float)1.0)  );
+				A.getPosition().addsi( normal, -(correction * (float)1.5)  );
 //			if(B.incident) 
 //				B.position.addsi( normal, correction * ((float)1.0) );			
 //			A.position.addsi( normal, -A.invMass * correction );

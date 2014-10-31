@@ -4,7 +4,7 @@ package org.metacsp.spatial.geometry;
 public class CollisionPolygonPolygon 
 {
 
-	public void handleCollision( Manifold m, Polygon A, Polygon B )
+	public boolean handleCollision( Manifold m, Polygon A, Polygon B )
 	{
 		m.contactCount = 0;
 
@@ -13,7 +13,7 @@ public class CollisionPolygonPolygon
 		float penetrationA = findAxisLeastPenetration( faceA, A, B );
 		if (penetrationA >= 0.0f)
 		{
-			return;
+			return false;
 		}
 
 		// Check for a separating axis with B's face planes
@@ -21,7 +21,7 @@ public class CollisionPolygonPolygon
 		float penetrationB = findAxisLeastPenetration( faceB, B, A );
 		if (penetrationB >= 0.0f)
 		{
-			return;
+			return false;
 		}
 
 		int referenceIndex;
@@ -70,7 +70,7 @@ public class CollisionPolygonPolygon
 
 		// Setup reference face vertices
 		Vec2 v1 = ((Vertex)RefPoly.getDomain()).getVertices()[referenceIndex];
-		referenceIndex = referenceIndex + 1 == RefPoly.vertexCount ? 0 : referenceIndex + 1;
+		referenceIndex = referenceIndex + 1 == RefPoly.getVertexCount() ? 0 : referenceIndex + 1;
 		Vec2 v2 = ((Vertex)RefPoly.getDomain()).getVertices()[referenceIndex];
 
 		// Transform vertices to world space
@@ -102,14 +102,14 @@ public class CollisionPolygonPolygon
 		// if(Clip( -sidePlaneNormal, negSide, incidentFace ) < 2)
 		if (clip( sidePlaneNormal.neg(), negSide, incidentFace ) < 2)
 		{
-			return; // Due to floating point error, possible to not have required
+			return false; // Due to floating point error, possible to not have required
 						// points
 		}
 
 		// if(Clip( sidePlaneNormal, posSide, incidentFace ) < 2)
 		if (clip( sidePlaneNormal, posSide, incidentFace ) < 2)
 		{
-			return; // Due to floating point error, possible to not have required
+			return false; // Due to floating point error, possible to not have required
 						// points
 		}
 
@@ -148,6 +148,8 @@ public class CollisionPolygonPolygon
 		}
 
 		m.contactCount = cp;
+		
+		return true;
 	}
 
 	public float findAxisLeastPenetration( int[] faceIndex, Polygon A, Polygon B )
@@ -155,7 +157,7 @@ public class CollisionPolygonPolygon
 		float bestDistance = -Float.MAX_VALUE;
 		int bestIndex = 0;
 
-		for (int i = 0; i < A.vertexCount; ++i)
+		for (int i = 0; i < A.getVertexCount(); ++i)
 		{
 			// Retrieve a face normal from A
 			// Vec2 n = A->m_normals[i];
@@ -213,7 +215,7 @@ public class CollisionPolygonPolygon
 		// Find most anti-normal face on incident polygon
 		int incidentFace = 0;
 		float minDot = Float.MAX_VALUE;
-		for (int i = 0; i < IncPoly.vertexCount; ++i)
+		for (int i = 0; i < IncPoly.getVertexCount(); ++i)
 		{
 			// real dot = Dot( referenceNormal, IncPoly->m_normals[i] );
 			float dot = Vec2.dot( referenceNormal, IncPoly.normals[i] );
@@ -234,7 +236,7 @@ public class CollisionPolygonPolygon
 		// IncPoly->body->position;
 
 		v[0] = IncPoly.u.mul( ((Vertex)IncPoly.getDomain()).getVertices()[incidentFace] ).addi( IncPoly.getPosition() );
-		incidentFace = incidentFace + 1 >= (int)IncPoly.vertexCount ? 0 : incidentFace + 1;
+		incidentFace = incidentFace + 1 >= (int)IncPoly.getVertexCount() ? 0 : incidentFace + 1;
 		v[1] = IncPoly.u.mul( ((Vertex)IncPoly.getDomain()).getVertices()[incidentFace] ).addi( IncPoly.getPosition() );
 	}
 
