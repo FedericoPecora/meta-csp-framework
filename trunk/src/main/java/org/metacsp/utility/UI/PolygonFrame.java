@@ -84,8 +84,8 @@ public class PolygonFrame extends JFrame {
 			int[] xCoords = new int[vertices.size()];
 			int[] yCoords = new int[vertices.size()];
 			for (int i = 0; i < vertices.size(); i++) {
-				xCoords[i] = (int)(vertices.get(i).x*ZOOM*resolutionX);
-				yCoords[i] = (int)(vertices.get(i).y*ZOOM*resolutionY);
+				xCoords[i] = (int)Math.round((vertices.get(i).x*ZOOM*resolutionX));
+				yCoords[i] = (int)Math.round((vertices.get(i).y*ZOOM*resolutionY));
 			}
 	    	centers.add(new Vec2(p.getPosition().x*ZOOM*resolutionX,p.getPosition().y*ZOOM*resolutionY));
 			java.awt.Polygon drawablePoly = new java.awt.Polygon(xCoords, yCoords, xCoords.length);
@@ -108,7 +108,7 @@ public class PolygonFrame extends JFrame {
                     ((Graphics2D)g).setStroke(new BasicStroke(5));
                 	g.drawPolygon(dPoly);
                 	g.setFont(new Font("default", Font.BOLD, 16));
-                	g.drawString("P"+counter, (int)centers.get(counter).x, (int)centers.get(counter).y);
+                	g.drawString("P"+counter, (int)Math.round(centers.get(counter).x), (int)Math.round(centers.get(counter).y));
                 	counter++;
                 }
             }
