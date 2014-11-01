@@ -67,23 +67,22 @@ public class TestGeometricConstraintSolver {
 		inside1.setFrom(p3);
 		inside1.setTo(p1);
 		
-		new PolygonFrame("No constraints", p1,p2,p3);
+		new PolygonFrame("0. No constraints", p1,p2,p3);
 		
 		solver.addConstraint(inside);
-		new PolygonFrame(inside.getEdgeLabel(), p1,p2,p3);
+		new PolygonFrame("1. " + inside.getEdgeLabel(), p1,p2,p3);
 		
-//		solver.addConstraint(dc1);
-//		new PolygonFrame(dc1.getEdgeLabel(), p1,p2,p3);
-//		
-//		solver.addConstraint(inside1);
-//		new PolygonFrame(inside1.getEdgeLabel(), p1,p2,p3);
-//		
-//		solver.removeConstraint(inside1);
-//		new PolygonFrame("Removed " + inside1.getEdgeLabel(), p1,p2,p3);
+		solver.addConstraint(dc1);
+		new PolygonFrame("2. " + dc1.getEdgeLabel(), p1,p2,p3);
 		
-//		solver.addConstraint(dc);
+		solver.addConstraint(inside1);
+		new PolygonFrame("3. " + inside1.getEdgeLabel(), p1,p2,p3);
 		
+		solver.removeConstraint(inside1);
+		new PolygonFrame("4. Removed " + inside1.getEdgeLabel(), p1,p2,p3);
 		
+		solver.addConstraint(dc);
+		new PolygonFrame("5. " + dc1.getEdgeLabel(), p1,p2,p3);
 		
 //		toPlots.add(p1.getFullSpaceRepresentation());
 //		toPlots.add(p3.getFullSpaceRepresentation());
