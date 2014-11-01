@@ -14,9 +14,6 @@ import org.metacsp.utility.UI.PolygonFrame;
 
 public class TestGeometricConstraintSolver {
 
-	/**
-	 * 
-	 */
 	public static void main(String[] args) {
 
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
@@ -52,8 +49,7 @@ public class TestGeometricConstraintSolver {
 		toPlots.add(p1.getFullSpaceRepresentation());
 		toPlots.add(p2.getFullSpaceRepresentation());
 		toPlots.add(p3.getFullSpaceRepresentation());
-		
-		
+				
 		//adding constraint
 		GeometricConstraint dc = new GeometricConstraint(GeometricConstraint.Type.DC);
 		dc.setFrom(p1);
@@ -76,14 +72,14 @@ public class TestGeometricConstraintSolver {
 		solver.addConstraint(inside);
 		new PolygonFrame(inside.getEdgeLabel(), p1,p2,p3);
 		
-		solver.addConstraint(dc1);
-		new PolygonFrame(dc1.getEdgeLabel(), p1,p2,p3);
-		
-		solver.addConstraint(inside1);
-		new PolygonFrame(inside1.getEdgeLabel(), p1,p2,p3);
-		
-		solver.removeConstraint(inside1);
-		new PolygonFrame("Removed " + inside1.getEdgeLabel(), p1,p2,p3);
+//		solver.addConstraint(dc1);
+//		new PolygonFrame(dc1.getEdgeLabel(), p1,p2,p3);
+//		
+//		solver.addConstraint(inside1);
+//		new PolygonFrame(inside1.getEdgeLabel(), p1,p2,p3);
+//		
+//		solver.removeConstraint(inside1);
+//		new PolygonFrame("Removed " + inside1.getEdgeLabel(), p1,p2,p3);
 		
 //		solver.addConstraint(dc);
 		
