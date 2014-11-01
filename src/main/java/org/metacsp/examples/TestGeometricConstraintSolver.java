@@ -3,11 +3,13 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
+
 import org.metacsp.framework.Variable;
 import org.metacsp.spatial.geometry.GeometricConstraint;
 import org.metacsp.spatial.geometry.GeometricConstraintSolver;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
+import org.metacsp.utility.UI.PolygonFrame;
 
 
 public class TestGeometricConstraintSolver {
@@ -69,35 +71,44 @@ public class TestGeometricConstraintSolver {
 		inside1.setFrom(p3);
 		inside1.setTo(p1);
 		
-//		solver.addConstraints(new Constraint[]{dc, inside});
+		new PolygonFrame("No constraints", p1,p2,p3);
 		
 		solver.addConstraint(inside);
+		new PolygonFrame(inside.getEdgeLabel(), p1,p2,p3);
+		
 		solver.addConstraint(dc1);
+		new PolygonFrame(dc1.getEdgeLabel(), p1,p2,p3);
+		
 		solver.addConstraint(inside1);
-
+		new PolygonFrame(inside1.getEdgeLabel(), p1,p2,p3);
+		
 		solver.removeConstraint(inside1);
+		new PolygonFrame("Removed " + inside1.getEdgeLabel(), p1,p2,p3);
+		
 //		solver.addConstraint(dc);
 		
 		
 		
-		toPlots.add(p1.getFullSpaceRepresentation());
-		toPlots.add(p3.getFullSpaceRepresentation());
+//		toPlots.add(p1.getFullSpaceRepresentation());
+//		toPlots.add(p3.getFullSpaceRepresentation());
 
-		String PATH = "/home/iran/Desktop/";
-//		String PATH = "../../";
-		BufferedWriter initPlot = null;
-		String initLayoutPlot = "";
-		initLayoutPlot = GeometricConstraintSolver.drawPolygons(toPlots, 500);
-		try{
-			
-			initPlot = new BufferedWriter(new FileWriter(PATH+ "shift"+".dat", false));
-			initPlot.write(initLayoutPlot);
-			initPlot.newLine();
-			initPlot.flush();
-		}				
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+		
+//		String PATH = "./plots/";
+////		String PATH = "/home/iran/Desktop/";
+////		String PATH = "../../";
+//		BufferedWriter initPlot = null;
+//		String initLayoutPlot = "";
+//		initLayoutPlot = GeometricConstraintSolver.drawPolygons(toPlots, 500);
+//		try{
+//			
+//			initPlot = new BufferedWriter(new FileWriter(PATH+ "shift"+".dat", false));
+//			initPlot.write(initLayoutPlot);
+//			initPlot.newLine();
+//			initPlot.flush();
+//		}				
+//		catch (IOException ioe) {
+//			ioe.printStackTrace();
+//		}
 	}
 
 }

@@ -403,7 +403,7 @@ public class Polygon extends Variable {
 		return bestVertex;
 	}
 
-	Vec2 getPosition() {
+	public Vec2 getPosition() {
 		return position;
 	}
 
