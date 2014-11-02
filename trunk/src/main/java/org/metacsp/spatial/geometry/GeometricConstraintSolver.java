@@ -61,6 +61,9 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 	protected boolean addConstraintsSub(Constraint[] c) {
 		Constraint[] cons = c;		
 		for (int i = 0; i < cons.length; i++) {
+			if(!((Polygon)((GeometricConstraint)cons[i]).getFrom()).isMovable())
+				return false;			
+			//keep track of added constraint for removing. i.e, taking snapshot of current domain of the vars
 			HashMap<Polygon, Vec2[]> poly2Domain = new HashMap<Polygon, Vec2[]>();
 			for (int j = 0; j < this.getVariables().length; j++) {
 				poly2Domain.put((Polygon)this.getVariables()[j], ((Polygon)this.getVariables()[j]).getFullSpaceRepresentation()

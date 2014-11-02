@@ -38,7 +38,7 @@ public class Polygon extends Variable {
 		this.isMovable = isMovable;
 	}
 
-	public boolean getMovable(){
+	public boolean isMovable(){
 		return this.isMovable;
 	}
 
