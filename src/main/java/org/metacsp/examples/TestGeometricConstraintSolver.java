@@ -27,6 +27,7 @@ public class TestGeometricConstraintSolver {
 		vecs1.add(new Vec2(220,60));
 		vecs1.add(new Vec2(180,120));
 		p1.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
+		p1.setMovable(true);
 		
 		Polygon p2 = (Polygon)vars[1];		
 		Vector<Vec2> vecs = new Vector<Vec2>();
@@ -35,7 +36,7 @@ public class TestGeometricConstraintSolver {
 		vecs.add(new Vec2(340,350));
 		vecs.add(new Vec2(290,125));
 		p2.setDomain(vecs.toArray(new Vec2[vecs.size()]));
-
+		p2.setMovable(false);
 		
 		Polygon p3 = (Polygon)vars[2];		
 		Vector<Vec2> vecs2 = new Vector<Vec2>();
@@ -44,6 +45,7 @@ public class TestGeometricConstraintSolver {
 		vecs2.add(new Vec2(240,138));
 		vecs2.add(new Vec2(190,225));
 		p3.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
+		p3.setMovable(true);
 		
 		//adding polygon for visualization
 		toPlots.add(p1.getFullSpaceRepresentation());
