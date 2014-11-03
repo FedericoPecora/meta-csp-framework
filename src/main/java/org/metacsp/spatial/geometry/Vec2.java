@@ -1,5 +1,7 @@
 package org.metacsp.spatial.geometry;
 
+import cern.colt.Arrays;
+
 
 public class Vec2
 {
@@ -448,6 +450,10 @@ public class Vec2
 		}
 
 		return array;
+	}
+	
+	public String toString() {
+		return Arrays.toString(new float[] {this.x, this.y});
 	}
 
 }

@@ -12,12 +12,11 @@ import org.metacsp.spatial.geometry.Vec2;
 import org.metacsp.utility.UI.PolygonFrame;
 
 
-public class TestGeometricConstraintSolver {
+public class TestGeometricConstraintSolver2 {
 
 	public static void main(String[] args) {
 
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
-		Vector<Vector<Vec2>> toPlots = new Vector<Vector<Vec2>>();
 		Variable[] vars = solver.createVariables(3);
 		
 		Polygon p1 = (Polygon)vars[0];
@@ -36,7 +35,7 @@ public class TestGeometricConstraintSolver {
 		vecs.add(new Vec2(340,350));
 		vecs.add(new Vec2(290,125));
 		p2.setDomain(vecs.toArray(new Vec2[vecs.size()]));
-		p2.setMovable(false);
+		p2.setMovable(true);
 		
 		Polygon p3 = (Polygon)vars[2];		
 		Vector<Vec2> vecs2 = new Vector<Vec2>();
@@ -46,76 +45,28 @@ public class TestGeometricConstraintSolver {
 		vecs2.add(new Vec2(190,225));
 		p3.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
 		p3.setMovable(true);
-		
-		//adding polygon for visualization
-//		toPlots.add(p1.getFullSpaceRepresentation());
-//		toPlots.add(p2.getFullSpaceRepresentation());
-//		toPlots.add(p3.getFullSpaceRepresentation());
-								
+										
 		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
 		
 		try { Thread.sleep(2000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
-
+		
 		GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside.setFrom(p1);
-		inside.setTo(p2);
+		inside.setFrom(vars[0]);
+		inside.setTo(vars[1]);
 		System.out.println("Added? " + solver.addConstraint(inside));
 		pf.updatePolygonFrame();
-
+		
 		try { Thread.sleep(2000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
-
+		
+		//The following should either not be added or it should "drag" vars[0] with it!
 		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
-		dc1.setFrom(p3);
-		dc1.setTo(p2);
+		dc1.setFrom(vars[1]);
+		dc1.setTo(vars[2]);
 		System.out.println("Added? " + solver.addConstraint(dc1));
 		pf.updatePolygonFrame();
 
-		try { Thread.sleep(2000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-
-		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside1.setFrom(p3);
-		inside1.setTo(p1);
-		System.out.println("Added? " + solver.addConstraint(inside1));
-		pf.updatePolygonFrame();
-
-		try { Thread.sleep(2000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-
-		solver.removeConstraint(inside1);
-		pf.updatePolygonFrame();
-
-		try { Thread.sleep(2000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-
-		GeometricConstraint dc = new GeometricConstraint(GeometricConstraint.Type.DC);
-		dc.setFrom(p1);
-		dc.setTo(p2);
-		System.out.println("Added? " + solver.addConstraint(dc));
-		pf.updatePolygonFrame();
-		
-//		toPlots.add(p1.getFullSpaceRepresentation());
-//		toPlots.add(p3.getFullSpaceRepresentation());
-
-		
-//		String PATH = "./plots/";
-////		String PATH = "/home/iran/Desktop/";
-////		String PATH = "../../";
-//		BufferedWriter initPlot = null;
-//		String initLayoutPlot = "";
-//		initLayoutPlot = GeometricConstraintSolver.drawPolygons(toPlots, 500);
-//		try{
-//			
-//			initPlot = new BufferedWriter(new FileWriter(PATH+ "shift"+".dat", false));
-//			initPlot.write(initLayoutPlot);
-//			initPlot.newLine();
-//			initPlot.flush();
-//		}				
-//		catch (IOException ioe) {
-//			ioe.printStackTrace();
-//		}
 	}
 
 }
