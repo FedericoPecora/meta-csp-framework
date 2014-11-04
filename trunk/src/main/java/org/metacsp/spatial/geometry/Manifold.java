@@ -25,8 +25,9 @@ public class Manifold {
 			return cpp.handleCollision( this, A, B );			
 		}
 
-		public boolean isSeparated() {			
-			return new CollisionPolygonPolygon().handleCollision( this, A, B );		
+		public boolean isCollided() {			
+//			return new CollisionPolygonPolygon().handleCollision( this, A, B );		
+			return new CollisionPolygonPolygon().verifyCollision(this, A, B);		
 		}
 		
 		public void positionalCorrection()
