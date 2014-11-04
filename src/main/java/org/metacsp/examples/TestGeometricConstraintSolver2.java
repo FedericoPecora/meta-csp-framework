@@ -60,11 +60,13 @@ public class TestGeometricConstraintSolver2 {
 		try { Thread.sleep(2000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 		
-		//The following should either not be added or it should "drag" vars[0] with it!
 		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
 		dc1.setFrom(vars[1]);
 		dc1.setTo(vars[2]);
 		System.out.println("Added? " + solver.addConstraint(dc1));
+		pf.updatePolygonFrame();
+		try { Thread.sleep(2000); }
+		catch (InterruptedException e) { e.printStackTrace(); }
 		pf.updatePolygonFrame();
 
 	}
