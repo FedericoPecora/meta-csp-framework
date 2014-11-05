@@ -34,10 +34,10 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 					}				
 				}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
 					Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-					if(!manifold.isCollided()){
+					//if(!manifold.isCollided()){
 						applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 						System.out.println("PROPAGATED INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
-					}
+					//}
 				}				
 			}
 		}		
@@ -45,9 +45,9 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 	}
 
 	private void applyInside(Polygon p1, Polygon p2) {
-		Manifold manifold = new Manifold(p1, p2);
+//		Manifold manifold = new Manifold(p1, p2);
 		//if p1 and p2 are separated change the domain of p1 equal to p2		
-		if(!manifold.solve()){			
+//		if(!manifold.solve()){			
 			float difx = p2.getPosition().x - p1.getPosition().x ;
 			float dify = p2.getPosition().y - p1.getPosition().y ;
 			Vec2[] p1Domain = new Vec2[p1.getFullSpaceRepresentation().size()];
@@ -57,12 +57,11 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 			}
 			p1.setDomain(p1Domain);
 			SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
-			p1.setDomain(slh.getClippedResult());
-//			p1.setDomain(p2.getFullSpaceRepresentation().toArray(new Vec2[p2.getFullSpaceRepresentation().size()]));			
-		}else{ 		//else if they are intersected p1 has to the result of intersection
-			SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
-			p1.setDomain(slh.getClippedResult());
-		}
+			p1.setDomain(slh.getClippedResult());			
+//		}else{ 		//else if they are intersected p1 has to the result of intersection
+//			SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
+//			p1.setDomain(slh.getClippedResult());
+//		}
 	}
 
 	private void appltPolygonSeparation(Polygon p1, Polygon p2) {
