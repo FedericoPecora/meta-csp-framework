@@ -4,6 +4,7 @@ import org.metacsp.framework.BinaryConstraint;
 import org.metacsp.framework.Constraint;
 
 
+
 public class GeometricConstraint extends BinaryConstraint{
 
 	/**
@@ -21,6 +22,19 @@ public class GeometricConstraint extends BinaryConstraint{
 	public Type getType(){
 		return type;
 	}
+
+	//Type.DC, Type.INSIDE,
+	public static Type[][][] transitionTable = {
+		{
+			{Type.DC, Type.INSIDE},
+			{Type.DC, Type.INSIDE}
+		},
+		{
+			{Type.DC},
+			{Type.INSIDE}
+		}	
+	};
+	
 	
 	@Override
 	public String getEdgeLabel() {
