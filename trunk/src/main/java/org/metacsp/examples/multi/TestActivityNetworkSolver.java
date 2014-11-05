@@ -26,6 +26,8 @@ import java.util.logging.Level;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintNetworkChangeEvent;
+import org.metacsp.framework.ConstraintNetworkChangeListener;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -40,23 +42,23 @@ public class TestActivityNetworkSolver {
 		MetaCSPLogging.setLevel(Level.FINEST);
 //		MetaCSPLogging.setLevel(solver.getClass(), Level.FINEST);
 //		MetaCSPLogging.setLevel(solver.getConstraintSolvers()[0].getClass(), Level.FINEST);
-
+		
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500, new String[] {"A","B","C","D","E","F"});
 		Activity act1 = (Activity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
 		Activity act2 = (Activity)solver.createVariable();
 		act2.setSymbolicDomain("B", "C", "D");
 		
-		ConstraintNetwork.draw(solver.getConstraintNetwork());
+		ConstraintNetwork.draw(solver.getConstraintSolvers()[1].getConstraintNetwork());
 		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);
 		con1.setFrom(act1);
 		con1.setTo(act2);
 
-		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
+		SymbolicValueConstraint con1a = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUESUBSET);
 		con1a.setFrom(act1);
 		con1a.setTo(act1);
-		con1a.setValue(new boolean[] {false,true,true,false,false,false});
+		con1a.setValue("B","C");
 
 		AllenIntervalConstraint con2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(10, 20));
 		con2.setFrom(act1);
@@ -78,26 +80,8 @@ public class TestActivityNetworkSolver {
 		con5a.setFrom(act2);
 		con5a.setTo(act2);
 
-		Constraint[] cons = new Constraint[]{con1a,con2,con3,con4,con5,con5a};
-		solver.addConstraints(cons);
-				
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		solver.removeConstraints(new Constraint[] {con1,con2,con3,con4,con5,con5a});
-//
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		solver.removeVariables(new Variable[] {act2});
+		solver.addConstraints(con1, con1a, con2, con3, con4, con5, con5a);
+
 	}
 
 }

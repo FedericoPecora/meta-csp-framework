@@ -48,26 +48,23 @@ public class TestGeometricConstraintSolver2 {
 										
 		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
 		
-		try { Thread.sleep(2000); }
+		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 		
 		GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
 		inside.setFrom(vars[0]);
 		inside.setTo(vars[1]);
 		System.out.println("Added? " + solver.addConstraint(inside));
-		pf.updatePolygonFrame();
 		
-		try { Thread.sleep(2000); }
+		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 		
 		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
 		dc1.setFrom(vars[1]);
 		dc1.setTo(vars[2]);
 		System.out.println("Added? " + solver.addConstraint(dc1));
-		pf.updatePolygonFrame();
-		try { Thread.sleep(2000); }
+		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
-		pf.updatePolygonFrame();
 
 	}
 

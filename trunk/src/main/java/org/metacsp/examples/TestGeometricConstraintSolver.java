@@ -53,7 +53,6 @@ public class TestGeometricConstraintSolver {
 		inside.setFrom(p0);
 		inside.setTo(p1);
 		System.out.println("Added? " + solver.addConstraint(inside));
-		pf.updatePolygonFrame();
 
 		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
@@ -62,7 +61,6 @@ public class TestGeometricConstraintSolver {
 		dc1.setFrom(p2);
 		dc1.setTo(p1);
 		System.out.println("Added? " + solver.addConstraint(dc1));
-		pf.updatePolygonFrame();
 
 		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
@@ -71,13 +69,11 @@ public class TestGeometricConstraintSolver {
 		inside1.setFrom(p2);
 		inside1.setTo(p0);
 		System.out.println("Added? " + solver.addConstraint(inside1));
-		pf.updatePolygonFrame();
 
 		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 
 		solver.removeConstraint(inside1);
-		pf.updatePolygonFrame();
 
 		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
@@ -86,7 +82,6 @@ public class TestGeometricConstraintSolver {
 		dc.setFrom(p0);
 		dc.setTo(p1);
 		System.out.println("Added? " + solver.addConstraint(dc));
-		pf.updatePolygonFrame();
 		
 	}
 
