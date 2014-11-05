@@ -29,8 +29,10 @@ import java.util.logging.Logger;
 import org.metacsp.booleanSAT.BooleanConstraint;
 import org.metacsp.booleanSAT.BooleanVariable;
 import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraint;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.throwables.NoSymbolsException;
 import org.metacsp.throwables.WrongSymbolListException;
 import org.metacsp.utility.logging.MetaCSPLogging;
@@ -68,26 +70,32 @@ public class SymbolicValueConstraint extends MultiConstraint {
 	}
 	
 	private void createUnaryValueFromStrings() {
-		String[] vocabulary = ((SymbolicVariableConstraintSolver)this.scope[0].getConstraintSolver()).getSymbols();
-		unaryValue = new boolean[vocabulary.length];
-		for (int i = 0; i < vocabulary.length; i++) {
-			boolean found = false;
-			for (String s : this.unaryValueStrings) {
-				if (vocabulary[i].equals(s)) {
-					found = true;
-					break;
+		SymbolicVariableConstraintSolver svcs = (SymbolicVariableConstraintSolver)MultiConstraintSolver.getConstraintSolver(this.scope[0].getConstraintSolver(), SymbolicVariableConstraintSolver.class);
+		if (svcs != null) {
+			String[] vocabulary = svcs.getSymbols();
+			unaryValue = new boolean[vocabulary.length];
+			for (int i = 0; i < vocabulary.length; i++) {
+				boolean found = false;
+				for (String s : this.unaryValueStrings) {
+					if (vocabulary[i].equals(s)) {
+						found = true;
+						break;
+					}
 				}
+				if (found) unaryValue[i] = true;
+				else unaryValue[i] = false;
 			}
-			if (found) unaryValue[i] = true;
-			else unaryValue[i] = false;
 		}
 	}
 
 	private void createStringsFromUnaryValue() {
-		String[] vocabulary = ((SymbolicVariableConstraintSolver)this.scope[0].getConstraintSolver()).getSymbols();
-		Vector<String> unaryValueStringV = new Vector<String>();
-		for (int i = 0; i < vocabulary.length; i++) if (this.unaryValue[i]) unaryValueStringV.add(vocabulary[i]);
-		this.unaryValueStrings = unaryValueStringV.toArray(new String[unaryValueStringV.size()]);
+		SymbolicVariableConstraintSolver svcs = (SymbolicVariableConstraintSolver)MultiConstraintSolver.getConstraintSolver(this.scope[0].getConstraintSolver(), SymbolicVariableConstraintSolver.class);
+		if (svcs != null) {
+			String[] vocabulary = svcs.getSymbols();
+			Vector<String> unaryValueStringV = new Vector<String>();
+			for (int i = 0; i < vocabulary.length; i++) if (this.unaryValue[i]) unaryValueStringV.add(vocabulary[i]);
+			this.unaryValueStrings = unaryValueStringV.toArray(new String[unaryValueStringV.size()]);
+		}
 	}
 
 	private Constraint[] createInternalBinaryConstraints(Variable f, Variable t) {

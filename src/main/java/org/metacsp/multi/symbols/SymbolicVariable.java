@@ -64,9 +64,11 @@ public class SymbolicVariable extends MultiVariable {
 		if (((SymbolicVariableConstraintSolver)this.solver).getSingleValue()) {
 			// INSERT CONSTRAINT SAYING THAT VAR MUST HAVE AT EXACTLY ONE SYMBOL!
 			for (int i = 0; i < variables.length-1; i++) {
-				BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[i+1]}, new boolean[] {false, false});
-				c.setAutoRemovable(true);
-				cons.add(c);
+				for (int j = i+1; j < variables.length-1; j++) {
+					BooleanConstraint c = new BooleanConstraint(new BooleanVariable[] {(BooleanVariable)variables[i], (BooleanVariable)variables[j]}, new boolean[] {false, false});
+					c.setAutoRemovable(true);
+					cons.add(c);
+				}
 			}
 		}
 		

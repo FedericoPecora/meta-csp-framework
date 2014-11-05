@@ -1,5 +1,6 @@
 package org.metacsp.framework;
 
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,10 +9,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -37,7 +40,32 @@ import edu.uci.ics.jung.graph.ObservableGraph;
  * @author Federico Pecora
  */
 
-public class ConstraintNetwork implements Cloneable, Serializable {
+public class ConstraintNetwork implements Cloneable, Serializable  {
+
+	//For changelistener
+	private List<ConstraintNetworkChangeListener> listeners = null;
+
+	public void addConstraintNetworkChangeListener(ConstraintNetworkChangeListener listener) {
+		if (listeners == null) listeners = new ArrayList<ConstraintNetworkChangeListener>();
+		listeners.add(listener);
+	}
+
+	private void dispatchEvent(ConstraintNetwork added, ConstraintNetwork removed) {
+		final ConstraintNetworkChangeEvent event = new ConstraintNetworkChangeEvent(this, added, removed);
+		for (ConstraintNetworkChangeListener l : listeners) {
+			dispatchRunnableOnEventQueue(l, event);
+		}
+	}
+
+	private void dispatchRunnableOnEventQueue(final ConstraintNetworkChangeListener listener, final ConstraintNetworkChangeEvent event) {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				listener.stateChanged(event);
+			}
+		});
+	}
+	//end for changelistener
 	
 	public static HashMap<FieldOfObject,Object> backupForSerialization = new HashMap<FieldOfObject,Object>();
 
@@ -69,29 +97,29 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	protected HashMap<Variable,VariablePrototype> substituted = new HashMap<Variable,VariablePrototype>();
 
 	protected HashMap<Constraint,DummyVariable> hyperEdges = new HashMap<Constraint, DummyVariable>();
-	
+
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
-	
+
 	private double weight=-1;
-	
+
 	public transient Object annotation;
 	public transient Object specilizedAnnotation;
 	public ConstraintNetworkMarking marking; // to mark the ConstraintNetwork in the backtracking process
-	
+
 	public static int IDs = 0;
 	public int ID = IDs++;
-	
+
 	public int getID() { return this.ID; }
 
 	public Object getSpecilizedAnnotation() {
 		return specilizedAnnotation;
 	}
-	
+
 	public void setSpecilizedAnnotation(Object specilizedAnnotation) {
 		this.specilizedAnnotation = specilizedAnnotation;
 	}
-	
+
 	//This is so that subclasses must invoke 1-arg constructor of ConstraintNetwork (below)
 	@SuppressWarnings("unused")
 	private ConstraintNetwork() {};
@@ -107,21 +135,21 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		substituted.put(v,vp);
 		logger.finest("Added susbstitution " + vp + " <-- " + v);
 	}
-	
+
 	/**
 	 * Convenience method to keep track of correspondences between {@link VariablePrototype}s and {@link Variable}s (useful
 	 * when {@link ConstraintNetwork}s are used as meta-values in {@link MetaConstraintSolver}s).
 	 * @param vp2v Mapping between {@link VariablePrototype}s and {@link Variable}s.
 	 */	
 	public void addSubstitutions(HashedMap<VariablePrototype,Variable> vp2v) {
-		
+
 		for(VariablePrototype vp: vp2v.keySet()){
 			substitutions.put(vp, vp2v.get(vp));
 			substituted.put(vp2v.get(vp),vp);
 			logger.finest("Added susbstitution " + vp + " <-- " + vp2v.get(vp));
 		}
 	}
-	
+
 
 	/**
 	 * Get the {@link Variable} corresponding to a given {@link VariablePrototype} (see addSubstitution() method).
@@ -131,7 +159,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public Variable getSubstitution(VariablePrototype vp) {
 		return substitutions.get(vp);
 	}
-	
+
 	/**
 	 * Get the {@link VariablePrototype} corresponding to a given {@link Variable} (see addSubstitution() method).
 	 * @param v The {@link Variable} to look up.
@@ -140,7 +168,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public VariablePrototype getSubstituted(Variable v) {
 		return substituted.get(v);
 	}
-	
+
 	/**
 	 * Remove the {@link Variable} corresponding to a given {@link VariablePrototype} (see addSubstitution() method).
 	 * @param vp The {@link VariablePrototype} to look up.
@@ -151,7 +179,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		substituted.remove(v);
 	}
 
-	
+
 	/**
 	 * Instantiates a new {@link ConstraintNetwork}.  Note that all implementing classes must call this constructor
 	 * (i.e., specifying a {@link ConstraintSolver} is mandatory).
@@ -189,7 +217,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		Collection<Constraint> edges = this.graph.findEdgeSet(from, to);
 		return edges.toArray(new Constraint[edges.size()]);
 	}
-	
+
 	/**
 	 * Adds a given {@link Variable} to the network.
 	 * @param v The {@link Variable} to add to the network.
@@ -199,6 +227,11 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		this.variables.put(Integer.valueOf(v.getID()), v);
 		this.variablesR.put(v, Integer.valueOf(v.getID()));
 		logger.finest("Added variable " + v);
+		if (listeners != null) {
+			ConstraintNetwork added = new ConstraintNetwork(this.solver);
+			added.addVariable(v);
+			dispatchEvent(added, null);
+		}
 	}
 
 	/**
@@ -210,8 +243,13 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		this.variables.remove(Integer.valueOf(v.getID()));
 		this.variablesR.remove(v);
 		logger.finest("Removed variable " + v);
+		if (listeners != null) {
+			ConstraintNetwork removed = new ConstraintNetwork(this.solver);
+			removed.addVariable(v);
+			dispatchEvent(null, removed);
+		}
 	}
-	
+
 	/**
 	 * Adds a {@link Constraint} to the network.
 	 * @param c The {@link Constraint} to add to the network. NOTE: this only works for
@@ -221,6 +259,11 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		if (c instanceof BinaryConstraint || c instanceof MultiBinaryConstraint) {
 			this.graph.addEdge(c, c.getScope()[0], c.getScope()[1]);
 			logger.finest("Added binary constraint " + c);
+			if (listeners != null) {
+				ConstraintNetwork added = new ConstraintNetwork(this.solver);
+				added.addConstraint(c);
+				dispatchEvent(added, null);
+			}
 		}
 		else {
 			DummyVariable dv = new DummyVariable(this.solver, c.getEdgeLabel());
@@ -230,21 +273,29 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 				DummyConstraint dm = new DummyConstraint("");
 				dm.setScope(new Variable[] {dv, var});
 				this.graph.addEdge(dm, dv, var);
-				
 			}
 			logger.finest("Added constraint " + c);
+			if (listeners != null) {
+				ConstraintNetwork added = new ConstraintNetwork(this.solver);
+				added.addConstraint(c);
+				dispatchEvent(added, null);
+			}
 		}
 	}
-	
+
 	/**
 	 * Removes a given {@link Constraint} from the network.
 	 * @param c The {@link Constraint} to remove from the network.
 	 */
 	public void removeConstraint(Constraint c) {
-		//if (c.getScope().length == 2) {
 		if (c instanceof BinaryConstraint || c instanceof MultiBinaryConstraint) {
 			this.graph.removeEdge(c);
 			logger.finest("Removed binary constraint " + c);
+			if (listeners != null) {
+				ConstraintNetwork removed = new ConstraintNetwork(this.solver);
+				removed.addConstraint(c);
+				dispatchEvent(null, removed);
+			}
 		}
 		else {
 			if (!(c instanceof DummyConstraint)) {
@@ -254,6 +305,11 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 				graph.removeVertex(dv);
 				hyperEdges.remove(c);
 				logger.finest("Removed constraint " + c);
+				if (listeners != null) {
+					ConstraintNetwork removed = new ConstraintNetwork(this.solver);
+					removed.addConstraint(c);
+					dispatchEvent(null, removed);
+				}
 			}
 		}
 	}
@@ -275,7 +331,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public Variable getVariableTo(Constraint c) {
 		return graph.getDest(c);
 	}
-	
+
 	/**
 	 * Gets a {@link Variable} given its ID.
 	 * @param id The ID of the {@link Variable}.
@@ -298,7 +354,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 				return v;
 		return null;
 	}
-	
+
 	/*
 	 * draw() is static so you can call this high-level
 	 * version to draw an object of a subclass (Java
@@ -317,7 +373,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		if (v == null) new ConstraintNetworkFrame(cn.graph, title, null);
 		else throw new NonInstantiatedDomain(v);
 	}
-	
+
 	/**
 	 * A static method for drawing {@link ConstraintNetwork}s.  This method is static so that
 	 * it can be called to draw an object of a subclass (Java enforces late-binding). This method instantiated a {@link JFrame}
@@ -332,7 +388,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		if (v == null) new ConstraintNetworkFrame(cn.graph, title, cb);
 		else throw new NonInstantiatedDomain(v);
 	}
-	
+
 	/**
 	 * Same as the static two-argument draw method, using the {@link ConstraintNetwork}'s simple class name as the
 	 * title of the {@link JFrame}.
@@ -341,7 +397,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public static void draw(ConstraintNetwork cn) {
 		ConstraintNetwork.draw(cn, cn.getClass().getSimpleName(), null);
 	}
-	
+
 	/**
 	 * Same as the static two-argument draw method, using the {@link ConstraintNetwork}'s simple class name as the
 	 * title of the {@link JFrame}.
@@ -351,7 +407,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public static void draw(ConstraintNetwork cn, Callback cb) {
 		ConstraintNetwork.draw(cn, cn.getClass().getSimpleName(), cb);
 	}
-	
+
 	/**
 	 * Get all {@link Constraint}s involving a given {@link Variable}. 
 	 * @param v The {@link Variable} involved in the {@link Constraint}s.
@@ -369,7 +425,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		for (int i = 0; i < in.size(); i++) retSet.add(inArray[i]);
 		for (int i = 0; i < out.size(); i++) retSet.add(outArray[i]);
 		Constraint[] ret = retSet.toArray(new Constraint[retSet.size()]);
-//		if(ret.length==0){return null;}
+		//		if(ret.length==0){return null;}
 		return ret;
 	}
 
@@ -429,7 +485,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public Variable[] getVariables(String component) {
 		return this.solver.getVariables(component);
 	}
-	
+
 	/**
 	 * Get all {@link Constraint}s in the network.
 	 * @return All the {@link Constraint}s in the network.
@@ -446,8 +502,8 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		return ret.toArray(new Constraint[ret.size()]);
 		//return this.graph.getEdges().toArray(new Constraint[this.graph.getEdgeCount()]);
 	}
-	
-	
+
+
 	/**
 	 * Query the network for the existence of a given {@link Constraint}. 
 	 * @param c The {@link Constraint} for the query. 
@@ -488,16 +544,16 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		for (Constraint con : this.getConstraints()) ret += con.toString() + "\n";
 		return ret;
 	}
-	
+
 	/**
 	 * Get a {@link String} representation of this {@link ConstraintNetwork}.
 	 * @return A {@link String} representation of this {@link ConstraintNetwork}.
 	 */
 	public String toString() {
 		return "[ConstraintNetwork]: \n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());		
-//		return "[ConstraintNetwork]: marking -> "+ this.getMarking().getState()+"\n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());
+		//		return "[ConstraintNetwork]: marking -> "+ this.getMarking().getState()+"\n\tVertices: " + Arrays.toString(this.getVariables()) + "\n\tConstriants: " + Arrays.toString(this.getConstraints());
 	}
-	
+
 	/**
 	 * Merges the given {@link ConstraintNetwork} to this.
 	 * @param cn The {@link ConstraintNetwork} to merge into this.
@@ -506,7 +562,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		for (Variable var : cn.getVariables()) this.addVariable(var);
 		for (Constraint con : cn.getConstraints()) this.addConstraint(con);
 	}
-	
+
 	/**
 	 * Checks if the given {@link ConstraintNetwork} is equal to this.
 	 * @return <code>true</code> iff the given {@link ConstraintNetwork} has the same
@@ -521,15 +577,15 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		for(Constraint c: this.getConstraints()) if (!this.containsConstraint(c))return false;
 		return true;
 	}
-	
-//	private void writeObject(ObjectOutputStream out) throws IOException {
-//		out.defaultWriteObject();
-//	}
-//
-//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		in.defaultReadObject();
-//		logger = MetaCSPLogging.getLogger(this.getClass());
-//	}
+
+	//	private void writeObject(ObjectOutputStream out) throws IOException {
+	//		out.defaultWriteObject();
+	//	}
+	//
+	//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+	//		in.defaultReadObject();
+	//		logger = MetaCSPLogging.getLogger(this.getClass());
+	//	}
 
 	/**
 	 * Weight associated to the {@link ConstraintNetwork} for some metrics.
@@ -546,7 +602,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}
-	
+
 	/**
 	 * Clone this {@link ConstraintNetwork}.
 	 * @return A new {@link ConstraintNetwork} of the runtime type of the original.
@@ -568,7 +624,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		catch (InvocationTargetException e) { e.printStackTrace(); }
 		return null;
 	}
-	
+
 	/**
 	 * Set an annotation for this {@link ConstraintNetwork}.
 	 * @param ann An object that should be used to annotate this {@link ConstraintNetwork}.
@@ -631,7 +687,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 			}
 		}
 	}
-	
+
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		for (Field f : ConstraintNetwork.class.getDeclaredFields()) {
@@ -643,7 +699,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Get all {@link Variable}s that are directly connected to a given {@link Variable} through one {@link Constraint}.
 	 * @param var The {@link Variable} from which the connected {@link Variable}s are to be computed. 
@@ -666,21 +722,21 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		return ret.toArray(new Variable[ret.size()]);
 	}
 
-	
+
 	/**
 	 * Masks all {@link Constraint}s in this {@link ConstraintNetwork}.
 	 */
 	public void maskConstraints() {
 		for (Constraint con : this.getConstraints()) con.mask();
 	}
-	
+
 	/**
 	 * Unmasks all {@link Constraint}s in this {@link ConstraintNetwork}.
 	 */
 	public void unmaskConstraints() {
 		for (Constraint con : this.getConstraints()) con.unmask();
 	}
-	
+
 	/**
 	 * Masks all given {@link Constraint}s.
 	 * @param cons The {@link Constraint}s to mask.
@@ -688,7 +744,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public static void maskConstraints(Constraint[] cons) {
 		for (Constraint con : cons) con.mask();
 	}
-	
+
 	/**
 	 * Unmasks all given {@link Constraint}s.
 	 * @param cons The {@link Constraint}s to unmask.
@@ -696,7 +752,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 	public static void unmaskConstraints(Constraint[] cons) {
 		for (Constraint con : cons) con.unmask();
 	}
-	
+
 	/**
 	 * Get all {@link Constraint}s that are not masked.
 	 * @return All {@link Constraint}s that are not masked.
@@ -708,7 +764,7 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		}
 		return ret.toArray(new Constraint[ret.size()]);
 	}
-	
+
 	/**
 	 * Get all {@link Constraint}s that are not masked.
 	 * @return All {@link Constraint}s that are not masked.
@@ -721,5 +777,4 @@ public class ConstraintNetwork implements Cloneable, Serializable {
 		return ret.toArray(new Constraint[ret.size()]);
 	}
 
-	
 }

@@ -72,6 +72,17 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	protected int[] ingredients;
 	private HashMap<Constraint,Constraint> newConstraintMapping = new HashMap<Constraint,Constraint>();
 	
+	public static ConstraintSolver getConstraintSolver(ConstraintSolver cs, Class<?> constraintSolverClass) {
+		if (cs.getClass().equals(constraintSolverClass)) return cs;
+		if (cs instanceof MultiConstraintSolver) {
+			MultiConstraintSolver mcs = (MultiConstraintSolver)cs;
+			for (int i = 0; i < mcs.getConstraintSolvers().length; i++) {
+				ConstraintSolver ret = getConstraintSolver(mcs.getConstraintSolvers()[i], constraintSolverClass);
+				if (ret != null) return ret;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * The constructor of a extending class must call this constructor.
@@ -205,12 +216,18 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 				Vector<Constraint> toRetract = added.elementAt(i);
 				if (!toRetract.isEmpty()) {
 					this.constraintSolvers[i].removeConstraints(toRetract.toArray(new Constraint[toRetract.size()]));
+					ArrayList<Constraint> toRemoveFromNewConstraintMapping = new ArrayList<Constraint>();
 					for (Constraint oldConstr : newConstraintMapping.keySet()) {
 						for (Constraint newConstr : toRetract) {
-							if (newConstraintMapping.get(oldConstr).equals(newConstr)) newConstraintMapping.remove(oldConstr);
-							break;
+							if (newConstraintMapping.get(oldConstr).equals(newConstr)) {
+								//newConstraintMapping.remove(oldConstr);
+								toRemoveFromNewConstraintMapping.add(oldConstr);
+								break;
+							}
 						}
 					}
+					for (Constraint toRemoveFromMapping : toRemoveFromNewConstraintMapping)
+						newConstraintMapping.remove(toRemoveFromMapping);
 				}
 			}
 			return false;

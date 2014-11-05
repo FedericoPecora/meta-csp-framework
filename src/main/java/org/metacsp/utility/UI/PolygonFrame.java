@@ -1,11 +1,14 @@
 package org.metacsp.utility.UI;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,18 +22,19 @@ import java.util.Vector;
 import javax.naming.ldap.HasControls;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintNetworkChangeEvent;
+import org.metacsp.framework.ConstraintNetworkChangeListener;
 import org.metacsp.framework.Variable;
-import org.metacsp.multi.spatial.rectangleAlgebra.Point;
 import org.metacsp.spatial.geometry.GeometricConstraint;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
-import org.omg.CORBA.INITIALIZE;
 
-public class PolygonFrame extends JFrame {
-	
+public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListener {
+		
 	private static final long serialVersionUID = 7979735587935134767L;
 	private final Dimension dim = new Dimension(1024, 768);
 	public static int ZOOM = 5;
@@ -131,7 +135,7 @@ public class PolygonFrame extends JFrame {
 		}
 	}
 	
-	public void updatePolygonFrame() {
+	private void updatePolygonFrame() {
 		initialize();
 		repaint();
 	}
@@ -142,6 +146,8 @@ public class PolygonFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.cn = constraintNetwork;
 		initialize();
+		
+		this.cn.addConstraintNetworkChangeListener(this);
 			
 		this.addMouseMotionListener(new MouseMotionListener() {
 			
@@ -283,9 +289,15 @@ public class PolygonFrame extends JFrame {
                 return dim;
             }
         };
+        
         this.add(p);
         this.pack();
         this.setVisible(true);
+	}
+	
+	@Override
+	public void stateChanged(ConstraintNetworkChangeEvent event) {
+		updatePolygonFrame();
 	}
 
 }
