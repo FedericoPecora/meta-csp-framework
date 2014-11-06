@@ -46,7 +46,7 @@ public class TestGeometricConstraintSolver {
 								
 		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
 		
-		try { Thread.sleep(3000); }
+		try { Thread.sleep(1000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 
 		GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
@@ -54,7 +54,7 @@ public class TestGeometricConstraintSolver {
 		inside.setTo(p1);
 		System.out.println("Added? " + solver.addConstraint(inside));
 
-		try { Thread.sleep(4000); }
+		try { Thread.sleep(1000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 
 		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
@@ -62,7 +62,7 @@ public class TestGeometricConstraintSolver {
 		dc1.setTo(p1);
 		System.out.println("Added? " + solver.addConstraint(dc1));
 
-		try { Thread.sleep(4000); }
+		try { Thread.sleep(1000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 
 		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
@@ -70,12 +70,12 @@ public class TestGeometricConstraintSolver {
 		inside1.setTo(p0);
 		System.out.println("Added? " + solver.addConstraint(inside1));
 
-		try { Thread.sleep(4000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
+//		try { Thread.sleep(1000); }
+//		catch (InterruptedException e) { e.printStackTrace(); }
+//
+//		solver.removeConstraint(inside);
 
-		solver.removeConstraint(inside1);
-
-		try { Thread.sleep(4000); }
+		try { Thread.sleep(1000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 
 		GeometricConstraint dc = new GeometricConstraint(GeometricConstraint.Type.DC);
