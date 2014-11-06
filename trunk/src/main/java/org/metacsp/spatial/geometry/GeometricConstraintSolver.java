@@ -7,7 +7,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 
 
-public class GeometricConstraintSolver extends ConstraintSolver{
+public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 
 	/**
 	 * 
@@ -16,15 +16,18 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 	private HashMap<GeometricConstraint, HashMap<Polygon, Vec2[]>> constraintTrack = new HashMap<GeometricConstraint, HashMap<Polygon,Vec2[]>>();
 	
 	public GeometricConstraintSolver() {
-		super(new Class[]{GeometricConstraint.class}, Polygon.class);
+		//super(new Class[]{GeometricConstraint.class}, Polygon.class);
+		super();
 		this.setOptions(OPTIONS.AUTO_PROPAGATE);
 	}
 
 	@Override
 	public boolean propagate() {
+		if(!super.propagate()) return false;
 		Constraint[] cons = this.getConstraints();	
 		for (int i = 0; i < cons.length; i++) {
 			if(!cons[i].isMasked()){
+				if(!super.propagate()) return false;
 				if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
 					Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 					if(manifold.isCollided()){
@@ -73,6 +76,7 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 
 	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
+		//if(!super.propagate()) return false;
 		Constraint[] cons = c;		
 		for (int i = 0; i < cons.length; i++) {
 			//handling movable property
@@ -116,23 +120,6 @@ public class GeometricConstraintSolver extends ConstraintSolver{
 		
 	}
 
-	@Override
-	protected Variable[] createVariablesSub(int num) {
-		Polygon[] ret = new Polygon[num];
-		for (int i = 0; i < num; i++) ret[i] = new Polygon(this, IDs++);
-			return ret;
-	}
-
-	@Override
-	protected void removeVariablesSub(Variable[] v) {
-		
-	}
-
-	@Override
-	public void registerValueChoiceFunctions() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public static String drawPolygons(Vector<Vector<Vec2>> toPlots, long horizon){
 		String ret = "";
