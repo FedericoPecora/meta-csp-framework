@@ -18,6 +18,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
 import org.metacsp.meta.hybridPlanner.MetaOccupiedConstraint;
+import org.metacsp.meta.hybridPlanner.MetaOccupiedTimesBasedConstraint;
 import org.metacsp.meta.hybridPlanner.MetaSpatialAdherenceConstraint;
 import org.metacsp.meta.hybridPlanner.SensingSchedulable;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
@@ -51,7 +52,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 	static long tick = 1000;
 	static HashMap<String, SpatialAssertionalRelation> currentObservation = new HashMap<String, SpatialAssertionalRelation>();
 
-	static MetaOccupiedConstraint metaOccupiedConstraint = null;
+	static MetaOccupiedTimesBasedConstraint metaOccupiedConstraint = null;
 	static MetaSpatialAdherenceConstraint metaSpatialAdherence  = null;
 	static SensingSchedulable sensingSchedulable = null;
 	
@@ -114,7 +115,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		MetaCSPLogging.setLevel(MetaSpatialAdherenceConstraint.class, Level.FINEST);
 		//#################################################################################################################
 		//add metaOccupiedConstraint
-		metaOccupiedConstraint = new MetaOccupiedConstraint(null, null);
+		metaOccupiedConstraint = new MetaOccupiedTimesBasedConstraint(null, null);
 		metaOccupiedConstraint.setPad(pad);
 		//#################################################################################################################
 		//add sensor schedulable

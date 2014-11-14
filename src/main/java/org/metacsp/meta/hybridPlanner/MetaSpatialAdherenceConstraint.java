@@ -652,26 +652,26 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				
 		long timeNow = Calendar.getInstance().getTimeInMillis();//iran
 
-		//filter sampling which is irrelevant to the theory
-		for (int i = 0; i < peak.length; i++) {
-			if(aTOsf.get(peak[i]).getName().contains(((SimpleHybridPlanner)this.metaCS).getManipulationAreaEncoding())) return false;
-		}
-		
-		//filter the sample which already captured as conflict and will not be anymore conflict
-		//this is not the case in general ...
-		boolean observed = true;
-		if(conflictTracking.size() !=0){
-			for (int i = 0; i < peak.length; i++) {
-				for (int j = 0; j < conflictTracking.size(); j++) {
-					if(!conflictTracking.get(j).contains(peak[i].getID()))
-						observed = false;
-				}
-				if(!observed) break;
-			}
-			
-			if(observed) return false;
-			
-		}
+//		//filter sampling which is irrelevant to the theory
+//		for (int i = 0; i < peak.length; i++) {
+//			if(aTOsf.get(peak[i]).getName().contains(((SimpleHybridPlanner)this.metaCS).getManipulationAreaEncoding())) return false;
+//		}
+//		
+//		//filter the sample which already captured as conflict and will not be anymore conflict
+//		//this is not the case in general ...
+//		boolean observed = true;
+//		if(conflictTracking.size() !=0){
+//			for (int i = 0; i < peak.length; i++) {
+//				for (int j = 0; j < conflictTracking.size(); j++) {
+//					if(!conflictTracking.get(j).contains(peak[i].getID()))
+//						observed = false;
+//				}
+//				if(!observed) break;
+//			}
+//			
+//			if(observed) return false;
+//			
+//		}
 		
 		Vector<UnaryRectangleConstraint> atConstraints = new Vector<UnaryRectangleConstraint>();
 		HashMap<String, SpatialFluent> currentFluent = new HashMap<String, SpatialFluent>();
