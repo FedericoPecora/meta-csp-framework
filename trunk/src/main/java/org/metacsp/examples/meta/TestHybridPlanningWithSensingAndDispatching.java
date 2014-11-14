@@ -23,7 +23,7 @@ import org.metacsp.meta.hybridPlanner.SensingSchedulable;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlannerInferenceCallback;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
@@ -129,10 +129,10 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//#################################################################################################################
 		//set the goals
 		metaSpatialAdherence.setInitialGoal(new String[]{"at_cup1_table1"});
-		Activity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(0,0,0,0)++true");
+		SymbolicVariableActivity act = getCreatedActivty(groundSolver, "atLocation::at_cup1_table1()--(0,0,0,0)++true");
 		act.setMarking(markings.UNJUSTIFIED);
 
-		simpleHybridPlanner.addGoal((Activity)act);
+		simpleHybridPlanner.addGoal((SymbolicVariableActivity)act);
 		//################################################################################################
 		//get controllable symbols
 		final Vector<String> ctrls = contrallableAtLocation.getContrallbaleSymbols();
@@ -140,7 +140,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//################################################################################################
 		//Set initial situation
 
-		Activity two = (Activity)groundSolver.getConstraintSolvers()[1].createVariable("atLocation");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)groundSolver.getConstraintSolvers()[1].createVariable("atLocation");
 		two.setSymbolicDomain("at_robot1_counter1()");
 		two.setMarking(markings.JUSTIFIED);
 
@@ -161,13 +161,13 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		simpleHybridPlanner.addMetaConstraint(metaOccupiedConstraint);		
 		simpleHybridPlanner.addMetaConstraint(metaSpatialAdherence);
 
-		final Vector<Activity> executingActs = new Vector<Activity>();
+		final Vector<SymbolicVariableActivity> executingActs = new Vector<SymbolicVariableActivity>();
 		
 
 		Vector<DispatchingFunction> dispatches = new Vector<DispatchingFunction>();
 		DispatchingFunction df = new DispatchingFunction("RobotAction") {
 			@Override
-			public void dispatch(Activity act) {
+			public void dispatch(SymbolicVariableActivity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);				
 //				printOutActivityNetwork(((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]));
 				executingActs.add(act);
@@ -212,7 +212,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		
 		DispatchingFunction dfSense = new DispatchingFunction("RobotSense") {
 			@Override
-			public void dispatch(Activity act) {
+			public void dispatch(SymbolicVariableActivity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
 				if(counter == 0){
@@ -271,7 +271,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 
 
 
-	private static Activity getCreatedActivty(SpatialFluentSolver groundSolver, String actString) {
+	private static SymbolicVariableActivity getCreatedActivty(SpatialFluentSolver groundSolver, String actString) {
 
 		String component = actString.substring(0, actString.indexOf("::")); //e.g., atLocation
 		String actSymbol = actString.substring(actString.indexOf("::")+2, actString.indexOf("--")); //e.g., at_cup1_counter1
@@ -285,13 +285,13 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//		System.out.println("coord: " + coordSym);
 		//		System.out.println("is Movable: " + isMovable);
 
-		Activity act = null;
+		SymbolicVariableActivity act = null;
 		for (int i = 0; i < groundSolver.getConstraintSolvers()[1].getVariables().length; i++) {
 			//it has to have the same name and it should not be finished yet , i.e, it is on the plan
 			
-			if(((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getSymbolicVariable().getSymbols()[0].toString().compareTo(actSymbol) == 0 && 
-					((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getEET() != ((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getLET()){				
-				act = ((Activity)groundSolver.getConstraintSolvers()[1].getVariables()[i]);
+			if(((SymbolicVariableActivity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getSymbolicVariable().getSymbols()[0].toString().compareTo(actSymbol) == 0 && 
+					((SymbolicVariableActivity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getEET() != ((SymbolicVariableActivity)groundSolver.getConstraintSolvers()[1].getVariables()[i]).getTemporalVariable().getLET()){				
+				act = ((SymbolicVariableActivity)groundSolver.getConstraintSolvers()[1].getVariables()[i]);
 			}
 				
 		}
@@ -301,8 +301,8 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		sf.setName(fluentId);//e.g., at_cup1_table1
 
 		((RectangularRegion)sf.getInternalVariables()[0]).setName(fluentId);
-		((Activity)sf.getInternalVariables()[1]).setSymbolicDomain(actSymbol);
-		((Activity)sf.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
+		((SymbolicVariableActivity)sf.getInternalVariables()[1]).setSymbolicDomain(actSymbol);
+		((SymbolicVariableActivity)sf.getInternalVariables()[1]).setMarking(markings.JUSTIFIED);
 		
 
 		//if this is already planned so it has to unified with the real observation i.e., spatial fluents
@@ -327,7 +327,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		return sf.getActivity();
 	}
 
-	private static void addDurationToActivity(SpatialFluentSolver groundSolver, long duration, Activity act) {
+	private static void addDurationToActivity(SpatialFluentSolver groundSolver, long duration, SymbolicVariableActivity act) {
 
 		Vector<Constraint> cons = new Vector<Constraint>();
 		AllenIntervalConstraint onDuration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(duration,APSPSolver.INF));
@@ -337,7 +337,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		groundSolver.getConstraintSolvers()[1].addConstraints(cons.toArray(new Constraint[cons.size()]));
 	}
 	
-	private static void releaseActivity(SpatialFluentSolver groundSolver, long releaseTime, Activity act) {
+	private static void releaseActivity(SpatialFluentSolver groundSolver, long releaseTime, SymbolicVariableActivity act) {
 		
 		Vector<Constraint> cons = new Vector<Constraint>();
 		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(releaseTime,releaseTime));
@@ -401,14 +401,14 @@ public class TestHybridPlanningWithSensingAndDispatching {
 	private static void printOutActivityNetwork(ActivityNetworkSolver actSolver) {
 
 		//sort Activity based on the start time for debugging purpose
-		HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
+		HashMap<SymbolicVariableActivity, Long> starttimes = new HashMap<SymbolicVariableActivity, Long>();
 		for (int i = 0; i < actSolver.getVariables().length; i++) {
-			starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
+			starttimes.put((SymbolicVariableActivity) actSolver.getVariables()[i], ((SymbolicVariableActivity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
 		}
 
 		//Collections.sort(starttimes.values());
 		starttimes =  sortHashMapByValuesD(starttimes);
-		for (Activity act0 : starttimes.keySet()) {
+		for (SymbolicVariableActivity act0 : starttimes.keySet()) {
 			System.out.println(act0 + " --> " + starttimes.get(act0));
 		}
 		
@@ -430,7 +430,7 @@ public class TestHybridPlanningWithSensingAndDispatching {
 			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
 
 			while (keyIt.hasNext()) {
-				Activity key = (Activity) keyIt.next();
+				SymbolicVariableActivity key = (SymbolicVariableActivity) keyIt.next();
 				long comp1 = (Long) passedMap.get(key);
 				long comp2 = val;
 

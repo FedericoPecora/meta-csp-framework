@@ -72,7 +72,7 @@ public abstract class Timeline {
 		if (stVars.length != 0 ) pulsesTemp.add(((ActivityNetworkSolver)stVars[0].getConstraintSolver()).getOrigin());
 		else pulsesTemp.add(new Long(0));
 		for (int i = 0; i < stVars.length; i++) {
-			Activity act = (Activity)stVars[i];
+			SymbolicVariableActivity act = (SymbolicVariableActivity)stVars[i];
 			long start = act.getTemporalVariable().getEST();
 			if (!pulsesTemp.contains(start)) {
 				pulsesTemp.add(start);

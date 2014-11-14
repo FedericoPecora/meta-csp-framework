@@ -25,7 +25,7 @@ package org.metacsp.meta.symbolsAndTime;
 import java.util.Arrays;
 
 import org.metacsp.framework.Variable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.activity.Timeline;
 
@@ -74,7 +74,7 @@ public class SymbolicTimeline extends Timeline {
 		ArrayOfStrings[] ret = new ArrayOfStrings[getPulses().length];
 		for (int i = 0; i < getPulses().length-1; i++) {
 			for (Variable var : getConstraintNetwork().getVariables(component)) {
-				Activity act = (Activity)var;
+				SymbolicVariableActivity act = (SymbolicVariableActivity)var;
 				if (act.getTemporalVariable().getEST() <= getPulses()[i] && act.getTemporalVariable().getEET() >= getPulses()[i+1]) {
 					String[] dom = act.getSymbolicVariable().getSymbols();
 					if (ret[i] == null) ret[i] = new ArrayOfStrings(dom);

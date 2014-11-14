@@ -5,7 +5,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.spatial.reachability.ConfigurationVariable;
 
@@ -65,9 +65,9 @@ public class SpatialFluent extends MultiVariable{
 		return ret;
 	}
 	
-	public Activity getActivity() {
+	public SymbolicVariableActivity getActivity() {
 		//return activity;
-		return (Activity)this.getInternalVariables()[1];
+		return (SymbolicVariableActivity)this.getInternalVariables()[1];
 	}
 	
 	public RectangularRegion getRectangularRegion() {

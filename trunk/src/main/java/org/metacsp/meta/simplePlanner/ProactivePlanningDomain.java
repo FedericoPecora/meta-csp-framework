@@ -10,7 +10,7 @@ import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaVariable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
@@ -19,10 +19,10 @@ import org.metacsp.time.Bounds;
 public class ProactivePlanningDomain extends SimpleDomain {
 
 	private boolean triggered = false;
-	private HashMap<String,Activity> oldInferences = new HashMap<String,Activity>();
+	private HashMap<String,SymbolicVariableActivity> oldInferences = new HashMap<String,SymbolicVariableActivity>();
 	private long timeNow = -1;
 	
-	public void setOldInference(String component, Activity oldInf) {
+	public void setOldInference(String component, SymbolicVariableActivity oldInf) {
 		oldInferences.put(component,oldInf);
 	}
 	
@@ -91,7 +91,7 @@ public class ProactivePlanningDomain extends SimpleDomain {
 		for (VariablePrototype oneGoal : possibleGoals) {
 			ConstraintNetwork cn = new ConstraintNetwork(null);
 			cn.addVariable(oneGoal);
-			Activity oldInf = oldInferences.get(oneGoal.getParameters()[0]);
+			SymbolicVariableActivity oldInf = oldInferences.get(oneGoal.getParameters()[0]);
 			boolean skip = false;
 			//Do not re-infer the last thing that was inferred
 			//(prevents from having to "model" impossibility to infer something continuously as temporal constraints in the domain)

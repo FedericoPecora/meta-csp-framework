@@ -12,7 +12,7 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
@@ -24,8 +24,8 @@ public class Sensor implements Serializable {
 	private ActivityNetworkSolver ans = null;
 	private ConstraintNetwork cn = null;
 	protected String name;
-	private Activity future = null;
-	private Activity currentAct = null;
+	private SymbolicVariableActivity future = null;
+	private SymbolicVariableActivity currentAct = null;
 	private AllenIntervalConstraint currentMeetsFuture = null;
 	protected ConstraintNetworkAnimator animator = null;
 	
@@ -37,7 +37,7 @@ public class Sensor implements Serializable {
 		this.cn = animator.getConstraintNetwork();
 		this.name = name;
 		for (Variable timeAct : cn.getVariables("Time")) {
-			if (((Activity)timeAct).getSymbolicVariable().getSymbols()[0].equals("Future")) future = (Activity)timeAct;
+			if (((SymbolicVariableActivity)timeAct).getSymbolicVariable().getSymbols()[0].equals("Future")) future = (SymbolicVariableActivity)timeAct;
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class Sensor implements Serializable {
 			}
 			//First reading or value changed --> make new activity
 			if (makeNew) {				
-				Activity act = (Activity)ans.createVariable(this.name);
+				SymbolicVariableActivity act = (SymbolicVariableActivity)ans.createVariable(this.name);
 				act.setSymbolicDomain(value);
 				act.setMarking(markings.JUSTIFIED);
 				AllenIntervalConstraint rel = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,timeNow));

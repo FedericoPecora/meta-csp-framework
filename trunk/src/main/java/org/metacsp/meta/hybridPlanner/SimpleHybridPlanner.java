@@ -14,7 +14,7 @@ import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
 import org.metacsp.meta.simplePlanner.SimpleReusableResource;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
@@ -38,8 +38,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	private long horizon = 0;
 	public Vector<SimpleOperator> operatorsAlongBranch = new Vector<SimpleOperator>();
 	public Vector<String> unificationAlongBranch = new  Vector<String>();
-	private Vector<Activity> goals = new Vector<Activity>();//this contains original goals (not sub goal)
-	private Vector<Activity> varInvolvedInOccupiedMetaConstraints = new Vector<Activity>();
+	private Vector<SymbolicVariableActivity> goals = new Vector<SymbolicVariableActivity>();//this contains original goals (not sub goal)
+	private Vector<SymbolicVariableActivity> varInvolvedInOccupiedMetaConstraints = new Vector<SymbolicVariableActivity>();
 	private boolean learningFromfailure = false;
 
 	private HashMap<String, Rectangle> observation = new HashMap<String, Rectangle>();
@@ -142,9 +142,9 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		if (mv.getMetaConstraint() instanceof MetaOccupiedConstraint){
 			for (Variable v : mv.getConstraintNetwork().getVariables()) {
-				if(!varInvolvedInOccupiedMetaConstraints.contains((Activity)v)){
+				if(!varInvolvedInOccupiedMetaConstraints.contains((SymbolicVariableActivity)v)){
 					//					System.out.println("== occupied constraints == " + (Activity)v);
-					varInvolvedInOccupiedMetaConstraints.add((Activity)v);	
+					varInvolvedInOccupiedMetaConstraints.add((SymbolicVariableActivity)v);	
 				}
 			}
 			if(armCapacity <= varInvolvedInOccupiedMetaConstraints.size()){
@@ -209,13 +209,13 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 				FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)this.metaConstraints.get(j);
 				for (Variable v : fluentToRemove) {
-					for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)((SpatialFluent)v).getActivity())) {
-						rr.removeUsage((Activity)((SpatialFluent)v).getActivity());
+					for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((SymbolicVariableActivity)((SpatialFluent)v).getActivity())) {
+						rr.removeUsage((SymbolicVariableActivity)((SpatialFluent)v).getActivity());
 					}
 				}
 				for (Variable v : activityToRemove) {
-					for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
-						rr.removeUsage((Activity)v);
+					for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((SymbolicVariableActivity)v)) {
+						rr.removeUsage((SymbolicVariableActivity)v);
 					}
 				}
 			}
@@ -234,8 +234,8 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 			System.out.println("Meta Value of MetaSpatialConstraint is retracted");
 
 			for (int i = 0; i < this.getConstraintSolvers()[0].getVariables().length; i++) {
-				if(((Activity)((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]).getActivity()).getTemporalVariable().getEST() == 0 &&
-						((Activity)((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]).getActivity()).getTemporalVariable().getLST() == horizon){
+				if(((SymbolicVariableActivity)((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]).getActivity()).getTemporalVariable().getEST() == 0 &&
+						((SymbolicVariableActivity)((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]).getActivity()).getTemporalVariable().getLST() == horizon){
 					spatialFluentToBeRemoved.add((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]);
 					//					System.out.println((SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getVariables()[i]);
 				}
@@ -296,7 +296,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)this.getConstraintSolvers()[0]).getConstraintSolvers()[1];
 
-		Vector<Activity> manAreaActs = new Vector<Activity>();
+		Vector<SymbolicVariableActivity> manAreaActs = new Vector<SymbolicVariableActivity>();
 
 		//Make real variables from variable prototypes
 		for (Variable v :  metaValue.getVariables()) {
@@ -310,13 +310,13 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 					SpatialFluent sf = (SpatialFluent)((SpatialFluentSolver)this.getConstraintSolvers()[0]).createVariable(component);
 					sf.setName(symbol);
 					((RectangularRegion)sf.getInternalVariables()[0]).setName(symbol);
-					((Activity)sf.getInternalVariables()[1]).setSymbolicDomain(symbol);
-					((Activity)sf.getInternalVariables()[1]).setMarking((SimpleDomain.markings)v.getMarking());
+					((SymbolicVariableActivity)sf.getInternalVariables()[1]).setSymbolicDomain(symbol);
+					((SymbolicVariableActivity)sf.getInternalVariables()[1]).setMarking((SimpleDomain.markings)v.getMarking());
 					metaValue.addSubstitution((VariablePrototype)v, sf);
 				}
 				else{				
-					Activity tailActivity = null;
-					tailActivity = (Activity)groundSolver.createVariable(component);
+					SymbolicVariableActivity tailActivity = null;
+					tailActivity = (SymbolicVariableActivity)groundSolver.createVariable(component);
 					tailActivity.setSymbolicDomain(symbol);
 					tailActivity.setMarking(v.getMarking());
 					metaValue.addSubstitution((VariablePrototype)v, tailActivity);
@@ -336,7 +336,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				for (int i = 0; i < oldScope.length; i++) {
 					if (oldScope[i] instanceof VariablePrototype) {
 						if(((String)((VariablePrototype) oldScope[i]).getParameters()[1]).contains(manipulationAreaEncoding))
-							newScope[i] = (Activity)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getActivity();
+							newScope[i] = (SymbolicVariableActivity)((SpatialFluent)metaValue.getSubstitution((VariablePrototype)oldScope[i])).getActivity();
 						else
 							newScope[i] = metaValue.getSubstitution((VariablePrototype)oldScope[i]);
 					}
@@ -382,7 +382,7 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 				if(this.metaConstraints.get(j) instanceof FluentBasedSimpleDomain ){
 					FluentBasedSimpleDomain metaCausalConatraint = (FluentBasedSimpleDomain)this.metaConstraints.elementAt(j);
 					for (SimpleReusableResource rr : metaCausalConatraint.getCurrentReusableResourcesUsedByActivity(v)) {
-						rr.setUsage((Activity)v);
+						rr.setUsage((SymbolicVariableActivity)v);
 					}
 				}
 			}
@@ -441,11 +441,11 @@ public class SimpleHybridPlanner extends MetaConstraintSolver {
 	}
 
 
-	public void addGoal(Activity act) {
+	public void addGoal(SymbolicVariableActivity act) {
 		goals.add(act);
 	}
 
-	public Vector<Activity> getGoals(){
+	public Vector<SymbolicVariableActivity> getGoals(){
 		return goals;
 	}
 

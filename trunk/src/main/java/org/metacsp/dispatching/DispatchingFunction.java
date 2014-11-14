@@ -1,6 +1,6 @@
 package org.metacsp.dispatching;
 
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 
 public abstract class DispatchingFunction {
 	
@@ -18,9 +18,9 @@ public abstract class DispatchingFunction {
 	
 	public String getComponent() { return component; }
 	
-	public abstract void dispatch(Activity act);
+	public abstract void dispatch(SymbolicVariableActivity act);
 	
-	public void finish(Activity act) {
+	public void finish(SymbolicVariableActivity act) {
 		dis.finish(act);
 	}
 	

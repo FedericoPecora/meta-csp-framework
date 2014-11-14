@@ -7,7 +7,7 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.sensing.InferenceCallback;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
@@ -48,7 +48,7 @@ public class SimplePlannerInferenceCallback implements InferenceCallback, Serial
 					}
 				}
 				if (var != null) {
-					Activity act = (Activity)cn.getSubstitution(var);
+					SymbolicVariableActivity act = (SymbolicVariableActivity)cn.getSubstitution(var);
 					domain.setOldInference(act.getComponent(), act);
 				}
 			}

@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import junit.framework.TestCase;
 
 import org.metacsp.framework.Constraint;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -70,10 +70,10 @@ public class TestAllenInterval extends TestCase {
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0, 200);
         solver.createVariables(2);
         
-        Activity intervals[] = new Activity[2];
+        SymbolicVariableActivity intervals[] = new SymbolicVariableActivity[2];
         
-        intervals[0] = (Activity)solver.getVariable(0);
-        intervals[1] = (Activity)solver.getVariable(1);
+        intervals[0] = (SymbolicVariableActivity)solver.getVariable(0);
+        intervals[1] = (SymbolicVariableActivity)solver.getVariable(1);
         
         Bounds problemBounds = new Bounds(5, APSPSolver.INF);
         

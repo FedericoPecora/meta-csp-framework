@@ -19,7 +19,7 @@ import org.metacsp.meta.hybridPlanner.MetaOccupiedConstraint;
 import org.metacsp.meta.hybridPlanner.MetaSpatialAdherenceConstraint;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
@@ -136,14 +136,14 @@ public class TestSimpleHybridPlanner {
 		tp.publish(true, false);
 		//#####################################################################################################################
 		//sort Activity based on the start time for debugging purpose
-		HashMap<Activity, Long> starttimes = new HashMap<Activity, Long>();
+		HashMap<SymbolicVariableActivity, Long> starttimes = new HashMap<SymbolicVariableActivity, Long>();
 		for (int i = 0; i < actSolver.getVariables().length; i++) {
-			starttimes.put((Activity) actSolver.getVariables()[i], ((Activity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
+			starttimes.put((SymbolicVariableActivity) actSolver.getVariables()[i], ((SymbolicVariableActivity)actSolver.getVariables()[i]).getTemporalVariable().getStart().getLowerBound());                       
 		}
 
 		//          Collections.sort(starttimes.values());
 		starttimes =  sortHashMapByValuesD(starttimes);
-		for (Activity act : starttimes.keySet()) {
+		for (SymbolicVariableActivity act : starttimes.keySet()) {
 			System.out.println(act + " --> " + starttimes.get(act));
 		}
 		//#####################################################################################################################
@@ -163,7 +163,7 @@ public class TestSimpleHybridPlanner {
 			Iterator keyIt = ((java.util.List<SpatialRule>) mapKeys).iterator();
 
 			while (keyIt.hasNext()) {
-				Activity key = (Activity) keyIt.next();
+				SymbolicVariableActivity key = (SymbolicVariableActivity) keyIt.next();
 				long comp1 = (Long) passedMap.get(key);
 				long comp2 = val;
 
@@ -185,8 +185,8 @@ public class TestSimpleHybridPlanner {
 		sf.setName(name);
 
 		((RectangularRegion)sf.getInternalVariables()[0]).setName(name);
-		((Activity)sf.getInternalVariables()[1]).setSymbolicDomain(symbolicDomain);
-		((Activity)sf.getInternalVariables()[1]).setMarking(mk);
+		((SymbolicVariableActivity)sf.getInternalVariables()[1]).setSymbolicDomain(symbolicDomain);
+		((SymbolicVariableActivity)sf.getInternalVariables()[1]).setMarking(mk);
 
 		if(mk.equals(markings.JUSTIFIED)){
 			AllenIntervalConstraint onDuration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(duration,APSPSolver.INF));
@@ -222,7 +222,7 @@ public class TestSimpleHybridPlanner {
 		//initial State
 		//===================================================================================================================
 
-		Activity two = (Activity)grounSpatialFluentSolver.getConstraintSolvers()[1].createVariable("RobotProprioception");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)grounSpatialFluentSolver.getConstraintSolvers()[1].createVariable("RobotProprioception");
 		two.setSymbolicDomain("holding_cup1()");
 		two.setMarking(markings.JUSTIFIED);
 		AllenIntervalConstraint releaseHolding = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1,1));

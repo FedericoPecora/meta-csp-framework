@@ -24,15 +24,15 @@ package org.metacsp.meta.symbolsAndTime;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.VariableOrderingH;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 
 public class EarliestStartTimeVarOH extends VariableOrderingH {
 
 	@Override
 	public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
 		// TODO Auto-generated method stub
-		long time1 = ((Activity)arg0.getVariables()[0]).getTemporalVariable().getEST();
-		long time2 = ((Activity)arg1.getVariables()[0]).getTemporalVariable().getEST();
+		long time1 = ((SymbolicVariableActivity)arg0.getVariables()[0]).getTemporalVariable().getEST();
+		long time2 = ((SymbolicVariableActivity)arg1.getVariables()[0]).getTemporalVariable().getEST();
 		if (time1 > time2) return 1;
 		else if (time1 < time2) return -1;
 		return 0;

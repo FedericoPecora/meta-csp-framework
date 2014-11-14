@@ -25,7 +25,7 @@ package org.metacsp.examples.multi;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintNetworkChangeEvent;
 import org.metacsp.framework.ConstraintNetworkChangeListener;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
@@ -47,9 +47,9 @@ public class TestConstraintNetworkListener {
 
 		
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500, new String[] {"A","B","C","D","E","F"});
-		Activity act1 = (Activity)solver.createVariable();
+		SymbolicVariableActivity act1 = (SymbolicVariableActivity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
-		Activity act2 = (Activity)solver.createVariable();
+		SymbolicVariableActivity act2 = (SymbolicVariableActivity)solver.createVariable();
 		act2.setSymbolicDomain("B", "C", "D");
 		
 		solver.getConstraintNetwork().addConstraintNetworkChangeListener(cncl);

@@ -45,7 +45,7 @@ import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
 import org.metacsp.meta.symbolsAndTime.Schedulable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.spatial.utility.SpatialRule;
@@ -69,7 +69,7 @@ public class SimpleDomain extends MetaConstraint {
 	protected Vector<String> contextVars = new Vector<String>();
 	protected HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
-	public HashMap<Activity, Activity> unificationTrack = new HashMap<Activity,Activity>();
+	public HashMap<SymbolicVariableActivity, SymbolicVariableActivity> unificationTrack = new HashMap<SymbolicVariableActivity,SymbolicVariableActivity>();
 	
 	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVED_UNJ, OBSERVED_JUST, IMPOSSIBLE, 
 		COND_UNJUSTIFIED, COND_CURRENT_UNJUSTIFIED};
@@ -78,7 +78,7 @@ public class SimpleDomain extends MetaConstraint {
 		return currentResourceUtilizers.keySet().toArray(new Schedulable[currentResourceUtilizers.keySet().size()]);
 	}
 	
-	public HashMap<Activity, Activity> getUnificationTrack(){
+	public HashMap<SymbolicVariableActivity, SymbolicVariableActivity> getUnificationTrack(){
 		return unificationTrack;
 	}
 	
@@ -160,7 +160,7 @@ public class SimpleDomain extends MetaConstraint {
 	}
 
 	
-	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, Activity problematicActivity) {
+	protected ConstraintNetwork expandOperator(SimpleOperator possibleOperator, SymbolicVariableActivity problematicActivity) {
 		ConstraintNetwork activityNetworkToReturn = new ConstraintNetwork(null);
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();
 
@@ -309,14 +309,14 @@ public class SimpleDomain extends MetaConstraint {
 		return false;
 	}
 
-	protected ConstraintNetwork[] getUnifications(Activity activity) {
+	protected ConstraintNetwork[] getUnifications(SymbolicVariableActivity activity) {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Variable[] acts = groundSolver.getVariables();
 				
-		Vector<Activity> possibleUnifications = new Vector<Activity>();
+		Vector<SymbolicVariableActivity> possibleUnifications = new Vector<SymbolicVariableActivity>();
 		for (Variable var : acts) {
 			if (!var.equals(activity)) {
-				Activity act = (Activity)var;
+				SymbolicVariableActivity act = (SymbolicVariableActivity)var;
 				String problematicActivitySymbolicDomain = activity.getSymbolicVariable().getSymbols()[0];
 				if (act.getComponent().equals(activity.getComponent())) {
 					String[] actSymbols = act.getSymbolicVariable().getSymbols();
@@ -334,9 +334,9 @@ public class SimpleDomain extends MetaConstraint {
 		return getUnifications(activity,possibleUnifications);
 	}
 	
-	private ConstraintNetwork[] getUnifications(Activity activity, Vector<Activity> possibleUnifications) {
+	private ConstraintNetwork[] getUnifications(SymbolicVariableActivity activity, Vector<SymbolicVariableActivity> possibleUnifications) {
 		Vector<ConstraintNetwork> unifications = new Vector<ConstraintNetwork>();
-		for (Activity act : possibleUnifications) {
+		for (SymbolicVariableActivity act : possibleUnifications) {
 			ConstraintNetwork oneUnification = new ConstraintNetwork(null);
 			AllenIntervalConstraint equals = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Equals);
 			equals.setFrom(activity);
@@ -356,7 +356,7 @@ public class SimpleDomain extends MetaConstraint {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		Vector<ConstraintNetwork> retPossibleConstraintNetworks = new Vector<ConstraintNetwork>();
 		ConstraintNetwork problematicNetwork = metaVariable.getConstraintNetwork();
-		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0];
+		SymbolicVariableActivity problematicActivity = (SymbolicVariableActivity)problematicNetwork.getVariables()[0];
 		
 		logger.finest("Getting metavalues for " + problematicActivity);
 		

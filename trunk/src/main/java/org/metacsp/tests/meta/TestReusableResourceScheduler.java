@@ -11,7 +11,7 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.symbolsAndTime.ReusableResource;
 import org.metacsp.meta.symbolsAndTime.Schedulable.PEAKCOLLECTION;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
@@ -38,9 +38,9 @@ public class TestReusableResourceScheduler extends TestCase {
 		final Scheduler metaSolver = new Scheduler(0,600,0);
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity one = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		one.setSymbolicDomain("1");
-		Activity two = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		two.setSymbolicDomain("1");
 		
 		//DURATIONS
@@ -96,11 +96,11 @@ public class TestReusableResourceScheduler extends TestCase {
 		final Scheduler metaSolver = new Scheduler(0,600,0);
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity one = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		one.setSymbolicDomain("2");
-		Activity two = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		two.setSymbolicDomain("1");
-		Activity three = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity three = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		three.setSymbolicDomain("3");
 		
 		//DURATIONS
@@ -167,15 +167,15 @@ public class TestReusableResourceScheduler extends TestCase {
 		
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity a1 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a1 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a1.setSymbolicDomain("1");
-		Activity a2 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a2 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a2.setSymbolicDomain("1");
-		Activity a3 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a3 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a3.setSymbolicDomain("1");
-		Activity a4 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a4 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a4.setSymbolicDomain("1");
-		Activity a5 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a5 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a5.setSymbolicDomain("1");
 				
 		
@@ -259,11 +259,11 @@ public class TestReusableResourceScheduler extends TestCase {
 		final Scheduler metaSolver = new Scheduler(0,5000,0);
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity a2 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a2 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a2.setSymbolicDomain("1");
-		Activity a4 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a4 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a4.setSymbolicDomain("1");
-		Activity a5 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a5 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a5.setSymbolicDomain("1");
 						
 		AllenIntervalConstraint rel2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(39, 4799));
@@ -324,11 +324,11 @@ public class TestReusableResourceScheduler extends TestCase {
 		
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity a1 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a1 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a1.setSymbolicDomain("1");
-		Activity a2 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a2 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a2.setSymbolicDomain("1");
-		Activity a3 = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity a3 = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		a3.setSymbolicDomain("1");
 				
 		

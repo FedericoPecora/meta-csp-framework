@@ -27,8 +27,8 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
-import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 
 public class ReusableResource extends Schedulable {
 
@@ -47,7 +47,7 @@ public class ReusableResource extends Schedulable {
 	public boolean isConflicting(Activity[] peak) {
 		int sum = 0;
 		for (Activity act : peak) {
-			sum += Integer.parseInt(act.getSymbolicVariable().getSymbols()[0]);
+			sum += Integer.parseInt(((SymbolicVariableActivity)act.getVariable()).getSymbolicVariable().getSymbols()[0]);
 			//sum += Integer.parseInt(((SymbolicDomain2)act.getSymbolicVariable().getDomain()).getSymbols()[0]);
 			if (sum > capacity) return true;
 		}

@@ -9,7 +9,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.time.APSPSolver;
@@ -28,12 +28,12 @@ public class SensingSchedulable extends MetaConstraint{
 	}
 
 	
-	private ConstraintNetwork[] binaryPeakCollection(Vector<Activity> activities) {
+	private ConstraintNetwork[] binaryPeakCollection(Vector<SymbolicVariableActivity> activities) {
 		
 		if (activities != null && !activities.isEmpty()) {
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			logger.finest("Doing binary peak collection with " + activities.size() + " activities...");
-			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
+			SymbolicVariableActivity[] groundVars = activities.toArray(new SymbolicVariableActivity[activities.size()]);
 			
 //			for (Activity a : groundVars) {
 //				if (isConflicting(new Activity[] {a})) {
@@ -67,9 +67,9 @@ public class SensingSchedulable extends MetaConstraint{
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		
-		Vector<Activity> activities = new Vector<Activity>();
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].getVariables().length; i++) {
-			Activity act = (Activity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].getVariables()[i];			
+			SymbolicVariableActivity act = (SymbolicVariableActivity)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1].getVariables()[i];			
 			if(act.getSymbolicVariable().getSymbols()[0].toString().contains("sens")){
 				activities.add(act);
 			}
@@ -87,20 +87,20 @@ public class SensingSchedulable extends MetaConstraint{
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		
 		AllenIntervalConstraint before01 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(beforeParameter, APSPSolver.INF));
-		before01.setFrom((Activity) conflict.getVariables()[0]);			
-		before01.setTo((Activity) conflict.getVariables()[1]);
+		before01.setFrom((SymbolicVariableActivity) conflict.getVariables()[0]);			
+		before01.setTo((SymbolicVariableActivity) conflict.getVariables()[1]);
 		ConstraintNetwork resolver0 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-		resolver0.addVariable((Activity) conflict.getVariables()[0]);
-		resolver0.addVariable((Activity) conflict.getVariables()[1]);
+		resolver0.addVariable((SymbolicVariableActivity) conflict.getVariables()[0]);
+		resolver0.addVariable((SymbolicVariableActivity) conflict.getVariables()[1]);
 		resolver0.addConstraint(before01);
 		ret.add(resolver0);
 		
 		AllenIntervalConstraint before10 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(beforeParameter, APSPSolver.INF));
-		before10.setFrom((Activity) conflict.getVariables()[1]);			
-		before10.setTo((Activity) conflict.getVariables()[0]);
+		before10.setFrom((SymbolicVariableActivity) conflict.getVariables()[1]);			
+		before10.setTo((SymbolicVariableActivity) conflict.getVariables()[0]);
 		ConstraintNetwork resolver = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-		resolver.addVariable((Activity) conflict.getVariables()[1]);
-		resolver.addVariable((Activity) conflict.getVariables()[0]);
+		resolver.addVariable((SymbolicVariableActivity) conflict.getVariables()[1]);
+		resolver.addVariable((SymbolicVariableActivity) conflict.getVariables()[0]);
 		resolver.addConstraint(before10);
 		ret.add(resolver);
 		

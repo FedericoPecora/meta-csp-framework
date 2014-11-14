@@ -29,7 +29,7 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
@@ -53,13 +53,13 @@ public class TestContextInferenceWithSimplePlanner {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
 
 		// GOAL: infer cooking
-		Activity one = (Activity)groundSolver.createVariable("Human");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("Human");
 		one.setSymbolicDomain("Cooking()");
 		// ... this is a goal (i.e., an activity to justify through the meta-constraint)
 		one.setMarking(markings.UNJUSTIFIED);
 		
 		// SENSORS: user in kitchen from 1 until at least 20
-		Activity s1 = (Activity)groundSolver.createVariable("Location");
+		SymbolicVariableActivity s1 = (SymbolicVariableActivity)groundSolver.createVariable("Location");
 		s1.setSymbolicDomain("Kitchen()");
 		// ... this is a sensor value (i.e., an activity that is already justified)
 		s1.setMarking(markings.JUSTIFIED);
@@ -73,7 +73,7 @@ public class TestContextInferenceWithSimplePlanner {
 		relS1.setTo(s1);
 		
 		// SENSORS: stove is on from 4 and lasts 10
-		Activity s2 = (Activity)groundSolver.createVariable("Stove");
+		SymbolicVariableActivity s2 = (SymbolicVariableActivity)groundSolver.createVariable("Stove");
 		s2.setSymbolicDomain("On()");
 		// ... this is a sensor value (i.e., an activity that is already justified)
 		s2.setMarking(markings.JUSTIFIED);

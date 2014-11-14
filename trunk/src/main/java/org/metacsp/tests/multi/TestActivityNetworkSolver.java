@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import junit.framework.TestCase;
 
 import org.metacsp.framework.Constraint;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
@@ -25,9 +25,9 @@ public class TestActivityNetworkSolver extends TestCase {
 
 	public void testConsistency() {
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,500, new String[] {"A","B","C","D","E","F"});
-		Activity act1 = (Activity)solver.createVariable();
+		SymbolicVariableActivity act1 = (SymbolicVariableActivity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
-		Activity act2 = (Activity)solver.createVariable();
+		SymbolicVariableActivity act2 = (SymbolicVariableActivity)solver.createVariable();
 		act2.setSymbolicDomain("B", "C");
 		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);

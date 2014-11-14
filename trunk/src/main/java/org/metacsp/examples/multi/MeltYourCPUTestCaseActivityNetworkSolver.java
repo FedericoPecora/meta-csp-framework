@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.utility.logging.MetaCSPLogging;
@@ -53,7 +53,7 @@ public class MeltYourCPUTestCaseActivityNetworkSolver {
 			metaCSPLogger.info("Created " + vars.length + " variables (" + (Calendar.getInstance().getTimeInMillis()-timeNow) + " msec)");
 			
 			for (int i = 0; i < vars.length; i++) {
-				Activity act = (Activity)vars[i];
+				SymbolicVariableActivity act = (SymbolicVariableActivity)vars[i];
 				act.setSymbolicDomain("RandomActivity"+i);
 			}
 			
@@ -86,9 +86,9 @@ public class MeltYourCPUTestCaseActivityNetworkSolver {
 //			}
 			
 			Vector<AllenIntervalConstraint> toRemoveCons = new Vector<AllenIntervalConstraint>();
-			Vector<Activity> toRemoveActs = new Vector<Activity>();
+			Vector<SymbolicVariableActivity> toRemoveActs = new Vector<SymbolicVariableActivity>();
 			for (int i = 0; i < rand.nextInt((int)Math.floor(allVars.length/2.0))+(int)Math.floor(allVars.length/2.0); i++) {
-				toRemoveActs.add((Activity)allVars[i]);
+				toRemoveActs.add((SymbolicVariableActivity)allVars[i]);
 			}
 			
 			Constraint[] allCons = solver.getConstraintNetwork().getConstraints();
@@ -105,7 +105,7 @@ public class MeltYourCPUTestCaseActivityNetworkSolver {
 			solver.removeConstraints(toRemoveCons.toArray(new AllenIntervalConstraint[toRemoveCons.size()]));
 			metaCSPLogger.info("Removed " + toRemoveCons.size() + "/" + numOldCons + " constraints (" + (Calendar.getInstance().getTimeInMillis()-timeNow) + " msec)");
 			timeNow = Calendar.getInstance().getTimeInMillis();
-			solver.removeVariables(toRemoveActs.toArray(new Activity[toRemoveActs.size()]));
+			solver.removeVariables(toRemoveActs.toArray(new SymbolicVariableActivity[toRemoveActs.size()]));
 			metaCSPLogger.info("Removed " + toRemoveActs.size() + "/" + numOldActs + " variables (" + (Calendar.getInstance().getTimeInMillis()-timeNow) + " msec)");
 		}
 		

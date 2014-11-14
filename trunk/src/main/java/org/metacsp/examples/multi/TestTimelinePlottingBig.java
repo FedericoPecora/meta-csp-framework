@@ -26,7 +26,7 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import org.metacsp.framework.Constraint;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
@@ -48,7 +48,7 @@ public class TestTimelinePlottingBig {
 		long oldEnd = 0;
 		int numact = 0;
 		while(true) {
-			Activity act = (Activity)solver.createVariable("aComponent");
+			SymbolicVariableActivity act = (SymbolicVariableActivity)solver.createVariable("aComponent");
 			long v = rand.nextInt(100);
 			act.setSymbolicDomain(v + "");
 			//rndm duration in [1,8]

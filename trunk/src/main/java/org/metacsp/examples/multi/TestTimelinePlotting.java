@@ -27,7 +27,7 @@ import java.util.logging.Level;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
@@ -43,9 +43,9 @@ public class TestTimelinePlotting {
 		MetaCSPLogging.setLevel(TimelinePublisher.class, Level.FINEST);
 		long timeNow = Calendar.getInstance().getTimeInMillis();
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(timeNow,timeNow+1000, new String[] {"A","B","C","D"});
-		Activity act1 = (Activity)solver.createVariable("One Component");
+		SymbolicVariableActivity act1 = (SymbolicVariableActivity)solver.createVariable("One Component");
 		act1.setSymbolicDomain("A", "B", "C");
-		Activity act2 = (Activity)solver.createVariable("Another Component");
+		SymbolicVariableActivity act2 = (SymbolicVariableActivity)solver.createVariable("Another Component");
 		act2.setSymbolicDomain("B", "C");
 		
 		SymbolicValueConstraint con1 = new SymbolicValueConstraint(SymbolicValueConstraint.Type.EQUALS);

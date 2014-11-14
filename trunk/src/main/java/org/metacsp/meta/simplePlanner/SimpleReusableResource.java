@@ -62,7 +62,7 @@ public class SimpleReusableResource extends Schedulable {
 //		}
 		
 		for (Activity act : peak) {
-			sum += rd.getResourceUsageLevel(this, act);
+			sum += rd.getResourceUsageLevel(this, act.getVariable());
 			if (sum > capacity) return true;
 		}
 		return false;

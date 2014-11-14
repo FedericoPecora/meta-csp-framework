@@ -27,7 +27,7 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
@@ -48,7 +48,7 @@ public class TestSimplePlannerWithDomain {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
 
 		// INITIAL AND GOAL STATE DEFS
-		Activity one = (Activity)groundSolver.createVariable("Robot1");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("Robot1");
 		one.setSymbolicDomain("MoveTo()");
 		// ... this is a goal (i.e., an activity to justify through the meta-constraint)
 		one.setMarking(markings.UNJUSTIFIED);
@@ -57,7 +57,7 @@ public class TestSimplePlannerWithDomain {
 		durationOne.setFrom(one);
 		durationOne.setTo(one);
 
-		Activity two = (Activity)groundSolver.createVariable("Robot2");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)groundSolver.createVariable("Robot2");
 		two.setSymbolicDomain("MoveTo()");
 		two.setMarking(markings.UNJUSTIFIED);
 		AllenIntervalConstraint durationTwo = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(7,APSPSolver.INF));
@@ -67,10 +67,10 @@ public class TestSimplePlannerWithDomain {
 		groundSolver.addConstraints(new Constraint[] {durationOne, durationTwo});
 		
 		// We can also specify that goals should be related in time somehow...		
-		AllenIntervalConstraint after = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, AllenIntervalConstraint.Type.After.getDefaultBounds());
-		after.setFrom(one);
-		after.setTo(two);
-		groundSolver.addConstraint(after);
+//		AllenIntervalConstraint after = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After, AllenIntervalConstraint.Type.After.getDefaultBounds());
+//		after.setFrom(one);
+//		after.setTo(two);
+//		groundSolver.addConstraint(after);
 
 		TimelinePublisher tp = new TimelinePublisher(groundSolver, "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);

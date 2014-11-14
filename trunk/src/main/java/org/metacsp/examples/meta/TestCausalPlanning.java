@@ -30,7 +30,7 @@ import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.APSPSolver;
@@ -55,7 +55,7 @@ public class TestCausalPlanning {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)planner.getConstraintSolvers()[0];
 
 		// INITIAL AND GOAL STATE DEFS
-		Activity one = (Activity)groundSolver.createVariable("Robot");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("Robot");
 		one.setSymbolicDomain("At(?to)");
 		// ... this is a goal (i.e., an activity to justify through the meta-constraint)
 		one.setMarking(markings.UNJUSTIFIED);
@@ -73,7 +73,7 @@ public class TestCausalPlanning {
 //		groundSolver.addConstraint(after);
 		
 		//Initial Condition
-		Activity init1 = (Activity)groundSolver.createVariable("Robot");
+		SymbolicVariableActivity init1 = (SymbolicVariableActivity)groundSolver.createVariable("Robot");
 		init1.setSymbolicDomain("At(?from)");
 		init1.setMarking(markings.JUSTIFIED);
 		AllenIntervalConstraint durationInit1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(1300,APSPSolver.INF));
