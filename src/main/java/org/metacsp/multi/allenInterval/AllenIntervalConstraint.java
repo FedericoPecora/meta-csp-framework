@@ -642,6 +642,8 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			
 			if (types[0].equals(Type.Overlaps)) {
 				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[0]);
+				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[1]);
+				if (bounds[2].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[2]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -649,16 +651,16 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint third = new SimpleDistanceConstraint();
-				first.setMinimum(1);
-				first.setMaximum(APSPSolver.INF);
+				first.setMinimum(bounds[0].min);
+				first.setMaximum(bounds[0].max);
 				first.setFrom(fs);
 				first.setTo(ts);
-				second.setMinimum(bounds[0].min);
-				second.setMaximum(bounds[0].max);
+				second.setMinimum(bounds[1].min);
+				second.setMaximum(bounds[1].max);
 				second.setFrom(ts);
 				second.setTo(fe);
-				third.setMinimum(1);
-				third.setMaximum(APSPSolver.INF);
+				third.setMinimum(bounds[2].min);
+				third.setMaximum(bounds[2].max);
 				third.setFrom(fe);
 				third.setTo(te);
 				Constraint[] ret = {first,second,third};
@@ -667,7 +669,9 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			
 		
 			if (types[0].equals(Type.OverlappedBy)) {
-				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.OverlappedBy, bounds[0]);
+				if (bounds[0].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[0]);
+				if (bounds[1].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[1]);
+				if (bounds[2].min == 0) throw new MalformedBoundsException(Type.Overlaps, bounds[2]);
 				TimePoint fs = from.getStart();
 				TimePoint ts = to.getStart();
 				TimePoint fe = from.getEnd();
@@ -675,16 +679,16 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint third = new SimpleDistanceConstraint();
-				first.setMinimum(1);
-				first.setMaximum(APSPSolver.INF);
+				first.setMinimum(bounds[0].min);
+				first.setMaximum(bounds[0].max);
 				first.setFrom(ts);
 				first.setTo(fs);
-				second.setMinimum(bounds[0].min);
-				second.setMaximum(bounds[0].max);
+				second.setMinimum(bounds[1].min);
+				second.setMaximum(bounds[1].max);
 				second.setFrom(fs);
 				second.setTo(te);
-				third.setMinimum(1);
-				third.setMaximum(APSPSolver.INF);
+				third.setMinimum(bounds[2].min);
+				third.setMaximum(bounds[2].max);
 				third.setFrom(te);
 				third.setTo(fe);
 				Constraint[] ret = {first,second,third};
