@@ -30,7 +30,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.symbolsAndTime.ReusableResource;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint.Type;
@@ -46,11 +46,11 @@ public class TestReusableResourceScheduler {
 		final Scheduler metaSolver = new Scheduler(0,600,0);
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity one = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		one.setSymbolicDomain("2");
-		Activity two = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		two.setSymbolicDomain("1");
-		Activity three = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity three = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		three.setSymbolicDomain("3");
 		
 		//DURATIONS

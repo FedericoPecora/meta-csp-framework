@@ -14,7 +14,7 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -47,8 +47,8 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		
-		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
-		Vector<Activity> activities = new Vector<Activity>();
+		HashMap<SymbolicVariableActivity, SpatialFluent> activityToFluent = new HashMap<SymbolicVariableActivity, SpatialFluent>();
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
 		for (int i = 0; i < getGroundSolver().getVariables().length; i++) {
 			if(((SpatialFluent)getGroundSolver().getVariables()[i]).getRectangularRegion().getOntologicalProp().isMovable()){
 				activities.add(((SpatialFluent)getGroundSolver().getVariables()[i]).getActivity());
@@ -69,11 +69,11 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 
 	
 	
-	private ConstraintNetwork[] binaryPeakCollection(HashMap<Activity, SpatialFluent> aTOsf) {
+	private ConstraintNetwork[] binaryPeakCollection(HashMap<SymbolicVariableActivity, SpatialFluent> aTOsf) {
 		
 		
-		Vector<Activity> activities = new Vector<Activity>();
-		for (Activity act : aTOsf.keySet()) {
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : aTOsf.keySet()) {
 			activities.add(act);
 		}
 		
@@ -81,9 +81,9 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		if (activities != null && !activities.isEmpty()) {
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 			logger.finest("Doing binary peak collection with " + activities.size() + " activities...");
-			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);
-			for (Activity a : groundVars) {
-				if (isConflicting(new Activity[] {a}, aTOsf)) {
+			SymbolicVariableActivity[] groundVars = activities.toArray(new SymbolicVariableActivity[activities.size()]);
+			for (SymbolicVariableActivity a : groundVars) {
+				if (isConflicting(new SymbolicVariableActivity[] {a}, aTOsf)) {
 					ConstraintNetwork cn = new ConstraintNetwork(null);
 					cn.addVariable(a);
 					ret.add(cn);
@@ -96,7 +96,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 				for (int j = i+1; j < groundVars.length; j++) {
 					Bounds bi = new Bounds(groundVars[i].getTemporalVariable().getEST(), groundVars[i].getTemporalVariable().getEET());
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
-					if (bi.intersectStrict(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]}, aTOsf)) {
+					if (bi.intersectStrict(bj) != null && isConflicting(new SymbolicVariableActivity[] {groundVars[i], groundVars[j]}, aTOsf)) {
 						ConstraintNetwork cn = new ConstraintNetwork(null);
 						cn.addVariable(groundVars[i]);
 						cn.addVariable(groundVars[j]);
@@ -112,7 +112,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 	}
 
 
-	protected boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> activityToFluent) {
+	protected boolean isConflicting(SymbolicVariableActivity[] peak, HashMap<SymbolicVariableActivity, SpatialFluent> activityToFluent) {
 		
 		if(peak.length == 1) return false;
 		for (int i = 0; i < peak.length; i++) {
@@ -217,20 +217,20 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		
 		AllenIntervalConstraint before01 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(beforeParameter, APSPSolver.INF));
-		before01.setFrom((Activity) conflict.getVariables()[0]);			
-		before01.setTo((Activity) conflict.getVariables()[1]);
+		before01.setFrom((SymbolicVariableActivity) conflict.getVariables()[0]);			
+		before01.setTo((SymbolicVariableActivity) conflict.getVariables()[1]);
 		ConstraintNetwork resolver0 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-		resolver0.addVariable((Activity) conflict.getVariables()[0]);
-		resolver0.addVariable((Activity) conflict.getVariables()[1]);
+		resolver0.addVariable((SymbolicVariableActivity) conflict.getVariables()[0]);
+		resolver0.addVariable((SymbolicVariableActivity) conflict.getVariables()[1]);
 		resolver0.addConstraint(before01);
 		ret.add(resolver0);
 		
 		AllenIntervalConstraint before10 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(beforeParameter, APSPSolver.INF));
-		before10.setFrom((Activity) conflict.getVariables()[1]);			
-		before10.setTo((Activity) conflict.getVariables()[0]);
+		before10.setFrom((SymbolicVariableActivity) conflict.getVariables()[1]);			
+		before10.setTo((SymbolicVariableActivity) conflict.getVariables()[0]);
 		ConstraintNetwork resolver = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-		resolver.addVariable((Activity) conflict.getVariables()[1]);
-		resolver.addVariable((Activity) conflict.getVariables()[0]);
+		resolver.addVariable((SymbolicVariableActivity) conflict.getVariables()[1]);
+		resolver.addVariable((SymbolicVariableActivity) conflict.getVariables()[0]);
 		resolver.addConstraint(before10);
 		ret.add(resolver);
 		
@@ -272,10 +272,10 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 			ConstraintNetwork resolver2 = new ConstraintNetwork(((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
 			ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)((SpatialFluentSolver)getGroundSolver()).getConstraintSolvers()[1];
 			
-			Activity problamaticActivity = null;
+			SymbolicVariableActivity problamaticActivity = null;
 			for (int i = 0; i < conflict.getVariables().length; i++) {
-				if(((Activity)conflict.getVariables()[i]).getTemporalVariable().getEST() != ((Activity)conflict.getVariables()[i]).getTemporalVariable().getLST()){
-					problamaticActivity = ((Activity)conflict.getVariables()[i]);
+				if(((SymbolicVariableActivity)conflict.getVariables()[i]).getTemporalVariable().getEST() != ((SymbolicVariableActivity)conflict.getVariables()[i]).getTemporalVariable().getLST()){
+					problamaticActivity = ((SymbolicVariableActivity)conflict.getVariables()[i]);
 				}			
 			}
 

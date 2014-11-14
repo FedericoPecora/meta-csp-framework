@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
 import org.metacsp.multi.spatioTemporal.SpatialFluent;
@@ -22,7 +22,7 @@ public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{
 	}
 
 	@Override
-	public boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> activityToFluent) {
+	public boolean isConflicting(SymbolicVariableActivity[] peak, HashMap<SymbolicVariableActivity, SpatialFluent> activityToFluent) {
 		
 		if(peak.length == 1) return false;
 		for (int i = 0; i < peak.length; i++) {
@@ -41,7 +41,7 @@ public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{
 		Vector<SpatialFluent> boundedsf = new Vector<SpatialFluent>();
 		//here only the time bounded and unbounded is considered
 		for (int i = 0; i < peak.length; i++) {
-			if (((Activity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getEST() == ((Activity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getLST()){
+			if (((SymbolicVariableActivity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getEST() == ((SymbolicVariableActivity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getLST()){
 				boundedsf.add(activityToFluent.get(peak[i]));
 //				System.out.println("--isbounded--: " + activityToFluent.get(peak[i]));
 			}

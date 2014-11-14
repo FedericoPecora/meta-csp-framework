@@ -100,7 +100,7 @@ public abstract class Schedulable extends MetaConstraint {
 			for (Activity act : activities) {
 				if (isConflicting(new Activity[] {act})) {
 					ConstraintNetwork temp = new ConstraintNetwork(null);
-					temp.addVariable(act);
+					temp.addVariable(act.getVariable());
 					ret.add(temp);
 				}
 			}
@@ -142,7 +142,7 @@ public abstract class Schedulable extends MetaConstraint {
 				if (overlapping.size() > 1) {
 					Activity first = overlapping.get(0);
 					ConstraintNetwork temp = new ConstraintNetwork(null);
-					for (Activity act : overlapping) temp.addVariable(act);
+					for (Activity act : overlapping) temp.addVariable(act.getVariable());
 					usages.put(first, temp);
 				}
 			}
@@ -192,7 +192,7 @@ public abstract class Schedulable extends MetaConstraint {
 				for (Set<Activity> s : PowerSet.powerSet(superSet)) {
 					if (!s.isEmpty()) {
 						ConstraintNetwork cn = new ConstraintNetwork(null);
-						for (Activity a : s) cn.addVariable(a); 
+						for (Activity a : s) cn.addVariable(a.getVariable()); 
 						if (!ret.contains(cn) && isConflicting(s.toArray(new Activity[s.size()]))) ret.add(cn);
 					}
 				}
@@ -213,7 +213,7 @@ public abstract class Schedulable extends MetaConstraint {
 			for (Activity a : groundVars) {
 				if (isConflicting(new Activity[] {a})) {
 					ConstraintNetwork cn = new ConstraintNetwork(null);
-					cn.addVariable(a);
+					cn.addVariable(a.getVariable());
 					ret.add(cn);
 				}
 			}
@@ -226,8 +226,8 @@ public abstract class Schedulable extends MetaConstraint {
 					Bounds bj = new Bounds(groundVars[j].getTemporalVariable().getEST(), groundVars[j].getTemporalVariable().getEET());
 					if (bi.intersectStrict(bj) != null && isConflicting(new Activity[] {groundVars[i], groundVars[j]})) {
 						ConstraintNetwork cn = new ConstraintNetwork(null);
-						cn.addVariable(groundVars[i]);
-						cn.addVariable(groundVars[j]);
+						cn.addVariable(groundVars[i].getVariable());
+						cn.addVariable(groundVars[j].getVariable());
 						ret.add(cn);
 					}
 				}
@@ -284,11 +284,11 @@ public abstract class Schedulable extends MetaConstraint {
 		
 		for (MCSData mcs : mcsinfo) {
 			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.BeforeOrMeets, new Bounds(this.beforeParameter, APSPSolver.INF));
-			before.setFrom(mcs.mcsActFrom);			
-			before.setTo(mcs.mcsActTo);
-			ConstraintNetwork resolver = new ConstraintNetwork(mcs.mcsActFrom.getConstraintSolver());
-			resolver.addVariable(mcs.mcsActFrom);
-			resolver.addVariable(mcs.mcsActTo);
+			before.setFrom(mcs.mcsActFrom.getVariable());			
+			before.setTo(mcs.mcsActTo.getVariable());
+			ConstraintNetwork resolver = new ConstraintNetwork(mcs.mcsActFrom.getVariable().getConstraintSolver());
+			resolver.addVariable(mcs.mcsActFrom.getVariable());
+			resolver.addVariable(mcs.mcsActTo.getVariable());
 			resolver.addConstraint(before);
 			ret.add(resolver);
 		}

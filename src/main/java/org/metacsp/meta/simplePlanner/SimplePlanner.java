@@ -32,7 +32,7 @@ import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
@@ -72,8 +72,8 @@ public class SimplePlanner extends MetaConstraintSolver {
 		for (MetaConstraint mcon : this.metaConstraints) if (mcon instanceof SimpleDomain) sd = (SimpleDomain)mcon; 
 		
 		for (Variable v : activityToRemove) {
-			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
-				rr.removeUsage((Activity)v);
+			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity((SymbolicVariableActivity)v)) {
+				rr.removeUsage((SymbolicVariableActivity)v);
 			}
 		}
 		
@@ -91,7 +91,7 @@ public class SimplePlanner extends MetaConstraintSolver {
 				//	the symbol of the Activity to be instantiated
 				String component = (String)((VariablePrototype) v).getParameters()[0];
 				String symbol = (String)((VariablePrototype) v).getParameters()[1];
-				Activity tailActivity = (Activity)groundSolver.createVariable(component);
+				SymbolicVariableActivity tailActivity = (SymbolicVariableActivity)groundSolver.createVariable(component);
 				tailActivity.setSymbolicDomain(symbol);
 				tailActivity.setMarking(v.getMarking());
 				possibleOperatorConstraintNetwork.addSubstitution((VariablePrototype)v, tailActivity);
@@ -118,7 +118,7 @@ public class SimplePlanner extends MetaConstraintSolver {
 		//Set resource usage if necessary
 		for (Variable v : possibleOperatorConstraintNetwork.getVariables()) {
 			for (SimpleReusableResource rr : sd.getCurrentReusableResourcesUsedByActivity(v)) {
-				rr.setUsage((Activity)v);
+				rr.setUsage((SymbolicVariableActivity)v);
 			}
 		}
 		

@@ -6,7 +6,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 
 
-public class RCC2ConstraintSolver extends ConstraintSolver{
+public class RCC2ConstraintSolver extends ConstraintSolver {
 
 	/**
 	 * 
@@ -39,7 +39,7 @@ public class RCC2ConstraintSolver extends ConstraintSolver{
 							//comp = R_ik * R_kj
 							GeometricConstraint.Type[] comp = getComposition(r_ik.getType(), r_kj.getType());
 							//inters = R_ij ^ comp
-							if(!Arrays.asList(comp).contains(r_ij.getType())) return false; 							
+							if(!Arrays.asList(comp).contains(r_ij.getType())) return false;
 						}
 					}	
 				}

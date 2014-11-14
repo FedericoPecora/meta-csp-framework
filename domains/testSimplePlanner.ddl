@@ -9,8 +9,8 @@
 #   SimpleOperator                                              #
 #   SimpleDomain                                                #
 #   Constraint                                                  #
-#   RequiredState						#
-#   RequriedResoruce						#
+#   RequiredState												#
+#   RequriedResoruce											#
 #   All AllenIntervalConstraint types                           #
 #   '[' and ']' should be used only for constraint bounds       #
 #   '(' and ')' are used for parsing                            #
@@ -19,9 +19,9 @@
 
 (Domain TestDom)
 
-(Resource power 6)
+(Resource power 5)
 (Resource usbport 6)
-(Resource serialport 6)
+(Resource serialport 1)
 
 (Actuator Robot1)
 (Actuator Robot2)

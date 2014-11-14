@@ -5,7 +5,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.spatial.blockAlgebra.RectangularCuboidRegion;
 
 public class SpatialFluent2 extends MultiVariable{
@@ -51,8 +51,8 @@ public class SpatialFluent2 extends MultiVariable{
 		return ret;
 	}
 	
-	public Activity getActivity() {
-		return (Activity)this.getInternalVariables()[1];
+	public SymbolicVariableActivity getActivity() {
+		return (SymbolicVariableActivity)this.getInternalVariables()[1];
 	}
 	
 	public RectangularCuboidRegion getRectangularCuboidRegion() {

@@ -16,7 +16,7 @@ import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.PlanningOperator;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
@@ -99,7 +99,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		Vector<ConstraintNetwork> retPossibleConstraintNetworks = new Vector<ConstraintNetwork>();
 		ConstraintNetwork problematicNetwork = metaVariable.getConstraintNetwork();
-		Activity problematicActivity = (Activity)problematicNetwork.getVariables()[0]; 
+		SymbolicVariableActivity problematicActivity = (SymbolicVariableActivity)problematicNetwork.getVariables()[0]; 
 		
 		Vector<ConstraintNetwork> operatorsConsNetwork = new Vector<ConstraintNetwork>();
 		Vector<ConstraintNetwork> unificationConsNetwork = new Vector<ConstraintNetwork>();
@@ -119,10 +119,10 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 //				System.out.println("TRYING: " + problematicActivity);
 				for (int i = 0; i < unifications.length; i++) {
 					//add if it is not the key and is true					
-					Activity unifiedAct = null;
+					SymbolicVariableActivity unifiedAct = null;
 					for (int j = 0; j < unifications[i].getVariables().length; j++) {
-						if(!((Activity)unifications[i].getVariables()[j]).equals(problematicActivity))
-							unifiedAct = (Activity)unifications[i].getVariables()[j];
+						if(!((SymbolicVariableActivity)unifications[i].getVariables()[j]).equals(problematicActivity))
+							unifiedAct = (SymbolicVariableActivity)unifications[i].getVariables()[j];
 					}
 					if(!unificationTrack.keySet().contains(unifiedAct)){						
 						unificationConsNetwork.add(unifications[i]);
@@ -278,7 +278,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	
 
 	
-	private ConstraintNetwork getSpatialConstraintNet(Activity problematicActivity, VariablePrototype manipulationAreaPrototype) {
+	private ConstraintNetwork getSpatialConstraintNet(SymbolicVariableActivity problematicActivity, VariablePrototype manipulationAreaPrototype) {
 		
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		String mainString = problematicActivity.getSymbolicVariable().getSymbols()[0];
@@ -501,7 +501,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 	private String getParameter(Variable task) {
 		
 		String ret = "";
-		String sym = ((Activity)task).getSymbolicVariable().getSymbols()[0];
+		String sym = ((SymbolicVariableActivity)task).getSymbolicVariable().getSymbols()[0];
 		
 		if(sym.contains("hold")){
 			
@@ -541,7 +541,7 @@ public class FluentBasedSimpleDomain extends SimpleDomain {
 		this.activeFreeArmHeuristic = active;
 	}
 	
-	public void applyFreeArmHeuristic(Vector<Activity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {
+	public void applyFreeArmHeuristic(Vector<SymbolicVariableActivity> varInvolvedInOccupiedMetaConstraints, String heursiticTerm) {
 		
 		//get Parameter from activities
 		objParams = new Vector<String>();

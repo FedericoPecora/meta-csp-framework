@@ -9,7 +9,7 @@ import org.metacsp.dispatching.Dispatcher;
 import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
@@ -19,7 +19,7 @@ public class ConstraintNetworkAnimator extends Thread {
 
 	private ConstraintNetwork cn = null;
 	private ActivityNetworkSolver ans = null;
-	private Activity future = null;
+	private SymbolicVariableActivity future = null;
 	private long originOfTime;
 	private long firstTick;
 	private long period;
@@ -46,7 +46,7 @@ public class ConstraintNetworkAnimator extends Thread {
 
 			this.cn = ans.getConstraintNetwork();
 
-			future = (Activity)ans.createVariable("Time");
+			future = (SymbolicVariableActivity)ans.createVariable("Time");
 			future.setSymbolicDomain("Future");
 			future.setMarking(markings.JUSTIFIED);
 			long timeNow = getTimeNow();

@@ -71,26 +71,26 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 	}
 
 	public ActivityNetworkSolver(long origin, long horizon) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, SymbolicVariableActivity.class, createConstraintSolvers(origin,horizon,500), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 	}
 	
 	public ActivityNetworkSolver(long origin, long horizon, int numActivities) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,numActivities), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, SymbolicVariableActivity.class, createConstraintSolvers(origin,horizon,numActivities), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 		MAX_ACTIVITIES = numActivities;
 	}
 
 	public ActivityNetworkSolver(long origin, long horizon, String[] symbols) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,MAX_ACTIVITIES,symbols), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, SymbolicVariableActivity.class, createConstraintSolvers(origin,horizon,MAX_ACTIVITIES,symbols), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 	}
 	
 	public ActivityNetworkSolver(long origin, long horizon, int numActivities, String[] symbols) {
-		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, Activity.class, createConstraintSolvers(origin,horizon,numActivities,symbols), new int[] {1,1});
+		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, SymbolicVariableActivity.class, createConstraintSolvers(origin,horizon,numActivities,symbols), new int[] {1,1});
 		this.origin = origin;
 		this.horizon = horizon;
 		MAX_ACTIVITIES = numActivities;
@@ -169,20 +169,20 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return aSolver.numBookmarks();
 	}
 	
-	public Activity[] getActivitiesWithSymbols(String component, String[] values) {
+	public SymbolicVariableActivity[] getActivitiesWithSymbols(String component, String[] values) {
 		Variable[] vars = this.getConstraintNetwork().getVariables(component);
 		return getActivitiesWithSymbolsHelper(vars, values);
 	}
 	
-	public Activity[] getActivitiesWithSymbols(String[] values) {
+	public SymbolicVariableActivity[] getActivitiesWithSymbols(String[] values) {
 		Variable[] vars = this.getConstraintNetwork().getVariables();
 		return getActivitiesWithSymbolsHelper(vars, values);
 	}
 	
-	private Activity[] getActivitiesWithSymbolsHelper(Variable[] vars, String[] values) {
-		Vector<Activity> ret = new Vector<Activity>();
+	private SymbolicVariableActivity[] getActivitiesWithSymbolsHelper(Variable[] vars, String[] values) {
+		Vector<SymbolicVariableActivity> ret = new Vector<SymbolicVariableActivity>();
 		for (Variable var : vars) {
-			Activity act = (Activity)var;
+			SymbolicVariableActivity act = (SymbolicVariableActivity)var;
 			List<String> symbolList = Arrays.asList(act.getSymbolicVariable().getSymbols());
 			for (String value : values) {
 				if (symbolList.contains(value)) {
@@ -191,7 +191,7 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 				}
 			}
 		}
-		return ret.toArray(new Activity[ret.size()]);		
+		return ret.toArray(new SymbolicVariableActivity[ret.size()]);		
 	}
 
 }

@@ -33,7 +33,7 @@ import java.util.logging.Level;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.multi.MultiConstraintSolver;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
@@ -44,9 +44,9 @@ public class TestSerialization {
 
 	public static void main(String[] args) {
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,100, new String[] {"A","B","C","D"});
-		Activity act1 = (Activity)solver.createVariable();
+		SymbolicVariableActivity act1 = (SymbolicVariableActivity)solver.createVariable();
 		act1.setSymbolicDomain("A", "B", "C");
-		Activity act2 = (Activity)solver.createVariable();
+		SymbolicVariableActivity act2 = (SymbolicVariableActivity)solver.createVariable();
 		act2.setSymbolicDomain("B", "C");
 		
 		MetaCSPLogging.setLevel(Level.FINEST);

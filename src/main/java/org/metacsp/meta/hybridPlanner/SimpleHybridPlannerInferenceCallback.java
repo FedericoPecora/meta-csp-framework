@@ -17,6 +17,7 @@ import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.meta.simplePlanner.SimpleOperator;
 import org.metacsp.meta.simplePlanner.SimpleReusableResource;
 import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
@@ -58,13 +59,13 @@ public class SimpleHybridPlannerInferenceCallback implements InferenceCallback, 
 				logger.info("Time now: " + timeNow);
 //				Vector<ConstraintNetwork> toBeRemoved = new Vector<ConstraintNetwork>();
 				planner.operatorsAlongBranch.clear();
-				Vector<Activity> constraintDomainHasTobeRemoved = new Vector<Activity>();
-				Vector<Activity> actsToBeremoved = new Vector<Activity>();
-				Vector<Activity> currentSituation = new Vector<Activity>();
+				Vector<SymbolicVariableActivity> constraintDomainHasTobeRemoved = new Vector<SymbolicVariableActivity>();
+				Vector<SymbolicVariableActivity> actsToBeremoved = new Vector<SymbolicVariableActivity>();
+				Vector<SymbolicVariableActivity> currentSituation = new Vector<SymbolicVariableActivity>();
 				
 				for (ConstraintNetwork cn : planner.getResolvers().keySet()) {
 					for (int i = 0; i < planner.getGoals().size(); i++) {
-						Activity metaVarAct = ((Activity)cn.getVariables()[0]);
+						SymbolicVariableActivity metaVarAct = ((SymbolicVariableActivity)cn.getVariables()[0]);
 						if(metaVarAct.equals(planner.getGoals().get(i))){
 							metaVarAct.setMarking(org.metacsp.meta.simplePlanner.SimpleDomain.markings.UNJUSTIFIED);
 							constraintDomainHasTobeRemoved.add(metaVarAct);
@@ -100,12 +101,12 @@ public class SimpleHybridPlannerInferenceCallback implements InferenceCallback, 
 				
 				groundActSolver.removeConstraints(consToBeRemoved.toArray(new Constraint[consToBeRemoved.size()]));
 				
-				Vector<Activity> activityOnResourceUse = new Vector<Activity>();
+				Vector<SymbolicVariableActivity> activityOnResourceUse = new Vector<SymbolicVariableActivity>();
 				//print all resources in use
 				for (int j = 0; j < planner.getMetaConstraints().length; j++){
 					if(planner.getMetaConstraints()[j] instanceof SimpleReusableResource ){
 						SimpleReusableResource rr = (SimpleReusableResource)planner.getMetaConstraints()[j];
-						activityOnResourceUse.addAll(rr.getActivityOnUse());																
+						for (Activity act : rr.getActivityOnUse()) activityOnResourceUse.add((SymbolicVariableActivity)act.getVariable());																
 					}
 				}
 				
@@ -116,15 +117,15 @@ public class SimpleHybridPlannerInferenceCallback implements InferenceCallback, 
 					if(planner.getMetaConstraints()[j] instanceof FluentBasedSimpleDomain ){
 						FluentBasedSimpleDomain mcc = (FluentBasedSimpleDomain)planner.getMetaConstraints()[j];
 						for (Variable v : activityOnResourceUse) {
-							for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((Activity)v)) {
+							for (SimpleReusableResource rr : mcc.getCurrentReusableResourcesUsedByActivity((SymbolicVariableActivity)v)) {
 //								System.out.println("--->" + (Activity)v);
-								rr.removeUsage((Activity)v);
+								rr.removeUsage((SymbolicVariableActivity)v);
 							}
 						}
 					}
 				}
 				
-				groundActSolver.removeVariables(actsToBeremoved.toArray(new Activity[actsToBeremoved.size()]));
+				groundActSolver.removeVariables(actsToBeremoved.toArray(new SymbolicVariableActivity[actsToBeremoved.size()]));
 				//hybridPlanner.clearResolvers();
 				
 				//it is deleting all the allocation of resource in the previous failed backtrack search
@@ -159,7 +160,7 @@ public class SimpleHybridPlannerInferenceCallback implements InferenceCallback, 
 //					overlappedObject.add("atLocation::at_cup1_table1()");
 					
 					
-					HashMap<Activity, Vector<SimpleOperator>> alternativeOperators = new HashMap<Activity, Vector<SimpleOperator>>();
+					HashMap<SymbolicVariableActivity, Vector<SimpleOperator>> alternativeOperators = new HashMap<SymbolicVariableActivity, Vector<SimpleOperator>>();
 					//extract current robot act rather the placement (e.g., holding)
 					for (int i = 0; i < currentSituation.size(); i++) {
 						if(currentSituation.get(i).getComponent().compareTo("RobotProprioception") == 0){
@@ -191,7 +192,7 @@ public class SimpleHybridPlannerInferenceCallback implements InferenceCallback, 
 							Vector<Constraint> cons = new Vector<Constraint>();
 
 							long duration = 1000;
-							Activity two = (Activity)((SpatialFluentSolver)planner.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable(opeatorHeadComponent);
+							SymbolicVariableActivity two = (SymbolicVariableActivity)((SpatialFluentSolver)planner.getConstraintSolvers()[0]).getConstraintSolvers()[1].createVariable(opeatorHeadComponent);
 							two.setSymbolicDomain(operatorHeadSymbol);
 							two.setMarking(org.metacsp.meta.simplePlanner.SimpleDomain.markings.UNJUSTIFIED);
 							
@@ -216,10 +217,10 @@ public class SimpleHybridPlannerInferenceCallback implements InferenceCallback, 
 		}
 	}
 	
-	private SimpleOperator getBestExapansion(Vector<Activity> currentSituation, HashMap<Activity, Vector<SimpleOperator>> alternativeOperators, Vector<String> overlappedObject) {
+	private SimpleOperator getBestExapansion(Vector<SymbolicVariableActivity> currentSituation, HashMap<SymbolicVariableActivity, Vector<SimpleOperator>> alternativeOperators, Vector<String> overlappedObject) {
 		
 		HashMap<SimpleOperator, Integer> rank = new HashMap<SimpleOperator, Integer>();
-		for (Activity activity : alternativeOperators.keySet()) {
+		for (SymbolicVariableActivity activity : alternativeOperators.keySet()) {
 			for (int i = 0; i < alternativeOperators.get(activity).size(); i++) {
 				rank.put(alternativeOperators.get(activity).get(i), alternativeOperators.get(activity).get(i).getRequirementActivities().length);
 			}

@@ -23,7 +23,7 @@ import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.framework.multi.MultiBinaryConstraint;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.meta.simplePlanner.SimpleReusableResource;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityComparator;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
@@ -162,27 +162,27 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 	// Finds sets of overlapping activities and assesses whether they are
 	// conflicting (e.g., over-consuming a resource)
-	private ConstraintNetwork[] samplingPeakCollection(HashMap<Activity, SpatialFluent> aTOsf) {
+	private ConstraintNetwork[] samplingPeakCollection(HashMap<SymbolicVariableActivity, SpatialFluent> aTOsf) {
 
 
 
-		Vector<Activity> observation = new Vector<Activity>();
-		Vector<Activity> activities = new Vector<Activity>();
-		for (Activity act : aTOsf.keySet()) {
+		Vector<SymbolicVariableActivity> observation = new Vector<SymbolicVariableActivity>();
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : aTOsf.keySet()) {
 			activities.add(act);
 			if(act.getTemporalVariable().getEST() == act.getTemporalVariable().getLST())
 				observation.add(act);
 		}
 		if (activities != null && !activities.isEmpty()) {
 
-			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);			
+			SymbolicVariableActivity[] groundVars = activities.toArray(new SymbolicVariableActivity[activities.size()]);			
 			Arrays.sort(groundVars, new ActivityComparator(true));
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-			Vector<Vector<Activity>> overlappingAll = new Vector<Vector<Activity>>();
+			Vector<Vector<SymbolicVariableActivity>> overlappingAll = new Vector<Vector<SymbolicVariableActivity>>();
 
 			// if an activity is spatially inconsistent even with itself
-			for (Activity act : activities) {
-				if (isConflicting(new Activity[] { act }, aTOsf)) {
+			for (SymbolicVariableActivity act : activities) {
+				if (isConflicting(new SymbolicVariableActivity[] { act }, aTOsf)) {
 					ConstraintNetwork temp = new ConstraintNetwork(null);
 					temp.addVariable(act);
 					ret.add(temp);
@@ -191,7 +191,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 			// groundVars are ordered activities
 			for (int i = 0; i < groundVars.length; i++) {
-				Vector<Activity> overlapping = new Vector<Activity>();
+				Vector<SymbolicVariableActivity> overlapping = new Vector<SymbolicVariableActivity>();
 				overlapping.add(groundVars[i]);
 				long start = (groundVars[i]).getTemporalVariable().getEST();
 				long end = (groundVars[i]).getTemporalVariable().getEET();
@@ -206,7 +206,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 						Bounds intersectionNew = intersection.intersectStrict(nextInterval);
 						if (intersectionNew != null) {
 							overlapping.add(groundVars[j]);
-							if (isConflicting(overlapping.toArray(new Activity[overlapping.size()]), aTOsf)) {
+							if (isConflicting(overlapping.toArray(new SymbolicVariableActivity[overlapping.size()]), aTOsf)) {
 								overlappingAll.add(overlapping);
 								if(overlapping.containsAll(observation))
 									break;
@@ -218,8 +218,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				}
 			}
 			if(overlappingAll.size() > 0){
-				Vector<Vector<Activity>> retActivities = new Vector<Vector<Activity>>();
-				Vector<Activity>  current = overlappingAll.get(0);
+				Vector<Vector<SymbolicVariableActivity>> retActivities = new Vector<Vector<SymbolicVariableActivity>>();
+				Vector<SymbolicVariableActivity>  current = overlappingAll.get(0);
 				for (int i = 1; i < overlappingAll.size(); i++) {
 					if(!isEqual(current, overlappingAll.get(i))){
 						retActivities.add(current);
@@ -228,9 +228,9 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 				}
 				retActivities.add(current);
 
-				for (Vector<Activity> actVec : retActivities) {
+				for (Vector<SymbolicVariableActivity> actVec : retActivities) {
 					ConstraintNetwork tmp = new ConstraintNetwork(null);
-					for (Activity act : actVec){
+					for (SymbolicVariableActivity act : actVec){
 						tmp.addVariable(act);
 					}
 					ret.add(tmp);					
@@ -250,7 +250,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 	}
 
 
-	private boolean isEqual(Vector<Activity> current, Vector<Activity> next) {
+	private boolean isEqual(Vector<SymbolicVariableActivity> current, Vector<SymbolicVariableActivity> next) {
 
 		if(current.size() != next.size()) return false;
 
@@ -275,8 +275,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
-		Vector<Activity> activities = new Vector<Activity>();
+		HashMap<SymbolicVariableActivity, SpatialFluent> activityToFluent = new HashMap<SymbolicVariableActivity, SpatialFluent>();
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			activities.add(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity());
 			activityToFluent.put(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity(), 
@@ -298,8 +298,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			return null;
 
 		//#######################################################################################################
-		HashMap<Activity, SpatialFluent> activityToFluent = new HashMap<Activity, SpatialFluent>();
-		Vector<Activity> activities = new Vector<Activity>();
+		HashMap<SymbolicVariableActivity, SpatialFluent> activityToFluent = new HashMap<SymbolicVariableActivity, SpatialFluent>();
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
 		Vector<Integer> metaVarIds = new Vector<Integer>();
 		for (int i = 0; i < ((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables().length; i++) {
 			activities.add(((SpatialFluent)((SpatialFluentSolver)this.metaCS.getConstraintSolvers()[0]).getVariables()[i]).getActivity());
@@ -324,8 +324,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 		//#########################################################################################################
 
 		for (int j = 0; j < conflict.getVariables().length; j++) {
-			conflictvars.add(activityToFluent.get((Activity) conflict.getVariables()[j]));
-			conflictRecvars.add(activityToFluent.get((Activity) conflict.getVariables()[j]).getRectangularRegion());
+			conflictvars.add(activityToFluent.get((SymbolicVariableActivity) conflict.getVariables()[j]));
+			conflictRecvars.add(activityToFluent.get((SymbolicVariableActivity) conflict.getVariables()[j]).getRectangularRegion());
 		}
 
 		setPermutationHashMAP(conflictvars, conflictRecvars);//it only generate permutation, does not perform any propagation
@@ -364,7 +364,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 		//		System.out.println("mvalue" + mvalue);
 		Vector<String> newGoal = new Vector<String>();
-		HashMap<String, Activity> culpritActivities = new HashMap<String, Activity>(); 
+		HashMap<String, SymbolicVariableActivity> culpritActivities = new HashMap<String, SymbolicVariableActivity>(); 
 
 		for (int i = 0; i < mvalue.getConstraints().length; i++) {
 			if (mvalue.getConstraints()[i] instanceof UnaryRectangleConstraint) {
@@ -378,17 +378,17 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 						//						System.out.println("%%%%%%%%");
 						for (int j = 0; j < metaVariable.getConstraintNetwork().getVariables().length; j++) {
 							if (((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName().compareTo
-									(((SpatialFluent) activityToFluent.get((Activity)metaVariable.getConstraintNetwork().getVariables()[j]) ).getName()) == 0) {
+									(((SpatialFluent) activityToFluent.get((SymbolicVariableActivity)metaVariable.getConstraintNetwork().getVariables()[j]) ).getName()) == 0) {
 								//								System.out.println("ADDED ACTIVITY: " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));								
 								if (this.getPotentialCulprit().contains(((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName())) {
 
 
-									if(((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getEST() == 
-											((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getLST()){
+									if(((SymbolicVariableActivity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getEST() == 
+											((SymbolicVariableActivity)(metaVariable.getConstraintNetwork().getVariables()[j])).getTemporalVariable().getLST()){
 										System.out.println(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName()); //this has to uncommented
 										//										System.out.println("==== " + ((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
 										culpritActivities.put(((RectangularRegion)mvalue.getConstraints()[i].getScope()[0]).getName(), 
-												((Activity)(metaVariable.getConstraintNetwork().getVariables()[j])));
+												((SymbolicVariableActivity)(metaVariable.getConstraintNetwork().getVariables()[j])));
 										if(!newGoal.contains(((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName()))
 											newGoal.add(((RectangularRegion) mvalue.getConstraints()[i].getScope()[0]).getName());
 									}
@@ -403,8 +403,8 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 
 		//extract the fluent which is relevant to the original goal(s)
-		Vector<Activity> originalGoals = new Vector<Activity>(); //e.g., cup1 in the so called wellSetTable Scenario
-		for (Activity act : activityToFluent.keySet()) {
+		Vector<SymbolicVariableActivity> originalGoals = new Vector<SymbolicVariableActivity>(); //e.g., cup1 in the so called wellSetTable Scenario
+		for (SymbolicVariableActivity act : activityToFluent.keySet()) {
 			if(initialUnboundedObjName.contains(activityToFluent.get(act).getName()))
 				originalGoals.add(act);
 		}
@@ -463,13 +463,13 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			newgoalFlunet = (SpatialFluent)((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0]))
 					.createVariable(culpritActivities.get(st).getComponent());
 			newgoalFlunet.setName(st);
-			((Activity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain(culpritActivities.get(st).getSymbolicVariable().getSymbols()[0]);
+			((SymbolicVariableActivity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain(culpritActivities.get(st).getSymbolicVariable().getSymbols()[0]);
 			//			((Activity)newgoalFlunet.getInternalVariables()[1]).setSymbolicDomain(culpritActivities.get(st).getSymbolicVariable().toString()
 			//						.subSequence(21, ((Activity)culpritActivities.get(st)).getSymbolicVariable().toString().length() - 1).toString());
-			((Activity)newgoalFlunet.getInternalVariables()[1]).setMarking(markings.UNJUSTIFIED);
+			((SymbolicVariableActivity)newgoalFlunet.getInternalVariables()[1]).setMarking(markings.UNJUSTIFIED);
 			((RectangularRegion)newgoalFlunet.getInternalVariables()[0]).setName(st);
 			mvalue.addVariable(newgoalFlunet);
-			activityToFluent.put(((Activity)newgoalFlunet.getInternalVariables()[1]), newgoalFlunet);
+			activityToFluent.put(((SymbolicVariableActivity)newgoalFlunet.getInternalVariables()[1]), newgoalFlunet);
 
 
 			newGoalFluentsVector.add(newgoalFlunet);
@@ -481,11 +481,11 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 							new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF), new Bounds(0, APSPSolver.INF)));
 			}			
 			//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			if(!activities.contains(((Activity)newgoalFlunet.getInternalVariables()[1])))
-				activities.add(((Activity)newgoalFlunet.getInternalVariables()[1]));
+			if(!activities.contains(((SymbolicVariableActivity)newgoalFlunet.getInternalVariables()[1])))
+				activities.add(((SymbolicVariableActivity)newgoalFlunet.getInternalVariables()[1]));
 			AllenIntervalConstraint newOnAfteroldOn = new AllenIntervalConstraint(AllenIntervalConstraint.Type.After,
 					AllenIntervalConstraint.Type.After.getDefaultBounds());
-			newOnAfteroldOn.setFrom(((Activity)newgoalFlunet.getInternalVariables()[1]));
+			newOnAfteroldOn.setFrom(((SymbolicVariableActivity)newgoalFlunet.getInternalVariables()[1]));
 			newOnAfteroldOn.setTo(culpritActivities.get(st));
 
 			//((SpatialFluentSolver)(this.metaCS.getConstraintSolvers()[0])).getConstraintSolvers()[1].addConstraints(new
@@ -626,7 +626,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 	}
 
-	protected boolean temporalOverlap(Activity a1, Activity a2) {
+	protected boolean temporalOverlap(SymbolicVariableActivity a1, SymbolicVariableActivity a2) {
 		return !(a1.getTemporalVariable().getEET() <= a2.getTemporalVariable()
 				.getEST() || a2.getTemporalVariable().getEET() <= a1
 				.getTemporalVariable().getEST());
@@ -639,7 +639,7 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 
 	
-	public boolean isConflicting(Activity[] peak, HashMap<Activity, SpatialFluent> aTOsf) {
+	public boolean isConflicting(SymbolicVariableActivity[] peak, HashMap<SymbolicVariableActivity, SpatialFluent> aTOsf) {
 
 		if(peak.length == 1) return false;
 
@@ -1183,18 +1183,18 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 	}
 
-	private ConstraintNetwork[] completePeakCollection(HashMap<Activity, SpatialFluent> aTOsf) {
-		Vector<Activity> activities = new Vector<Activity>();
-		for (Activity act : aTOsf.keySet()) {
+	private ConstraintNetwork[] completePeakCollection(HashMap<SymbolicVariableActivity, SpatialFluent> aTOsf) {
+		Vector<SymbolicVariableActivity> activities = new Vector<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : aTOsf.keySet()) {
 			activities.add(act);
 		}
 
 		if (activities != null && !activities.isEmpty()) {
 			logger.finest("Doing complete peak collection with " + activities.size() + " activities...");
 
-			Activity[] groundVars = activities.toArray(new Activity[activities.size()]);			
+			SymbolicVariableActivity[] groundVars = activities.toArray(new SymbolicVariableActivity[activities.size()]);			
 			Vector<Long> discontinuities = new Vector<Long>();
-			for (Activity a : groundVars) {
+			for (SymbolicVariableActivity a : groundVars) {
 				long start = a.getTemporalVariable().getEST();
 				long end = a.getTemporalVariable().getEET();
 				if (!discontinuities.contains(start)) discontinuities.add(start);
@@ -1204,13 +1204,13 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 			Long[] discontinuitiesArray = discontinuities.toArray(new Long[discontinuities.size()]);
 			Arrays.sort(discontinuitiesArray);
 
-			HashSet<HashSet<Activity>> superPeaks = new HashSet<HashSet<Activity>>();
+			HashSet<HashSet<SymbolicVariableActivity>> superPeaks = new HashSet<HashSet<SymbolicVariableActivity>>();
 
 			for (int i = 0; i < discontinuitiesArray.length-1; i++) {
-				HashSet<Activity> onePeak = new HashSet<Activity>();
+				HashSet<SymbolicVariableActivity> onePeak = new HashSet<SymbolicVariableActivity>();
 				superPeaks.add(onePeak);
 				Bounds interval = new Bounds(discontinuitiesArray[i], discontinuitiesArray[i+1]);
-				for (Activity a : groundVars) {
+				for (SymbolicVariableActivity a : groundVars) {
 					Bounds interval1 = new Bounds(a.getTemporalVariable().getEST(), a.getTemporalVariable().getEET());
 					Bounds intersection = interval.intersectStrict(interval1);
 					if (intersection != null && !intersection.isSingleton()) {
@@ -1222,12 +1222,12 @@ public class MetaSpatialAdherenceConstraint extends MetaConstraint {
 
 
 			Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-			for (HashSet<Activity> superSet : superPeaks) {
-				for (Set<Activity> s : powerSet(superSet)) {
+			for (HashSet<SymbolicVariableActivity> superSet : superPeaks) {
+				for (Set<SymbolicVariableActivity> s : powerSet(superSet)) {
 					if (!s.isEmpty()) {
 						ConstraintNetwork cn = new ConstraintNetwork(null);
-						for (Activity a : s) cn.addVariable(a); 
-						if (!ret.contains(cn) && isConflicting(s.toArray(new Activity[s.size()]), aTOsf)) ret.add(cn);
+						for (SymbolicVariableActivity a : s) cn.addVariable(a); 
+						if (!ret.contains(cn) && isConflicting(s.toArray(new SymbolicVariableActivity[s.size()]), aTOsf)) ret.add(cn);
 					}
 				}
 			}

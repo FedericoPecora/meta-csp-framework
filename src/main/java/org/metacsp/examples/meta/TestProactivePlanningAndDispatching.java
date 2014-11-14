@@ -32,7 +32,7 @@ import org.metacsp.meta.simplePlanner.ProactivePlanningDomain;
 import org.metacsp.meta.simplePlanner.SimpleDomain;
 import org.metacsp.meta.simplePlanner.SimplePlanner;
 import org.metacsp.meta.simplePlanner.SimplePlannerInferenceCallback;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;
@@ -54,10 +54,10 @@ public class TestProactivePlanningAndDispatching {
 		SimplePlannerInferenceCallback cb = new SimplePlannerInferenceCallback(planner);
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000, cb);
 		
-		final Vector<Activity> executingActs = new Vector<Activity>();
+		final Vector<SymbolicVariableActivity> executingActs = new Vector<SymbolicVariableActivity>();
 		DispatchingFunction df = new DispatchingFunction("Robot") {
 			@Override
-			public void dispatch(Activity act) {
+			public void dispatch(SymbolicVariableActivity act) {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
 			}

@@ -28,7 +28,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
 import org.metacsp.meta.symbolsAndTime.StateVariable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
@@ -43,11 +43,11 @@ public class TestStateVariableSchedulerSimple {
 		final Scheduler metaSolver = new Scheduler(0,600,0);
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity one = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		one.setSymbolicDomain("A", "B");
-		Activity two = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		two.setSymbolicDomain("A", "B", "C");
-		Activity three = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity three = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		three.setSymbolicDomain("D", "E");
 
 		//DURATIONS

@@ -28,7 +28,7 @@ import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
 import org.metacsp.meta.symbolsAndTime.StateVariable;
-import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
@@ -43,18 +43,18 @@ public class TestStateVariableScheduler {
 		final Scheduler metaSolver = new Scheduler(0,600,0);
 		final ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Activity one = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		one.setSymbolicDomain("F", "G");
-		Activity oneA = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity oneA = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		oneA.setSymbolicDomain("A", "B", "C");
-		Activity oneB = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity oneB = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		oneB.setSymbolicDomain("D", "E");
 
-		Activity oneAA = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity oneAA = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		oneAA.setSymbolicDomain("A", "G");
-		Activity oneAB = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity oneAB = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		oneAB.setSymbolicDomain("B", "F");
-		Activity oneAC = (Activity)groundSolver.createVariable("comp1");
+		SymbolicVariableActivity oneAC = (SymbolicVariableActivity)groundSolver.createVariable("comp1");
 		oneAC.setSymbolicDomain("C", "E");
 
 		//metaSolver.draw();

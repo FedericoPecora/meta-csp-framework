@@ -33,6 +33,7 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.time.Interval;
 
 public class StateVariable extends Schedulable {
@@ -65,11 +66,11 @@ public class StateVariable extends Schedulable {
 	@Override
 	public boolean isConflicting(Activity[] peak) {		
 		if (peak.length != 2) return false;
-		peak[0].getSymbolicVariable().getDomain();
+		((SymbolicVariableActivity)peak[0].getVariable()).getSymbolicVariable().getDomain();
 //		Vector<String> intersection = new Vector<String>(Arrays.asList(((SymbolicDomain)peak[0].getSymbolicVariable().getDomain()).getSymbols()));
 //		intersection.retainAll(Arrays.asList(((SymbolicDomain)peak[1].getSymbolicVariable().getDomain()).getSymbols()));
-		Vector<String> intersection = new Vector<String>(Arrays.asList(peak[0].getSymbolicVariable().getSymbols()));
-		intersection.retainAll(Arrays.asList(peak[1].getSymbolicVariable().getSymbols()));
+		Vector<String> intersection = new Vector<String>(Arrays.asList(((SymbolicVariableActivity)peak[0].getVariable()).getSymbolicVariable().getSymbols()));
+		intersection.retainAll(Arrays.asList(((SymbolicVariableActivity)peak[1].getVariable()).getSymbolicVariable().getSymbols()));
 		return intersection.isEmpty(); // if the intersection is null these variables do not share symbols and therefore can not co-exist
 	}
 
