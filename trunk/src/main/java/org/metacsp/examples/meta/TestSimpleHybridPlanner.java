@@ -12,16 +12,20 @@ import java.util.logging.Level;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.meta.hybridPlanner.FluentBasedSimpleDomain;
 import org.metacsp.meta.hybridPlanner.MetaOccupiedConstraint;
+import org.metacsp.meta.hybridPlanner.MetaOccupiedTimesBasedConstraint;
 import org.metacsp.meta.hybridPlanner.MetaSpatialAdherenceConstraint;
 import org.metacsp.meta.hybridPlanner.SimpleHybridPlanner;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
@@ -78,9 +82,10 @@ public class TestSimpleHybridPlanner {
 
 		MetaCSPLogging.setLevel(SimpleHybridPlanner.class, Level.FINEST);
 		MetaCSPLogging.setLevel(MetaSpatialAdherenceConstraint.class, Level.FINEST);
+		//MetaCSPLogging.setLevel(APSPSolver.class, Level.FINEST);
 		//#################################################################################################################
 		//add metaOccupiedConstraint
-		MetaOccupiedConstraint metaOccupiedConstraint = new MetaOccupiedConstraint(null, null);
+		MetaOccupiedTimesBasedConstraint metaOccupiedConstraint = new MetaOccupiedTimesBasedConstraint(null, null);
 		metaOccupiedConstraint.setPad(pad);
 		//#################################################################################################################
 		//this is spatial general and assetional rule

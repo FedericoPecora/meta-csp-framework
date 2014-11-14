@@ -14,6 +14,7 @@ import org.metacsp.framework.VariablePrototype;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
@@ -59,8 +60,8 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		
 //		System.out.println("===================================================");		
 //		for (Activity activity : activityToFluent.keySet()) {
-//			System.out.println(activityToFluent.get(activity).getName());
-//			System.out.println(activityToFluent.get(activity));
+//			System.out.println(activityToFluent.get(activity.getVariable()).getName());
+//			System.out.println(activityToFluent.get(activity.getVariable()));
 //		}
 //		System.out.println("===================================================");
 		
@@ -120,11 +121,11 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 		}
 		
 		
-//		System.out.println("_________________________________________________");
-//		for (int i = 0; i < peak.length; i++) {
-//			System.out.println("peak: " + activityToFluent.get(peak[i]));
-//		}
-//		System.out.println("_________________________________________________");
+		System.out.println("_________________________________________________");
+		for (int i = 0; i < peak.length; i++) {
+			System.out.println("peak: " + activityToFluent.get(peak[i]));
+		}
+		System.out.println("_________________________________________________");
 //		System.out.println("==============================================================");
 		
 		Vector<SpatialFluent> unboundedsf = new Vector<SpatialFluent>();
@@ -138,7 +139,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 							new Bounds(((AllenInterval)activityToFluent.get(peak[i]).getRectangularRegion().getInternalVariables()[1]).getEET(), ((AllenInterval)activityToFluent.get(peak[i]).getRectangularRegion().getInternalVariables()[1]).getLET()))							
 							 //&& (((Activity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getEST() != ((Activity)activityToFluent.get(peak[i]).getActivity()).getTemporalVariable().getLST())
 							){//it was bouneded
-					System.out.println("--isunbounded--: " + activityToFluent.get(peak[i]));
+//					System.out.println("--isunbounded--: " + activityToFluent.get(peak[i]));
 				unboundedsf.add(activityToFluent.get(peak[i]));
 			}
 			else{ 
@@ -146,7 +147,7 @@ public class MetaOccupiedConstraint extends MetaConstraint{
 					boundedsf.add(activityToFluent.get(peak[i]));
 //			}
 
-				System.out.println("--isbounded--: " + activityToFluent.get(peak[i]));
+//				System.out.println("--isbounded--: " + activityToFluent.get(peak[i]));
 				
 			}
 		}

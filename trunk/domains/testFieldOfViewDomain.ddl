@@ -31,8 +31,8 @@
 #(Observable RobotProprioception) #proprioception
 #(Observable atLocation) #tabletop perception
 
-(Controllable RobotProprioception) #proprioception
-(Controllable atLocation) #tabletop perception
+(Actuator RobotProprioception) #proprioception
+(Actuator atLocation) #tabletop perception
 
 (Resource arm 2)
 #(Resource kinect 1)

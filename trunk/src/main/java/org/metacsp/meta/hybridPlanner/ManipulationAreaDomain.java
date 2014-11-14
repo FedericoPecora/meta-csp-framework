@@ -7,6 +7,7 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
 import org.metacsp.spatial.utility.SpatialRule;
+import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 
 public class ManipulationAreaDomain {
@@ -62,7 +63,7 @@ public class ManipulationAreaDomain {
 			srules.add(r0);
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy , overlapped_max),
+					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy , new Bounds(0,APSPSolver.INF),overlapped_max, new Bounds(0,APSPSolver.INF)),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds()))
 					);
 			srules.add(r2);
@@ -94,7 +95,7 @@ public class ManipulationAreaDomain {
 
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps , overlapped_max),
+					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps , new Bounds(0,APSPSolver.INF),overlapped_max , new Bounds(0,APSPSolver.INF)),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy, AllenIntervalConstraint.Type.MetBy.getDefaultBounds()))
 					);
 			srules.add(r2);
@@ -127,7 +128,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy , AllenIntervalConstraint.Type.MetBy.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, overlapped_max))
+					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, new Bounds(0,APSPSolver.INF),overlapped_max, new Bounds(0,APSPSolver.INF)))
 					);
 			srules.add(r2);
 
@@ -166,7 +167,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.MetBy , AllenIntervalConstraint.Type.MetBy.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, overlapped_max))
+					new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, new Bounds(0,APSPSolver.INF),overlapped_max, new Bounds(0,APSPSolver.INF)))
 					);
 			srules.add(r2);
 
@@ -197,7 +198,7 @@ public class ManipulationAreaDomain {
 
 
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps , overlapped_max),
+					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps , new Bounds(0,APSPSolver.INF), overlapped_max , new Bounds(0,APSPSolver.INF)),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Meets.getDefaultBounds()))
 					);
 			srules.add(r2);
@@ -227,7 +228,7 @@ public class ManipulationAreaDomain {
 			
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
-					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy , overlapped_max),
+					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy , new Bounds(0,APSPSolver.INF) ,overlapped_max, new Bounds(0,APSPSolver.INF)),
 					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets, AllenIntervalConstraint.Type.Meets.getDefaultBounds()))
 					);
 			srules.add(r2);
@@ -258,7 +259,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, overlapped_max))
+					new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, new Bounds(0,APSPSolver.INF), overlapped_max, new Bounds(0,APSPSolver.INF)))
 					);
 			srules.add(r2);
 
@@ -288,7 +289,7 @@ public class ManipulationAreaDomain {
 			
 			SpatialRule r2 = new SpatialRule("placingArea", "manipulationArea", 
 					new RectangleConstraint(new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets , AllenIntervalConstraint.Type.Meets.getDefaultBounds()),
-					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, overlapped_max))
+					new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, new Bounds(0,APSPSolver.INF), overlapped_max, new Bounds(0,APSPSolver.INF)))
 					);
 			srules.add(r2);
 
