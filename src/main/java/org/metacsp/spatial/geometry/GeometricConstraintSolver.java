@@ -9,10 +9,14 @@ import org.metacsp.framework.Variable;
 
 public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1610027841057830885L;
+	
+	//Min and max dimensions of the Eucledian space
+	public static final float MAX_X = 1000.0f;
+	public static final float MAX_Y = 1000.0f;
+	public static final float MIN_X = -1000.0f;
+	public static final float MIN_Y = -1000.0f;
+
 	private HashMap<GeometricConstraint, HashMap<Polygon, Vec2[]>> constraintTrack = new HashMap<GeometricConstraint, HashMap<Polygon,Vec2[]>>();
 	
 	public GeometricConstraintSolver() {
@@ -32,7 +36,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 					Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 					if(manifold.isCollided()){
 						System.out.println("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
-						appltPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+						applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 						
 					}				
 				}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
@@ -67,7 +71,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 //		}
 	}
 
-	private void appltPolygonSeparation(Polygon p1, Polygon p2) {
+	private void applyPolygonSeparation(Polygon p1, Polygon p2) {
 		Manifold manifold = new Manifold(p1, p2);
 		if(manifold.solve()){
 			manifold.positionalCorrection();
@@ -97,7 +101,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			}
 			//adding constraint
 			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){	
-				appltPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());			}
 			else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
 				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());

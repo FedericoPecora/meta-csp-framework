@@ -37,7 +37,7 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		
 	private static final long serialVersionUID = 7979735587935134767L;
 	private final Dimension dim = new Dimension(1024, 768);
-	public static int ZOOM = 5;
+	private float zoom = 5.0f;
 	private float deltaX = 0.0f;
 	private float deltaY = 0.0f;
 	private float xSpan = 0.0f;
@@ -80,8 +80,8 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		// |------ 1024 ------|
 		//dim.x:spanX=input.x:output.x -> output.x = spanX*input.x/dim.x*
 		int[] ret = new int[2];
-		ret[0] = Math.round(ZOOM*xSpan*(x-deltaX+paddingPixels)/dim.width);
-		ret[1] = Math.round(ZOOM*ySpan*(y-deltaY+paddingPixels)/dim.height);
+		ret[0] = Math.round(this.zoom*xSpan*(x-deltaX+paddingPixels)/dim.width);
+		ret[1] = Math.round(this.zoom*ySpan*(y-deltaY+paddingPixels)/dim.height);
 		return ret;
 	}
 
@@ -141,6 +141,11 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 	}
 	
 	public PolygonFrame(String title, ConstraintNetwork constraintNetwork) {
+		this(title, constraintNetwork, 5);
+	}
+	
+	public PolygonFrame(String title, ConstraintNetwork constraintNetwork, float zoom) {
+		this.zoom = zoom;
 		this.setResizable(true);
 		this.setTitle(title);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

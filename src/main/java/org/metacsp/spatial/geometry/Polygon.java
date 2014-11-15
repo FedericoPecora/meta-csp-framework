@@ -8,10 +8,8 @@ import org.metacsp.framework.Variable;
 
 public class Polygon extends Variable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3385252449426376306L;
+		
 	private Domain dom;
 	
 	public static final int MAX_POLY_VERTEX_COUNT = 10;
@@ -31,7 +29,7 @@ public class Polygon extends Variable {
 	
 	protected Polygon(ConstraintSolver cs, int id) {
 		super(cs, id);
-		
+		this.setInitialDomain();
 	}
 
 	public void setMovable(boolean isMovable){
@@ -77,9 +75,16 @@ public class Polygon extends Variable {
 		initialize();
 	}
 	
+	private void setInitialDomain() {
+		Vec2 p1 = new Vec2(GeometricConstraintSolver.MIN_X,GeometricConstraintSolver.MAX_Y);
+		Vec2 p2 = new Vec2(GeometricConstraintSolver.MAX_X,GeometricConstraintSolver.MAX_Y);
+		Vec2 p3 = new Vec2(GeometricConstraintSolver.MAX_X,GeometricConstraintSolver.MIN_Y);
+		Vec2 p4 = new Vec2(GeometricConstraintSolver.MIN_X,GeometricConstraintSolver.MIN_Y);
+		this.setDomain(p1,p2,p3,p4);
+	}
+	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return this.getClass().getSimpleName() + " " + this.id + " " + this.getDomain();
 	}
 
