@@ -5,7 +5,7 @@ import org.metacsp.framework.Variable;
 
 public class Vertex extends Domain{
 
-
+	private static final long serialVersionUID = -672154595622071623L;
 	private Vec2[] vertices; 
 	protected Vertex(Variable v) {
 		super(v);
