@@ -75,9 +75,8 @@ public class Polygon extends Variable {
 		}
 		set( halfPoly );
 		initialize();
-		
 	}
-
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
