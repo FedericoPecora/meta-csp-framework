@@ -12,11 +12,11 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 	private static final long serialVersionUID = -1610027841057830885L;
 	
 	//Min and max dimensions of the Eucledian space
-	public static final float MAX_X = 1000.0f;
-	public static final float MAX_Y = 1000.0f;
-	public static final float MIN_X = -1000.0f;
-	public static final float MIN_Y = -1000.0f;
-
+	public static final float MAX_X = 10000.0f;
+	public static final float MAX_Y = 10000.0f;
+	public static final float MIN_X = -10000.0f;
+	public static final float MIN_Y = -10000.0f;
+	
 	private HashMap<GeometricConstraint, HashMap<Polygon, Vec2[]>> constraintTrack = new HashMap<GeometricConstraint, HashMap<Polygon,Vec2[]>>();
 	
 	public GeometricConstraintSolver() {

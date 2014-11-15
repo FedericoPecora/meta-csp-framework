@@ -85,7 +85,10 @@ public class Polygon extends Variable {
 	
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " " + this.id + " " + this.getDomain();
+		String ret = this.getClass().getSimpleName() + " " + this.id;
+		Vertex dom = (Vertex)this.getDomain();
+		for (int i = 0; i < vertexCount; i++) ret += (" " + dom.getVertices()[i]);
+		return ret;
 	}
 
 	public void initialize()
