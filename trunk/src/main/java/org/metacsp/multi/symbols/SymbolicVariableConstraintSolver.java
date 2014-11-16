@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.metacsp.multi.symbols;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.metacsp.booleanSAT.BooleanSatisfiabilitySolver;
@@ -208,7 +209,7 @@ public class SymbolicVariableConstraintSolver extends MultiConstraintSolver {
 		for (Variable var : unconstrainedVariables) {
 			SymbolicVariable sv = (SymbolicVariable)var;
 			Constraint[] internalCons = sv.getInternalConstraints();
-			ConstraintNetwork.maskConstraints(internalCons);
+			if (internalCons != null) ConstraintNetwork.maskConstraints(internalCons);
 		}
 		logger.fine("Masked internal constraints");
 	}

@@ -290,13 +290,15 @@ public class SymbolicValueConstraint extends MultiConstraint {
 		if (this.type.equals(Type.EQUALS) || this.type.equals(Type.DIFFERENT) || this.type.equals(Type.CONTAINS)) {
 			for (int i = 0; i < variables.length; i++) {
 				for (int j = i+1; j < variables.length; j++) {
-					for (Constraint con : this.createInternalBinaryConstraints(variables[i], variables[j])) cons.add(con);
+					Constraint[] internalCons = this.createInternalBinaryConstraints(variables[i], variables[j]);
+					for (Constraint con : internalCons) cons.add(con);
 				}			
 			}
 		}
 		else {
 			for (int i = 0; i < variables.length; i++) {
-				for (Constraint con : this.createInternalBinaryConstraints(variables[i], variables[i])) cons.add(con);
+				Constraint[] internalCons = this.createInternalBinaryConstraints(variables[i], variables[i]);
+				for (Constraint con : internalCons) cons.add(con);
 			}
 		}
 		return cons.toArray(new Constraint[cons.size()]);
