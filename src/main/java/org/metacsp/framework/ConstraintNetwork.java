@@ -251,6 +251,15 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	}
 
 	/**
+	 * Adds a set of {@link Constraint}s to the network.
+	 * @param cons The {@link Constraint}s to add to the network. NOTE: this only works for
+	 * {@link BinaryConstraint}s and {@link MultiBinaryConstraint}s in the current implementation. 
+	 */
+	public void addConstraints(Constraint ... cons) {
+		for (Constraint c : cons) this.addConstraint(c);
+	}
+	
+	/**
 	 * Adds a {@link Constraint} to the network.
 	 * @param c The {@link Constraint} to add to the network. NOTE: this only works for
 	 * {@link BinaryConstraint}s and {@link MultiBinaryConstraint}s in the current implementation. 
