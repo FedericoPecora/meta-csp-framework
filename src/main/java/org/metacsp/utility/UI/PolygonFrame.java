@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -37,7 +39,8 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		
 	private static final long serialVersionUID = 7979735587935134767L;
 	private final Dimension dim = new Dimension(1024, 768);
-	private final float zoom;
+	private float zoom;
+	private float zoomInv;
 	private float deltaX = 0.0f;
 	private float deltaY = 0.0f;
 	private float xSpan = 0.0f;
@@ -80,8 +83,10 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		// |------ 1024 ------|
 		//dim.x:spanX=input.x:output.x -> output.x = spanX*input.x/dim.x*
 		int[] ret = new int[2];
-		ret[0] = Math.round(this.zoom*xSpan*(x-deltaX+paddingPixels)/dim.width);
-		ret[1] = Math.round(this.zoom*ySpan*(y-deltaY+paddingPixels)/dim.height);
+//		ret[0] = Math.round(this.zoomInv*xSpan*(x-deltaX+paddingPixels)/dim.width);
+//		ret[1] = Math.round(this.zoomInv*ySpan*(y-deltaY+paddingPixels)/dim.height);
+		ret[0] = Math.round(this.zoomInv*(x-deltaX+paddingPixels));
+		ret[1] = Math.round(this.zoomInv*(y-deltaY+paddingPixels));
 		return ret;
 	}
 
@@ -95,12 +100,14 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		float minY = Integer.MAX_VALUE;
 		
 		for (Variable p : polys) {
-			Vector<Vec2> vertices = ((Polygon)p).getFullSpaceRepresentation();
-			for (int i = 0; i < vertices.size(); i++) {
-				if (vertices.get(i).x > maxX) maxX = vertices.get(i).x;
-				if (vertices.get(i).y > maxY) maxY = vertices.get(i).y;
-				if (vertices.get(i).x < minX) minX = vertices.get(i).x;
-				if (vertices.get(i).y < minY) minY = vertices.get(i).y;
+			if (!((Polygon)p).hasDefaultDomain()) {
+				Vector<Vec2> vertices = ((Polygon)p).getFullSpaceRepresentation();
+				for (int i = 0; i < vertices.size(); i++) {
+					if (vertices.get(i).x > maxX) maxX = vertices.get(i).x;
+					if (vertices.get(i).y > maxY) maxY = vertices.get(i).y;
+					if (vertices.get(i).x < minX) minX = vertices.get(i).x;
+					if (vertices.get(i).y < minY) minY = vertices.get(i).y;
+				}
 			}
 		}
 
@@ -112,6 +119,9 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		canvasStartY = minY;
 		canvasEndX = maxX;
 		canvasEndY = maxY;
+		
+		zoom = (float)xSpan/(float)dim.getWidth();
+		zoomInv = 1/zoom;
 	}
 	
 	private void updatePositions() {
@@ -139,13 +149,8 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		initialize();
 		repaint();
 	}
-	
+		
 	public PolygonFrame(String title, ConstraintNetwork constraintNetwork) {
-		this(title, constraintNetwork, 5);
-	}
-	
-	public PolygonFrame(String title, ConstraintNetwork constraintNetwork, final float zoom) {
-		this.zoom = zoom;
 		this.setResizable(true);
 		this.setTitle(title);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -169,6 +174,16 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 				repaint();
 			}
 			
+		});
+		
+		this.addMouseWheelListener(new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent arg0) {
+				int rot = arg0.getWheelRotation();
+				zoom += (0.01*rot);
+				zoomInv = 1/zoom;
+				repaint();
+			}
 		});
 		
 		this.addMouseListener(new MouseListener() {
@@ -233,8 +248,8 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
             	DecimalFormat df = new DecimalFormat("#.#");
             	
 				float positionX = canvasStartX;
-				float interval = ((canvasEndX-canvasStartX)/20.0f);
-				//float interval = (canvasEndX-canvasStartX*10)*zoom;
+				System.out.println("StartX = " + canvasStartX);
+				float interval = xSpan/10.0f;
 				while(positionX <= canvasEndX+interval) {
 					int[] p1 = toScreen(positionX,canvasStartY);
 					int[] p2 = toScreen(positionX,canvasEndY+interval);

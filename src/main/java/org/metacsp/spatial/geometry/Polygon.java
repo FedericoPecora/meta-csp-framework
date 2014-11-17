@@ -20,18 +20,21 @@ public class Polygon extends Variable {
 	public Vec2[] normals = Vec2.arrayOf( MAX_POLY_VERTEX_COUNT );
 	public Mat2 u = new Mat2();
 	
-	
 	private Vec2 position = new Vec2();
 	public boolean ref = false;
 	public boolean incident = false;
 	
-	
+	private boolean hasDefaultDomain = true;
 	
 	protected Polygon(ConstraintSolver cs, int id) {
 		super(cs, id);
 		this.setInitialDomain();
 	}
 
+	public boolean hasDefaultDomain() {
+		return hasDefaultDomain;
+	}
+	
 	public void setMovable(boolean isMovable){
 		this.isMovable = isMovable;
 	}
@@ -73,6 +76,7 @@ public class Polygon extends Variable {
 		}
 		set( halfPoly );
 		initialize();
+		hasDefaultDomain = false;
 	}
 	
 	private void setInitialDomain() {
@@ -81,6 +85,7 @@ public class Polygon extends Variable {
 		Vec2 p3 = new Vec2(GeometricConstraintSolver.MAX_X,GeometricConstraintSolver.MIN_Y);
 		Vec2 p4 = new Vec2(GeometricConstraintSolver.MIN_X,GeometricConstraintSolver.MIN_Y);
 		this.setDomain(p1,p2,p3,p4);
+		hasDefaultDomain = true;
 	}
 	
 	@Override
