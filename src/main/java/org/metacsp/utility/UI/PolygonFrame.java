@@ -248,7 +248,7 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
             	DecimalFormat df = new DecimalFormat("#.#");
             	
 				float positionX = canvasStartX;
-				System.out.println("StartX = " + canvasStartX);
+//				System.out.println("StartX = " + canvasStartX);
 				float interval = xSpan/10.0f;
 				while(positionX <= canvasEndX+interval) {
 					int[] p1 = toScreen(positionX,canvasStartY);

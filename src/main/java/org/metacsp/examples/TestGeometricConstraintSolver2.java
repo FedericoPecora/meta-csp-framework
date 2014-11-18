@@ -1,7 +1,4 @@
 package org.metacsp.examples;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Vector;
 
 import org.metacsp.framework.Variable;
@@ -17,34 +14,34 @@ public class TestGeometricConstraintSolver2 {
 	public static void main(String[] args) {
 
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
-		Variable[] vars = solver.createVariables(3);
+		Variable[] vars = solver.createVariables(2);
 		
 		Polygon p1 = (Polygon)vars[0];
 		Vector<Vec2> vecs1 = new Vector<Vec2>();
-		vecs1.add(new Vec2(100,87));
-		vecs1.add(new Vec2(60,30));
-		vecs1.add(new Vec2(220,60));
-		vecs1.add(new Vec2(180,120));
+		vecs1.add(new Vec2(2,2));
+		vecs1.add(new Vec2(8,2));
+		vecs1.add(new Vec2(8,8));
+		vecs1.add(new Vec2(2,8));
 		p1.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
-		p1.setMovable(true);
+		p1.setMovable(false);
 		
 		Polygon p2 = (Polygon)vars[1];		
 		Vector<Vec2> vecs = new Vector<Vec2>();
-		vecs.add(new Vec2(180,90));
-		vecs.add(new Vec2(100,350));
-		vecs.add(new Vec2(340,350));
-		vecs.add(new Vec2(290,125));
+		vecs.add(new Vec2(1,1));
+		vecs.add(new Vec2(9,1));
+		vecs.add(new Vec2(9,9));
+		vecs.add(new Vec2(1,9));
 		p2.setDomain(vecs.toArray(new Vec2[vecs.size()]));
-		p2.setMovable(true);
+		p2.setMovable(false);
 		
-		Polygon p3 = (Polygon)vars[2];		
-		Vector<Vec2> vecs2 = new Vector<Vec2>();
-		vecs2.add(new Vec2(180,190));
-		vecs2.add(new Vec2(100,50));
-		vecs2.add(new Vec2(240,138));
-		vecs2.add(new Vec2(190,225));
-		p3.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
-		p3.setMovable(true);
+//		Polygon p3 = (Polygon)vars[1];		
+//		Vector<Vec2> vecs2 = new Vector<Vec2>();
+//		vecs2.add(new Vec2(180,190));
+//		vecs2.add(new Vec2(100,50));
+//		vecs2.add(new Vec2(240,138));
+//		vecs2.add(new Vec2(190,225));
+//		p3.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
+//		p3.setMovable(true);
 										
 		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
 		
@@ -56,15 +53,6 @@ public class TestGeometricConstraintSolver2 {
 		inside.setTo(vars[1]);
 		System.out.println("Added? " + solver.addConstraint(inside));
 		
-		try { Thread.sleep(4000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-		
-		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
-		dc1.setFrom(vars[1]);
-		dc1.setTo(vars[2]);
-		System.out.println("Added? " + solver.addConstraint(dc1));
-		try { Thread.sleep(4000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
 
 	}
 
