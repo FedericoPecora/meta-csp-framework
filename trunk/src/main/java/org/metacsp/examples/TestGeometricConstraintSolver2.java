@@ -34,6 +34,8 @@ public class TestGeometricConstraintSolver2 {
 		p2.setDomain(vecs.toArray(new Vec2[vecs.size()]));
 		p2.setMovable(false);
 		
+		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
+		
 //		Polygon p3 = (Polygon)vars[1];		
 //		Vector<Vec2> vecs2 = new Vector<Vec2>();
 //		vecs2.add(new Vec2(180,190));
@@ -42,9 +44,7 @@ public class TestGeometricConstraintSolver2 {
 //		vecs2.add(new Vec2(190,225));
 //		p3.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
 //		p3.setMovable(true);
-										
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
-		
+												
 		try { Thread.sleep(4000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
 		
@@ -52,7 +52,6 @@ public class TestGeometricConstraintSolver2 {
 		inside.setFrom(vars[0]);
 		inside.setTo(vars[1]);
 		System.out.println("Added? " + solver.addConstraint(inside));
-		
 
 	}
 
