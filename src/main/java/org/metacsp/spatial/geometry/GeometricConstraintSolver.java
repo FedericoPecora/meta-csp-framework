@@ -47,7 +47,12 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 	}
 
 
-	private boolean checkInside(Polygon p1, Polygon p2) {
+	public static GeometricConstraint.Type getRelation(Polygon p1, Polygon p2) {
+		if (checkInside(p1, p2)) return GeometricConstraint.Type.INSIDE;
+		return GeometricConstraint.Type.DC;
+	}
+	
+	private static boolean checkInside(Polygon p1, Polygon p2) {
 		float EPSILON = 0.003f;
 		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
 		for (int i = 0; i < p1.getFullSpaceRepresentation().size(); i++) {

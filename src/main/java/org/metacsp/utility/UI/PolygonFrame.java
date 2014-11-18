@@ -120,28 +120,30 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		canvasEndX = maxX;
 		canvasEndY = maxY;
 		
-		zoom = (float)xSpan/(float)dim.getWidth();
+		zoom = (float)xSpan/(float)dim.getWidth()*3.0f;
 		zoomInv = 1/zoom;
 	}
 	
 	private void updatePositions() {
 		Random rand = new Random(1231234);    	
 		for (Variable p : polys) {
-			Vector<Vec2> vertices = ((Polygon)p).getFullSpaceRepresentation();
-			int[] xCoords = new int[vertices.size()];
-			int[] yCoords = new int[vertices.size()];
-			for (int i = 0; i < vertices.size(); i++) {
-				int[] screenCoords = toScreen(vertices.get(i).x, vertices.get(i).y); 
-				xCoords[i] = screenCoords[0];
-				yCoords[i] = screenCoords[1];
+			if (!((Polygon)p).hasDefaultDomain()) {
+				Vector<Vec2> vertices = ((Polygon)p).getFullSpaceRepresentation();
+				int[] xCoords = new int[vertices.size()];
+				int[] yCoords = new int[vertices.size()];
+				for (int i = 0; i < vertices.size(); i++) {
+					int[] screenCoords = toScreen(vertices.get(i).x, vertices.get(i).y); 
+					xCoords[i] = screenCoords[0];
+					yCoords[i] = screenCoords[1];
+				}
+		    	centers.put(((Polygon)p),toScreen(((Polygon)p).getPosition().x,((Polygon)p).getPosition().y));
+				java.awt.Polygon drawablePoly = new java.awt.Polygon(xCoords, yCoords, xCoords.length);
+				drawablePolys.put(((Polygon)p),drawablePoly);
+				float r = rand.nextFloat();
+				float g = rand.nextFloat();
+				float b = rand.nextFloat();
+				colors.put(((Polygon)p),new Color(r,g,b));
 			}
-	    	centers.put(((Polygon)p),toScreen(((Polygon)p).getPosition().x,((Polygon)p).getPosition().y));
-			java.awt.Polygon drawablePoly = new java.awt.Polygon(xCoords, yCoords, xCoords.length);
-			drawablePolys.put(((Polygon)p),drawablePoly);
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			colors.put(((Polygon)p),new Color(r,g,b));
 		}
 	}
 	
@@ -280,7 +282,7 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
                 ((Graphics2D)g).setStroke(new BasicStroke(5));
             	g.drawPolygon(drawablePolys.get(p));
             	g.setFont(new Font("default", Font.BOLD, 16));
-            	g.drawString("P"+p.getID(), centers.get(p)[0], centers.get(p)[1]);        		
+            	g.drawString(p.getComponent(), centers.get(p)[0], centers.get(p)[1]);        		
         	}
 
 			@Override
@@ -294,7 +296,7 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 				drawGrid(g);
 
                 //Draw polys
-                for (Variable p : polys) drawPolygon(g, (Polygon)p);
+                for (Variable p : polys) if (!((Polygon)p).hasDefaultDomain()) drawPolygon(g, (Polygon)p);
                 
             	//Draw arrows
                 Random rand = new Random(125534);
