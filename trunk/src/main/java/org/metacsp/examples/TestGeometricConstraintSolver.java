@@ -16,12 +16,21 @@ public class TestGeometricConstraintSolver {
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
 		Variable[] vars = solver.createVariables(3);
 		
-		Polygon p0 = (Polygon)vars[0];
+//		Polygon p0 = (Polygon)vars[0];
+//		Vector<Vec2> vecs1 = new Vector<Vec2>();
+//		vecs1.add(new Vec2(100,87));
+//		vecs1.add(new Vec2(60,30));
+//		vecs1.add(new Vec2(220,60));
+//		vecs1.add(new Vec2(180,120));
+//		p0.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
+//		p0.setMovable(true);
+		
+		Polygon p0 = (Polygon)vars[0];		
 		Vector<Vec2> vecs1 = new Vector<Vec2>();
-		vecs1.add(new Vec2(100,87));
-		vecs1.add(new Vec2(60,30));
-		vecs1.add(new Vec2(220,60));
-		vecs1.add(new Vec2(180,120));
+		vecs1.add(new Vec2(1,1));
+		vecs1.add(new Vec2(19,1));
+		vecs1.add(new Vec2(19,19));
+		vecs1.add(new Vec2(1,19));
 		p0.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
 		p0.setMovable(true);
 		

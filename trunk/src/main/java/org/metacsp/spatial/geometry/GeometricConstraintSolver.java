@@ -38,8 +38,6 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 					applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				}				
 			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
-				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-				//if(!manifold.isCollided()){
 				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				System.out.println("PROPAGATED INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
 				//}
@@ -48,29 +46,41 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		return true;
 	}
 
-	
-	private boolean checkInsideWithoutUpdate(Polygon p1, Polygon p2) {
-		float EPSILON = 0.0003f;
+
+	private boolean checkInside(Polygon p1, Polygon p2) {
+		float EPSILON = 0.003f;
 		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
 		for (int i = 0; i < p1.getFullSpaceRepresentation().size(); i++) {
-			if(Math.abs(p1.getFullSpaceRepresentation().get(i).x - slh.getClippedResult()[i].x) < EPSILON &&
-					Math.abs(p1.getFullSpaceRepresentation().get(i).y - slh.getClippedResult()[i].y) < EPSILON)
-				return true;
+			boolean found = false;
+			for (int j = 0; j < slh.getClippedResult().length; j++) {				
+				if(Math.abs(p1.getFullSpaceRepresentation().get(i).x - slh.getClippedResult()[j].x) < EPSILON &&
+						Math.abs(p1.getFullSpaceRepresentation().get(i).y - slh.getClippedResult()[j].y) < EPSILON) found = true;						
+			}
+			if(!found) return false;
+			//			System.out.println("p1: " + p1.getFullSpaceRepresentation().get(i).x + " " + p1.getFullSpaceRepresentation().get(i).y);
+			//			System.out.println("getClippedResult: " + slh.getClippedResult()[i].x + " " + slh.getClippedResult()[i].y);				
 		}
-		return false;			
+		return true;			
 	}
-	
-	private void applyInside(Polygon p1, Polygon p2) {
+
+	private boolean applyInside(Polygon p1, Polygon p2) {
 		float difx = p2.getPosition().x - p1.getPosition().x ;
 		float dify = p2.getPosition().y - p1.getPosition().y ;
+		Vec2[] p1Copy = new Vec2[p1.getFullSpaceRepresentation().size()];
 		Vec2[] p1Domain = new Vec2[p1.getFullSpaceRepresentation().size()];
 		for (int i = 0; i < p1.getFullSpaceRepresentation().size(); i++) {
-			p1Domain[i] = new Vec2(p1.getFullSpaceRepresentation().get(i).x + difx,
-					p1.getFullSpaceRepresentation().get(i).y + dify);
+			p1Copy[i] = new Vec2(p1.getFullSpaceRepresentation().get(i).x, p1.getFullSpaceRepresentation().get(i).y);
+			p1Domain[i] = new Vec2(p1.getFullSpaceRepresentation().get(i).x + difx, p1.getFullSpaceRepresentation().get(i).y + dify);
 		}
 		p1.setDomain(p1Domain);
-		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
-		p1.setDomain(slh.getClippedResult());			
+		if(checkInside(p1, p2)) return true;
+		else{
+			p1.setDomain(p1Copy);
+			return false;
+		}
+
+//		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
+//		p1.setDomain(slh.getClippedResult());			
 	}
 
 	private void applyPolygonSeparation(Polygon p1, Polygon p2) {
@@ -92,10 +102,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			if(this.getConstraints((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo()).length > 0){
 				if(((GeometricConstraint)(this.getConstraints((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo())[0])).getType().equals((GeometricConstraint)c[i]))
 					return true;
-				else
-					return false;
-				//				this.getConstraints((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo())[0].mask();
-				//				System.out.println("MAKSED CONSTRAINT: " + this.getConstraints((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo())[0]);
+				else return false;
 			}
 			//keep track of added constraint for removing. i.e, taking snapshot of current domain of the vars
 			HashMap<Polygon, Vec2[]> poly2Domain = new HashMap<Polygon, Vec2[]>();
@@ -107,27 +114,26 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			//adding constraint
 			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){	
 				applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());			}
+				//				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());			}
+			}
 			else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
-				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-				System.out.println("Added INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
+				if(!applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo()))
+					return false;
+//				System.out.println("Added INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
 			}
 		}		
 		return true;
 	}
 
 	private boolean verifySituation(Constraint c) {
-			if(((GeometricConstraint)c).getType().equals(GeometricConstraint.Type.DC)){
-				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)c).getFrom(), (Polygon)((GeometricConstraint)c).getTo());
-				if(manifold.isCollided()){
-					return false;
-				}				
-			}else if(((GeometricConstraint)c).getType().equals(GeometricConstraint.Type.INSIDE)){
-				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)c).getFrom(), (Polygon)((GeometricConstraint)c).getTo());
-//				if(manifold.isCollided())
-//					return false;
-				return checkInsideWithoutUpdate((Polygon)((GeometricConstraint)c).getFrom(), (Polygon)((GeometricConstraint)c).getTo());
+		if(((GeometricConstraint)c).getType().equals(GeometricConstraint.Type.DC)){
+			Manifold manifold = new Manifold((Polygon)((GeometricConstraint)c).getFrom(), (Polygon)((GeometricConstraint)c).getTo());
+			if(manifold.isCollided()){
+				return false;
 			}				
+		}else if(((GeometricConstraint)c).getType().equals(GeometricConstraint.Type.INSIDE)){
+			return checkInside((Polygon)((GeometricConstraint)c).getFrom(), (Polygon)((GeometricConstraint)c).getTo());
+		}				
 		return false;
 	}
 
