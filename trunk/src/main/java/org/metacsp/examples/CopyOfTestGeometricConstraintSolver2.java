@@ -18,23 +18,30 @@ public class CopyOfTestGeometricConstraintSolver2 {
 		
 		Polygon p1 = (Polygon)vars[0];
 		Vector<Vec2> vecs1 = new Vector<Vec2>();
-		vecs1.add(new Vec2(0,0));
-		vecs1.add(new Vec2(1,0));
-		vecs1.add(new Vec2(0,1));
-		vecs1.add(new Vec2(0.6f,0.6f));
+		vecs1.add(new Vec2(100,87));
+		vecs1.add(new Vec2(60,30));
+		vecs1.add(new Vec2(220,60));
+		vecs1.add(new Vec2(180,120));
 		p1.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
-		p1.setMovable(false);
+		p1.setMovable(true);
 
 		Polygon p2 = (Polygon)vars[1];
 		Vector<Vec2> vecs2 = new Vector<Vec2>();
-		vecs2.add(new Vec2(0+2,0));
-		vecs2.add(new Vec2(1+2,0));
-		vecs2.add(new Vec2(0+2,1));
-		vecs2.add(new Vec2(0.6f+2,0.6f+2));
+		vecs2.add(new Vec2(0,0));
+		vecs2.add(new Vec2(1,0));
+		vecs2.add(new Vec2(0,1));
+		vecs2.add(new Vec2(0.6f,0.6f));
 		p2.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
 		p2.setMovable(false);
+				
+		if (!GeometricConstraintSolver.getRelation(p1, p2).equals(GeometricConstraint.Type.INSIDE)) {
+			GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
+			inside.setFrom(p1);
+			inside.setTo(p2);
+			System.out.println("Added? " + solver.addConstraint(inside));
+		}
 		
-		System.out.println(solver.getRelation(p1, p2));
+		System.out.println(GeometricConstraintSolver.getRelation(p1, p2));
 				
 //		GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
 //		inside.setFrom(vars[0]);
