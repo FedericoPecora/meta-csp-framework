@@ -14,75 +14,33 @@ public class CopyOfTestGeometricConstraintSolver2 {
 	public static void main(String[] args) {
 
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
-		Variable[] vars = solver.createVariables(3);
+		Variable[] vars = solver.createVariables(2, "Component");
 		
-		Polygon p0 = (Polygon)vars[0];
+		Polygon p1 = (Polygon)vars[0];
 		Vector<Vec2> vecs1 = new Vector<Vec2>();
-		vecs1.add(new Vec2(100,87));
-		vecs1.add(new Vec2(60,30));
-		vecs1.add(new Vec2(220,60));
-		vecs1.add(new Vec2(180,120));
-		p0.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
-		p0.setMovable(true);
-		
-		Polygon p1 = (Polygon)vars[1];		
-		Vector<Vec2> vecs = new Vector<Vec2>();
-		vecs.add(new Vec2(180,90));
-		vecs.add(new Vec2(100,350));
-		vecs.add(new Vec2(340,350));
-		vecs.add(new Vec2(290,125));
-		p1.setDomain(vecs.toArray(new Vec2[vecs.size()]));
+		vecs1.add(new Vec2(0,0));
+		vecs1.add(new Vec2(1,0));
+		vecs1.add(new Vec2(0,1));
+		vecs1.add(new Vec2(0.6f,0.6f));
+		p1.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
 		p1.setMovable(false);
-		
-		Polygon p2 = (Polygon)vars[2];		
+
+		Polygon p2 = (Polygon)vars[1];
 		Vector<Vec2> vecs2 = new Vector<Vec2>();
-		vecs2.add(new Vec2(180,190));
-		vecs2.add(new Vec2(100,50));
-		vecs2.add(new Vec2(240,138));
-		vecs2.add(new Vec2(190,225));
+		vecs2.add(new Vec2(0+2,0));
+		vecs2.add(new Vec2(1+2,0));
+		vecs2.add(new Vec2(0+2,1));
+		vecs2.add(new Vec2(0.6f+2,0.6f+2));
 		p2.setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
-		p2.setMovable(true);
+		p2.setMovable(false);
 		
-								
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
-		
-		try { Thread.sleep(1000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
+		System.out.println(solver.getRelation(p1, p2));
+				
+//		GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
+//		inside.setFrom(vars[0]);
+//		inside.setTo(vars[1]);
+//		System.out.println("Added? " + solver.addConstraint(inside));
 
-		GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside.setFrom(p0);
-		inside.setTo(p1);
-		System.out.println("Added? " + solver.addConstraint(inside));
-
-		try { Thread.sleep(1000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-
-		GeometricConstraint dc1 = new GeometricConstraint(GeometricConstraint.Type.DC);
-		dc1.setFrom(p2);
-		dc1.setTo(p1);
-		System.out.println("Added? " + solver.addConstraint(dc1));
-
-		try { Thread.sleep(1000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-
-		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside1.setFrom(p2);
-		inside1.setTo(p0);
-		System.out.println("Added? " + solver.addConstraint(inside1));
-
-//		try { Thread.sleep(1000); }
-//		catch (InterruptedException e) { e.printStackTrace(); }
-//
-//		solver.removeConstraint(inside);
-
-		try { Thread.sleep(1000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-
-		GeometricConstraint dc = new GeometricConstraint(GeometricConstraint.Type.DC);
-		dc.setFrom(p0);
-		dc.setTo(p1);
-		System.out.println("Added? " + solver.addConstraint(dc));
-		
 	}
 
 }
