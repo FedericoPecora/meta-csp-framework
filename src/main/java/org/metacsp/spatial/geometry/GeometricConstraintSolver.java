@@ -2,6 +2,7 @@ package org.metacsp.spatial.geometry;
 import java.util.HashMap;
 import java.util.Vector;
 
+
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
@@ -52,20 +53,38 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		return GeometricConstraint.Type.DC;
 	}
 	
-	private static boolean checkInside(Polygon p1, Polygon p2) {
-		float EPSILON = 0.003f;
-		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
-		for (int i = 0; i < p1.getFullSpaceRepresentation().size(); i++) {
-			boolean found = false;
-			for (int j = 0; j < slh.getClippedResult().length; j++) {				
-				if(Math.abs(p1.getFullSpaceRepresentation().get(i).x - slh.getClippedResult()[j].x) < EPSILON &&
-						Math.abs(p1.getFullSpaceRepresentation().get(i).y - slh.getClippedResult()[j].y) < EPSILON) found = true;						
-			}
-			if(!found) return false;
-			//			System.out.println("p1: " + p1.getFullSpaceRepresentation().get(i).x + " " + p1.getFullSpaceRepresentation().get(i).y);
-			//			System.out.println("getClippedResult: " + slh.getClippedResult()[i].x + " " + slh.getClippedResult()[i].y);				
+//	private static boolean checkInside(Polygon p1, Polygon p2) {
+//		float EPSILON = 0.003f;
+//		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
+//		for (int i = 0; i < p1.getFullSpaceRepresentation().size(); i++) {
+//			boolean found = false;
+//			for (int j = 0; j < slh.getClippedResult().length; j++) {				
+//				if(Math.abs(p1.getFullSpaceRepresentation().get(i).x - slh.getClippedResult()[j].x) < EPSILON &&
+//						Math.abs(p1.getFullSpaceRepresentation().get(i).y - slh.getClippedResult()[j].y) < EPSILON) found = true;						
+//			}
+//			if(!found) return false;
+//			//			System.out.println("p1: " + p1.getFullSpaceRepresentation().get(i).x + " " + p1.getFullSpaceRepresentation().get(i).y);
+//			//			System.out.println("getClippedResult: " + slh.getClippedResult()[i].x + " " + slh.getClippedResult()[i].y);				
+//		}
+//		return true;			
+//	}
+	
+	private static boolean checkInside(Polygon p1, Polygon p2){
+		
+		int[] xpoints = new int[p2.getFullSpaceRepresentation().size()];
+		int[] ypoints = new int[p2.getFullSpaceRepresentation().size()];
+		for (int j = 0; j < p2.getFullSpaceRepresentation().size(); j++) {
+			xpoints[j] = (int)(p2.getFullSpaceRepresentation().get(j).x * 10000);
+			ypoints[j] = (int)(p2.getFullSpaceRepresentation().get(j).y * 10000);
 		}
-		return true;			
+
+		java.awt.Polygon newp2 = new  java.awt.Polygon(xpoints, ypoints, p2.getFullSpaceRepresentation().size());
+		for (int i = 0; i < p1.getFullSpaceRepresentation().size(); i++) {
+			if(!newp2.contains(p1.getFullSpaceRepresentation().get(i).x*10000, p1.getFullSpaceRepresentation().get(i).y*10000))
+				return false;
+		}
+		
+		return true;
 	}
 
 	private boolean applyInside(Polygon p1, Polygon p2) {
