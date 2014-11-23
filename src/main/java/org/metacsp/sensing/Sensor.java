@@ -12,6 +12,7 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -21,16 +22,16 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 public class Sensor implements Serializable {
 	
 	private static final long serialVersionUID = -852002916221212114L;
-	private ActivityNetworkSolver ans = null;
+	protected ActivityNetworkSolver ans = null;
 	private ConstraintNetwork cn = null;
 	protected String name;
 	private SymbolicVariableActivity future = null;
-	private SymbolicVariableActivity currentAct = null;
+	private Activity currentAct = null;
 	private AllenIntervalConstraint currentMeetsFuture = null;
 	protected ConstraintNetworkAnimator animator = null;
 	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
-		
+
 	public Sensor(String name, ConstraintNetworkAnimator animator) {
 		this.animator = animator;
 		this.ans = animator.getActivityNetworkSolver();
@@ -49,11 +50,11 @@ public class Sensor implements Serializable {
 			if (currentAct == null) { makeNew = true; }
 			else if (currentAct != null) {
 				//If it has not changed, do nothing - otherwise:
-				if (!currentAct.getSymbolicVariable().getSymbols()[0].equals(value)) {
+				if (this.hasChanged(value)) {
 					//change value
 					AllenIntervalConstraint deadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(timeNow,timeNow));
-					deadline.setFrom(currentAct);
-					deadline.setTo(currentAct);
+					deadline.setFrom(currentAct.getVariable());
+					deadline.setTo(currentAct.getVariable());
 					ans.removeConstraint(currentMeetsFuture);
 					boolean ret = ans.addConstraint(deadline);
 					if (!ret) throw new NetworkMaintenanceError(deadline);
@@ -61,15 +62,13 @@ public class Sensor implements Serializable {
 				}
 			}
 			//First reading or value changed --> make new activity
-			if (makeNew) {				
-				SymbolicVariableActivity act = (SymbolicVariableActivity)ans.createVariable(this.name);
-				act.setSymbolicDomain(value);
-				act.setMarking(markings.JUSTIFIED);
+			if (makeNew) {
+				Activity act = this.createNewActivity(value);
 				AllenIntervalConstraint rel = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,timeNow));
-				rel.setFrom(act);
-				rel.setTo(act);
+				rel.setFrom(act.getVariable());
+				rel.setTo(act.getVariable());
 				AllenIntervalConstraint meetsFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-				meetsFuture.setFrom(act);
+				meetsFuture.setFrom(act.getVariable());
 				meetsFuture.setTo(future);
 				currentAct = act;
 				currentMeetsFuture = meetsFuture;
@@ -117,6 +116,17 @@ public class Sensor implements Serializable {
 
 	public void registerSensorTrace(String sensorTraceFile) {
 		this.registerSensorTrace(sensorTraceFile, 0);
+	}
+	
+	protected boolean hasChanged(String value) {
+		return (!((SymbolicVariableActivity)currentAct.getVariable()).getSymbolicVariable().getSymbols()[0].equals(value));
+	}
+	
+	protected Activity createNewActivity(String value) {
+		SymbolicVariableActivity act = (SymbolicVariableActivity)ans.createVariable(this.name);
+		act.setSymbolicDomain(value);
+		act.setMarking(markings.JUSTIFIED);
+		return act;
 	}
 	
 	public void registerSensorTrace(String sensorTraceFile, long delta) {

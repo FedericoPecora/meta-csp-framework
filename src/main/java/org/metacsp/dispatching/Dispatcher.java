@@ -121,4 +121,8 @@ public class Dispatcher extends Thread {
 	}
 
 	public void finish(SymbolicVariableActivity act) { acts.put(act, ACTIVITY_STATE.FINISHING); }
+	
+	public ConstraintNetwork getConstraintNetwork() {
+		return ans.getConstraintNetwork();
+	}
 }

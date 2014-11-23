@@ -1,12 +1,14 @@
 package org.metacsp.dispatching;
 
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
+import org.metacsp.sensing.ConstraintNetworkAnimator;
 
 public abstract class DispatchingFunction {
 	
-	private String component;
+	protected String component;
 	
-	private Dispatcher dis;
+	protected Dispatcher dis;
 	
 	public DispatchingFunction(String component) {
 		this.component = component;
@@ -22,6 +24,10 @@ public abstract class DispatchingFunction {
 	
 	public void finish(SymbolicVariableActivity act) {
 		dis.finish(act);
+	}
+	
+	public ConstraintNetwork getConstraintNetwork() {
+		return dis.getConstraintNetwork();
 	}
 	
 
