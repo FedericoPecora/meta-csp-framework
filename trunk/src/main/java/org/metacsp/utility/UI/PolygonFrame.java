@@ -280,9 +280,10 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
         	private void drawPolygon(Graphics g, Polygon p) {
                 g.setColor(colors.get(p));
                 ((Graphics2D)g).setStroke(new BasicStroke(5));
-            	g.drawPolygon(drawablePolys.get(p));
+                java.awt.Polygon toDraw = drawablePolys.get(p);
+                if (toDraw != null) g.drawPolygon(toDraw);
             	g.setFont(new Font("default", Font.BOLD, 16));
-            	g.drawString(p.getComponent(), centers.get(p)[0], centers.get(p)[1]);        		
+            	if (p != null && centers != null && centers.containsKey(p) && centers.get(p) != null && centers.get(p).length == 2) g.drawString(p.getComponent(), centers.get(p)[0], centers.get(p)[1]);        		
         	}
 
 			@Override
