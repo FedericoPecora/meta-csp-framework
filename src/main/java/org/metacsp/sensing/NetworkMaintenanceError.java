@@ -11,5 +11,9 @@ public class NetworkMaintenanceError extends Error {
 	public NetworkMaintenanceError(AllenIntervalConstraint ... con) {
 		super("Cannot add maintenance constraint(s) " + Arrays.toString(con));
 	}
+	
+	public NetworkMaintenanceError(long timeNow, long timeSensor) {
+		super("Cannot add maintenance constraint(s) because sensor value is ahead by " + (timeSensor - timeNow));
+	}
 
 }

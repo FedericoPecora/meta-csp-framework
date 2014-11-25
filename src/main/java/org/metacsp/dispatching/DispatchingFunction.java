@@ -22,6 +22,8 @@ public abstract class DispatchingFunction {
 	
 	public abstract void dispatch(SymbolicVariableActivity act);
 	
+	public abstract boolean skip(SymbolicVariableActivity act);
+	
 	public void finish(SymbolicVariableActivity act) {
 		dis.finish(act);
 	}

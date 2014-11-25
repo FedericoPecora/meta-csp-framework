@@ -32,6 +32,10 @@ public class ConstraintNetworkAnimator extends Thread {
 
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
+	protected long getCurrentTimeInMillis() {
+		return Calendar.getInstance().getTimeInMillis();
+	}
+	
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, InferenceCallback cb) {
 		this(ans, period);
 		this.cb = cb;
@@ -42,7 +46,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			this.ans = ans;
 			this.period = period;
 			originOfTime = ans.getOrigin();
-			firstTick = Calendar.getInstance().getTimeInMillis();
+			firstTick = getCurrentTimeInMillis();
 
 			this.cn = ans.getConstraintNetwork();
 
@@ -101,7 +105,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	}
 
 	private long getTimeNow() {
-		return Calendar.getInstance().getTimeInMillis()-firstTick+originOfTime;
+		return getCurrentTimeInMillis()-firstTick+originOfTime;
 	}
 
 

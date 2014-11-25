@@ -174,6 +174,11 @@ public class TestHybridPlanningWithSensingAndDispatching {
 				executingActs.add(act);
 
 			}
+			@Override
+			public boolean skip(SymbolicVariableActivity act) {
+				// TODO Auto-generated method stub
+				return false;
+			}
 		};
 		dispatches.add(df);
 
@@ -233,6 +238,12 @@ public class TestHybridPlanningWithSensingAndDispatching {
 					metaSpatialAdherence.setSpatialAssertionalRelations(saRelations);	
 					counter++;
 				}
+			}
+
+			@Override
+			public boolean skip(SymbolicVariableActivity act) {
+				// TODO Auto-generated method stub
+				return false;
 			}
 
 		};
