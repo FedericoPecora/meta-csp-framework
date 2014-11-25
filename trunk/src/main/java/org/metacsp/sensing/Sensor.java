@@ -58,6 +58,7 @@ public class Sensor implements Serializable {
 					ans.removeConstraint(currentMeetsFuture);
 					boolean ret = ans.addConstraint(deadline);
 					if (!ret) throw new NetworkMaintenanceError(deadline);
+					//if (!ret) throw new NetworkMaintenanceError(future.getTemporalVariable().getEST(),timeNow);
 					makeNew = true;
 				}
 			}
@@ -73,7 +74,8 @@ public class Sensor implements Serializable {
 				currentAct = act;
 				currentMeetsFuture = meetsFuture;
 				boolean ret = ans.addConstraints(new Constraint[] {rel,meetsFuture});
-				if (!ret) throw new NetworkMaintenanceError(rel,meetsFuture);
+				//if (!ret) throw new NetworkMaintenanceError(rel,meetsFuture);
+				if (!ret) throw new NetworkMaintenanceError(future.getTemporalVariable().getEST(),timeNow);
 				logger.info("" + currentAct);
 			}
 		}

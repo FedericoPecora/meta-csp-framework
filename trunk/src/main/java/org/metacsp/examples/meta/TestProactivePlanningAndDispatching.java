@@ -61,6 +61,11 @@ public class TestProactivePlanningAndDispatching {
 				System.out.println(">>>>>>>>>>>>>> Dispatched " + act);
 				executingActs.add(act);
 			}
+			@Override
+			public boolean skip(SymbolicVariableActivity act) {
+				// TODO Auto-generated method stub
+				return false;
+			}
 		}; 
 		
 		animator.addDispatchingFunctions(ans, df);

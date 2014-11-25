@@ -58,7 +58,8 @@ public class Dispatcher extends Thread {
 					for (Variable var : cn.getVariables(component)) {
 						if (var instanceof SymbolicVariableActivity) {
 							SymbolicVariableActivity act = (SymbolicVariableActivity)var;
-
+							if (dfs.get(component).skip(act)) continue;
+							
 							//New act, tag as not dispatched
 							if (!acts.containsKey(act)) {
 								boolean skip = false;
@@ -106,7 +107,7 @@ public class Dispatcher extends Thread {
 								AllenIntervalConstraint deadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(future.getTemporalVariable().getEST(),future.getTemporalVariable().getEST()));
 								deadline.setFrom(act);
 								deadline.setTo(act);
-								ans.addConstraint(deadline);
+								if (!ans.addConstraint(deadline)) System.out.println("++++++++++++++++++++ SHIT: " + act);
 							}							
 						}
 					}

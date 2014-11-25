@@ -21,6 +21,7 @@ import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.meta.TCSP.TCSPSolver;
 import org.metacsp.meta.symbolsAndTime.Scheduler;
+import org.metacsp.throwables.NoFocusDefinedException;
 import org.metacsp.utility.UI.SearchTreeFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
@@ -69,7 +70,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolversInverseMapping;
 	protected long animationTime = 0;
-	protected int counterMoves;	
+	protected int counterMoves;
+	protected FocusConstraint currentFocus = null;
 	
 	private Vector<HashMap<ConstraintSolver,byte[]>> backedUpCNs = new Vector<HashMap<ConstraintSolver,byte[]>>();
 	
@@ -649,6 +651,61 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
 	public int getCounterMoves() {
 		return counterMoves;
+	}
+	
+	public FocusConstraint getCurrentFocus() {
+		return currentFocus;
+	}
+
+//	private void removeFromConstraintSolvers() {
+//		if (currentFocus != null) {
+//			for (ConstraintSolver cs : this.getConstraintSolvers()) {
+//				cs.removeConstraint(currentFocus);
+//			}
+//		}		
+//	}
+//	
+//	private void addToConstraintSolvers() {
+//		for (ConstraintSolver cs : this.getConstraintSolvers()) {
+//			cs.addConstraint(currentFocus);
+//		}
+//	}
+	
+	public void setCurrentFocus(FocusConstraint focus) {
+		this.currentFocus = focus;
+	}
+	
+	public Variable[] getCurrentFocusVariables() {
+		if (currentFocus != null) return currentFocus.getScope();
+		return null;
+	}
+	
+	public void setCurrentFocusVariables(Variable ... vars) {
+		currentFocus = new FocusConstraint();
+		currentFocus.setScope(vars);
+	}
+
+	public void addToCurrentFocus(Variable ... vars) {
+		if (currentFocus == null) {
+			currentFocus = new FocusConstraint();
+		}
+		Vector<Variable> scopeVars = new Vector<Variable>();
+		for (Variable v : currentFocus.getScope()) scopeVars.add(v);
+		for (Variable v : vars) scopeVars.add(v);
+		currentFocus.setScope(scopeVars.toArray(new Variable[scopeVars.size()]));
+	}
+	
+	public void removeFromCurrentFocus(Variable ... vars) {
+		if (currentFocus == null) throw new NoFocusDefinedException(vars);
+		Vector<Variable> newScope = new Vector<Variable>();
+		for (Variable vOld : currentFocus.getScope()) {
+			boolean found = false;
+			for (Variable vToRem : vars) {
+				if (vOld.equals(vToRem)) found = true;
+			}
+			if (!found) newScope.add(vOld);
+		}
+		currentFocus.setScope(newScope.toArray(new Variable[newScope.size()]));
 	}
 
 	public void setCounterMoves(int counterMoves) {
