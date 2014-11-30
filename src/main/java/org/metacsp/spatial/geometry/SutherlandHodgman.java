@@ -5,6 +5,7 @@ import java.util.*;
 public class SutherlandHodgman{
 
 	List<double[]> subject, clipper, result; 
+	Vector<Vec2> pol = new Vector<Vec2>();
     public SutherlandHodgman(Polygon p1, Polygon p2) {
 //    	double[][] clipPoints = {{100, 100}, {150, 80}, {300, 130}, {320, 300},
 //        {200, 220}};
@@ -18,6 +19,7 @@ public class SutherlandHodgman{
     	for (int i = 0; i < clipPoints.length; i++) {
         	clipPoints[i][0] = p1vec[i].x;
         	clipPoints[i][1] = p1vec[i].y;
+        	pol.add(new Vec2(p1vec[i].x, p1vec[i].y));
 		}
     	double[][] subjPoints = new double[p2.getVertexCount()][2];
 //        Vec2[] p2vec = ((Vertex)p2.getDomain()).getVertices();
@@ -33,8 +35,8 @@ public class SutherlandHodgman{
  
         clipPolygon();
         
-//        for (int i = 0; i < subject.size(); i++) {
-//				System.out.println(subject.get(i)[0] + " " + subject.get(i)[1]);
+//        for (int i = 0; i < clipPoints.size(); i++) {
+//				System.out.println(clipPoints.get(i)[0] + " " + clipPoints.get(i)[1]);
 //		}
 //        System.out.println();
 //        for (int i = 0; i < clipper.size(); i++) {
@@ -50,8 +52,25 @@ public class SutherlandHodgman{
     	Vec2[] ret = new Vec2[result.size()];
     	for (int i = 0; i < result.size(); i++) {
     		ret[i] = new Vec2((float)result.get(i)[0], (float)result.get(i)[1]);
-//			System.out.println(result.get(i)[0] + " " + result.get(i)[1]);
     	}
+    	return ret;
+    }
+    
+    public Vector<Vec2> getContactPoints(){
+    	
+    	Vector<Vec2> ret = new Vector<Vec2>();
+		float EPSILON = 0.003f;
+		for (int i = 0; i < this.getClippedResult().length; i++) {
+			boolean found = false;
+			for (int j = 0; j < pol.size(); j++) {				
+				if(Math.abs(pol.get(j).x - this.getClippedResult()[i].x) < EPSILON &&
+						Math.abs(pol.get(j).y - this.getClippedResult()[i].y) < EPSILON) found = true;						
+			}
+			if(!found) {
+				ret.add(this.getClippedResult()[i]);
+//				System.out.println("p1: " + this.getClippedResult()[i].x + " " +this.getClippedResult()[i].y);
+			}
+		}
     	return ret;
     }
     
@@ -97,7 +116,7 @@ public class SutherlandHodgman{
         double det = A1 * B2 - A2 * B1;
         double x = (B2 * C1 - B1 * C2) / det;
         double y = (A1 * C2 - A2 * C1) / det;
- 
+        
         return new double[]{x, y};
     }
 

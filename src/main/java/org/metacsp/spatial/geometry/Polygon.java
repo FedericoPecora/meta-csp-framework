@@ -467,5 +467,6 @@ public class Polygon extends Variable {
 //		System.out.println("-----------------------------------------");
 		return vecs;
 	}
+
 	
 }
