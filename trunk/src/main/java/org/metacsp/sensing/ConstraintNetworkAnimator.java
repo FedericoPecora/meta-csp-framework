@@ -27,6 +27,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	private HashMap<Sensor,HashMap<Long,String>> sensorValues = new HashMap<Sensor, HashMap<Long,String>>();
 	private InferenceCallback cb = null;
 	private Dispatcher dis = null;
+	private boolean paused = false;
 
 	private HashMap<Controllable,HashMap<Long,String>> controllableValues = new HashMap<Controllable, HashMap<Long,String>>();
 
@@ -35,13 +36,23 @@ public class ConstraintNetworkAnimator extends Thread {
 	protected long getCurrentTimeInMillis() {
 		return Calendar.getInstance().getTimeInMillis();
 	}
-	
+
+	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, InferenceCallback cb, boolean startPaused) {
+		this(ans, period, startPaused);
+		this.cb = cb;
+	}
+
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, InferenceCallback cb) {
 		this(ans, period);
 		this.cb = cb;
 	}
 
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period) {
+		this(ans,period,false);
+	}
+
+	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, boolean startPaused) {
+		this.paused = startPaused;
 		synchronized(ans) {
 			this.ans = ans;
 			this.period = period;
@@ -107,7 +118,10 @@ public class ConstraintNetworkAnimator extends Thread {
 	private long getTimeNow() {
 		return getCurrentTimeInMillis()-firstTick+originOfTime;
 	}
-
+	
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
 
 	public void run() {
 		int iteration = 0;
@@ -115,36 +129,38 @@ public class ConstraintNetworkAnimator extends Thread {
 			try { Thread.sleep(period); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 
-			synchronized(ans) {
-				//Update release constraint of Future
-				long timeNow = getTimeNow();
-				AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
-				releaseFuture.setFrom(future);
-				releaseFuture.setTo(future);
-				if (currentReleaseFuture != null) ans.removeConstraint(currentReleaseFuture);
-				if (!ans.addConstraint(releaseFuture)) {
-					throw new NetworkMaintenanceError(releaseFuture);
-				}
-				currentReleaseFuture = releaseFuture;
-
-				//If there are registered sensor traces, animate them too
-				for (Sensor sensor : sensorValues.keySet()) {
-					Vector<Long> toRemove = new Vector<Long>();
-					HashMap<Long,String> values = sensorValues.get(sensor);
-					for (long time : values.keySet()) {
-						if (time <= timeNow) {
-							sensor.modelSensorValue(values.get(time), time);
-							toRemove.add(time);
-						}
+			if (!paused) {
+				synchronized(ans) {
+					//Update release constraint of Future
+					long timeNow = getTimeNow();
+					AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
+					releaseFuture.setFrom(future);
+					releaseFuture.setTo(future);
+					if (currentReleaseFuture != null) ans.removeConstraint(currentReleaseFuture);
+					if (!ans.addConstraint(releaseFuture)) {
+						throw new NetworkMaintenanceError(releaseFuture);
 					}
-					for (long time : toRemove) values.remove(time);
+					currentReleaseFuture = releaseFuture;
+
+					//If there are registered sensor traces, animate them too
+					for (Sensor sensor : sensorValues.keySet()) {
+						Vector<Long> toRemove = new Vector<Long>();
+						HashMap<Long,String> values = sensorValues.get(sensor);
+						for (long time : values.keySet()) {
+							if (time <= timeNow) {
+								sensor.modelSensorValue(values.get(time), time);
+								toRemove.add(time);
+							}
+						}
+						for (long time : toRemove) values.remove(time);
+					}
+
+					//If there is a registered InferenceCallback (e.g., call a planner), run it
+					if (this.cb != null) cb.doInference(timeNow);
+
+					//Print iteration number
+					logger.info("Iteration " + iteration++ + " @" + timeNow);
 				}
-
-				//If there is a registered InferenceCallback (e.g., call a planner), run it
-				if (this.cb != null) cb.doInference(timeNow);
-
-				//Print iteration number
-				logger.info("Iteration " + iteration++ + " @" + timeNow);
 			}
 		}
 	}
