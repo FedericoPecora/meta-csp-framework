@@ -653,7 +653,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		return counterMoves;
 	}
 	
-	public FocusConstraint getCurrentFocus() {
+	public FocusConstraint getCurrentFocusConstraint() {
 		return currentFocus;
 	}
 
@@ -671,21 +671,29 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 //		}
 //	}
 	
-	public void setCurrentFocus(FocusConstraint focus) {
+	public synchronized void setCurrentFocusConstraint(FocusConstraint focus) {
 		this.currentFocus = focus;
 	}
 	
-	public Variable[] getCurrentFocusVariables() {
+	public synchronized Variable[] getFocused() {
 		if (currentFocus != null) return currentFocus.getScope();
 		return null;
 	}
 	
-	public void setCurrentFocusVariables(Variable ... vars) {
+	public synchronized void setFocus(Variable ... vars) {
 		currentFocus = new FocusConstraint();
 		currentFocus.setScope(vars);
 	}
+	
+	public synchronized boolean isFocused(Variable var) {
+		if (currentFocus == null) return false;
+		for (Variable v : getFocused()) {
+			if (v.equals(var)) return true;
+		}
+		return false;
+	}
 
-	public void addToCurrentFocus(Variable ... vars) {
+	public synchronized void focus(Variable ... vars) {
 		if (currentFocus == null) {
 			currentFocus = new FocusConstraint();
 		}
@@ -695,7 +703,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		currentFocus.setScope(scopeVars.toArray(new Variable[scopeVars.size()]));
 	}
 	
-	public void removeFromCurrentFocus(Variable ... vars) {
+	public synchronized void removeFromCurrentFocus(Variable ... vars) {
 		if (currentFocus == null) throw new NoFocusDefinedException(vars);
 		Vector<Variable> newScope = new Vector<Variable>();
 		for (Variable vOld : currentFocus.getScope()) {
