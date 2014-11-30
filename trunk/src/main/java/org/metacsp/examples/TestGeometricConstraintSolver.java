@@ -14,7 +14,7 @@ public class TestGeometricConstraintSolver {
 	public static void main(String[] args) {
 
 		GeometricConstraintSolver solver = new GeometricConstraintSolver();
-		Variable[] vars = solver.createVariables(3);
+		Variable[] vars = solver.createVariables(3, "P");
 		
 //		Polygon p0 = (Polygon)vars[0];
 //		Vector<Vec2> vecs1 = new Vector<Vec2>();
