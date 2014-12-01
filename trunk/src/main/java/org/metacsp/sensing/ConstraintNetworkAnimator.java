@@ -31,7 +31,7 @@ public class ConstraintNetworkAnimator extends Thread {
 
 	private HashMap<Controllable,HashMap<Long,String>> controllableValues = new HashMap<Controllable, HashMap<Long,String>>();
 
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	private transient Logger logger = MetaCSPLogging.getLogger(ConstraintNetworkAnimator.class);
 
 	protected long getCurrentTimeInMillis() {
 		return Calendar.getInstance().getTimeInMillis();
@@ -58,9 +58,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			this.period = period;
 			originOfTime = ans.getOrigin();
 			firstTick = getCurrentTimeInMillis();
-
 			this.cn = ans.getConstraintNetwork();
-
 			future = (SymbolicVariableActivity)ans.createVariable("Time");
 			future.setSymbolicDomain("Future");
 			future.setMarking(markings.JUSTIFIED);

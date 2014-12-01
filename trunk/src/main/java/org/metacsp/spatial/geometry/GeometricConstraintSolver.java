@@ -26,22 +26,22 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 
 	@Override
 	public boolean propagate() {
-//		if(!super.propagate()) return false;
-//		Constraint[] cons = this.getConstraints();	
-//		for (int i = 0; i < cons.length; i++) {
-//			if(!super.propagate()) return false;
-//			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
-//				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-//				if(manifold.isCollided()){
-//					System.out.println("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
-//					applyDCcliping((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-//				}				
-//			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
-//				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-//				System.out.println("PROPAGATED INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
-//				//}
-//			}				
-//		}		
+		if(!super.propagate()) return false;
+		Constraint[] cons = this.getConstraints();	
+		for (int i = 0; i < cons.length; i++) {
+			if(!super.propagate()) return false;
+			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
+				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				if(manifold.isCollided()){
+					System.out.println("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
+					applyDCcliping((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				}				
+			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
+				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				System.out.println("PROPAGATED INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
+				//}
+			}				
+		}		
 		return true;
 	}
 
