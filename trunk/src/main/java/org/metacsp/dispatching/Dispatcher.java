@@ -107,7 +107,13 @@ public class Dispatcher extends Thread {
 								AllenIntervalConstraint deadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(future.getTemporalVariable().getEST(),future.getTemporalVariable().getEST()));
 								deadline.setFrom(act);
 								deadline.setTo(act);
-								if (!ans.addConstraint(deadline)) System.out.println("++++++++++++++++++++ SHIT: " + act + " DAEDLINE AT " + future.getTemporalVariable().getEST());
+								if (!ans.addConstraint(deadline)) {
+									AllenIntervalConstraint defaultDeadline = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(act.getTemporalVariable().getEET(),act.getTemporalVariable().getEET()));
+									defaultDeadline.setFrom(act);
+									defaultDeadline.setTo(act);
+									ans.addConstraint(defaultDeadline);
+									//System.out.println("++++++++++++++++++++ SHIT: " + act + " DAEDLINE AT " + future.getTemporalVariable().getEST());
+								}
 							}							
 						}
 					}
