@@ -81,18 +81,22 @@ public class ConstraintNetworkAnimator extends Thread {
 
 	public ActivityNetworkSolver getActivityNetworkSolver() { return this.ans; }
 
-	public synchronized void postSensorValueToDispatch(Sensor sensor, long time, String value) {
-		if (!this.sensorValues.keySet().contains(sensor))
-			this.sensorValues.put(sensor, new HashMap<Long, String>());
-		HashMap<Long, String> sensorVal = this.sensorValues.get(sensor);
-		sensorVal.put(time, value);
+	public void postSensorValueToDispatch(Sensor sensor, long time, String value) {
+		synchronized(ans) {
+			if (!this.sensorValues.keySet().contains(sensor))
+				this.sensorValues.put(sensor, new HashMap<Long, String>());
+			HashMap<Long, String> sensorVal = this.sensorValues.get(sensor);
+			sensorVal.put(time, value);
+		}
 	}
 
-	public synchronized void postControllableValueToDispatch(Controllable controllable, long time, String value) {
-		if (!this.controllableValues.keySet().contains(controllable))
-			this.controllableValues.put(controllable, new HashMap<Long, String>());
-		HashMap<Long, String> contrVal = this.controllableValues.get(controllable);
-		contrVal.put(time, value);
+	public void postControllableValueToDispatch(Controllable controllable, long time, String value) {
+		synchronized(ans) {
+			if (!this.controllableValues.keySet().contains(controllable))
+				this.controllableValues.put(controllable, new HashMap<Long, String>());
+			HashMap<Long, String> contrVal = this.controllableValues.get(controllable);
+			contrVal.put(time, value);
+		}
 	}
 
 	public void registerSensorValuesToDispatch(Sensor sensor, HashMap<Long,String> values) {

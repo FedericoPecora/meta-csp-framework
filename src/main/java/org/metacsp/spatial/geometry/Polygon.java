@@ -26,11 +26,13 @@ public class Polygon extends Variable {
 	
 	private boolean hasDefaultDomain = true;
 	
+	private float orientation;
+	
 	protected Polygon(ConstraintSolver cs, int id) {
 		super(cs, id);
 		this.setInitialDomain();
 	}
-
+	
 	public boolean hasDefaultDomain() {
 		return hasDefaultDomain;
 	}
@@ -195,6 +197,14 @@ public class Polygon extends Variable {
 	
 	}
 
+	public float getOrientation() {
+		return orientation;
+	}
+	
+	public void setOrientation(float or) {
+		this.orientation = or;
+	}
+	
 	private void setOrient( float radians )
 	{
 		u.set( radians );

@@ -98,11 +98,12 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			p1Domain[i] = new Vec2(p1.getFullSpaceRepresentation().get(i).x + difx, p1.getFullSpaceRepresentation().get(i).y + dify);
 		}
 		p1.setDomain(p1Domain);
-		if(checkInside(p1, p2)) return true;
-		else{
-			p1.setDomain(p1Copy);
-			return false;
+		if(checkInside(p1, p2)) {
+			p1.setOrientation(p2.getOrientation());
+			return true;
 		}
+		p1.setDomain(p1Copy);
+		return false;
 
 //		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
 //		p1.setDomain(slh.getClippedResult());			
