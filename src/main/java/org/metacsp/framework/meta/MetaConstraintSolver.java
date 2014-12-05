@@ -67,6 +67,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	protected DelegateForest<MetaVariable,ConstraintNetwork> g;
 	protected MetaVariable currentVertex = null;
 	protected boolean breakSearch = false;
+	protected HashMap<ConstraintNetwork,MetaConstraint> metaVarsToMetaCons;
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolvers;
 	protected HashMap<ConstraintNetwork,ConstraintNetwork> resolversInverseMapping;
 	protected long animationTime = 0;
@@ -107,6 +108,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		}
 		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();
 		this.resolversInverseMapping = new HashMap<ConstraintNetwork, ConstraintNetwork>();
+		this.metaVarsToMetaCons.clear();
 	}
 
 	/**
@@ -117,6 +119,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 */
 	public void clearResolvers() {
 		this.resolvers = new HashMap<ConstraintNetwork, ConstraintNetwork>();
+		this.metaVarsToMetaCons = new HashMap<ConstraintNetwork, MetaConstraint>();
 	}
 
 	protected class TerminalNode extends MetaVariable {
@@ -136,6 +139,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		g = new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.animationTime = animationTime;
 		this.resolvers = new HashMap<ConstraintNetwork,ConstraintNetwork>();
+		this.metaVarsToMetaCons= new HashMap<ConstraintNetwork, MetaConstraint>(); 
 		this.resolversInverseMapping = new HashMap<ConstraintNetwork,ConstraintNetwork>();
 		this.counterMoves=0;
 	}
@@ -242,6 +246,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
+					this.metaVarsToMetaCons.put(mostProblematicNetwork, metaVariable.getMetaConstraint());
 					this.resolversInverseMapping.put(value,mostProblematicNetwork);
 					this.counterMoves++;
 
@@ -262,6 +267,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					logger.fine("Retracting value: " + Arrays.toString(value.getConstraints()));		
 					this.retractResolver(mostProblematicNetwork, value);
 					this.resolvers.remove(mostProblematicNetwork);		
+					this.metaVarsToMetaCons.remove(mostProblematicNetwork);
 					this.resolversInverseMapping.remove(value);
 					this.counterMoves--;
 
@@ -378,6 +384,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				
 				if (this.addResolver(mostProblematicNetwork, value)) {
 					this.resolvers.put(mostProblematicNetwork, value);
+					this.metaVarsToMetaCons.put(mostProblematicNetwork,metaVariable.getMetaConstraint());
 					this.resolversInverseMapping.put(value,mostProblematicNetwork);
 					this.counterMoves++;
 
@@ -401,6 +408,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 					this.restoreCNs();
 					this.retractResolverSub(mostProblematicNetwork, value);
 					this.resolvers.remove(mostProblematicNetwork);
+					this.metaVarsToMetaCons.remove(mostProblematicNetwork);
 					this.resolversInverseMapping.remove(value);
 					this.counterMoves--;
 				}
@@ -647,6 +655,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		this.counterMoves=0;
 		this.g=new DelegateForest<MetaVariable,ConstraintNetwork>();
 		this.resolvers.clear();
+		this.metaVarsToMetaCons.clear();
 	}
 
 	public int getCounterMoves() {
@@ -730,6 +739,10 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 
 	public void setResolvers(HashMap<ConstraintNetwork, ConstraintNetwork> resolvers) {
 		this.resolvers = resolvers;
+	}
+	
+	public MetaConstraint getMetaConstraint(ConstraintNetwork metaVariable) {
+		return this.metaVarsToMetaCons.get(metaVariable);
 	}
 	
 
