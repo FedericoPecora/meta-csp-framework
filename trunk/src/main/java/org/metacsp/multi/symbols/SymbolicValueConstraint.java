@@ -61,6 +61,10 @@ public class SymbolicValueConstraint extends MultiConstraint {
 		this.unaryValue = unaryValue;
 	}
 	
+	public String[] getValue() {
+		return this.unaryValueStrings;
+	}
+	
 	public void setValue(boolean[] unaryValue) {
 		this.unaryValue = unaryValue;
 	}
