@@ -85,8 +85,8 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 		int[] ret = new int[2];
 //		ret[0] = Math.round(this.zoomInv*xSpan*(x-deltaX+paddingPixels)/dim.width);
 //		ret[1] = Math.round(this.zoomInv*ySpan*(y-deltaY+paddingPixels)/dim.height);
-		ret[0] = Math.round(this.zoomInv*(x-deltaX+paddingPixels));
-		ret[1] = Math.round(this.zoomInv*(y-deltaY+paddingPixels));
+		ret[0] = Math.round(this.zoomInv*(x-deltaX)+paddingPixels);
+		ret[1] = Math.round(this.zoomInv*(y-deltaY)+paddingPixels);
 		return ret;
 	}
 
@@ -169,8 +169,8 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
 				//java.awt.Point pStart = arg0.getPoint();
-				deltaX += originX-arg0.getX();
-				deltaY += originY-arg0.getY();
+				deltaX += (originX-arg0.getX())*zoom;
+				deltaY += (originY-arg0.getY())*zoom;
 				originX = arg0.getX();
 				originY = arg0.getY();
 				repaint();
@@ -182,7 +182,7 @@ public class PolygonFrame extends JFrame implements ConstraintNetworkChangeListe
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent arg0) {
 				int rot = arg0.getWheelRotation();
-				zoom += (0.01*rot);
+				zoom += (0.001*rot);
 				zoomInv = 1/zoom;
 				repaint();
 			}
