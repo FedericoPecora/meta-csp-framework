@@ -33,12 +33,12 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
 				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				if(manifold.isCollided()){
-					System.out.println("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
+					logger.finest("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
 					applyDCcliping((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				}				
 			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
 				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-				System.out.println("PROPAGATED INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
+				logger.finest("PROPAGATED INSIDE between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
 				//}
 			}				
 		}		
@@ -209,7 +209,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 	@Override
 	protected void removeConstraintsSub(Constraint[] c) {
 		for (int i = 0; i < c.length; i++) {
-			System.out.println("remove constraint between Polygon " + ((Polygon)((GeometricConstraint)c[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)c[i]).getTo()).getID());
+			logger.finest("Removed constraint between Polygon " + ((Polygon)((GeometricConstraint)c[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)c[i]).getTo()).getID());
 			HashMap<Polygon, Vec2[]> temp = constraintTrack.get((GeometricConstraint)c[i]);
 			for (Polygon p : temp.keySet()) {
 				p.setDomain(temp.get(p));

@@ -33,19 +33,34 @@ public class Polygon extends Variable {
 		this.setInitialDomain();
 	}
 	
+	/**
+	 * Returns whether or not the domain of this {@link Polygon} has been refined.
+	 * @return <code>true</code> iff the domain of this {@link Polygon} has been refined.
+	 */
 	public boolean hasDefaultDomain() {
 		return hasDefaultDomain;
 	}
 	
+	/**
+	 * Set whether this {@link Polygon} is movable. 
+	 * @param isMovable Whether this {@link Polygon} is movable.
+	 */
 	public void setMovable(boolean isMovable){
 		this.isMovable = isMovable;
 	}
 
+	/**
+	 * Query whether this {@link Polygon} is movable.
+	 * @return <code>true</code> iff this {@link Polygon} is movable.
+	 */
 	public boolean isMovable(){
 		return this.isMovable;
 	}
 
-	
+	/**
+	 * Get number of vertices in this {@link Polygon}.
+	 * @return The number of vertices in this {@link Polygon}.
+	 */
 	public int getVertexCount(){
 		return vertexCount;
 	}
@@ -67,6 +82,10 @@ public class Polygon extends Variable {
 		
 	}
 	
+	/**
+	 * Set the domain of this {@link Polygon}, its vertices.
+	 * @param verts The vertices of this {@link Polygon}.
+	 */
 	public void setDomain(Vec2 ... verts){
 		dom = new Vertex(this);
 		vertexCount = verts.length;
@@ -98,7 +117,7 @@ public class Polygon extends Variable {
 		return ret;
 	}
 
-	public void initialize()
+	private void initialize()
 	{
 		computeMass( 1.0f );
 	}
@@ -197,10 +216,18 @@ public class Polygon extends Variable {
 	
 	}
 
+	/**
+	 * Get the orientation of this polygon (in radians).
+	 * @return The orientation of this polygon (in radians).
+	 */
 	public float getOrientation() {
 		return orientation;
 	}
 	
+	/**
+	 * Set the orientation of this polygon (in radians).
+	 * @param or The orientation of this polygon (in radians).
+	 */
 	public void setOrientation(float or) {
 		this.orientation = or;
 	}
@@ -415,6 +442,7 @@ public class Polygon extends Variable {
 		((Vertex)this.dom).setVertices(vertices);
 	}
 
+	
 	public Vec2 getSupport( Vec2 dir )
 	{
 		float bestProjection = -Float.MAX_VALUE;
@@ -434,11 +462,19 @@ public class Polygon extends Variable {
 		return bestVertex;
 	}
 
+	/**
+	 * Get the reference position of this {@link Polygon}.
+	 * @return The reference position of this {@link Polygon}.
+	 */
 	public Vec2 getPosition() {
 		return position;
 	}
 
-	void setPosition(Vec2 position) {
+	/**
+	 * Set the reference position of this {@link Polygon}.
+	 * @param position The reference position of this {@link Polygon}.
+	 */
+	public void setPosition(Vec2 position) {
 		this.position = position;
 	}
 	

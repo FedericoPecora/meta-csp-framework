@@ -91,42 +91,42 @@ public class RCCConstraint extends BinaryConstraint{
 	public static enum Type {
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DISCONNECTED B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-dc.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DISCONNECTED B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-dc.png alt=""> 
 		 */
 		DC, //DisConnected
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EXTERNALLY-CONNECTED B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-ec.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EXTERNALLY-CONNECTED B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-ec.png alt=""> 
 		 */
 		EC, //Externally Connected
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A PARTIALLY-OVERLAPPING B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-po.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A PARTIALLY-OVERLAPPING B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-po.png alt=""> 
 		 */
 		PO, //Partially Overlapping
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-tpp.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-tpp.png alt=""> 
 		 */
 		TPP, //Tangential Proper Part
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A NON-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-ntpp.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A NON-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-ntpp.png alt=""> 
 		 */
 		NTPP, //Non-Tangential Proper Part
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A INVERSE-OF-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-tppi.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A INVERSE-OF-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-tppi.png alt=""> 
 		 */
 		TPPI, //Inverse of Tangential Proper Part
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A INVERSE-OF-NON-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-ntppi.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A INVERSE-OF-NON-TANGENTIAL-PROPER-PART B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-ntppi.png alt=""> 
 		 */
 		NTPPI, //inverse of Non-Tangential Proper Part
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/rcc8-e.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/rcc8-e.png alt=""> 
 		 */
 		EQ //EQual
 	};
