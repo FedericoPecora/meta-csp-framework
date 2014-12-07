@@ -48,68 +48,68 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 	public static enum Type {
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/beforeQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/beforeQ.png alt=""> 
 		 */
 		Before,
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MEETS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/meetsQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MEETS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/meetsQ.png alt=""> 
 		 */
 		Meets,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/overlapsQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/overlapsQ.png alt=""> 
 		 */
 		Overlaps,
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/finishedbyQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/finishedbyQ.png alt=""> 
 		 */
 		FinishedBy,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/containsQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/containsQ.png alt=""> 
 		 */
 		Contains,
 
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/startedbyQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/startedbyQ.png alt=""> 
 		 */
 		StartedBy,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/equalsQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/equalsQ.png alt=""> 
 		 */
 		Equals,
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/startsQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/startsQ.png alt=""> 
 		 */
 		Starts,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/duringQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/duringQ.png alt=""> 
 		 */
 		During,
 
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/finishesQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/finishesQ.png alt=""> 
 		 */
 		Finishes,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/overlappedbyQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/overlappedbyQ.png alt=""> 
 		 */
 		OverlappedBy,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MET-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/metbyQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MET-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/metbyQ.png alt=""> 
 		 */
 		MetBy,
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/afterQ.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../images/afterQ.png alt=""> 
 		 */
 		After
 	};
@@ -573,7 +573,7 @@ public class QualitativeAllenIntervalConstraint extends BinaryConstraint {
 	}
 	
 	/**
-	 * Define whether an Allen relation (disjunction of basic Allen relations) is pre-convex or not, R is a preconvex(weakly preconvex) relation if dim(I(R)\R) < dim(R)  
+	 * Define whether an Allen relation (disjunction of basic Allen relations) is pre-convex or not, R is a pre-convex (weakly preconvex) relation if dim(I(R)\R) &lt; dim(R)  
 	 * @param types an array of basic Allen relations representing the disjunction we want to test.
 	 * @return true iff the relation is preconvex (weakly preconvex).
 	 */

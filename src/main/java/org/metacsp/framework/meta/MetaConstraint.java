@@ -156,26 +156,33 @@ public abstract class MetaConstraint extends Constraint {
 	}
 	
 	/**
-	 * Method to get the Variable Ordering function
+	 * Method to get the Variable Ordering heuristic used by this {@link MetaConstraint}.
+	 * @return the Variable Ordering heuristic used by this {@link MetaConstraint}.
 	 */
 	public VariableOrderingH getVarOH() {
 		return varOH;
 	}
-	/**
-	 * Method to set the Variable Ordering function
-	 */
+	
 
+	/**
+	 * Method to set the Variable Ordering heuristic of this {@link MetaConstraint}.
+	 * @param varOH the Variable Ordering heuristic of this {@link MetaConstraint}
+	 */
 	public void setVarOH(VariableOrderingH varOH) {
 		this.varOH = varOH;
 	}
+
 	/**
-	 * Method to get the Value Ordering function
+	 * Method to get the Value Ordering heuristic used by this {@link MetaConstraint}.
+	 * @return the Value Ordering heuristic used by this {@link MetaConstraint}.
 	 */
 	public ValueOrderingH getValOH() {
 		return valOH;
 	}
+	
 	/**
-	 * Method to set the Value Ordering function
+	 * Method to set the Value Ordering heuristic of this {@link MetaConstraint}.
+	 * @param valOH the Value Ordering heuristic of this {@link MetaConstraint}
 	 */
 	public void setValOH(ValueOrderingH valOH) {
 		this.valOH = valOH;

@@ -75,9 +75,6 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 	
 	/**
 	 * Get the minimum and maximum allowed distance between the global source and a {@link TimePoint}. 
-	 * Calling this function is equivalent to calling 
-	 * {@link #getAdmissibleDistanceBounds(TimePoint, TimePoint)}
-	 * With the parameters <code>(<i>Source</i>, tpTo)<code>.
 	 * @param tpTo the {@link TimePoint} whose temporal placement should be queried.
 	 * @return The allowed bounds of the {@link TimePoint}.
 	 */

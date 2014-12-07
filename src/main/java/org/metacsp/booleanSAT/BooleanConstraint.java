@@ -152,7 +152,7 @@ public class BooleanConstraint extends Constraint {
 	/**
 	 * A factory method for creating {@link BooleanConstraint}s from an arbitrary
 	 * propositional logic formula (wff).  Allowed connectives are
-	 * {'^' (and), 'v' (or), '~' (not), '->' (implies), '<->' (iff)}.
+	 * <code>^</code> (and), <code>v</code> (or), <code>~</code> (not), <code>-&gt;</code> (implies), <code>&lt;-&gt;</code> (iff)}.
 	 * Atoms in the formula should be named "xN" where
 	 * x is in [a-z] and N is in {1..<code>scope.length</code>}. The signature
 	 * of the formula must contain all and only the variables in the scope. 

@@ -56,67 +56,67 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		//Before,Meets,Overlaps,FinishedBy,Contains,StartedBy,Equals,Starts,During,Finishes,OverlappedBy,
 		//MetBy,After,
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-p.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A BEFORE [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-p.png alt=""> 
 		 */
 		Before(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MEETS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-m.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MEETS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-m.png alt=""> 
 		 */
 		Meets(0),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS [l,u][l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<img src=../../../../img/aaia-o.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPS [l,u][l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-o.png alt=""> 
 		 */
 		Overlaps(1L, APSPSolver.INF, 1L, APSPSolver.INF, 1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-fi.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-fi.png alt=""> 
 		 */
 		FinishedBy(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS [l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-di.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A CONTAINS [l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-di.png alt=""> 
 		 */
 		Contains(1L, APSPSolver.INF,   1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-si.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTED-BY [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-si.png alt=""> 
 		 */
 		StartedBy(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-e.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A EQUALS B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-e.png alt=""> 
 		 */
 		Equals(0),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-s.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A STARTS [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-s.png alt=""> 
 		 */
 		Starts(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING [l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-d.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A DURING [l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-d.png alt=""> 
 		 */
 		During(1L, APSPSolver.INF,   1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-f.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A FINISHES [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-f.png alt=""> 
 		 */
 		Finishes(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY [l,u][l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-oi.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A OVERLAPPED-BY [l,u][l,u][l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-oi.png alt=""> 
 		 */
 		OverlappedBy(1L, APSPSolver.INF, 1L, APSPSolver.INF, 1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-pi.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A AFTER [l,u] B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-pi.png alt=""> 
 		 */
 		After(1L, APSPSolver.INF),
 		
 		/**
-		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MET-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-mi.png> 
+		 * <br>&nbsp;&nbsp;&nbsp;Semantics: A MET-BY B<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=../../../../img/aaia-mi.png alt=""> 
 		 */
 		MetBy(0),
 		
