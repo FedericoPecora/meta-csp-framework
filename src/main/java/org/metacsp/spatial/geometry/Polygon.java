@@ -14,7 +14,7 @@ public class Polygon extends Variable {
 	
 	public static final int MAX_POLY_VERTEX_COUNT = 10;
 	private int vertexCount;
-	private boolean isMovable = false;
+	private boolean isMovable = true;
 	
 //	private Vec2[] vertices = Vec2.arrayOf( MAX_POLY_VERTEX_COUNT );
 	public Vec2[] normals = Vec2.arrayOf( MAX_POLY_VERTEX_COUNT );

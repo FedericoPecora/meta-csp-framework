@@ -34,7 +34,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				if(manifold.isCollided()){
 					logger.finest("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
-					applyDCcliping((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+					applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				}				
 			}else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
 				applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
@@ -152,11 +152,12 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 
 	
 	
-	private void applyPolygonSeparation(Polygon p1, Polygon p2) {
+	private boolean applyPolygonSeparation(Polygon p1, Polygon p2) {
 		Manifold manifold = new Manifold(p1, p2);
 		if(manifold.solve()){
 			manifold.positionalCorrection();
 		}
+		return true;
 	}
 
 	@Override
@@ -182,7 +183,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			constraintTrack.put((GeometricConstraint)c[i], poly2Domain);
 			//adding constraint
 			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){	
-				return applyDCcliping((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				return applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				//				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());			}
 			}
 			else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
