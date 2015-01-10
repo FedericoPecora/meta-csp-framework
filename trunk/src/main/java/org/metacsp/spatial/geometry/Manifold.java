@@ -43,7 +43,7 @@ public class Manifold {
 //			float correction = StrictMath.max( penetration - ImpulseMath.PENETRATION_ALLOWANCE, 0.0f );
 			float correction = penetration;
 //			if(A.incident) 
-				A.getPosition().addsi( normal, -(correction * (float)1.3)  );
+				A.getPosition().addsi( normal, -(correction * (float)1.1)  );
 //			if(B.incident) 
 //				B.position.addsi( normal, correction * ((float)1.0) );			
 //			A.position.addsi( normal, -A.invMass * correction );

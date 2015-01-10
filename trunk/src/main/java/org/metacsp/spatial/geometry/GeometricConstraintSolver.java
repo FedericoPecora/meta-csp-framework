@@ -105,8 +105,13 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		p1.setDomain(p1Copy);
 		return false;
 
-//		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
-//		p1.setDomain(slh.getClippedResult());			
+	}
+	
+	
+	public static Vec2[] getIntersectionPolygon(Polygon p1, Polygon p2){
+		SutherlandHodgman slh = new SutherlandHodgman(p1, p2);
+		Vec2[] ret = slh.getClippedResult();			
+		return ret;
 	}
 	
 	private boolean applyDCcliping(Polygon p1, Polygon p2) {
@@ -150,7 +155,14 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 	}
 	
 
-	
+	public static double getArea(Vec2[] vertices) {
+		double ret = 0;
+		for (int i = 0; i < vertices.length - 1; i++) {
+			ret+= (vertices[i].x * vertices[i + 1].y) - (vertices[i].y * vertices[i + 1].x);
+		}
+		ret = ret / 2.0;
+		return Math.abs(ret);
+	}
 	
 	private boolean applyPolygonSeparation(Polygon p1, Polygon p2) {
 		Manifold manifold = new Manifold(p1, p2);
