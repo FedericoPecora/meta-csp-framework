@@ -26,7 +26,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -76,20 +78,37 @@ public abstract class Timeline {
 		}
 	}
 	
+	private long computeOrigin() {
+		ArrayList<Long> startTimes = new ArrayList<Long>();
+		for (Variable v : an.getVariables()) {
+			if (v instanceof Activity) {
+				startTimes.add(((Activity) v).getTemporalVariable().getEST());
+			}
+		}
+		if (!startTimes.isEmpty()) {
+			Collections.sort(startTimes);
+			return startTimes.get(0);
+		}
+		return 0;
+	}
+
 	private void computePulses() {
 		Variable[] stVars = an.getVariables(component);
 		Vector<Long> pulsesTemp = new Vector<Long>();
-		if (stVars.length != 0 ) pulsesTemp.add(((ActivityNetworkSolver)stVars[0].getConstraintSolver()).getOrigin());
+		if (stVars.length != 0 ) pulsesTemp.add(computeOrigin());
 		else pulsesTemp.add(new Long(0));
 		for (int i = 0; i < stVars.length; i++) {
-			SymbolicVariableActivity act = (SymbolicVariableActivity)stVars[i];
-			long start = act.getTemporalVariable().getEST();
-			if (!pulsesTemp.contains(start)) {
-				pulsesTemp.add(start);
-			}
-			long end = act.getTemporalVariable().getEET();
-			if (!pulsesTemp.contains(end)) {
-				pulsesTemp.add(end);
+			if (stVars[i] instanceof Activity) {
+				//SymbolicVariableActivity act = (SymbolicVariableActivity)stVars[i];
+				Activity act = (Activity)stVars[i];
+				long start = act.getTemporalVariable().getEST();
+				if (!pulsesTemp.contains(start)) {
+					pulsesTemp.add(start);
+				}
+				long end = act.getTemporalVariable().getEET();
+				if (!pulsesTemp.contains(end)) {
+					pulsesTemp.add(end);
+				}
 			}
 		}		
 		pulses = pulsesTemp.toArray(new Long[pulsesTemp.size()]);
