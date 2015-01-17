@@ -60,7 +60,6 @@ public final class TimelinePublisher
 
 	private String[] components;
 	private ConstraintNetwork an;
-	private ActivityNetworkSolver ans;
 	private long min = Long.MAX_VALUE;
 	private long max = Long.MIN_VALUE;
 	private Bounds bounds;
@@ -112,7 +111,6 @@ public final class TimelinePublisher
 	public TimelinePublisher(ActivityNetworkSolver ans, Bounds bounds, boolean slidingWindow, String ... components)
 	{
 		this.components = components;
-		this.ans = ans;
 		this.an = ans.getConstraintNetwork();
 		this.bounds = bounds;
 		this.imageEncoder.start();
@@ -143,7 +141,6 @@ public final class TimelinePublisher
 	public TimelinePublisher(ActivityNetworkSolver ans, Bounds bounds, String ... components)
 	{
 		this.components = components;
-		this.ans = ans;
 		this.an = ans.getConstraintNetwork();
 		this.bounds = bounds;
 		this.imageEncoder.start();

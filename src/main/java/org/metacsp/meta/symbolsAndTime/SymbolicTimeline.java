@@ -65,13 +65,15 @@ public class SymbolicTimeline extends Timeline {
 		ArrayOfStrings[] ret = new ArrayOfStrings[getPulses().length];
 		for (int i = 0; i < getPulses().length-1; i++) {
 			for (Variable var : getConstraintNetwork().getVariables(component)) {
-				//SymbolicVariableActivity act = (SymbolicVariableActivity)var;
-				Activity act = (Activity)var;
-				if (act.getTemporalVariable().getEST() <= getPulses()[i] && act.getTemporalVariable().getEET() >= getPulses()[i+1]) {
-					//String[] dom = act.getSymbolicVariable().getSymbols();
-					String[] dom = act.getSymbols();
-					if (ret[i] == null) ret[i] = new ArrayOfStrings(dom);
-					else ret[i].union(dom);
+				if (var instanceof Activity) {
+					//SymbolicVariableActivity act = (SymbolicVariableActivity)var;
+					Activity act = (Activity)var;
+					if (act.getTemporalVariable().getEST() <= getPulses()[i] && act.getTemporalVariable().getEET() >= getPulses()[i+1]) {
+						//String[] dom = act.getSymbolicVariable().getSymbols();
+						String[] dom = act.getSymbols();
+						if (ret[i] == null) ret[i] = new ArrayOfStrings(dom);
+						else ret[i].union(dom);
+					}
 				}
 			}
 		}
