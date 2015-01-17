@@ -41,7 +41,8 @@ public class TestTimelinePlottingBig {
 		MetaCSPLogging.setLevel(TimelinePublisher.class, Level.FINE);
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(10,10000,1000);
 		Random rand = new Random(12314);
-		TimelinePublisher tp = new TimelinePublisher(solver, new Bounds(0,30), true, "aComponent");
+		//TimelinePublisher tp = new TimelinePublisher(solver, new Bounds(0,30), true, "aComponent");
+		TimelinePublisher tp = new TimelinePublisher(solver.getConstraintNetwork(), new Bounds(0,30), true, "aComponent");
 		tp.setTemporalResolution(1000);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		

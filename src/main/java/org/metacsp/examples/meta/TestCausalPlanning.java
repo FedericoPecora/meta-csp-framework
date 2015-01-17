@@ -84,7 +84,8 @@ public class TestCausalPlanning {
 		
 		planner.backtrack();
 		
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
+		//TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
+		TimelinePublisher tp = new TimelinePublisher(planner.getConstraintSolvers()[0].getConstraintNetwork(), new Bounds(0,60000), true, "Robot", "LocalizationService", "RFIDReader", "LaserScanner");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tp.publish(true, false);
 		

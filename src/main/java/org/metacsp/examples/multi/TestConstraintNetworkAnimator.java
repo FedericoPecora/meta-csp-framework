@@ -19,7 +19,8 @@ public class TestConstraintNetworkAnimator {
 		sensorA.registerSensorTrace("sensorTraces/sensorA.st");
 		sensorB.registerSensorTrace("sensorTraces/sensorB.st");
 
-		TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "SensorA", "SensorB");
+		//TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "SensorA", "SensorB");
+		TimelinePublisher tp = new TimelinePublisher(ans.getConstraintNetwork(), new Bounds(0,60000), true, "Time", "SensorA", "SensorB");
 		tp.setTemporalResolution(1);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);

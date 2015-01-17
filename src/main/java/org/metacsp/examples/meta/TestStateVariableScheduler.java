@@ -130,7 +130,8 @@ public class TestStateVariableScheduler {
 		
 		//System.out.println(Arrays.toString(sv.getMetaVariables()));
 
-		final TimelinePublisher tp = new TimelinePublisher(groundSolver, "comp1");
+		//final TimelinePublisher tp = new TimelinePublisher(groundSolver, "comp1");
+		final TimelinePublisher tp = new TimelinePublisher(groundSolver.getConstraintNetwork(), "comp1");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);
 		
 		tp.publish(true, true);

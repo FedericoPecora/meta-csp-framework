@@ -72,7 +72,8 @@ public class TestSimplePlannerWithDomain {
 //		after.setTo(two);
 //		groundSolver.addConstraint(after);
 
-		TimelinePublisher tp = new TimelinePublisher(groundSolver, "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
+		//TimelinePublisher tp = new TimelinePublisher(groundSolver, "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
+		TimelinePublisher tp = new TimelinePublisher(groundSolver.getConstraintNetwork(), "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);
 		tp.publish(false, false);
 		

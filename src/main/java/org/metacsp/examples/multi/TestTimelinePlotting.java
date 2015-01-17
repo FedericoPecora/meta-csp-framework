@@ -71,7 +71,7 @@ public class TestTimelinePlotting {
 		Constraint[] cons = new Constraint[]{dur1,dur2,con1,con2};
 		solver.addConstraints(cons);
 		
-		TimelinePublisher tp = new TimelinePublisher(solver, "One Component", "Another Component");
+		TimelinePublisher tp = new TimelinePublisher(solver.getConstraintNetwork(), "One Component", "Another Component");
 		//tp.setTemporalResolution(1000);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		

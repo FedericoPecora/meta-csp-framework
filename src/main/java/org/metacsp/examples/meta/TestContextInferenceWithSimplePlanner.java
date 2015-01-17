@@ -93,7 +93,8 @@ public class TestContextInferenceWithSimplePlanner {
 		ConstraintNetwork.draw(groundSolver.getConstraintNetwork(), "Constraint Network");
 		
 		planner.draw();
-		TimelinePublisher tp = new TimelinePublisher(groundSolver, "Human", "Location", "Stove", "Robot", "LocalizationService", "LaserScanner", "RFIDReader");
+		//TimelinePublisher tp = new TimelinePublisher(groundSolver, "Human", "Location", "Stove", "Robot", "LocalizationService", "LaserScanner", "RFIDReader");
+		TimelinePublisher tp = new TimelinePublisher(groundSolver.getConstraintNetwork(), "Human", "Location", "Stove", "Robot", "LocalizationService", "LaserScanner", "RFIDReader");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);
 		tp.publish(true, false);
 

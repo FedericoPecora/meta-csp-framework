@@ -256,7 +256,8 @@ public class TestHybridPlanningWithSensingAndDispatching {
 		//######################################################################
 		//Timeline
 		ActivityNetworkSolver actSolver = ((ActivityNetworkSolver)((SpatialFluentSolver)simpleHybridPlanner.getConstraintSolvers()[0]).getConstraintSolvers()[1]);
-		TimelinePublisher tp = new TimelinePublisher(actSolver, new Bounds(0,60000), true, "Time","RobotAction","RobotProprioception", "RobotSense","atLocation");
+		//TimelinePublisher tp = new TimelinePublisher(actSolver, new Bounds(0,60000), true, "Time","RobotAction","RobotProprioception", "RobotSense","atLocation");
+		TimelinePublisher tp = new TimelinePublisher(actSolver.getConstraintNetwork(), new Bounds(0,60000), true, "Time","RobotAction","RobotProprioception", "RobotSense","atLocation");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 

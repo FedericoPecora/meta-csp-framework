@@ -52,7 +52,8 @@ public class TestConstraintNetworkAnimator {
 		sensorB.registerSensorTrace("sensorTraces/stove.st",origin);
 		
 		//Visualize progression
-		TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "Location", "Stove");
+		//TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "Location", "Stove");
+		TimelinePublisher tp = new TimelinePublisher(ans.getConstraintNetwork(), new Bounds(0,60000), true, "Time", "Location", "Stove");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 
