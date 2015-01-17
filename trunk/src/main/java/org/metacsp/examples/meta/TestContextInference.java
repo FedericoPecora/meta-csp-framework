@@ -58,7 +58,8 @@ public class TestContextInference {
 		sensorA.registerSensorTrace("sensorTraces/location.st",origin);
 		sensorB.registerSensorTrace("sensorTraces/stove.st",origin);
 		
-		TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "RFIDReader");
+		//TimelinePublisher tp = new TimelinePublisher(ans, new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "RFIDReader");
+		TimelinePublisher tp = new TimelinePublisher(ans.getConstraintNetwork(), new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "RFIDReader");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 

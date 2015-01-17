@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -38,7 +39,10 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.Variable;
 import org.metacsp.meta.symbolsAndTime.SymbolicTimeline;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.PlotBoxTLSmall;
@@ -55,6 +59,7 @@ public final class TimelinePublisher
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
 	private String[] components;
+	private ConstraintNetwork an;
 	private ActivityNetworkSolver ans;
 	private long min = Long.MAX_VALUE;
 	private long max = Long.MIN_VALUE;
@@ -64,44 +69,100 @@ public final class TimelinePublisher
 	private long timeNow = 0;
 	private long temporalResolution = 1;
 	private long origin = 0;
-	private long horizon = 0;
+
+	private void computeOrigin() {
+		ArrayList<Long> startTimes = new ArrayList<Long>();
+		for (Variable v : an.getVariables()) {
+			if (v instanceof Activity) {
+				startTimes.add(((Activity) v).getTemporalVariable().getEST());
+			}
+		}
+		if (!startTimes.isEmpty()) {
+			Collections.sort(startTimes);
+			this.origin = startTimes.get(0);
+		}
+		else {
+			this.origin = 0;
+		}
+	}
 	
+	/**
+	 * @param an The {@link ConstraintNetwork} used to calculate the {@link SymbolicTimeline}s.
+	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
+	 * @param slidingWindow If <code>true</code>, the bounds are interpreted as a sliding window.
+	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
+	 */
+	public TimelinePublisher(ConstraintNetwork an, Bounds bounds, boolean slidingWindow, String ... components)
+	{
+		this.components = components;
+		this.an = an;
+		this.bounds = bounds;
+		this.imageEncoder.start();
+		this.slidingWindow = slidingWindow;
+		computeOrigin();
+	}
+
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
 	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
 	 * @param slidingWindow If <code>true</code>, the bounds are interpreted as a sliding window.
 	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
 	 */
+	@Deprecated
 	public TimelinePublisher(ActivityNetworkSolver ans, Bounds bounds, boolean slidingWindow, String ... components)
 	{
 		this.components = components;
 		this.ans = ans;
+		this.an = ans.getConstraintNetwork();
 		this.bounds = bounds;
 		this.imageEncoder.start();
 		this.slidingWindow = slidingWindow;
 		this.origin = ans.getOrigin();
-		this.horizon = ans.getHorizon();
 	}
 
+	/**
+	 * @param an The {@link ConstraintNetwork} used to calculate the {@link SymbolicTimeline}s.
+	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
+	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
+	 */
+	public TimelinePublisher(ConstraintNetwork an, Bounds bounds, String ... components)
+	{
+		this.components = components;
+		this.an = an;
+		this.bounds = bounds;
+		this.imageEncoder.start();
+		computeOrigin();
+	}
+	
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
 	 * @param bounds The range in which to plot {@link SymbolicTimeline}s.
 	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
 	 */
+	@Deprecated
 	public TimelinePublisher(ActivityNetworkSolver ans, Bounds bounds, String ... components)
 	{
 		this.components = components;
 		this.ans = ans;
+		this.an = ans.getConstraintNetwork();
 		this.bounds = bounds;
 		this.imageEncoder.start();
 		this.origin = ans.getOrigin();
-		this.horizon = ans.getHorizon();
+	}
+	
+	/**
+	 * @param an The {@link ConstraintNetwork} used to calculate the {@link SymbolicTimeline}s.
+	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
+	 */
+	public TimelinePublisher(ConstraintNetwork an, String ... components) {
+		this(an,null,components);
 	}
 
 	/**
 	 * @param ans The {@link ActivityNetworkSolver} used to calculate the {@link SymbolicTimeline}s.
 	 * @param components List of components for which to publish {@link SymbolicTimeline}s.
 	 */
+	@Deprecated
 	public TimelinePublisher(ActivityNetworkSolver ans, String ... components) {
 		this(ans,null,components);
 	}
@@ -165,8 +226,10 @@ public final class TimelinePublisher
 			for(int tl = 0; tl < components.length; tl++) {
 				String comp = components[tl];
 				SymbolicTimeline stl  = null;
-				synchronized(ans) {
-					stl = new SymbolicTimeline(ans, comp);
+				//synchronized(ans) {
+				synchronized(an) {
+					//stl = new SymbolicTimeline(ans, comp);
+					stl = new SymbolicTimeline(an, comp);
 				}
 				if (bounds == null) {
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];

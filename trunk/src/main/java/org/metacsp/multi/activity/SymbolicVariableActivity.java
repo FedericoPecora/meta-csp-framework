@@ -86,5 +86,10 @@ public class SymbolicVariableActivity extends MultiVariable implements Activity 
 	@Override
 	public Variable getVariable() { return this; }
 
+	@Override
+	public String[] getSymbols() {
+		return this.getSymbolicVariable().getSymbols();
+	}
+
 	
 }

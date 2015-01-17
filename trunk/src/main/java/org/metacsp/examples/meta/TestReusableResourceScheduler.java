@@ -109,7 +109,8 @@ public class TestReusableResourceScheduler {
 //		SymbolicTimeline tl = new SymbolicTimeline(groundSolver,"comp1");
 //		tl.draw();
 		
-		final TimelinePublisher tp = new TimelinePublisher(groundSolver, "comp1");
+		//final TimelinePublisher tp = new TimelinePublisher(groundSolver, "comp1");
+		final TimelinePublisher tp = new TimelinePublisher(groundSolver.getConstraintNetwork(), "comp1");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);
 		
 		tp.publish(true, true);

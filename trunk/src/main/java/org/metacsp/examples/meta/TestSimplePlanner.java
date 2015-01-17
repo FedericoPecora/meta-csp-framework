@@ -152,7 +152,8 @@ public class TestSimplePlanner {
 //		after.setTo(one);
 //		groundSolver.addConstraint(after);
 
-		TimelinePublisher tp = new TimelinePublisher(groundSolver, new Bounds(0,25), "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
+		//TimelinePublisher tp = new TimelinePublisher(groundSolver, new Bounds(0,25), "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
+		TimelinePublisher tp = new TimelinePublisher(groundSolver.getConstraintNetwork(), new Bounds(0,25), "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
 		//TimelinePublisher can also be instantiated w/o bounds, in which case the bounds are calculated every time publish is called
 //		TimelinePublisher tp = new TimelinePublisher(groundSolver, "Robot1", "Robot2", "LocalizationService", "RFIDReader1", "LaserScanner1");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);

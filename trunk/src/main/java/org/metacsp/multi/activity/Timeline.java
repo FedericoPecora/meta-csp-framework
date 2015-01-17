@@ -45,6 +45,16 @@ public abstract class Timeline {
 	private Long[] durations = null;
 	protected String component;
 	
+	public Timeline(ConstraintNetwork an, String component) {
+		this.an = an;
+		this.component = component;
+		this.pulses = null;
+		this.durations = null;
+		this.computePulses();	
+		this.computeDurations();
+	}
+	
+	@Deprecated
 	public Timeline(ActivityNetworkSolver ans, String component) {
 		this.an = ans.getConstraintNetwork();
 		this.component = component;

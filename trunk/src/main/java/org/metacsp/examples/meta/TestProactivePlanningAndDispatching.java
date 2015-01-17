@@ -76,7 +76,8 @@ public class TestProactivePlanningAndDispatching {
 		sensorA.registerSensorTrace("sensorTraces/location.st");
 		sensorB.registerSensorTrace("sensorTraces/stove.st");
 		
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot");
+		//TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)planner.getConstraintSolvers()[0], new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot");
+		TimelinePublisher tp = new TimelinePublisher(planner.getConstraintSolvers()[0].getConstraintNetwork(), new Bounds(0,60000), true, "Time", "Location", "Stove", "Human", "Robot");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 		

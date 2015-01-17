@@ -24,8 +24,9 @@ package org.metacsp.meta.symbolsAndTime;
 
 import java.util.Arrays;
 
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
-import org.metacsp.multi.activity.SymbolicVariableActivity;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.activity.Timeline;
 
@@ -48,35 +49,27 @@ public class SymbolicTimeline extends Timeline {
 		}
 	}
 	
+	public SymbolicTimeline(ConstraintNetwork an, String component) {
+		super(an, component);
+		cacheValues();
+	}
+	
+	@Deprecated
 	public SymbolicTimeline(ActivityNetworkSolver ans, String component) {
 		super(ans, component);
 		cacheValues();
 		// TODO Auto-generated constructor stub
 	}
-
-//	private void cacheValues() {
-//		SymbolicDomain[] ret = new SymbolicDomain[getPulses().length];
-//		for (int i = 0; i < getPulses().length-1; i++) {
-//			for (Variable var : getAn().getVariables(component)) {
-//				Activity act = (Activity)var;
-//				if (act.getTemporalVariable().getEST() <= getPulses()[i] && act.getTemporalVariable().getEET() >= getPulses()[i+1]) {
-//					SymbolicDomain dom = (SymbolicDomain)act.getSymbolicVariable().getDomain();
-//					if (ret[i] == null) ret[i] = dom;
-//					//else ret[i] = SymbolicDomain.intersection(ret[i], dom);
-//					else ret[i] = SymbolicDomain.union(ret[i], dom);
-//				}
-//			}
-//		}
-//		values = ret;		
-//	}
 	
 	private void cacheValues() {
 		ArrayOfStrings[] ret = new ArrayOfStrings[getPulses().length];
 		for (int i = 0; i < getPulses().length-1; i++) {
 			for (Variable var : getConstraintNetwork().getVariables(component)) {
-				SymbolicVariableActivity act = (SymbolicVariableActivity)var;
+				//SymbolicVariableActivity act = (SymbolicVariableActivity)var;
+				Activity act = (Activity)var;
 				if (act.getTemporalVariable().getEST() <= getPulses()[i] && act.getTemporalVariable().getEET() >= getPulses()[i+1]) {
-					String[] dom = act.getSymbolicVariable().getSymbols();
+					//String[] dom = act.getSymbolicVariable().getSymbols();
+					String[] dom = act.getSymbols();
 					if (ret[i] == null) ret[i] = new ArrayOfStrings(dom);
 					else ret[i].union(dom);
 				}

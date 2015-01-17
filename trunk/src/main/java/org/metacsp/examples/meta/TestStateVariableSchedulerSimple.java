@@ -31,6 +31,7 @@ import org.metacsp.meta.symbolsAndTime.StateVariable;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.Callback;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
@@ -62,7 +63,7 @@ public class TestStateVariableSchedulerSimple {
 		dur3.setTo(three);
 
 		//CONSTRAINTS
-		AllenIntervalConstraint con1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, new Bounds(5,10));
+		AllenIntervalConstraint con1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, new Bounds(1,APSPSolver.INF), new Bounds(5,10), new Bounds(1,APSPSolver.INF));
 		con1.setFrom(one);
 		con1.setTo(two);
 	
@@ -97,7 +98,8 @@ public class TestStateVariableSchedulerSimple {
 		sv.setUsage(one,two,three);
 		metaSolver.addMetaConstraint(sv);
 		
-		final TimelinePublisher tp = new TimelinePublisher(groundSolver, "comp1");
+		//final TimelinePublisher tp = new TimelinePublisher(groundSolver, "comp1");
+		final TimelinePublisher tp = new TimelinePublisher(groundSolver.getConstraintNetwork(), "comp1");
 		TimelineVisualizer viz = new TimelineVisualizer(tp);
 		
 		tp.publish(true, true);
