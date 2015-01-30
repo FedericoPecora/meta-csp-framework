@@ -31,8 +31,11 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		for (int i = 0; i < cons.length; i++) {
 			if(!super.propagate()) return false;
 			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
-				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());				
 				if(manifold.isCollided()){
+					if(!((Polygon)((GeometricConstraint)cons[i]).getFrom()).isMovable()){
+						return false;
+					}
 					logger.finest("PROPAGATED DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
 					applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
 				}				
@@ -178,8 +181,9 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		Constraint[] cons = c;		
 		for (int i = 0; i < cons.length; i++) {
 			//handling movable property
-			if(!((Polygon)((GeometricConstraint)cons[i]).getFrom()).isMovable())
+			if(!((Polygon)((GeometricConstraint)cons[i]).getFrom()).isMovable()){
 				return verifySituation(cons[i]);
+			}
 			//if there is already any constraint between scopes of the added constraint reject the constraint			
 			if(this.getConstraints((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo()).length > 0){
 				if(((GeometricConstraint)(this.getConstraints((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo())[0])).getType().equals((GeometricConstraint)c[i]))
@@ -194,9 +198,9 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			}
 			constraintTrack.put((GeometricConstraint)c[i], poly2Domain);
 			//adding constraint
-			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){	
+			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
+				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
 				return applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
-				//				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());			}
 			}
 			else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
 				if(!applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo()))
@@ -216,7 +220,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		}else if(((GeometricConstraint)c).getType().equals(GeometricConstraint.Type.INSIDE)){
 			return checkInside((Polygon)((GeometricConstraint)c).getFrom(), (Polygon)((GeometricConstraint)c).getTo());
 		}				
-		return false;
+		return true;
 	}
 
 	@Override
