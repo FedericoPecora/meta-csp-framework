@@ -178,13 +178,14 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	
 	/**
 	 * Implement this method to define any extra operations that should be performed
-	 * before backtracking.
+	 * before backtracking over a {@link MetaVariable} (and before it is even chosen).
 	 */
 	public abstract void preBacktrack();
 
 	/**
 	 * Implement this method to define any extra operations that should be performed
-	 * after backtracking.
+	 * after branching over a {@link MetaVariable}.
+	 * @param metaVariable The {@link MetaVariable} that has been branched upon. 
 	 */
 	public abstract void postBacktrack(MetaVariable metaVariable);
 	
@@ -493,7 +494,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	 * Implement this method to define any additional operations that should happen before
 	 * adding a meta-value in the meta-CSP search (e.g., when branching).
 	 * @param metaVariable The {@link MetaVariable} over which the search is branching.
-	 * @param metaValue The meta-value that has been selected (the branch). 
+	 * @param metaValue The meta-value that has been selected (the branch).
+	 * @return <code>true</code> iff the metavalue is consistent with the ground-CSP (Note: if <code>false</code> is returned, the ground-CSP has not been changed, i.e., it is left in a consistent state.) 
 	 */
 	protected abstract boolean addResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue);
 	

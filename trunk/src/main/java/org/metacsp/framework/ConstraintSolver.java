@@ -138,6 +138,7 @@ public abstract class ConstraintSolver implements Serializable {
 	/**
 	 * Get option value for this {@link ConstraintSolver}.
 	 * @param op The option to get (see {@link OPTIONS}).
+	 * @return <code>true</code> iff the given option is set.
 	 */
 	public boolean getOption(OPTIONS op) {
 		if (op.equals(OPTIONS.AUTO_PROPAGATE)) return autoprop;
@@ -404,6 +405,7 @@ public abstract class ConstraintSolver implements Serializable {
 	 * This method must be implemented by the developer of the specific {@link ConstraintSolver}
 	 * class.  It should implement all operations necessary to create a batch of variable for the specific
 	 * type of {@link ConstraintSolver}. 
+	 * @param num The number of variables to create.
 	 * @return  A batch of new {@link Variable} for this {@link ConstraintSolver}.
 	 */
 	protected abstract Variable[] createVariablesSub(int num);
@@ -530,6 +532,7 @@ public abstract class ConstraintSolver implements Serializable {
 
 	/**
 	 * Get all the {@link Variable}s contained in this {@link ConstraintSolver}'s {@link ConstraintNetwork}.
+	 * @param component Only {@link Variable}s associated with the given label (component) should be returned. 
 	 * @return all the {@link Variable}s contained in this {@link ConstraintSolver}'s {@link ConstraintNetwork}.
 	 */
 	public Variable[] getVariables(String component) {
