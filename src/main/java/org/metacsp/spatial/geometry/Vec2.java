@@ -3,6 +3,7 @@ package org.metacsp.spatial.geometry;
 import cern.colt.Arrays;
 
 
+@SuppressWarnings("javadoc")
 public class Vec2
 {
 
@@ -37,6 +38,7 @@ public class Vec2
 		return this;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Negates this vector and returns this.
 	 */
@@ -45,6 +47,7 @@ public class Vec2
 		return neg( this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the negation of this vector and returns out.
 	 */
@@ -55,6 +58,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the negation to this vector.
 	 */
@@ -63,6 +67,7 @@ public class Vec2
 		return neg( new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Multiplies this vector by s and returns this.
 	 */
@@ -71,6 +76,7 @@ public class Vec2
 		return mul( s, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to this vector multiplied by s and returns out.
 	 */
@@ -81,6 +87,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is a multiplication of this vector and s.
 	 */
@@ -89,6 +96,7 @@ public class Vec2
 		return mul( s, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Divides this vector by s and returns this.
 	 */
@@ -97,6 +105,7 @@ public class Vec2
 		return div( s, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the division of this vector and s and returns out.
 	 */
@@ -107,6 +116,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is a division between this vector and s.
 	 */
@@ -115,6 +125,7 @@ public class Vec2
 		return div( s, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Adds s to this vector and returns this. 
 	 */
@@ -123,6 +134,7 @@ public class Vec2
 		return add( s, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the sum of this vector and s and returns out.
 	 */
@@ -133,6 +145,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the sum between this vector and s.
 	 */
@@ -141,6 +154,7 @@ public class Vec2
 		return add( s, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Multiplies this vector by v and returns this.
 	 */
@@ -149,6 +163,7 @@ public class Vec2
 		return mul( v, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the product of this vector and v and returns out.
 	 */
@@ -159,6 +174,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the product of this vector and v.
 	 */
@@ -167,6 +183,7 @@ public class Vec2
 		return mul( v, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Divides this vector by v and returns this.
 	 */
@@ -175,6 +192,7 @@ public class Vec2
 		return div( v, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the division of this vector and v and returns out.
 	 */
@@ -185,6 +203,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the division of this vector by v.
 	 */
@@ -193,6 +212,7 @@ public class Vec2
 		return div( v, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Adds v to this vector and returns this.
 	 */
@@ -201,6 +221,7 @@ public class Vec2
 		return add( v, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the addition of this vector and v and returns out.
 	 */
@@ -211,6 +232,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the addition of this vector and v.
 	 */
@@ -219,6 +241,7 @@ public class Vec2
 		return add( v, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Adds v * s to this vector and returns this.
 	 */
@@ -227,6 +250,7 @@ public class Vec2
 		return adds( v, s, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the addition of this vector and v * s and returns out.
 	 */
@@ -237,6 +261,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the addition of this vector and v * s.
 	 */
@@ -245,6 +270,7 @@ public class Vec2
 		return adds( v, s, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Subtracts v from this vector and returns this.
 	 */
@@ -253,6 +279,7 @@ public class Vec2
 		return sub( v, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the subtraction of v from this vector and returns out.
 	 */
@@ -263,6 +290,7 @@ public class Vec2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the subtraction of v from this vector.
 	 */
@@ -271,6 +299,7 @@ public class Vec2
 		return sub( v, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns the squared length of this vector.
 	 */
@@ -279,6 +308,7 @@ public class Vec2
 		return x * x + y * y;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns the length of this vector.
 	 */
@@ -287,6 +317,7 @@ public class Vec2
 		return (float)StrictMath.sqrt( x * x + y * y );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Rotates this vector by the given radians.
 	 */
@@ -302,6 +333,7 @@ public class Vec2
 		y = yp;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Normalizes this vector, making it a unit vector. A unit vector has a length of 1.0.
 	 */
@@ -317,6 +349,7 @@ public class Vec2
 		}
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets this vector to the minimum between a and b.
 	 */
@@ -325,6 +358,7 @@ public class Vec2
 		return min( a, b, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets this vector to the maximum between a and b.
 	 */
@@ -333,6 +367,7 @@ public class Vec2
 		return max( a, b, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns the dot product between this vector and v.
 	 */
@@ -341,6 +376,7 @@ public class Vec2
 		return dot( this, v );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns the squared distance between this vector and v.
 	 */
@@ -349,6 +385,7 @@ public class Vec2
 		return distanceSq( this, v );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns the distance between this vector and v.
 	 */
@@ -357,6 +394,7 @@ public class Vec2
 		return distance( this, v );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets this vector to the cross between v and a and returns this.
 	 */
@@ -364,7 +402,8 @@ public class Vec2
 	{
 		return cross( v, a, this );
 	}
-
+	
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets this vector to the cross between a and v and returns this.
 	 */
@@ -373,6 +412,7 @@ public class Vec2
 		return cross( a, v, this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns the scalar cross between this vector and v. This is essentially
 	 * the length of the cross product if this vector were 3d. This can also
@@ -437,6 +477,7 @@ public class Vec2
 		return a.x * b.y - a.y * b.x;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns an array of allocated Vec2 of the requested length.
 	 */

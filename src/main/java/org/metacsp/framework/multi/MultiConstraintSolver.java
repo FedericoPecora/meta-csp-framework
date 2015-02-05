@@ -97,6 +97,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 
 	/**
 	 *  Method to set the options for this {@link MultiConstraintSolver} (see {@link OPTIONS}).
+	 *  @param ops Options to set (see {@link OPTIONS}).
 	 */
 	public void setOptions(OPTIONS ...ops) {
 		for (OPTIONS op : ops)
@@ -105,7 +106,9 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	}
 	
 	/**
-	 * Method to get options of this {@link MultiConstraintSolver} (see {@link OPTIONS}).  
+	 * Method to get options of this {@link MultiConstraintSolver} (see {@link OPTIONS}).
+	 * @param op The option that should be checked
+	 * @return <code>true</code> iff the given option was set  
 	 */
 	public boolean getOption(OPTIONS op) {
 		if (op.equals(OPTIONS.ALLOW_INCONSISTENCIES)) return allowInconsistencies;
@@ -346,6 +349,7 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	 * for each internal solver.
 	 * @param ingredients The number of internal variables to create for each internal solver.   
 	 * @param num The number of {@link MultiVariable}s for which internal variables are to be created.
+	 * @param component The label (component) the created variables should be associated with.
 	 * @return The {@link Variable}s for {@code num} {@link MultiVariable}s.
 	 */
 	protected Variable[] createVariablesSub(int[] ingredients, int num, String component) {

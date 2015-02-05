@@ -6,15 +6,29 @@ public class Mat2
 	public float m00, m01;
 	public float m10, m11;
 
+	/**
+	 * Creates a new 2D transformation matrix.
+	 */
 	public Mat2()
 	{
 	}
 
+	/**
+	 * Creates a new 2D transformation matrix with given rotation.
+	 * @param radians Rotation to set.
+	 */
 	public Mat2( float radians )
 	{
 		set( radians );
 	}
 
+	/**
+	 * Creates a new transfomration matrix 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 */
 	public Mat2( float a, float b, float c, float d )
 	{
 		set( a, b, c, d );
@@ -22,6 +36,7 @@ public class Mat2
 
 	/**
 	 * Sets this matrix to a rotation matrix with the given radians.
+	 * @param radians Rotation in radians.
 	 */
 	public void set( float radians )
 	{
@@ -34,6 +49,7 @@ public class Mat2
 		m11 = c;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets the values of this matrix.
 	 */
@@ -45,6 +61,7 @@ public class Mat2
 		m11 = d;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets this matrix to have the same values as the given matrix.
 	 */
@@ -56,6 +73,7 @@ public class Mat2
 		m11 = m.m11;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets the values of this matrix to their absolute value.
 	 */
@@ -64,6 +82,7 @@ public class Mat2
 		abs( this );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new matrix that is the absolute value of this matrix.
 	 */
@@ -72,6 +91,7 @@ public class Mat2
 		return abs( new Mat2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the absolute value of this matrix.
 	 */
@@ -84,6 +104,7 @@ public class Mat2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the x-axis (1st column) of this matrix.
 	 */
@@ -94,6 +115,7 @@ public class Mat2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the x-axis (1st column) of this matrix.
 	 */
@@ -102,6 +124,7 @@ public class Mat2
 		return getAxisX( new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the y-axis (2nd column) of this matrix.
 	 */
@@ -112,6 +135,7 @@ public class Mat2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the y-axis (2nd column) of this matrix.
 	 */
@@ -120,6 +144,7 @@ public class Mat2
 		return getAxisY( new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets the matrix to it's transpose.
 	 */
@@ -130,6 +155,7 @@ public class Mat2
 		m10 = t;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the transpose of this matrix.
 	 */
@@ -142,6 +168,7 @@ public class Mat2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new matrix that is the transpose of this matrix.
 	 */
@@ -150,6 +177,7 @@ public class Mat2
 		return transpose( new Mat2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Transforms v by this matrix.
 	 */
@@ -158,6 +186,7 @@ public class Mat2
 		return mul( v.x, v.y, v );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the transformation of v by this matrix.
 	 */
@@ -166,6 +195,7 @@ public class Mat2
 		return mul( v.x, v.y, out );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new vector that is the transformation of v by this matrix.
 	 */
@@ -174,6 +204,7 @@ public class Mat2
 		return mul( v.x, v.y, new Vec2() );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out the to transformation of {x,y} by this matrix.
 	 */
@@ -184,6 +215,7 @@ public class Mat2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Multiplies this matrix by x.
 	 */
@@ -196,6 +228,7 @@ public class Mat2
 			m10 * x.m01 + m11 * x.m11 );
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Sets out to the multiplication of this matrix and x.
 	 */
@@ -208,6 +241,7 @@ public class Mat2
 		return out;
 	}
 
+	@SuppressWarnings("javadoc")
 	/**
 	 * Returns a new matrix that is the multiplication of this and x.
 	 */
