@@ -35,7 +35,7 @@ group = 'se.oru.aass.project-template'
 dependencies {
 
   // This pulls in the meta-csp-framework jar
-  compile 'org.metacsp:meta-csp-framework:1.0.314'
+  compile 'org.metacsp:meta-csp-framework:1.0.394'
 
   // Add the following if you need to include jars that are not
   // in Maven Central and that you have places in the directory "lib"
