@@ -1,0 +1,73 @@
+== == == == == == == == == == == == == == == == == == == == == == == == == ==
+= Meta-CSP Framework project template.                                      =
+= The Meta-CSP Framework is available on Maven Central and at metacsp.org.  =
+= (c) 2014 Federico Pecora - http://metacsp.org                             =
+== == == == == == == == == == == == == == == == == == == == == == == == == ==
+
+---------------------
+-- Current version --
+---------------------
+
+At the time of writing, the current stable version number was 1.0.255.
+Check Maven central or metacsp.org to find the current latest version
+number.
+
+If you want to use the framework within your own non-Gradle, non-Maven
+build environment, get the latest binary, source and Javadoc JARs from
+the Maven Central website (see metacsp.org).
+
+
+-------------------------------
+-- Gradle build instructions --
+-------------------------------
+
+Enter the directory with the file build.gradle and issue the command:
+
+$ gradle install
+
+To test the build, issue the following:
+
+$ gradle run
+
+The 'clean' target will clean up the build directory. The target
+'javadoc' can be used to generate API documentation (Javadoc) for your
+project, which will be placed in build/docs/javadoc.
+
+
+----------------------------------
+-- Preparing an Eclipse project --
+----------------------------------
+
+If developing in Eclipse, consider using the 'eclipse' target:
+
+$ gradle eclipse
+
+This will prepare the directory with .classpath, .settings and
+.project files. The directory can then be used as source for a new
+Eclipse project which will have all dependencies properly set.
+
+
+---------------------------------------------------------
+-- Using the compiled library in other Gradle projects --
+---------------------------------------------------------
+
+The 'install' target builds the artifact
+project-template-0.0.0-SNAPSHOT.jar, and places it into your local
+Maven repository (the location is
+~/.m2/repository/se.oru.aass/project-template/). You can use the newly
+compiled version of your project in another Gradle-based project by
+including the following in the project's build.gradle:
+
+repositories {
+   mavenLocal()
+   //any other repo you may need for your project
+}
+
+dependencies {
+   compile 'se.oru.aass:project-template:0.0.0-SNAPSHOT'
+   //any other dependency you may have
+}
+
+---------
+-- EOF --
+---------
