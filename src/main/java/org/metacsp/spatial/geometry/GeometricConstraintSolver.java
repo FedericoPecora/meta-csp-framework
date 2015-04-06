@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
+import org.metacsp.framework.Variable;
 
 
 
@@ -17,6 +18,8 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 	public static final float MIN_Y = -10000.0f;
 
 	private HashMap<GeometricConstraint, HashMap<Polygon, Vec2[]>> constraintTrack = new HashMap<GeometricConstraint, HashMap<Polygon,Vec2[]>>();
+	private Variable[] obstacles; 
+	
 
 	public GeometricConstraintSolver() {
 		//super(new Class[]{GeometricConstraint.class}, Polygon.class);
@@ -25,12 +28,12 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 	}
 
 	@Override
-	public boolean propagate() {
+	public boolean propagate() {	
 		if(!super.propagate()) return false;
 		Constraint[] cons = this.getConstraints();	
 		for (int i = 0; i < cons.length; i++) {
 			if(!super.propagate()) return false;
-			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
+			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){				
 				Manifold manifold = new Manifold((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());				
 				if(manifold.isCollided()){
 					if(!((Polygon)((GeometricConstraint)cons[i]).getFrom()).isMovable()){
@@ -117,7 +120,7 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		return ret;
 	}
 	
-	private boolean applyDCcliping(Polygon p1, Polygon p2) {
+	public boolean applyDCcliping(Polygon p1, Polygon p2) {
 		
 		Vector<Vec2> toBeAdded = new Vector<Vec2>();
 		Vector<Vec2> toBeRemoved = new Vector<Vec2>();
@@ -199,8 +202,20 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 			constraintTrack.put((GeometricConstraint)c[i], poly2Domain);
 			//adding constraint
 			if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.DC)){
-				System.out.println("added DC between Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getFrom()).getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
-				return applyPolygonSeparation((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo());
+				Polygon from = (Polygon)((GeometricConstraint)cons[i]).getFrom();
+				Vector<Vec2> fromOriginalDomain = from.getFullSpaceRepresentation();
+				System.out.println("added DC between Polygon " + from.getID() + " Polygon " + ((Polygon)((GeometricConstraint)cons[i]).getTo()).getID());
+				boolean added = applyPolygonSeparation(from, (Polygon)((GeometricConstraint)cons[i]).getTo());				
+				if(obstacles != null){					
+					for (int j = 0; j < obstacles.length; j++) {						
+						Manifold manifold = new Manifold(from, (Polygon)obstacles[j]);
+						if(manifold.isCollided()){							
+							from.setDomain(fromOriginalDomain.toArray(new Vec2[fromOriginalDomain.size()]));
+							return false;
+						}						
+					}					
+				}
+				return added;
 			}
 			else if(((GeometricConstraint)cons[i]).getType().equals(GeometricConstraint.Type.INSIDE)){
 				if(!applyInside((Polygon)((GeometricConstraint)cons[i]).getFrom(), (Polygon)((GeometricConstraint)cons[i]).getTo()))
@@ -257,5 +272,13 @@ public class GeometricConstraintSolver extends RCC2ConstraintSolver{
 		return ret;
 	}
 
-
+	
+	public void setObstacles(Variable[] variables) {
+		this.obstacles = variables;
+	}
+	
+	public Variable[] getObstacles() {
+		return obstacles;
+	}
 }
+
