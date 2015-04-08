@@ -167,4 +167,8 @@ public class ConstraintNetworkAnimator extends Thread {
 		}
 	}
 
+    public Dispatcher getDispatcher() {
+        return dis;
+    }
+
 }

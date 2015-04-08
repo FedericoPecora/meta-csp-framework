@@ -26,12 +26,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.*;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
@@ -70,8 +65,13 @@ public class SimpleDomain extends MetaConstraint {
 	protected HashMap<SimpleOperator, Integer> operatorsLevels = new HashMap<SimpleOperator, Integer>(); 
 	
 	public HashMap<SymbolicVariableActivity, SymbolicVariableActivity> unificationTrack = new HashMap<SymbolicVariableActivity,SymbolicVariableActivity>();
-	
-	public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVED_UNJ, OBSERVED_JUST, IMPOSSIBLE, 
+    private Vector<String> timelines = new Vector<String>();
+
+    public String[] getTimelines() {
+        return this.timelines.toArray(new String[this.timelines.size()]);
+    }
+
+    public enum markings {UNJUSTIFIED, JUSTIFIED, DIRTY, STATIC, IGNORE, PLANNED, UNPLANNED, PERMANENT, OBSERVED_UNJ, OBSERVED_JUST, IMPOSSIBLE,
 		COND_UNJUSTIFIED, COND_CURRENT_UNJUSTIFIED};
 
 	public Schedulable[] getSchedulingMetaConstraints() {
@@ -117,15 +117,15 @@ public class SimpleDomain extends MetaConstraint {
 		this.everything = everything;
 	}
 	
-	public void addResrouceUtilizers(SimpleReusableResource rr, HashMap<Variable, Integer> hm) {
+	public void addResourceUtilizers(SimpleReusableResource rr, HashMap<Variable, Integer> hm) {
 		currentResourceUtilizers.put(rr,hm);
 	}
 
-	public void addResrouceUtilizer(SimpleReusableResource rr, Variable var, Integer amount) {
+	public void addResourceUtilizer(SimpleReusableResource rr, Variable var, Integer amount) {
 		currentResourceUtilizers.get(rr).put(var,amount);
 	}
 	
-	public void addReourceMap(String resourcename, SimpleReusableResource simpleReusableResource){		
+	public void addResourceMap(String resourcename, SimpleReusableResource simpleReusableResource){
 		resourcesMap.put(resourcename, simpleReusableResource);
 	}
 	
@@ -347,6 +347,8 @@ public class SimpleDomain extends MetaConstraint {
 //			eqValue.setTo(act);
 //			oneUnification.addConstraint(eqValue);
 			unifications.add(oneUnification);
+            //highest priority
+            oneUnification.setAnnotation(2);
 		}
 		if (unifications.isEmpty()) return null;
 		return unifications.toArray(new ConstraintNetwork[unifications.size()]);
@@ -369,7 +371,36 @@ public class SimpleDomain extends MetaConstraint {
 			ConstraintNetwork[] unifications = this.getUnifications(problematicActivity);
 			if (unifications != null)
 				for (ConstraintNetwork cn : unifications) cn.setAnnotation(2);
-			return unifications;
+            //But before returning all the unifications (which could be the empty set),
+            // also add the expansions of PlanningOperators that have this problematic
+            // activity as an AchievedState
+            String problematicActivitySymbolicDomain = problematicActivity.getSymbolicVariable().getSymbols()[0];
+            for (SimpleOperator r : operators) {
+                if (r instanceof PlanningOperator) {
+                    for (String reqState : r.getRequirementActivities()) {
+                        String operatorEffect = reqState;
+                        String opeatorEffectComponent = operatorEffect.substring(0, operatorEffect.indexOf("::"));
+                        String operatorEffectSymbol = operatorEffect.substring(operatorEffect.indexOf("::")+2, operatorEffect.length());
+                        if (((PlanningOperator)r).isEffect(reqState)) {
+                            if(problematicActivity.getComponent().equals(opeatorEffectComponent) ) {
+                                if(problematicActivitySymbolicDomain.equals(operatorEffectSymbol)) {
+                                    ConstraintNetwork newResolver = expandOperator(r,problematicActivity);
+                                    newResolver.annotation = r;
+                                    //middle priority
+                                    newResolver.setAnnotation(1);
+                                    retPossibleConstraintNetworks.add(newResolver);
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            if (null != unifications)  {
+                retPossibleConstraintNetworks.addAll(Arrays.asList(unifications));
+            }
+			return retPossibleConstraintNetworks.toArray(new ConstraintNetwork[retPossibleConstraintNetworks.size()]);
 		}
 						
 		//Find all expansions
@@ -544,7 +575,6 @@ public class SimpleDomain extends MetaConstraint {
 		Vector<AllenIntervalConstraint> constraints = new Vector<AllenIntervalConstraint>();
 		Vector<String> froms = new Vector<String>();
 		Vector<String> tos = new Vector<String>();
-		String[] args = null;
 		int[] resourceRequirements = new int[resources.length];
 		HashMap<String,Boolean> effects = new HashMap<String, Boolean>();
 
@@ -789,6 +819,12 @@ public class SimpleDomain extends MetaConstraint {
 
 				String[] contextVars = parseKeyword("ContextVariable", everything);
 
+                String[] timelinesString = parseKeyword("TimelinesToShow", everything);
+                String[] timelines = null;
+                if (timelinesString.length > 0) {
+                    timelines =timelinesString[0].split("\\s");
+                }
+
 				int[] resourceCaps = new int[resources.keySet().size()];
 				String[] resourceNames = new String[resources.keySet().size()];
 				int resourceCounter = 0;
@@ -808,36 +844,37 @@ public class SimpleDomain extends MetaConstraint {
 				}
 				else if (domainType.equals(ProactivePlanningDomain.class)) {
 					dom = new ProactivePlanningDomain(resourceCaps, resourceNames, name, everything);
-
-	                ValueOrderingH valOH = new ValueOrderingH() {
-	                    @Override
-	                    public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
-	                        //Return unifications first
-	                        if (arg0.getAnnotation() != null && arg1.getAnnotation() != null) {
-	                            if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
-	                            	int annotation1 = ((Integer)arg0.getAnnotation()).intValue();
-	                            	int annotation2 = ((Integer)arg1.getAnnotation()).intValue();
-	                            	return annotation2-annotation1;
-	                            }
-	                        }
-	                        //Return unifications first
-	                        //TODO: maybe this is superfluous...
-	                        return arg0.getVariables().length - arg1.getVariables().length;
-	                    }
-	                };
-
-	                //No variable ordering
-	                VariableOrderingH varOH = new VariableOrderingH() {
-	                    @Override
-	                    public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
-	                    @Override
-	                    public void collectData(ConstraintNetwork[] allMetaVariables) { }
-	                };
-
-
-					dom.setValOH(valOH);
-					dom.setVarOH(varOH);
 				}
+
+                ValueOrderingH valOH = new ValueOrderingH() {
+                    @Override
+                    public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
+                        //Return unifications first
+                        if (arg0.getAnnotation() != null && arg1.getAnnotation() != null) {
+                            if (arg0.getAnnotation() instanceof Integer && arg1.getAnnotation() instanceof Integer) {
+                                int annotation1 = ((Integer)arg0.getAnnotation()).intValue();
+                                int annotation2 = ((Integer)arg1.getAnnotation()).intValue();
+//                                System.out.println("............................ Returning " + (annotation2-annotation1));
+                                return annotation2-annotation1;
+                            }
+                        }
+                        //Return unifications first
+                        //TODO: maybe this is superfluous...
+                        return arg0.getVariables().length - arg1.getVariables().length;
+                    }
+                };
+
+                //No variable ordering
+                VariableOrderingH varOH = new VariableOrderingH() {
+                    @Override
+                    public int compare(ConstraintNetwork o1, ConstraintNetwork o2) { return 0; }
+                    @Override
+                    public void collectData(ConstraintNetwork[] allMetaVariables) { }
+                };
+
+
+                dom.setValOH(valOH);
+                dom.setVarOH(varOH);
 				
 				for (String sensor : sensors) dom.addSensor(sensor);
 				for (String act : actuators) dom.addActuator(act);
@@ -853,6 +890,11 @@ public class SimpleDomain extends MetaConstraint {
 
 				//This adds the domain as a meta-constraint of the SimplePlanner
 				sp.addMetaConstraint(dom);
+                if (null != timelines) {
+                    for (String timeline : timelines) dom.addTimeline(timeline);
+                }
+
+
 				return dom;
 			}
 			finally { br.close(); }
@@ -861,5 +903,9 @@ public class SimpleDomain extends MetaConstraint {
 		catch (IOException e) { e.printStackTrace(); }
 		return null;
 	}
-	
+
+    private void addTimeline(String timeline) {
+        this.timelines.add(timeline);
+    }
+
 }

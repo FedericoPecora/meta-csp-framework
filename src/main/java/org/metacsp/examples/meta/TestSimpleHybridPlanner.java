@@ -88,7 +88,7 @@ public class TestSimpleHybridPlanner {
 		MetaOccupiedTimesBasedConstraint metaOccupiedConstraint = new MetaOccupiedTimesBasedConstraint(null, null);
 		metaOccupiedConstraint.setPad(pad);
 		//#################################################################################################################
-		//this is spatial general and assetional rule
+		//this is spatial general and assertional rule
 		Vector<SpatialRule> srules = new Vector<SpatialRule>();
 		Vector<SpatialAssertionalRelation> saRelations = new Vector<SpatialAssertionalRelation>();
 		HashMap<String, Rectangle> observation = new HashMap<String, Rectangle>();
