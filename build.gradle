@@ -28,10 +28,16 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 task releaseInfo {
-    def cmd = "git describe --tags"
-    def proc = cmd.execute()
-    project.version = proc.text.trim()
-    println ("Releaseing version: " + project.version + "...")
+    def taskName = project.getGradle().startParameter.taskNames.get(0);
+    if (taskName.equals("publish")) {
+       def cmd = "git describe --tags"
+       def proc = cmd.execute()
+       project.version = proc.text.trim()
+    }
+    else {
+       project.version = '0.0.0-SNAPSHOT'
+    }
+    println ("Releasing version: " + project.version + "...")
 }
 
 def getSvnRevision() {
@@ -118,6 +124,7 @@ try {
 //publish bin, source and javaDoc to repo
 if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
 publishing {
+
     publications {
         metaCSPFramework(MavenPublication) {
             from components.java
