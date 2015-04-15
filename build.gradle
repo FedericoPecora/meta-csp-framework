@@ -27,6 +27,13 @@ mainClassName = 'org.metacsp.examples.multi.TestTimelinePlotting'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+task releaseInfo {
+    def cmd = "git describe --tags"
+    def proc = cmd.execute()
+    project.version = proc.text.trim()
+    println ("Releaseing version: " + project.version + "...")
+}
+
 def getSvnRevision() {
     new ByteArrayOutputStream().withStream { os ->
         def result = exec {
@@ -44,8 +51,9 @@ def getSvnRevision() {
 
 //MetaCSP version
 //version = '1.0.' + getSvnRevision()
-version = '0.0.0-SNAPSHOT'
-group = 'org.metacsp'
+//version = '0.0.0-SNAPSHOT'
+//group = 'org.metacsp'
+project.group = 'org.metacsp'
 
 //Repos for dependencies
 repositories {
