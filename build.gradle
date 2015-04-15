@@ -132,8 +132,8 @@ publishing {
 		    }*/
                     scm {
                         url 'http://metacsp.org'
-                        connection 'scm:svn:http://meta-csp-framework.googlecode.com/svn/trunk'
-                        developerConnection 'scm:svn:https://meta-csp-framework.googlecode.com/svn/trunk'
+                        connection 'scm:git:https://github.com/FedericoPecora/meta-csp-framework.git'
+                        developerConnection 'scm:git:https://github.com/FedericoPecora/meta-csp-framework.git'
                     }
                     licenses {
                         license {
