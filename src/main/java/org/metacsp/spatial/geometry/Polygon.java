@@ -12,7 +12,7 @@ public class Polygon extends Variable {
 		
 	private Domain dom;
 	
-	public static final int MAX_POLY_VERTEX_COUNT = 60;
+	public static final int MAX_POLY_VERTEX_COUNT = 260;
 	private int vertexCount;
 	private boolean isMovable = true;
 	

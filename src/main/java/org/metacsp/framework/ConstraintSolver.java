@@ -393,7 +393,7 @@ public abstract class ConstraintSolver implements Serializable {
 	}
 
 	private boolean checkDomainsInstantiated() {
-		if (domainsInstantiated) return true;
+		if (domainsAutoInstantiated) return true;
 		if (this.theNetwork.checkDomainsInstantiated() == null) {
 			domainsInstantiated = true;
 			return true;
