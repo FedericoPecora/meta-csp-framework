@@ -132,4 +132,8 @@ public class Dispatcher extends Thread {
 	public ConstraintNetwork getConstraintNetwork() {
 		return ans.getConstraintNetwork();
 	}
+
+    public DispatchingFunction getDispatchingFunction(String component) {
+        return this.dfs.get(component);
+    }
 }

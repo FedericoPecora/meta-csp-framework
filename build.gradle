@@ -27,6 +27,19 @@ mainClassName = 'org.metacsp.examples.multi.TestTimelinePlotting'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+task releaseInfo {
+    def taskName = project.getGradle().startParameter.taskNames.get(0);
+    if (taskName.equals("publish")) {
+       def cmd = "git describe --tags"
+       def proc = cmd.execute()
+       project.version = proc.text.trim()
+    }
+    else {
+       project.version = '0.0.0-SNAPSHOT'
+    }
+    println ("Releasing version: " + project.version + "...")
+}
+
 def getSvnRevision() {
     new ByteArrayOutputStream().withStream { os ->
         def result = exec {
@@ -44,8 +57,9 @@ def getSvnRevision() {
 
 //MetaCSP version
 //version = '1.0.' + getSvnRevision()
-version = '0.0.0-SNAPSHOT'
-group = 'org.metacsp'
+//version = '0.0.0-SNAPSHOT'
+//group = 'org.metacsp'
+project.group = 'org.metacsp'
 
 //Repos for dependencies
 repositories {
@@ -110,6 +124,7 @@ try {
 //publish bin, source and javaDoc to repo
 if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
 publishing {
+
     publications {
         metaCSPFramework(MavenPublication) {
             from components.java
@@ -132,8 +147,8 @@ publishing {
 		    }*/
                     scm {
                         url 'http://metacsp.org'
-                        connection 'scm:svn:http://meta-csp-framework.googlecode.com/svn/trunk'
-                        developerConnection 'scm:svn:https://meta-csp-framework.googlecode.com/svn/trunk'
+                        connection 'scm:git:https://github.com/FedericoPecora/meta-csp-framework.git'
+                        developerConnection 'scm:git:https://github.com/FedericoPecora/meta-csp-framework.git'
                     }
                     licenses {
                         license {
