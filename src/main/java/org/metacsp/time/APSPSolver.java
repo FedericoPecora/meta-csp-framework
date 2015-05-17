@@ -91,6 +91,7 @@ public class APSPSolver extends ConstraintSolver {
 	private long[][] distanceBackupInternal;
 	private Vector<long[][]> backups = new Vector<long[][]>();
 	private Vector<Constraint[]> backupConstraints = new Vector<Constraint[]>();
+	private Vector<Integer> backupMaxUsed = new Vector<Integer>();
 
 	// Roll-back data structures
 	private ArrayList<TimePoint[]> tPointsRollback = new ArrayList<TimePoint[]>();
@@ -276,17 +277,19 @@ public class APSPSolver extends ConstraintSolver {
 		}
 		backupConstraints.add(con);
 		backups.add(distanceBackup);
+		backupMaxUsed.add(MAX_USED);
 	}
 
 	private void restoreDMatrix() {
 		long[][] distanceBackup = backups.lastElement();
-		for (int i = 0; i < MAX_USED+1; i++) {
-			for (int j = 0; j < MAX_USED+1; j++) {
+		for (int i = 0; i < backupMaxUsed.lastElement()+1; i++) {
+			for (int j = 0; j < backupMaxUsed.lastElement()+1; j++) {
 				distance[i][j] = distanceBackup[i][j];
 			}			
 		}
-		backupConstraints.remove(backupConstraints.lastElement());
-		backups.remove(backups.lastElement());
+		backupConstraints.remove(backupConstraints.size()-1);
+		backups.remove(backups.size()-1);
+		backupMaxUsed.remove(backupMaxUsed.size()-1);
 	}
 	
 	private void saveDMatrixInternal() {
@@ -887,6 +890,12 @@ public class APSPSolver extends ConstraintSolver {
 		
 		return true;
 	}
+
+	private void resetDMatrixBackups() {
+		backups = new Vector<long[][]>();
+		backupConstraints = new Vector<Constraint[]>();
+		backupMaxUsed = new Vector<Integer>();
+	}
 	
 	private boolean canRestoreDMatrix(Constraint[] con) {
 		if (backupConstraints.isEmpty()) return false;
@@ -921,7 +930,10 @@ public class APSPSolver extends ConstraintSolver {
 				}
 			}
 			if (canRestoreDMatrix(con)) cDelete(tot,from,to,true);
-			else cDelete(tot,from,to,false);
+			else {
+				resetDMatrixBackups();
+				cDelete(tot,from,to,false);
+			}
 		}
 	}
 
