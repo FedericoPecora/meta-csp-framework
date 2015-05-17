@@ -64,6 +64,7 @@ public class APSPSolver extends ConstraintSolver {
 	transient private Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	private boolean doFromScratchInsteadOfIncremental = false;
+	private boolean addingIndependentConstraints = false;
 
 	private int cubePropCount = 0;
 	private int quadPropCount = 0;
@@ -395,8 +396,8 @@ public class APSPSolver extends ConstraintSolver {
 
 	
 	//Create an interval for a constraint
-	private boolean cCreate(Bounds i, int from, int to) {
-		if (doFromScratchInsteadOfIncremental) return cCreateFromScratch(i, from, to);
+	private boolean cCreate(Bounds i, int from, int to, boolean noPropagation) {
+		if (!noPropagation && doFromScratchInsteadOfIncremental) return cCreateFromScratch(i, from, to);
 		//Conversion
 		long max = i.max;
 		long min = i.min;
@@ -409,6 +410,11 @@ public class APSPSolver extends ConstraintSolver {
 		if (from == to) return false;
 		if (tPoints[from] == null) return false;
 
+		if (noPropagation) {
+			distance[from][to] = max;
+			distance[to][from] = -min;
+		}
+		
 		//Already existing edge
 		SimpleDistanceConstraint con = tPoints[from].getOut(to);
 		if (con != null) {
@@ -427,7 +433,7 @@ public class APSPSolver extends ConstraintSolver {
 			if (con.getMaximum() > i.max) con.setMaximum(i.max);
 
 //			saveDMatrix();
-			if (!incrementalDistanceMatrixComputation(from,to,i)) {
+			if (!noPropagation && !incrementalDistanceMatrixComputation(from,to,i)) {
 				//Inconsistency. Rollback
 				con.setMinimum(oldd);
 				con.setMaximum(oldD);
@@ -447,7 +453,7 @@ public class APSPSolver extends ConstraintSolver {
 		}				
 		else {
 //			saveDMatrix();
-			if (!incrementalDistanceMatrixComputation(from,to,i)) {
+			if (!noPropagation && !incrementalDistanceMatrixComputation(from,to,i)) {
 //				restoreDMatrix();
 				return false;
 			}
@@ -786,8 +792,11 @@ public class APSPSolver extends ConstraintSolver {
 		//super.removeVariable(ti);
 		tpDelete(Ids);
 	}
-
-
+	
+	public void setAddingIndependentConstraints() {
+		addingIndependentConstraints = true;
+	}
+	
 	@Override
 	protected boolean addConstraintsSub(Constraint[] con) {
 		if (con == null || con.length == 0) return true;
@@ -806,32 +815,46 @@ public class APSPSolver extends ConstraintSolver {
 
 		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
 		Vector<Constraint> added = new Vector<Constraint>();
+		
+		if (addingIndependentConstraints) {
+			addingIndependentConstraints = false;
+			//Do special adding
+			for (int i = 0; i < con.length; i++) {
+				//add cons, one shot
+				if (!cCreate(tot[i],from[i],to[i],true)) {
+					logger.info("Critical error in new constraint propagation!");
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		if (con.length > MAX_USED) {
 			logger.finest("From scratch prop is more convenient (MAX_USED = " + MAX_USED + " < " + con.length + " = #constraintsToAdd)...");
 			return cCreate(tot, from, to);
 		}
-		else {
-			logger.finest("Incremental prop is more convenient (MAX_USED = " + MAX_USED + " >= " + con.length + " = #constraintsToAdd)...");
-			for (int i = 0; i < con.length; i++) {
-				//System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
-				if (cCreate(tot[i],from[i],to[i])) {
-					added.add(con[i]);
+		
+		logger.finest("Incremental prop is more convenient (MAX_USED = " + MAX_USED + " >= " + con.length + " = #constraintsToAdd)...");
+		for (int i = 0; i < con.length; i++) {
+			//System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
+			if (cCreate(tot[i],from[i],to[i],false)) {
+				added.add(con[i]);
+			}
+			else {
+				logger.finest("Failed to add " + con[i]);
+				Bounds[] toDeleteBounds = new Bounds[added.size()];
+				int[] toDeleteFrom = new int[added.size()];
+				int[] toDeleteTo = new int[added.size()];
+				for (int j = 0; j < added.size(); j++) {
+					toDeleteBounds[j] = new Bounds(((SimpleDistanceConstraint)added.get(j)).getMinimum(),((SimpleDistanceConstraint)added.get(j)).getMaximum());
+					toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
+					toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
 				}
-				else {
-					logger.finest("Failed to add " + con[i]);
-					Bounds[] toDeleteBounds = new Bounds[added.size()];
-					int[] toDeleteFrom = new int[added.size()];
-					int[] toDeleteTo = new int[added.size()];
-					for (int j = 0; j < added.size(); j++) {
-						toDeleteBounds[j] = new Bounds(((SimpleDistanceConstraint)added.get(j)).getMinimum(),((SimpleDistanceConstraint)added.get(j)).getMaximum());
-						toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
-						toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
-					}
-					cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
-					return false;
-				}
+				cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
+				return false;
 			}
 		}
+		
 		return true;
 	}
 
