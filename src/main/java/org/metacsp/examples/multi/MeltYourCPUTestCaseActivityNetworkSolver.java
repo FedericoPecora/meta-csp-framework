@@ -25,6 +25,7 @@ package org.metacsp.examples.multi;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.metacsp.framework.Constraint;
@@ -32,6 +33,7 @@ import org.metacsp.framework.Variable;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
+import org.metacsp.time.APSPSolver;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class MeltYourCPUTestCaseActivityNetworkSolver {
@@ -39,7 +41,8 @@ public class MeltYourCPUTestCaseActivityNetworkSolver {
 	public static void main(String[] args) {
 	
 		Logger metaCSPLogger = MetaCSPLogging.getLogger(new MeltYourCPUTestCaseActivityNetworkSolver().getClass());
-
+		
+		MetaCSPLogging.setLevel(APSPSolver.class, Level.FINEST);
 		ActivityNetworkSolver solver = new ActivityNetworkSolver(0,5000);
 		Random rand = new Random(Calendar.getInstance().getTimeInMillis());
 

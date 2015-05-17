@@ -88,8 +88,9 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Distance Matrix
 	private long[][] distance;
-	private long[][] distanceBackup;
 	private long[][] distanceBackupInternal;
+	private Vector<long[][]> backups = new Vector<long[][]>();
+	private Vector<Constraint[]> backupConstraints = new Vector<Constraint[]>();
 
 	// Roll-back data structures
 	private ArrayList<TimePoint[]> tPointsRollback = new ArrayList<TimePoint[]>();
@@ -266,22 +267,26 @@ public class APSPSolver extends ConstraintSolver {
 		return ret;
 	}
 
-	private void saveDMatrix() {
-		distanceBackup = new long[MAX_USED+1][MAX_USED+1];
+	private void saveDMatrix(Constraint[] con) {
+		long[][] distanceBackup = new long[MAX_USED+1][MAX_USED+1];
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = 0; j < MAX_USED+1; j++) {
 				distanceBackup[i][j] = distance[i][j];
-			}			
+			}
 		}
+		backupConstraints.add(con);
+		backups.add(distanceBackup);
 	}
 
 	private void restoreDMatrix() {
+		long[][] distanceBackup = backups.lastElement();
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = 0; j < MAX_USED+1; j++) {
 				distance[i][j] = distanceBackup[i][j];
 			}			
 		}
-		distanceBackup = null;
+		backupConstraints.remove(backupConstraints.lastElement());
+		backups.remove(backups.lastElement());
 	}
 	
 	private void saveDMatrixInternal() {
@@ -585,38 +590,38 @@ public class APSPSolver extends ConstraintSolver {
 		return true;    
 	}
 	
-	//Delete a constraint...
-	//throw error in case of parameter inconsistency
-	private boolean cDelete(Bounds i, int from, int to) throws ConstraintNotFound, MalformedSimpleDistanceConstraint {
-		//Conversion
-		long min = i.min;
-		long max = i.max;
-		if (i.max == Long.MAX_VALUE - 1) max = H-O;
-		if (i.min == Long.MIN_VALUE + 1) min = -1 * (H - O);
-		i = new Bounds(min,max);
-
-		SimpleDistanceConstraint con = tPoints[from].getOut(to);
-
-		if (con == null) throw new ConstraintNotFound(String.format("Interval %s, from %d, to %d", i.toString(), from, to));
-
-		if (con.getCounter() == 1) { 
-			if (con.removeInterval(i)) {
-				tPoints[from].setOut(to,null);
-			}
-			else throw new MalformedSimpleDistanceConstraint(con, 3);
-		}
-		else if (!con.removeInterval(i)) throw new MalformedSimpleDistanceConstraint(con, 4);
-
-		fromScratchDistanceMatrixComputation();
-
-		for (int j = 0; j < MAX_USED+1; j++)
-			if (tPoints[j].isUsed()) {
-				tPoints[j].setLowerBound(sum(-distance[j][0],O));
-				tPoints[j].setUpperBound(sum(distance[0][j],O));
-			}
-
-		return true;
-	}
+//	//Delete a constraint...
+//	//throw error in case of parameter inconsistency
+//	private boolean cDelete(Bounds i, int from, int to) throws ConstraintNotFound, MalformedSimpleDistanceConstraint {
+//		//Conversion
+//		long min = i.min;
+//		long max = i.max;
+//		if (i.max == Long.MAX_VALUE - 1) max = H-O;
+//		if (i.min == Long.MIN_VALUE + 1) min = -1 * (H - O);
+//		i = new Bounds(min,max);
+//
+//		SimpleDistanceConstraint con = tPoints[from].getOut(to);
+//
+//		if (con == null) throw new ConstraintNotFound(String.format("Interval %s, from %d, to %d", i.toString(), from, to));
+//
+//		if (con.getCounter() == 1) { 
+//			if (con.removeInterval(i)) {
+//				tPoints[from].setOut(to,null);
+//			}
+//			else throw new MalformedSimpleDistanceConstraint(con, 3);
+//		}
+//		else if (!con.removeInterval(i)) throw new MalformedSimpleDistanceConstraint(con, 4);
+//
+//		fromScratchDistanceMatrixComputation();
+//
+//		for (int j = 0; j < MAX_USED+1; j++)
+//			if (tPoints[j].isUsed()) {
+//				tPoints[j].setLowerBound(sum(-distance[j][0],O));
+//				tPoints[j].setUpperBound(sum(distance[0][j],O));
+//			}
+//
+//		return true;
+//	}
 
 	//Delete many constraints...
 	//throw error in case of parameter inconsistency
@@ -643,7 +648,10 @@ public class APSPSolver extends ConstraintSolver {
 		}
 
 		if (!canRestore) fromScratchDistanceMatrixComputation();
-		else restoreDMatrix();
+		else {
+			logger.finest("QuickRestoring distance matrix, no propagation");
+			restoreDMatrix();
+		}
 
 		for (int j = 0; j < MAX_USED+1; j++)
 			if (tPoints[j].isUsed() == true) {
@@ -667,7 +675,6 @@ public class APSPSolver extends ConstraintSolver {
 		if (tPoints[Id] == null) return null;
 		if (!tPoints[Id].isUsed()) return null;
 		return tPoints[Id];
-
 	}
 
 
@@ -835,6 +842,8 @@ public class APSPSolver extends ConstraintSolver {
 
 		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
 		Vector<Constraint> added = new Vector<Constraint>();
+
+		saveDMatrix(con);
 		
 		if (addingIndependentConstraints) {
 			addingIndependentConstraints = false;
@@ -855,6 +864,7 @@ public class APSPSolver extends ConstraintSolver {
 		}
 		
 		logger.finest("Incremental prop is more convenient (MAX_USED = " + MAX_USED + " >= " + con.length + " = #constraintsToAdd)...");
+		ConstraintNetwork cn = new ConstraintNetwork(null);
 		for (int i = 0; i < con.length; i++) {
 			//System.out.println("TOT: " + tot[i] + " FROM: " + printLong(from[i]) + " TO: " + printLong(to[i]));
 			if (cCreate(tot[i],from[i],to[i],false)) {
@@ -870,11 +880,26 @@ public class APSPSolver extends ConstraintSolver {
 					toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
 					toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
 				}
-				cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo, false);
+				cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo, true);
 				return false;
 			}
 		}
 		
+		return true;
+	}
+	
+	private boolean canRestoreDMatrix(Constraint[] con) {
+		if (backupConstraints.isEmpty()) return false;
+		for (Constraint c : backupConstraints.lastElement()) {
+			boolean found = false;
+			for (Constraint c1 : con) {
+				if (c1.equals(c)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) return false;
+		}
 		return true;
 	}
 
@@ -895,8 +920,8 @@ public class APSPSolver extends ConstraintSolver {
 					to[i] = ((TimePoint)c.getTo()).getID();				
 				}
 			}
-
-			cDelete(tot,from,to,false);
+			if (canRestoreDMatrix(con)) cDelete(tot,from,to,true);
+			else cDelete(tot,from,to,false);
 		}
 	}
 
