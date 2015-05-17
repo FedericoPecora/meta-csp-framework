@@ -27,6 +27,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.time.TimePoint;
 
@@ -67,6 +68,8 @@ public class AllenInterval extends MultiVariable {
 		dur.setFrom(this);
 		dur.setTo(this);
 		dur.setAutoRemovable(true);
+		APSPSolver s = (APSPSolver)((AllenIntervalNetworkSolver)this.getConstraintSolver()).getConstraintSolvers()[0];
+		s.setAddingIndependentConstraints();
 		return new Constraint[] {dur};
 	}
 

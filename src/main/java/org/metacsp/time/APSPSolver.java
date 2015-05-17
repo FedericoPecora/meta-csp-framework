@@ -88,7 +88,8 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Distance Matrix
 	private long[][] distance;
-	private long[][] backup;
+	private long[][] distanceBackup;
+	private long[][] distanceBackupInternal;
 
 	// Roll-back data structures
 	private ArrayList<TimePoint[]> tPointsRollback = new ArrayList<TimePoint[]>();
@@ -266,10 +267,10 @@ public class APSPSolver extends ConstraintSolver {
 	}
 
 	private void saveDMatrix() {
-		backup = new long[MAX_USED+1][MAX_USED+1];
+		distanceBackup = new long[MAX_USED+1][MAX_USED+1];
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = 0; j < MAX_USED+1; j++) {
-				backup[i][j] = distance[i][j];
+				distanceBackup[i][j] = distance[i][j];
 			}			
 		}
 	}
@@ -277,10 +278,28 @@ public class APSPSolver extends ConstraintSolver {
 	private void restoreDMatrix() {
 		for (int i = 0; i < MAX_USED+1; i++) {
 			for (int j = 0; j < MAX_USED+1; j++) {
-				distance[i][j] = backup[i][j];
+				distance[i][j] = distanceBackup[i][j];
 			}			
 		}
-		backup = null;
+		distanceBackup = null;
+	}
+	
+	private void saveDMatrixInternal() {
+		distanceBackupInternal = new long[MAX_USED+1][MAX_USED+1];
+		for (int i = 0; i < MAX_USED+1; i++) {
+			for (int j = 0; j < MAX_USED+1; j++) {
+				distanceBackupInternal[i][j] = distance[i][j];
+			}			
+		}
+	}
+
+	private void restoreDMatrixInternal() {
+		for (int i = 0; i < MAX_USED+1; i++) {
+			for (int j = 0; j < MAX_USED+1; j++) {
+				distance[i][j] = distanceBackupInternal[i][j];
+			}			
+		}
+		distanceBackupInternal = null;
 	}
 
 
@@ -351,11 +370,11 @@ public class APSPSolver extends ConstraintSolver {
 
 			if (!con.addInterval(i)) return false;
 			
-			saveDMatrix();
+			saveDMatrixInternal();
 			if (!fromScratchDistanceMatrixComputation()) {
 				//Inconsistency. Rollback
 				con.removeInterval(i);
-				restoreDMatrix();
+				restoreDMatrixInternal();
 				return false;
 			}
 
@@ -376,10 +395,10 @@ public class APSPSolver extends ConstraintSolver {
 			//Add edge to tp
 			tPoints[from].setOut(to,con);
 
-			saveDMatrix();
+			saveDMatrixInternal();
 			if (!fromScratchDistanceMatrixComputation()) {
 				tPoints[from].setOut(to,null);
-				restoreDMatrix();
+				restoreDMatrixInternal();
 				return false;
 			}
 
@@ -542,9 +561,9 @@ public class APSPSolver extends ConstraintSolver {
 			return false;
 		}
 
-		saveDMatrix();
+		saveDMatrixInternal();
 		if (!this.fromScratchDistanceMatrixComputation()) {
-			restoreDMatrix();
+			restoreDMatrixInternal();
 			return false;
 		}
 		
@@ -601,7 +620,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	//Delete many constraints...
 	//throw error in case of parameter inconsistency
-	private boolean cDelete(Bounds[] in, int[] from, int[] to) throws ConstraintNotFound, MalformedSimpleDistanceConstraint {
+	private boolean cDelete(Bounds[] in, int[] from, int[] to, boolean canRestore) throws ConstraintNotFound, MalformedSimpleDistanceConstraint {
 		for (int i = 0; i < in.length; i++) {
 			//Conversion
 			long min = in[i].min;
@@ -623,7 +642,8 @@ public class APSPSolver extends ConstraintSolver {
 			else if (!con.removeInterval(in[i])) throw new MalformedSimpleDistanceConstraint(con, 2);
 		}
 
-		fromScratchDistanceMatrixComputation();
+		if (!canRestore) fromScratchDistanceMatrixComputation();
+		else restoreDMatrix();
 
 		for (int j = 0; j < MAX_USED+1; j++)
 			if (tPoints[j].isUsed() == true) {
@@ -850,7 +870,7 @@ public class APSPSolver extends ConstraintSolver {
 					toDeleteFrom[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getFrom()).getID();
 					toDeleteTo[j] = ((TimePoint)((SimpleDistanceConstraint)added.get(j)).getTo()).getID();
 				}
-				cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo);
+				cDelete(toDeleteBounds, toDeleteFrom, toDeleteTo, false);
 				return false;
 			}
 		}
@@ -876,7 +896,7 @@ public class APSPSolver extends ConstraintSolver {
 				}
 			}
 
-			cDelete(tot,from,to);
+			cDelete(tot,from,to,false);
 		}
 	}
 
