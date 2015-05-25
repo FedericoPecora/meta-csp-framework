@@ -744,6 +744,7 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 			
 			if (types[0].equals(Type.Deadline)) {
 				TimePoint fe = from.getEnd();
+				if (bounds[0].max == APSPSolver.INF) bounds[0].max = ((APSPSolver)from.getInternalConstraintSolvers()[0]).getH();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 				first.setMinimum(bounds[0].min-((APSPSolver)from.getInternalConstraintSolvers()[0]).getO());
 				first.setMaximum(bounds[0].max-((APSPSolver)from.getInternalConstraintSolvers()[0]).getO());
