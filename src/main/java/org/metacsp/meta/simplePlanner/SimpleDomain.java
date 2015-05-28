@@ -56,7 +56,7 @@ public class SimpleDomain extends MetaConstraint {
 	protected HashMap<String,SimpleReusableResource> resourcesMap;
 	protected HashMap<SimpleReusableResource,HashMap<Variable,Integer>> currentResourceUtilizers;
 	private String everything = null;
-
+	protected long filteringTime = Long.MIN_VALUE;
 	private String name;
 
 	protected Vector<String> sensors = new Vector<String>();
@@ -80,6 +80,10 @@ public class SimpleDomain extends MetaConstraint {
 	
 	public HashMap<SymbolicVariableActivity, SymbolicVariableActivity> getUnificationTrack(){
 		return unificationTrack;
+	}
+	
+	public void setFileteringTime(long filteringTime) {
+		this.filteringTime = filteringTime;
 	}
 	
 	public SimpleDomain(int[] capacities, String[] resourceNames, String domainName) {
@@ -309,6 +313,16 @@ public class SimpleDomain extends MetaConstraint {
 		return false;
 	}
 
+	private Vector<SymbolicVariableActivity> filterUnifications(Vector<SymbolicVariableActivity> possibleUnifications) {
+		Vector<SymbolicVariableActivity> ret = new Vector<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : possibleUnifications) {
+			if (act.getTemporalVariable().getLET() >= filteringTime) {
+				ret.add(act);
+			}
+		}
+		return ret;
+	}
+	
 	protected ConstraintNetwork[] getUnifications(SymbolicVariableActivity activity) {
 		ActivityNetworkSolver groundSolver = (ActivityNetworkSolver)getGroundSolver();//(ActivityNetworkSolver)this.metaCS.getConstraintSolvers()[0];
 		Variable[] acts = groundSolver.getVariables();
@@ -331,7 +345,8 @@ public class SimpleDomain extends MetaConstraint {
 				}
 			}
 		}
-		return getUnifications(activity,possibleUnifications);
+		//return getUnifications(activity,possibleUnifications);
+		return getUnifications(activity,filterUnifications(possibleUnifications));
 	}
 	
 	private ConstraintNetwork[] getUnifications(SymbolicVariableActivity activity, Vector<SymbolicVariableActivity> possibleUnifications) {
@@ -560,6 +575,10 @@ public class SimpleDomain extends MetaConstraint {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public static String instantiateVariable(String var) {
+		return var.substring(var.indexOf('?'));
+	}
 	
 	/**
 	 * Creates a {@link SimpleOperator} from a textual specification (used by the
@@ -612,8 +631,10 @@ public class SimpleDomain extends MetaConstraint {
 						String ubString = oneBound.substring(oneBound.indexOf(",")+1,oneBound.indexOf("]")).trim();
 						long lb, ub;
 						if (lbString.equals("INF")) lb = org.metacsp.time.APSPSolver.INF;
+						else if (lbString.startsWith("?")) lb = Long.parseLong(instantiateVariable(lbString));
 						else lb = Long.parseLong(lbString);
 						if (ubString.equals("INF")) ub = org.metacsp.time.APSPSolver.INF;
+						else if (ubString.startsWith("?")) ub = Long.parseLong(instantiateVariable(ubString));
 						else ub = Long.parseLong(ubString);
 						bounds.add(new Bounds(lb,ub));
 					}
