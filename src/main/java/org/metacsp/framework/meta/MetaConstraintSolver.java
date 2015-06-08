@@ -225,7 +225,8 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 		if (this.g.getRoot() == null) this.g.addVertex(currentVertex);
 		ConstraintNetwork mostProblematicNetwork = metaVariable.getConstraintNetwork();
 		logger.fine("Solving conflict: " + metaVariable);
-		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable);	
+		ConstraintNetwork[] values = metaVariable.getMetaConstraint().getMetaValues(metaVariable);
+		for (ConstraintNetwork value : values) value.setAnnotation(metaVariable);
 		if (metaVariable.getMetaConstraint().valOH != null && values!=null) {
 			//System.out.println("SORTING with " + metaVariable.getMetaConstraint().valOH.getClass());
 			Arrays.sort(values, metaVariable.getMetaConstraint().valOH);

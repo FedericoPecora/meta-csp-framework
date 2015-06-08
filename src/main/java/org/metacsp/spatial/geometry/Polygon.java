@@ -32,7 +32,7 @@ public class Polygon extends Variable {
 		super(cs, id);
 		this.setInitialDomain();
 	}
-	
+
 	/**
 	 * Returns whether or not the domain of this {@link Polygon} has been refined.
 	 * @return <code>true</code> iff the domain of this {@link Polygon} has been refined.
