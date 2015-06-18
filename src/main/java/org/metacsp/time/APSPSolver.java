@@ -830,6 +830,7 @@ public class APSPSolver extends ConstraintSolver {
 	@Override
 	protected boolean addConstraintsSub(Constraint[] con) {
 		if (con == null || con.length == 0) return true;
+		if (backupConstraints.size() > 50) resetDMatrixBackups();
 		Bounds[] tot = new Bounds[con.length];
 		int[] from = new int[con.length];
 		int[] to = new int[con.length];
