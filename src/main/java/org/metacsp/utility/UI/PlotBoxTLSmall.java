@@ -89,7 +89,8 @@ public class PlotBoxTLSmall extends JPanel {
         public String generateLabel(CategoryDataset dataset, int series, 
                                     int category) {
         	
-        	String label = "(null)";
+        	//String label = "(null)";
+        	String label = "";
         	if (values[new Integer(dataset.getRowKey(series).toString()).intValue()] != null) {
 	        	label = new String(values[new Integer(dataset.getRowKey(series).toString()).intValue()].toString());
 	        	//label = label.replaceAll(", ", "\n");
@@ -147,8 +148,15 @@ public class PlotBoxTLSmall extends JPanel {
 	private int xsize = 900;
 	private Range range = null;
 	
+	private boolean showlabels = true;
+
 	public PlotBoxTLSmall(Timeline simpletimeline, String n, boolean f, boolean l, long min, long max) {
+		this(simpletimeline, n, f, l, min, max, true);
+	}
+	
+	public PlotBoxTLSmall(Timeline simpletimeline, String n, boolean f, boolean l, long min, long max, boolean showlabels) {
 		//super(title);
+		this.showlabels = showlabels;
 		if (min != -1 && max != -1) {
 			this.range = new Range(min, max);
 		}
@@ -158,6 +166,7 @@ public class PlotBoxTLSmall extends JPanel {
 		this.title = "Simple Timeline";
 		this.name = n;
 		this.stl = simpletimeline;
+		//this.range = Range.scale(range, 0.2);
 		//estProfile = (SimpleTimeline) stateVariable.extractTimeline(0);
 				
 		JFreeChart chart = createChart(createDataset());
@@ -226,7 +235,7 @@ public class PlotBoxTLSmall extends JPanel {
         //CategoryItemRenderer renderer = plot.getRenderer();
         StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
         renderer.setItemLabelsVisible(true);
-        renderer.setItemLabelGenerator(new LabelGenerator(true));
+        renderer.setItemLabelGenerator(new LabelGenerator(showlabels));
         ItemLabelPosition pos = new ItemLabelPosition(ItemLabelAnchor.INSIDE1, TextAnchor.TOP_RIGHT);
     	renderer.setPositiveItemLabelPositionFallback(pos);
         for(int i = 0; i < dataset.getRowCount(); i++) {

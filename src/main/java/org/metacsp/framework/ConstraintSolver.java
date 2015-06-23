@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 
 import org.metacsp.framework.multi.MultiConstraint;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.meta.symbolsAndTime.SymbolicTimeline;
 import org.metacsp.throwables.ConstraintNotFound;
 import org.metacsp.throwables.IllegalVariableRemoval;
 import org.metacsp.throwables.VariableNotFound;
@@ -528,6 +529,28 @@ public abstract class ConstraintSolver implements Serializable {
 	 */
 	public Variable[] getVariables() {
 		return this.theNetwork.getVariables();
+	}
+
+	/**
+	 * Get all the {@link Variable}s contained in this {@link ConstraintSolver}'s {@link ConstraintNetwork}.
+	 * @param component Only {@link Variable}s associated with the given label (component) should be returned. 
+	 * @return all the {@link Variable}s contained in this {@link ConstraintSolver}'s {@link ConstraintNetwork}.
+	 */
+	public Variable[] getVariables(String component, Object ... markingsToExclude) {
+		ArrayList<Variable> ret = this.components.get(component);
+		ArrayList<Variable> retFiltered = new ArrayList<Variable>();
+		for (Variable v : ret) {
+			boolean found = false;
+			if (v.getMarking() != null)
+				for (Object m : markingsToExclude) {
+					if (m.equals(v.getMarking())) {
+						found = true;
+						break;
+					}
+				}
+			if (!found) retFiltered.add(v);
+		}
+		return retFiltered.toArray(new Variable[retFiltered.size()]);
 	}
 
 	/**

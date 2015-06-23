@@ -49,8 +49,8 @@ public class SymbolicTimeline extends Timeline {
 		}
 	}
 	
-	public SymbolicTimeline(ConstraintNetwork an, String component) {
-		super(an, component);
+	public SymbolicTimeline(ConstraintNetwork an, String component, Object ... markingsToExclude) {
+		super(an, component, markingsToExclude);
 		cacheValues();
 	}
 	
@@ -64,7 +64,10 @@ public class SymbolicTimeline extends Timeline {
 	private void cacheValues() {
 		ArrayOfStrings[] ret = new ArrayOfStrings[getPulses().length];
 		for (int i = 0; i < getPulses().length-1; i++) {
-			for (Variable var : getConstraintNetwork().getVariables(component)) {
+			Variable[] vars = null;
+			if (markingsToExclude != null) vars = getConstraintNetwork().getVariables(component, markingsToExclude);
+			else vars = getConstraintNetwork().getVariables(component);
+			for (Variable var : vars) {
 				if (var instanceof Activity) {
 					//SymbolicVariableActivity act = (SymbolicVariableActivity)var;
 					Activity act = (Activity)var;

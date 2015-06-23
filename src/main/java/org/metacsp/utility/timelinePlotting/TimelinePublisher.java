@@ -68,6 +68,8 @@ public final class TimelinePublisher
 	private long timeNow = 0;
 	private long temporalResolution = 1;
 	private long origin = 0;
+	private Object[] markingsToExclude = null;
+	private boolean showlabels = true;
 
 	private void computeOrigin() {
 		ArrayList<Long> startTimes = new ArrayList<Long>();
@@ -164,6 +166,14 @@ public final class TimelinePublisher
 		this(ans,null,components);
 	}
 	
+	public void setShowLabels(boolean showlabels) {
+		this.showlabels = showlabels;
+	}
+	
+	public void setMarkingsToExclude(Object ... markingsToExclude) {
+		this.markingsToExclude = markingsToExclude;
+	}
+	
 	/**
 	 * Sets the temporal resolution of this publisher (default is milliseconds).
 	 * @param temporalResolution The desired temporal resolution of this publisher (e.g., seconds if <code>temporalResolution = 1000</code>).
@@ -226,7 +236,8 @@ public final class TimelinePublisher
 				//synchronized(ans) {
 				synchronized(an) {
 					//stl = new SymbolicTimeline(ans, comp);
-					stl = new SymbolicTimeline(an, comp);
+					if (markingsToExclude != null) stl = new SymbolicTimeline(an, comp, markingsToExclude);
+					else stl = new SymbolicTimeline(an, comp);
 				}
 				if (bounds == null) {
 					if (stl.getPulses()[stl.getPulses().length-1] > max) max = stl.getPulses()[stl.getPulses().length-1];
@@ -316,7 +327,7 @@ public final class TimelinePublisher
 					SymbolicTimeline stl = currentTimelines.get(tl);
 					if(stl != null)
 					{
-						BufferedImage img = (new PlotBoxTLSmall(stl, stl.getComponent(), false, false, min, max)).getBufferedImage(imageWidth, subImageHeight);
+						BufferedImage img = (new PlotBoxTLSmall(stl, stl.getComponent(), false, false, min, max, showlabels)).getBufferedImage(imageWidth, subImageHeight);
 						Graphics2D g2 = mergedImage.createGraphics();
 						g2.drawImage(img, 0, tl*subImageHeight, null);
 						g2.dispose();

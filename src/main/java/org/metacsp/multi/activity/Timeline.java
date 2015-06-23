@@ -46,7 +46,18 @@ public abstract class Timeline {
 	private Long[] pulses = null;
 	private Long[] durations = null;
 	protected String component;
-	
+	protected Object[] markingsToExclude = null;
+
+	public Timeline(ConstraintNetwork an, String component, Object ... markingsToExclude) {
+		this.an = an;
+		this.component = component;
+		this.pulses = null;
+		this.durations = null;
+		this.markingsToExclude = markingsToExclude;
+		this.computePulses();	
+		this.computeDurations();
+	}
+
 	public Timeline(ConstraintNetwork an, String component) {
 		this.an = an;
 		this.component = component;
@@ -93,7 +104,9 @@ public abstract class Timeline {
 	}
 
 	private void computePulses() {
-		Variable[] stVars = an.getVariables(component);
+		Variable[] stVars = null;
+		if (markingsToExclude != null) stVars = an.getVariables(component, markingsToExclude);
+		else stVars = an.getVariables(component);
 		Vector<Long> pulsesTemp = new Vector<Long>();
 		if (stVars.length != 0 ) pulsesTemp.add(computeOrigin());
 		else pulsesTemp.add(new Long(0));
