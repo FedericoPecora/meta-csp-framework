@@ -30,7 +30,7 @@ repositories {
 
 version = '0.0.0-SNAPSHOT'
 // Call your group something meaninful, e.g., '<inverse-url>.<project-name>'
-group = 'se.oru.aass.project-template'
+group = 'org.metacsp.project-template'
 
 dependencies {
 
