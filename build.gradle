@@ -30,9 +30,11 @@ targetCompatibility = 1.6
 task releaseInfo {
     def taskName = project.getGradle().startParameter.taskNames.get(0);
     if (taskName.equals("publish")) {
-       def cmd = "git describe --tags"
+       //def cmd = "git describe --tags"
+       def cmd = "git tag"
        def proc = cmd.execute()
-       project.version = proc.text.trim()
+       def tagArray = proc.text.split("\n")
+       project.version = tagArray[tagArray.length-1]
     }
     else {
        project.version = '0.0.0-SNAPSHOT'
