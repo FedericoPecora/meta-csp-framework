@@ -115,6 +115,11 @@ public class TestDE9IMRelationSolver {
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
+		for (Variable var : vars) {
+			GeometricShapeVariable gsv = (GeometricShapeVariable)var;
+			System.out.println(var + ": " + gsv.getShapeType());
+		}
+		
 	}
 
 }

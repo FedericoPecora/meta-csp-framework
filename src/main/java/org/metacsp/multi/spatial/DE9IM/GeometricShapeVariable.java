@@ -19,11 +19,10 @@ public class GeometricShapeVariable extends Variable {
 		setDomain(new PolygonalDomain(this));
 	}
 	
-//	protected GeometricShapeVariable(ConstraintSolver cs, int id, Coordinate ... coordinates) {
-//		super(cs, id);
-//		setDomain(new GeometricShapeDomain(this, coordinates));
-//	}
-
+	public Class<?> getShapeType() {
+		return ((GeometricShapeDomain)this.getDomain()).getShapeType();
+	}
+	
 	@Override
 	public int compareTo(Variable o) {
 		return o.getID() - this.getID();

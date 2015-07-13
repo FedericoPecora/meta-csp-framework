@@ -33,6 +33,10 @@ public abstract class GeometricShapeDomain extends Domain {
 		return geom;
 	}
 	
+	public Class<?> getShapeType() {
+		return this.getClass();
+	}
+	
 	protected abstract void updateGeometry();
 	
 	public void setCoordinates(Coordinate ... coord) {
