@@ -6,6 +6,12 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
+/**
+ * Represents line string domains for {@link GeometricShapeVariable}s. 
+ * 
+ * @author Federico Pecora
+ *
+ */
 public class LineStringDomain extends GeometricShapeDomain {
 
 	private static final long serialVersionUID = 1543675650668270396L;
@@ -14,6 +20,11 @@ public class LineStringDomain extends GeometricShapeDomain {
 		super(v);
 	}
 	
+	/**
+	 * Create a {@link LineStringDomain} for a variable given a list of coordinates.
+	 * @param v The variable of which this object represents the domain.
+	 * @param coord The coordinates to be used for creating this {@link LineStringDomain}.
+	 */
 	public LineStringDomain(Variable v, Coordinate[] coord) {
 		super(v, coord);
 	}

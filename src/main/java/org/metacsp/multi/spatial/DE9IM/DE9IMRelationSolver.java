@@ -4,16 +4,27 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation.Type;
 
+/**
+ * A solver for constraint networks of {@link DE9IMRelation}s. This solver handles variables of type {@link GeometricShapeVariable}, which represent
+ * points, line strings, or polygons. The latter are not necessarily convex.
+ * 
+ * @author Federico Pecora
+ *
+ */
 public class DE9IMRelationSolver extends ConstraintSolver {
 
 	protected DE9IMRelationSolver(Class<?>[] constraintTypes, Class<?> variableType) {
 		super(constraintTypes, variableType);
 	}
 
+	/**
+	 * Creates a new solver for {@link DE9IMRelation}s.
+	 */
 	public DE9IMRelationSolver() {
 		super(new Class<?>[] {DE9IMRelation.class}, GeometricShapeVariable.class);
 		this.setOptions(OPTIONS.DOMAINS_AUTO_INSTANTIATED, OPTIONS.AUTO_PROPAGATE);
@@ -21,10 +32,30 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 	
 	private static final long serialVersionUID = 2872228080625654304L;
 
+	/**
+	 * Get all the implicit {@link DE9IMRelation}s that exist among the variables in this solver's {@link ConstraintNetwork}.
+	 * @return All the implicit {@link DE9IMRelation}s that exist among the variables in this solver's {@link ConstraintNetwork}.
+	 */
 	public Constraint[] getAllImplicitRelations() {
 		return this.getAllImplicitRelations(false);
 	}
-	
+
+	/**
+	 * Get all the implicit {@link DE9IMRelation}s that exist among the variables in this solver's {@link ConstraintNetwork}. These
+	 * are limited to the eight Jointly Exclusive, Pairwise Disjoint relations<br>
+	 * <lu>
+	 * <li>Contains</li>
+	 * <li>Within</li>
+	 * <li>Covers</li>
+	 * <li>CoveredBy</li>
+	 * <li>Disjoint</li>
+	 * <li>Overlaps</li>
+	 * <li>Touches</li>
+	 * <li>Equals</li>
+	 * </lu>
+	 * These eight relations are equivalent to te basic RCC8 relations (Cohn et al., 1997).
+	 * @return All the implicit {@link DE9IMRelation}s that are also RCC8 relations existing among the variables in this solver's {@link ConstraintNetwork}.
+	 */
 	public Constraint[] getAllImplicitRCC8Relations() {
 		return this.getAllImplicitRelations(true);
 	}
@@ -49,9 +80,6 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 		}
 		return cons.toArray(new Constraint[cons.size()]);
 	}
-
-	
-
 	
 	@Override
 	public boolean propagate() {

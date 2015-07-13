@@ -96,11 +96,8 @@ public class TestDE9IMRelationSolver {
 		GeometricShapeVariable g3 = (GeometricShapeVariable)vars[2];
 		g3.setDomain(new LineStringDomain(g3,coord3));
 
-		Coordinate[] coord4 = new Coordinate[] {
-				new Coordinate(-2,-2)
-		};
 		GeometricShapeVariable g4 = (GeometricShapeVariable)vars[3];
-		g4.setDomain(new PointDomain(g4,coord4));
+		g4.setDomain(new PointDomain(g4,new Coordinate(-2,-2)));
 		
 		Constraint[] implicitRelations = solver.getAllImplicitRelations();
 		System.out.println("All implicit relations:\n" + Arrays.toString(implicitRelations));

@@ -10,6 +10,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
+/**
+ * Represents the domain of a {@link GeometricShapeVariable}. This is an abstract class that is used to refer to the generic
+ * type of three types of domains: point (provided by implementing class {@link PointDomain}), line string (provided by implementing class {@link LineStringDomain}),
+ * and polygon (provided by implementing class {@link PolygonalDomain}).   
+ * 
+ * @author Federico Pecora
+ *
+ */
 public abstract class GeometricShapeDomain extends Domain {
 
 	protected Coordinate[] coordinates = null;
@@ -28,17 +36,31 @@ public abstract class GeometricShapeDomain extends Domain {
 		this.coordinates = coord;
 		updateGeometry();
 	}
-	
+
+	/**
+	 * Returns the {@link Geometry} used to represent this domain internally. Methods provided by the JTS Topology Suite (see {@link http://tsusiatsoftware.net/}) can
+	 * be used on these objects.
+	 * @return The {@link Geometry} used to represent this domain internally.
+	 */
 	public Geometry getGeometry() {
 		return geom;
 	}
 	
+	/**
+	 * Returns the class used to represent this domain. Methods provided by the JTS Topology Suite (see {@link http://tsusiatsoftware.net/}) can
+	 * be used on these objects.
+	 * @return The class used to represent this domain.
+	 */
 	public Class<?> getShapeType() {
 		return this.getClass();
 	}
 	
 	protected abstract void updateGeometry();
 	
+	/**
+	 * Set the coordinates of this domain.
+	 * @param coord The coordinates that should be used to create this domain.
+	 */
 	public void setCoordinates(Coordinate ... coord) {
 		this.coordinates = coord;
 	}
