@@ -38,14 +38,6 @@ public abstract class GeometricShapeDomain extends Domain {
 	public void setCoordinates(Coordinate ... coord) {
 		this.coordinates = coord;
 	}
-//	public void setCoordinates(Coordinate ... coord) {
-//		this.coordinates = new Coordinate[coord.length+1];
-//		for (int i = 0; i < coord.length; i++) {
-//			this.coordinates[i] = coord[i];
-//		}
-//		this.coordinates[coord.length] = this.coordinates[0];
-//		updateGeometry();
-//	}
 	
 	@Override
 	public int compareTo(Object o) {
