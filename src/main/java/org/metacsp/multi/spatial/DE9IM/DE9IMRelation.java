@@ -24,7 +24,15 @@ public class DE9IMRelation extends BinaryConstraint {
 
 	private Type[] types = null;
 	
-	public static Type[] getRelation(GeometricShapeVariable gv1, GeometricShapeVariable gv2, boolean rcc8Relations) {
+	public static Type[] getRelations(GeometricShapeVariable gv1, GeometricShapeVariable gv2) {
+		return getRelations(gv1, gv2, false);		
+	}
+
+	public static Type[] getRCC8Relations(GeometricShapeVariable gv1, GeometricShapeVariable gv2) {
+		return getRelations(gv1, gv2, true);		
+	}
+
+	private static Type[] getRelations(GeometricShapeVariable gv1, GeometricShapeVariable gv2, boolean rcc8Relations) {
 		ArrayList<Type> ret = new ArrayList<Type>();
 		Geometry g1 = ((GeometricShapeDomain)gv1.getDomain()).getGeometry();
 		Geometry g2 = ((GeometricShapeDomain)gv2.getDomain()).getGeometry();

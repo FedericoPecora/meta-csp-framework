@@ -108,7 +108,7 @@ public class TestDE9IMRelationSolver {
 		Constraint[] rcc8ImplicitRelations = solver.getAllImplicitRCC8Relations();
 		System.out.println("All implicit RCC8 relations:\n" + Arrays.toString(rcc8ImplicitRelations));
 
-		DE9IMRelation relation = new DE9IMRelation(DE9IMRelation.Type.Covers);
+		DE9IMRelation relation = new DE9IMRelation(DE9IMRelation.Type.Disjoint);
 		relation.setFrom(g1);
 		relation.setTo(g2);
 		System.out.println(solver.addConstraints(relation));

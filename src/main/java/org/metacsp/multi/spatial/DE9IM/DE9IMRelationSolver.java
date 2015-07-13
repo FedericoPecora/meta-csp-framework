@@ -29,7 +29,7 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 		return this.getAllImplicitRelations(true);
 	}
 
-	public Constraint[] getAllImplicitRelations(boolean rcc8relations) {
+	private Constraint[] getAllImplicitRelations(boolean rcc8relations) {
 		ArrayList<Constraint> cons = new ArrayList<Constraint>();
 		Variable[] vars = this.getVariables();
 		for (int i = 0; i < vars.length; i++) {
@@ -38,8 +38,8 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 				if (i != j) {
 					GeometricShapeVariable g2 = (GeometricShapeVariable)vars[j];
 					Type[] rels = null;
-					if (!rcc8relations) rels = DE9IMRelation.getRelation(g1, g2, rcc8relations);
-					else rels = DE9IMRelation.getRelation(g1, g2, rcc8relations);
+					if (!rcc8relations) rels = DE9IMRelation.getRelations(g1, g2);
+					else rels = DE9IMRelation.getRCC8Relations(g1, g2);
 					DE9IMRelation con = new DE9IMRelation(rels);
 					con.setFrom(g1);
 					con.setTo(g2);
@@ -61,8 +61,8 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 			for (int j = 0; j < vars.length; j++) {
 				if (i != j) {
 					GeometricShapeVariable g2 = (GeometricShapeVariable)vars[j];
-					//Are explicit (given) relations compatible with implicit ones?
-					Type[] implicitRelsA = DE9IMRelation.getRelation(g1, g2, true);
+					//Are explicit (given, RCC8) relations compatible with implicit ones?
+					Type[] implicitRelsA = DE9IMRelation.getRCC8Relations(g1, g2);
 					HashSet<Type> implicitRels = new HashSet<Type>();
 					for (Type t : implicitRelsA) implicitRels.add(t);
 					Constraint[] cons = this.getConstraints(g1, g2);
