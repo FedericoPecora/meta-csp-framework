@@ -1,4 +1,4 @@
-# What is meta-constarint reasoning?
+# What is meta-constraint reasoning?
 Constraint Satisfaction Problems (CSP) consist of a finite set of variables, each associated with a finite domain, and a set of constraints which restrict simultaneous assignments to variables. A Meta-CSP is CSP formulation of a combinatorial problem which builds on lower-level CSPs.
 
 # What does this API do?
