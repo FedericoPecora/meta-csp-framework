@@ -56,6 +56,15 @@ public class DE9IMRelation extends BinaryConstraint {
 	public static Type[] getRCC8Relations(GeometricShapeVariable gv1, GeometricShapeVariable gv2) {
 		return getRelations(gv1, gv2, true);		
 	}
+	
+	/**
+	 * Find out whether a relation is a {@link DE9IMRelation} belongs to the RCC8 subset.
+	 * @param t The relation to test
+	 * @return <code>true</code> iff the given {@link DE9IMRelation} belongs to the RCC8 subset.
+	 */
+	public static boolean isRCC8Relation(DE9IMRelation.Type t) {
+		return RCC8Types.contains(t.name());
+	}
 
 	private static Type[] getRelations(GeometricShapeVariable gv1, GeometricShapeVariable gv2, boolean rcc8Relations) {
 		ArrayList<Type> ret = new ArrayList<Type>();

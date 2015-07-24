@@ -82,6 +82,7 @@ public class Dispatcher extends Thread {
 
 							//Not dispatched, check if need to dispatch
 							if (acts.get(act).equals(ACTIVITY_STATE.PLANNED)) {
+								//System.out.println("PLANNED: " + act);
 								//time to dispatch, do it!
 								if (act.getTemporalVariable().getEST() < future.getTemporalVariable().getEST()) {
 									acts.put(act, ACTIVITY_STATE.STARTED);

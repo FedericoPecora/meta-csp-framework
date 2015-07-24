@@ -39,8 +39,6 @@ public class TestDE9IMRelationSolver {
 		GeometricShapeVariable g1 = (GeometricShapeVariable)vars[0];
 		g1.setDomain(new PolygonalDomain(g1,coord1));
 
-		((GeometricShapeDomain)g1.getDomain()).setCoordinates(coord1);
-
 //		Coordinate[] coord2 = new Coordinate[] {
 //			new Coordinate(8,2),
 //			new Coordinate(6,15),
