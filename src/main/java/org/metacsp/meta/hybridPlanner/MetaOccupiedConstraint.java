@@ -20,8 +20,8 @@ import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
-import org.metacsp.multi.spatioTemporal.SpatialFluent;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluent;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluentSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 
