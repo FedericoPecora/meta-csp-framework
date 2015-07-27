@@ -4,11 +4,7 @@ import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Represents the domain of a {@link GeometricShapeVariable}. This is an abstract class that is used to refer to the generic

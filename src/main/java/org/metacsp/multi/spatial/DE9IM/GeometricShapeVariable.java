@@ -4,10 +4,6 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-
 /**
  * Represents a variable that can be reasoned upon by the {@link DE9IMRelationSolver}. A {@link GeometricShapeVariable} should be provided a domain
  * representing one of the following geometric entities: point (provided by class {@link PointDomain}), line string (provided by class {@link LineStringDomain}),
