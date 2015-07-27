@@ -17,8 +17,8 @@ import com.vividsolutions.jts.geom.IntersectionMatrix;
  * This class represents spatial relations between geometric shapes (variables of type {@link GeometricShapeVariable}).
  * These shapes can be points, strings of segments, or polygons. The relations constitute a topological mode called
  * the Dimensionally Extended nine-Intersection Model (DE-9IM) (see (Clementini et al., 1993) and {@link https://en.wikipedia.org/wiki/DE-9IM}).
- * If the shapes are all polygons, then a Jointly Exclusive and Pairwise Disjoint subset of these relations is
- * equivalent to RCC8 (Cohn et al., 1997).
+ * If the shapes are all polygons, then a Jointly Exclusive and Pairwise Disjoint (JEPD) subset of these relations is
+ * equivalent to RCC8 (Cohn et al., 2007).
  * 
  * @author Federico Pecora
  *
@@ -28,7 +28,9 @@ public class DE9IMRelation extends BinaryConstraint {
 	private static final long serialVersionUID = 5511066094460985805L;
 
 	/**
-	 * The 10 meaningful relations in DE-9IM.
+	 * The 10 meaningful relations in DE-9IM. The subset
+	 * { {@value Type#Contains}, {@value Type#Within}, {@value Type#Covers}, {@value Type#CoveredBy}, {@value Type#Disjoint}, {@value Type#Overlaps}, {@value Type#Touches}, {@value Type#Equals} }
+	 * is Jointly Exclusive and Pairwise Disjoint (JEPD) and equivalent to RCC8 (Cohn et al., 2007).
 	 */
 	public static enum Type {Contains, Within, Covers, CoveredBy, Intersects, Disjoint, Crosses, Overlaps, Touches, Equals};
 
@@ -37,6 +39,16 @@ public class DE9IMRelation extends BinaryConstraint {
 
 	private Type[] types = null;
 
+	/**
+	 * Assess whether this relation is of a given {@link Type}.
+	 * @param relationType The {@link Type} to compare against.
+	 * @return <code>true</code> iff this relation is of the given {@link Type}.
+	 */
+	public boolean isRelation(DE9IMRelation.Type relationType) {
+		for (Type t : types) if (t.equals(relationType)) return true;
+		return false;
+	}
+	
 	/**
 	 * Get the DE-9IM relation(s) existing between two {@link GeometricShapeVariable}s.
 	 * @param gv1 The first {@link GeometricShapeVariable} (the source of the directed edge).
@@ -51,7 +63,7 @@ public class DE9IMRelation extends BinaryConstraint {
 	 * Get the RCC8 relation(s) existing between two {@link GeometricShapeVariable}s.
 	 * @param gv1 The first {@link GeometricShapeVariable} (the source of the directed edge).
 	 * @param gv2 The second {@link GeometricShapeVariable} (the destination of the directed edge).
-	 * @return The DE-9IM relation(s) existing between the two given {@link GeometricShapeVariable}s.
+	 * @return The RCC8 relation(s) existing between the two given {@link GeometricShapeVariable}s.
 	 */
 	public static Type[] getRCC8Relations(GeometricShapeVariable gv1, GeometricShapeVariable gv2) {
 		return getRelations(gv1, gv2, true);		
@@ -95,6 +107,7 @@ public class DE9IMRelation extends BinaryConstraint {
 			catch (IllegalArgumentException e) { e.printStackTrace(); }
 			catch (InvocationTargetException e) { e.printStackTrace(); }
 		}
+		if (rcc8Relations && ret.contains(Type.Equals)) return new Type[] {Type.Equals};
 		return ret.toArray(new Type[ret.size()]);
 	}
 	

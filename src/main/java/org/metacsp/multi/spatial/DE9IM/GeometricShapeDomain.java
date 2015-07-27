@@ -36,6 +36,10 @@ public abstract class GeometricShapeDomain extends Domain {
 		this.coordinates = coord;
 		updateGeometry();
 	}
+	
+	public boolean isInstantiated() {
+		return this.coordinates != null && this.coordinates.length > 0;
+	}
 
 	/**
 	 * Returns the {@link Geometry} used to represent this domain internally. Methods provided by the JTS Topology Suite (see {@link http://tsusiatsoftware.net/}) can
@@ -74,7 +78,7 @@ public abstract class GeometricShapeDomain extends Domain {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.geom.getGeometryType() + " (" + ((this.coordinates==null) ? ("no coordinates") : (this.coordinates.length + " coordinates")) + ")";
 	}
 
 }

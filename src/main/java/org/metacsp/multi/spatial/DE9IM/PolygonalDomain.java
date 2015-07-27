@@ -28,7 +28,7 @@ public class PolygonalDomain extends GeometricShapeDomain {
 	public PolygonalDomain(Variable v, Coordinate[] coord) {
 		super(v, coord);
 	}
-
+	
 	@Override
 	protected void updateGeometry() {
 		if (this.coordinates == null) {
