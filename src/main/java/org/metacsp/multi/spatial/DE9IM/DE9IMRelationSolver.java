@@ -18,6 +18,11 @@ import org.metacsp.multi.spatial.DE9IM.DE9IMRelation.Type;
  */
 public class DE9IMRelationSolver extends ConstraintSolver {
 
+	protected Constraint[] addedConstraints = null;
+	protected boolean removedConstraints = false;
+	protected boolean addedVariables = false;
+	protected boolean removedVariables = false;
+	
 	protected DE9IMRelationSolver(Class<?>[] constraintTypes, Class<?> variableType) {
 		super(constraintTypes, variableType);
 	}
@@ -83,10 +88,54 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 	
 	@Override
 	public boolean propagate() {
+		if (addedConstraints != null) {
+			for (Constraint con : addedConstraints) {
+				if (con instanceof DE9IMRelation) {
+					if (!propagateEdge((DE9IMRelation)con)) return false;
+				}
+			}
+			addedConstraints = null;
+			return true;
+		}
+		if (removedConstraints) {
+			logger.info("Propagation skipped because only removing constriants");
+			removedConstraints = false;
+			return true;
+		}
+		if (addedVariables) {
+			logger.info("Propagation skipped because only adding variables");
+			addedVariables = false;
+			return true;
+		}
+		if (removedVariables) {
+			logger.info("Propagation skipped because only removing variables");
+			removedVariables = false;
+			return true;
+		}
 		return propagateFull();
 	}
-	
+
+	private boolean propagateEdge(DE9IMRelation con) {
+		logger.info("Edge propagation performed");
+		GeometricShapeVariable g1 = (GeometricShapeVariable)con.getFrom();
+		GeometricShapeVariable g2 = (GeometricShapeVariable)con.getTo();
+		//Are explicit (given) relations compatible with implicit ones?
+		Type[] implicitRelsA = DE9IMRelation.getRelations(g1, g2);
+		HashSet<Type> implicitRels = new HashSet<Type>();
+		for (Type t : implicitRelsA) implicitRels.add(t);
+			for (Type t : con.getTypes()) {
+			//System.out.println(implicitRels + " contains " + t + "?");
+			if (!implicitRels.contains(t)) {
+				//System.out.println("... no!");
+				return false;
+			}
+		}
+		//... yes!
+		return true;
+	}
+
 	private boolean propagateFull() {
+		logger.info("Full propagation performed");
 		Variable[] vars = this.getVariables();
 		for (int i = 0; i < vars.length; i++) {
 			GeometricShapeVariable g1 = (GeometricShapeVariable)vars[i];
@@ -148,16 +197,18 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 
 	@Override
 	protected boolean addConstraintsSub(Constraint[] c) {
+		addedConstraints = c;
 		return true;
 	}
 
 	@Override
 	protected void removeConstraintsSub(Constraint[] c) {
-		// TODO Auto-generated method stub
+		removedConstraints = true;
 	}
 
 	@Override
 	protected Variable[] createVariablesSub(int num) {
+		addedVariables = true;
 		Variable[] ret = new Variable[num];
 		for (int i = 0; i < num; i++) {
 			ret[i] = new GeometricShapeVariable(this, IDs++);
@@ -167,7 +218,7 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 
 	@Override
 	protected void removeVariablesSub(Variable[] v) {
-		// TODO Auto-generated method stub
+		removedVariables = true;
 	}
 
 	@Override
