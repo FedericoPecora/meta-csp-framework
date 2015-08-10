@@ -1,4 +1,4 @@
-package org.metacsp.multi.spatioTemporal;
+package org.metacsp.multi.temporalRectangleAlgebra;
 
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.multi.MultiConstraintSolver;

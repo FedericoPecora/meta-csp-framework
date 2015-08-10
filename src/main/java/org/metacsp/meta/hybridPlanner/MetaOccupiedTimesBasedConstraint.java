@@ -9,7 +9,7 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.spatial.rectangleAlgebra.BoundingBox;
-import org.metacsp.multi.spatioTemporal.SpatialFluent;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluent;
 import org.metacsp.time.Bounds;
 
 public class MetaOccupiedTimesBasedConstraint extends MetaOccupiedConstraint{

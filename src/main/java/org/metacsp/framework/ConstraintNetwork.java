@@ -404,7 +404,8 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	 * @param cn The {@link ConstraintNetwork} to draw.
 	 */
 	public static void draw(ConstraintNetwork cn) {
-		ConstraintNetwork.draw(cn, cn.getClass().getSimpleName(), null);
+		if (cn.getVariables().length > 0) ConstraintNetwork.draw(cn, cn.getVariable(0).getConstraintSolver().getClass().getSimpleName(), null);
+		else ConstraintNetwork.draw(cn, cn.getClass().getSimpleName(), null);
 	}
 
 	/**
@@ -414,7 +415,9 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	 * @param cb A {@link Callback} object to use when the button is pressed. 
 	 */
 	public static void draw(ConstraintNetwork cn, Callback cb) {
-		ConstraintNetwork.draw(cn, cn.getClass().getSimpleName(), cb);
+		if (cn.getVariables().length > 0) ConstraintNetwork.draw(cn, cn.getVariable(0).getConstraintSolver().getClass().getSimpleName(), cb);
+		else ConstraintNetwork.draw(cn, cn.getClass().getSimpleName(), cb);
+
 	}
 
 	/**

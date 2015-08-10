@@ -1,4 +1,4 @@
-# What is meta-constarint reasoning?
+# What is meta-constraint reasoning?
 Constraint Satisfaction Problems (CSP) consist of a finite set of variables, each associated with a finite domain, and a set of constraints which restrict simultaneous assignments to variables. A Meta-CSP is CSP formulation of a combinatorial problem which builds on lower-level CSPs.
 
 # What does this API do?
@@ -18,13 +18,13 @@ Maven dependency declaration:
 <dependency>
   <groupId>org.metacsp</groupId>
   <artifactId>meta-csp-framework</artifactId>
-  <version>1.1.2</version>
+  <version>1.1.3</version>
 </dependency>
 ```
 
 Gradle dependency declaration:
 ```
-compile 'org.metacsp:meta-csp-framework:1.1.2'
+compile 'org.metacsp:meta-csp-framework:1.1.3'
 ```
 
 Alternatively, get the <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.metacsp%22%20AND%20a%3A%22meta-csp-framework%22">latest binary, source and Javadoc JARs from the Maven Central website</a>.

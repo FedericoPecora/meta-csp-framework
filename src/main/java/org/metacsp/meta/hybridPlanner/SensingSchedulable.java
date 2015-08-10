@@ -11,7 +11,7 @@ import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluentSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 

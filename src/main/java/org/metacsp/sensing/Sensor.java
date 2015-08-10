@@ -112,8 +112,14 @@ public class Sensor implements Serializable {
 		return ret;
 	}
 
-	public void postSensorValue(String sensorValue, long time) {
+	public int postSensorValue(String sensorValue, long time) {
 		animator.postSensorValueToDispatch(this, time, sensorValue);
+		return getHashCode(this.getName(), sensorValue, time);
+	}
+	
+	public static int getHashCode(String sensorName, String sensorValue, long time) {
+		String ret = sensorName + sensorValue + (""+time);
+		return ret.hashCode();
 	}
 
 	public void registerSensorTrace(String sensorTraceFile) {

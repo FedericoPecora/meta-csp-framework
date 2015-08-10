@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.metacsp.multi.allenInterval;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -1060,6 +1061,28 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 		return (ac.getTypes()[0].equals(this.getTypes()[0]) && ac.getFrom().equals(this.getFrom()) && ac.getTo().equals(this.getTo()));
 	}
 
+	/**
+	 * Get the qualitative relation that exists between two {@link AllenInterval}s, under the earliest time assumption.
+	 * @param i1 The first {@link AllenInterval} in the sought relation.
+	 * @param i2 The second {@link AllenInterval} in the sought relation.
+	 * @return The qualitative relation in {@link Type} that exists between the two given {@link AllenInterval}s (under the earliest time assumption).
+	 */
+	public static Type getRelation(AllenInterval i1, AllenInterval i2) {
+		if (i1.getEET() == i2.getEST()) return Type.Meets;
+		if (i2.getEET() == i1.getEST()) return Type.MetBy;
+		if (i1.getEST() ==  i2.getEST() && i1.getEET() == i2.getEET()) return Type.Equals;
+		if (i1.getEET() < i2.getEST()) return Type.Before;
+		if (i2.getEET() < i1.getEST()) return Type.After;
+		if (i1.getEST() < i2.getEST() && i1.getEET() > i2.getEST() && i1.getEET() < i2.getEET()) return Type.Overlaps;
+		if (i2.getEST() < i1.getEST() && i2.getEET() > i1.getEST() && i2.getEET() < i1.getEET()) return Type.OverlappedBy;
+		if (i1.getEST() == i2.getEST() && i1.getEET() < i2.getEET()) return Type.Starts;
+		if (i1.getEST() == i2.getEST() && i1.getEET() > i2.getEET()) return Type.StartedBy;
+		if (i2.getEST() < i1.getEST() && i2.getEET() > i1.getEET()) return Type.During;
+		if (i1.getEST() < i2.getEST() && i1.getEET() > i2.getEET()) return Type.Contains;
+		if (i1.getEST() > i2.getEST() && i1.getEET() == i2.getEET()) return Type.Finishes;
+		return Type.FinishedBy;
+	}
+	
 	/*
 	 * these gives the translation of quantitative Allen to Qualitative Allen based on the relation over
 	 * first bound = [fs ts]

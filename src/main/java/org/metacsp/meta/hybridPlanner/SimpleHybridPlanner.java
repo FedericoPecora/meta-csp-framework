@@ -22,9 +22,9 @@ import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraint;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangleConstraintSolver;
 import org.metacsp.multi.spatial.rectangleAlgebra.RectangularRegion;
 import org.metacsp.multi.spatial.rectangleAlgebra.UnaryRectangleConstraint;
-import org.metacsp.multi.spatioTemporal.SpatialFluent;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluent;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluentSolver;
 import org.metacsp.spatial.reachability.ReachabilityConstraint;
 import org.metacsp.spatial.utility.SpatialAssertionalRelation;
 

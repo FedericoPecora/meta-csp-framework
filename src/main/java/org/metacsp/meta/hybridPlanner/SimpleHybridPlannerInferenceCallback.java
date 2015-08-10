@@ -20,7 +20,7 @@ import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
-import org.metacsp.multi.spatioTemporal.SpatialFluentSolver;
+import org.metacsp.multi.temporalRectangleAlgebra.SpatialFluentSolver;
 import org.metacsp.sensing.InferenceCallback;
 import org.metacsp.spatial.utility.SpatialRule;
 import org.metacsp.time.APSPSolver;

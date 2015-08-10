@@ -51,9 +51,6 @@ import org.metacsp.utility.logging.MetaCSPLogging;
  */
 public abstract class MultiConstraintSolver extends ConstraintSolver {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3328919153619683198L;
 	
 	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
@@ -114,6 +111,16 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		if (op.equals(OPTIONS.ALLOW_INCONSISTENCIES)) return allowInconsistencies;
 		else if (op.equals(OPTIONS.FORCE_CONSISTENCY)) return !allowInconsistencies;
 		return false;
+	}
+	
+	/**
+	 * Set the number of internal variables of different types that are to be created when
+	 * calling the method createVariables().
+	 * @param ingredients The number of internal variables, oen number for each type, that are to 
+	 * be created.
+	 */
+	public void setIngredients(int[] ingredients) {
+		this.ingredients = ingredients;
 	}
 		
 	@Override
