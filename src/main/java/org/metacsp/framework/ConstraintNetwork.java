@@ -495,15 +495,44 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	 * @return All variables in the network with a given component.
 	 */
 	public Variable[] getVariables(String component, Object ... markingsToExclude) {
-		return this.solver.getVariables(component, markingsToExclude);
+		if (this.solver != null) {
+			return this.solver.getVariables(component, markingsToExclude);
+		} else {
+			ArrayList<Variable> ret = new ArrayList<Variable>();
+			for (Variable var : getVariables()) {
+				if (var.getComponent() != null && component.equals(var.getComponent())) {
+					boolean found = false;
+					if (var.getMarking() != null)
+						for (Object m : markingsToExclude) {
+							if (m.equals(var.getMarking())) {
+								found = true;
+								break;
+							}
+						}
+					if (!found) ret.add(var);
+				}
+			}
+			return ret.toArray(new Variable[ret.size()]);
+		}
 	}
+
 
 	/**
 	 * Get all variables in the network with a given component.
 	 * @return All variables in the network with a given component.
 	 */
 	public Variable[] getVariables(String component) {
-		return this.solver.getVariables(component);
+		if (this.solver != null) {
+			return this.solver.getVariables(component);
+		} else {
+			ArrayList<Variable> ret = new ArrayList<Variable>();
+			for (Variable var : getVariables()) {
+				if (var.getComponent() != null && component.equals(var.getComponent())) {
+					ret.add(var);
+				}
+			}
+			return ret.toArray(new Variable[ret.size()]);
+		}
 	}
 
 	/**
