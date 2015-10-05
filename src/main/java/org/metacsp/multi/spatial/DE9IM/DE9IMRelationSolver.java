@@ -48,7 +48,7 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 	/**
 	 * Get all the implicit {@link DE9IMRelation}s that exist among the variables in this solver's {@link ConstraintNetwork}. These
 	 * are limited to the eight Jointly Exclusive, Pairwise Disjoint relations<br>
-	 * <lu>
+	 * <ul>
 	 * <li>Contains</li>
 	 * <li>Within</li>
 	 * <li>Covers</li>
@@ -57,7 +57,7 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 	 * <li>Overlaps</li>
 	 * <li>Touches</li>
 	 * <li>Equals</li>
-	 * </lu>
+	 * </ul>
 	 * These eight relations are equivalent to te basic RCC8 relations (Cohn et al., 1997).
 	 * @return All the implicit {@link DE9IMRelation}s that are also RCC8 relations existing among the variables in this solver's {@link ConstraintNetwork}.
 	 */

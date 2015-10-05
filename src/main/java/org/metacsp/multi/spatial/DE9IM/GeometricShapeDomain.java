@@ -38,7 +38,7 @@ public abstract class GeometricShapeDomain extends Domain {
 	}
 
 	/**
-	 * Returns the {@link Geometry} used to represent this domain internally. Methods provided by the JTS Topology Suite (see {@link http://tsusiatsoftware.net/}) can
+	 * Returns the {@link Geometry} used to represent this domain internally. Methods provided by the JTS Topology Suite (see <a href="http://tsusiatsoftware.net/">http://tsusiatsoftware.net</a>) can
 	 * be used on these objects.
 	 * @return The {@link Geometry} used to represent this domain internally.
 	 */
@@ -47,7 +47,7 @@ public abstract class GeometricShapeDomain extends Domain {
 	}
 	
 	/**
-	 * Returns the class used to represent this domain. Methods provided by the JTS Topology Suite (see {@link http://tsusiatsoftware.net/}) can
+	 * Returns the class used to represent this domain. Methods provided by the JTS Topology Suite (see <a href="http://tsusiatsoftware.net/">http://tsusiatsoftware.net</a>) can
 	 * be used on these objects.
 	 * @return The class used to represent this domain.
 	 */
