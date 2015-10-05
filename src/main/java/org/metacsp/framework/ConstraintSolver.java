@@ -538,6 +538,7 @@ public abstract class ConstraintSolver implements Serializable {
 	 */
 	public Variable[] getVariables(String component, Object ... markingsToExclude) {
 		ArrayList<Variable> ret = this.components.get(component);
+		if (ret == null) return new Variable[0];
 		ArrayList<Variable> retFiltered = new ArrayList<Variable>();
 		for (Variable v : ret) {
 			boolean found = false;
