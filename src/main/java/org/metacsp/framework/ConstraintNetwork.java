@@ -98,6 +98,8 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 
 	protected HashMap<Constraint,DummyVariable> hyperEdges = new HashMap<Constraint, DummyVariable>();
 
+	public ObservableGraph<Variable,Constraint> getGraph() { return graph; }
+	
 	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	private static final long serialVersionUID = 7526472295622776148L;
 

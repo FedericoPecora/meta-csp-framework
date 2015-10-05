@@ -33,7 +33,6 @@ public class DistanceConstraintSolver extends MultiConstraintSolver {
 	 * 
 	 */
 	private static final long serialVersionUID = -8474292073131422005L;
-	private int IDs = 0;
 	private MultiTimePoint source = null;
 	private MultiTimePoint sink = null;
 	
