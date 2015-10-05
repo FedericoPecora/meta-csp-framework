@@ -5,6 +5,7 @@ import org.metacsp.framework.Variable;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Represents polygonal domains for {@link GeometricShapeVariable}s.
@@ -27,6 +28,16 @@ public class PolygonalDomain extends GeometricShapeDomain {
 	 */
 	public PolygonalDomain(Variable v, Coordinate[] coord) {
 		super(v, coord);
+	}
+	
+	/**
+	 * Check whether this polygon contains a given point.
+	 * @param point The coordinates specifying the point to check.
+	 * @return <code>true</code> this {@link PolygonalDomain} contains this point.
+	 */
+	public boolean containsPoint(Coordinate point) {
+		Point p = new GeometryFactory().createPoint(point);	
+		return this.getGeometry().contains(p);
 	}
 	
 	@Override

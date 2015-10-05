@@ -69,6 +69,29 @@ public class DE9IMRelation extends BinaryConstraint {
 	}
 	
 	/**
+	 * Check if the spatial relation between two {@link GeometricShapeVariable}s is of a given type.
+	 * @param gv1 The source {@link GeometricShapeVariable}.
+	 * @param gv2 The destination {@link GeometricShapeVariable}.
+	 * @param t The type of relation to check.
+	 * @return <code>true</code> iff the given variables are in the given relation.
+	 */
+	public static boolean isRelation(GeometricShapeVariable gv1, GeometricShapeVariable gv2, DE9IMRelation.Type t) {
+		try {
+			String methodName = t.name().substring(0, 1).toLowerCase() + t.name().substring(1);
+			Method m = Geometry.class.getMethod(methodName, Geometry.class);
+			Geometry g1 = ((GeometricShapeDomain)gv1.getDomain()).getGeometry();
+			Geometry g2 = ((GeometricShapeDomain)gv2.getDomain()).getGeometry();
+			return ((Boolean)m.invoke(g1, g2));
+		}
+		catch (NoSuchMethodException e) { e.printStackTrace(); }
+		catch (SecurityException e) { e.printStackTrace(); }
+		catch (IllegalAccessException e) { e.printStackTrace(); }
+		catch (IllegalArgumentException e) { e.printStackTrace(); }
+		catch (InvocationTargetException e) { e.printStackTrace(); }
+		return false;
+	}
+	
+	/**
 	 * Find out whether a relation is a {@link DE9IMRelation} belongs to the RCC8 subset.
 	 * @param t The relation to test
 	 * @return <code>true</code> iff the given {@link DE9IMRelation} belongs to the RCC8 subset.
