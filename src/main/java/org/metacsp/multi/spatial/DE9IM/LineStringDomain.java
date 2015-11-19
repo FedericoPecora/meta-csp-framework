@@ -28,6 +28,10 @@ public class LineStringDomain extends GeometricShapeDomain {
 		super(v, coord);
 	}
 
+	public Coordinate[] getCoordiantes() {
+		return this.getGeometry().getCoordinates();
+	}
+	
 	@Override
 	protected void updateGeometry() {
 		if (this.coordinates == null) this.geom = new GeometryFactory().createLineString(new Coordinate[]{});			

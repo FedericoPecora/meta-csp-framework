@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.IntersectionMatrix;
 /**
  * This class represents spatial relations between geometric shapes (variables of type {@link GeometricShapeVariable}).
  * These shapes can be points, strings of segments, or polygons. The relations constitute a topological mode called
- * the Dimensionally Extended nine-Intersection Model (DE-9IM) (see (Clementini et al., 1993) and {@link https://en.wikipedia.org/wiki/DE-9IM}).
+ * the Dimensionally Extended nine-Intersection Model (DE-9IM) (see (Clementini et al., 1993) and <a href="https://en.wikipedia.org/wiki/DE-9IM">https://en.wikipedia.org/wiki/DE-9IM</a>).
  * If the shapes are all polygons, then a Jointly Exclusive and Pairwise Disjoint (JEPD) subset of these relations is
  * equivalent to RCC8 (Cohn et al., 2007).
  * 
@@ -28,7 +28,7 @@ public class DE9IMRelation extends BinaryConstraint {
 
 	/**
 	 * The 10 meaningful relations in DE-9IM. The subset
-	 * { {@value Type#Contains}, {@value Type#Within}, {@value Type#Covers}, {@value Type#CoveredBy}, {@value Type#Disjoint}, {@value Type#Overlaps}, {@value Type#Touches}, {@value Type#Equals} }
+	 * { {@code Contains}, {@code Within}, {@code Covers}, {@code CoveredBy}, {@code Disjoint}, {@code Overlaps}, {@code Touches}, {@code Equals} }
 	 * is Jointly Exclusive and Pairwise Disjoint (JEPD) and equivalent to RCC8 (Cohn et al., 2007).
 	 */
 	public static enum Type {Contains, Within, Covers, CoveredBy, Intersects, Disjoint, Crosses, Overlaps, Touches, Equals};
@@ -66,6 +66,29 @@ public class DE9IMRelation extends BinaryConstraint {
 	 */
 	public static Type[] getRCC8Relations(GeometricShapeVariable gv1, GeometricShapeVariable gv2) {
 		return getRelations(gv1, gv2, true);		
+	}
+	
+	/**
+	 * Check if the spatial relation between two {@link GeometricShapeVariable}s is of a given type.
+	 * @param gv1 The source {@link GeometricShapeVariable}.
+	 * @param gv2 The destination {@link GeometricShapeVariable}.
+	 * @param t The type of relation to check.
+	 * @return <code>true</code> iff the given variables are in the given relation.
+	 */
+	public static boolean isRelation(GeometricShapeVariable gv1, GeometricShapeVariable gv2, DE9IMRelation.Type t) {
+		try {
+			String methodName = t.name().substring(0, 1).toLowerCase() + t.name().substring(1);
+			Method m = Geometry.class.getMethod(methodName, Geometry.class);
+			Geometry g1 = ((GeometricShapeDomain)gv1.getDomain()).getGeometry();
+			Geometry g2 = ((GeometricShapeDomain)gv2.getDomain()).getGeometry();
+			return ((Boolean)m.invoke(g1, g2));
+		}
+		catch (NoSuchMethodException e) { e.printStackTrace(); }
+		catch (SecurityException e) { e.printStackTrace(); }
+		catch (IllegalAccessException e) { e.printStackTrace(); }
+		catch (IllegalArgumentException e) { e.printStackTrace(); }
+		catch (InvocationTargetException e) { e.printStackTrace(); }
+		return false;
 	}
 	
 	/**
