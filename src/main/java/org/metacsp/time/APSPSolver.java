@@ -66,6 +66,7 @@ public class APSPSolver extends ConstraintSolver {
 	private boolean doFromScratchInsteadOfIncremental = false;
 	private boolean addingIndependentConstraints = false;
 
+	private boolean backupDMatrixSimple = false;
 	private int cubePropCount = 0;
 	private int quadPropCount = 0;
 
@@ -378,11 +379,11 @@ public class APSPSolver extends ConstraintSolver {
 
 			if (!con.addInterval(i)) return false;
 			
-			saveDMatrixInternal();
+			if (backupDMatrixSimple) saveDMatrixInternal();
 			if (!fromScratchDistanceMatrixComputation()) {
 				//Inconsistency. Rollback
 				con.removeInterval(i);
-				restoreDMatrixInternal();
+				if (backupDMatrixSimple) restoreDMatrixInternal();
 				return false;
 			}
 
@@ -403,10 +404,10 @@ public class APSPSolver extends ConstraintSolver {
 			//Add edge to tp
 			tPoints[from].setOut(to,con);
 
-			saveDMatrixInternal();
+			if (backupDMatrixSimple) saveDMatrixInternal();
 			if (!fromScratchDistanceMatrixComputation()) {
 				tPoints[from].setOut(to,null);
-				restoreDMatrixInternal();
+				if (backupDMatrixSimple) restoreDMatrixInternal();
 				return false;
 			}
 
@@ -569,9 +570,9 @@ public class APSPSolver extends ConstraintSolver {
 			return false;
 		}
 
-		saveDMatrixInternal();
+		if (backupDMatrixSimple) saveDMatrixInternal();
 		if (!this.fromScratchDistanceMatrixComputation()) {
-			restoreDMatrixInternal();
+			if (backupDMatrixSimple) restoreDMatrixInternal();
 			return false;
 		}
 		
@@ -653,7 +654,7 @@ public class APSPSolver extends ConstraintSolver {
 		if (!canRestore) fromScratchDistanceMatrixComputation();
 		else {
 			logger.finest("QuickRestoring distance matrix, no propagation");
-			restoreDMatrix();
+			if (backupDMatrixSimple) restoreDMatrix();
 		}
 
 		for (int j = 0; j < MAX_USED+1; j++)
@@ -830,7 +831,7 @@ public class APSPSolver extends ConstraintSolver {
 	@Override
 	protected boolean addConstraintsSub(Constraint[] con) {
 		if (con == null || con.length == 0) return true;
-		if (backupConstraints.size() > 50) resetDMatrixBackups();
+		if (backupDMatrixSimple && backupConstraints.size() > 50) resetDMatrixBackups();
 		Bounds[] tot = new Bounds[con.length];
 		int[] from = new int[con.length];
 		int[] to = new int[con.length];
@@ -847,7 +848,7 @@ public class APSPSolver extends ConstraintSolver {
 		logger.finest("Trying to add constraints " + Arrays.toString(con) + "...");
 		Vector<Constraint> added = new Vector<Constraint>();
 
-		saveDMatrix(con);
+		if (backupDMatrixSimple) saveDMatrix(con);
 		
 		if (addingIndependentConstraints) {
 			addingIndependentConstraints = false;
@@ -899,6 +900,7 @@ public class APSPSolver extends ConstraintSolver {
 	}
 	
 	private boolean canRestoreDMatrix(Constraint[] con) {
+		if (!backupDMatrixSimple) return false;
 		if (backupConstraints.isEmpty()) return false;
 		for (Constraint c : backupConstraints.lastElement()) {
 			boolean found = false;
@@ -932,7 +934,7 @@ public class APSPSolver extends ConstraintSolver {
 			}
 			if (canRestoreDMatrix(con)) cDelete(tot,from,to,true);
 			else {
-				resetDMatrixBackups();
+				if (backupDMatrixSimple) resetDMatrixBackups();
 				cDelete(tot,from,to,false);
 			}
 		}
