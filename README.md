@@ -3,7 +3,7 @@ Constraint Satisfaction Problems (CSP) consist of a finite set of variables, eac
 
 # What does this API do?
 
-This software framework provides tools for developing solvers for problems that can be cast as Meta-CSPs. The framework includes several built-in CSP and Meta-CSP problem solvers which can be used as "ingredients" for defining more sophisticated solvers. Among these, hybrid problem solvers which exemplify the natural predisposition of Meta-CSPs for solving hybrid reasoning problems.
+This software framework provides tools for developing solvers for problems that can be cast as Meta-CSPs. The framework includes several built-in CSP and Meta-CSP problem solvers which can be used as "ingredients" for defining more sophisticated solvers. Among these are hybrid problem solvers which exemplify the natural predisposition of Meta-CSPs for solving hybrid reasoning problems.
 
 # Documentation
 
