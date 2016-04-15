@@ -592,7 +592,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 				this.addResolver(cn, value);
 				setUpperBound();
 //				System.out.println("test: " + "U: " + getUpperBound() + " L: " + getLowerBound());
-				if(getUpperBound() <= getLowerBound()){						
+				if(getUpperBound() <= getLowerBound()){
 					this.retractResolver(cn, value);
 					continue;
 				}
