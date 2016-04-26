@@ -1,5 +1,6 @@
 package org.metacsp.utility.UI;
 
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Envelope; 
 import com.vividsolutions.jts.geom.Geometry; 
 import com.vividsolutions.jts.geom.LineString; 
@@ -12,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D; 
 import java.awt.Paint; 
 import java.awt.Rectangle; 
+import java.awt.Shape;
 import java.awt.geom.AffineTransform; 
 import java.util.ArrayList; 
 import java.util.List; 
@@ -19,8 +21,6 @@ import java.util.List;
 import javax.swing.JFrame; 
 import javax.swing.JPanel; 
 
-import org.geotools.geometry.jts.Geometries;
-import org.geotools.geometry.jts.LiteShape;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
@@ -47,15 +47,16 @@ public class JTSDrawingPanel extends JPanel {
             Paint defaultPaint = Color.BLACK; 
 
             for (Geometry geom : geometries) { 
-                LiteShape shape = new LiteShape(geom, geomToScreen, false); 
-
-                if (Geometries.get(geom) == Geometries.POLYGON) {
+            	ShapeWriter writer = new ShapeWriter();
+            	Shape shape = writer.toShape(geom);
+            	Shape newShape = geomToScreen.createTransformedShape(shape);
+            	if (geom instanceof Polygon) {
                 	Paint polyPaint = Color.getHSBColor((float) Math.random(), .6f, .6f);
                     g2d.setPaint(polyPaint); 
-                    g2d.fill(shape); 
+                    g2d.fill(newShape); 
                 } else { 
                     g2d.setPaint(defaultPaint); 
-                    g2d.draw(shape);
+                    g2d.draw(newShape);
                 } 
             } 
         } 

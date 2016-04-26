@@ -2,7 +2,6 @@ package org.metacsp.multi.spatioTemporal.paths;
 
 import java.util.ArrayList;
 
-import org.geotools.geometry.jts.JTS;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
