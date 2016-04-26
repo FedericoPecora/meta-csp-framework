@@ -41,10 +41,19 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private double deltaW = 0.0;
 	private double deltaL = 0.0;
 	private Trajectory trajectory = null;
+	private boolean refinable = true;
 	
 	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public void setRefinable(boolean refinable) {
+		this.refinable = refinable;
+	}
+	
+	public boolean getRefinable() {
+		return this.refinable;
 	}
 	
 	@Override
@@ -65,7 +74,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		this.deltaW = deltaW;
 		this.deltaL = deltaL;
 	}
-	
+		
+
 //	private Coordinate[] createEnvelope() {
 //		ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
 //		for (PoseSteering ps : this.path.getPoseSteering()) {
@@ -119,7 +129,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			GeometricShapeFactory gsf = new GeometricShapeFactory();
 			gsf.setHeight(width);
 			gsf.setWidth(length);
-			gsf.setCentre(new Coordinate(ps.getX(),ps.getY()));
+			gsf.setCentre(new Coordinate(ps.getX()+deltaL*Math.cos(ps.getTheta()),ps.getY()+deltaW*Math.sin(ps.getTheta())));
 			gsf.setRotation(ps.getTheta());
 			Polygon rect = gsf.createRectangle();
 			if (onePoly == null) {

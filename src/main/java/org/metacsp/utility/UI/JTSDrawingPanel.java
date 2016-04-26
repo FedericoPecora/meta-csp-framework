@@ -21,6 +21,8 @@ import java.util.List;
 import javax.swing.JFrame; 
 import javax.swing.JPanel; 
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
@@ -95,30 +97,17 @@ public class JTSDrawingPanel extends JPanel {
         frame.setVisible(true);     	
     }
     
-    public static void drawVariables(Object ... vars) {
-        JTSDrawingPanel panel = new JTSDrawingPanel(); 
-        JFrame frame = new JFrame("Draw geometries"); 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        frame.add(panel); 
-        frame.setSize(500, 500); 
-        for (Object o : vars) {
-        	if (o instanceof GeometricShapeVariable) {
-        		panel.addGeometry(((GeometricShapeDomain)((GeometricShapeVariable)o).getDomain()).getGeometry());
-        	}
-        	else if (o instanceof GeometricShapeDomain) {
-        		panel.addGeometry(((GeometricShapeDomain)(o)).getGeometry());
-        	}
-        	else if (o instanceof Geometry) {
-        		panel.addGeometry((Geometry)o);
-        	}
-        	else if (o instanceof TrajectoryEnvelope) {
-        		panel.addGeometry(((GeometricShapeDomain)((GeometricShapeVariable)((TrajectoryEnvelope)o).getEnvelopeVariable()).getDomain()).getGeometry());
-        	}
-
-        }
-        frame.setVisible(true);     	
+    public static void drawConstraintNetwork(ConstraintNetwork cn) {
+    	ArrayList<GeometricShapeVariable> tes = new ArrayList<GeometricShapeVariable>();
+    	for (Variable v : cn.getVariables()) {
+    		if (v instanceof TrajectoryEnvelope) {
+    			tes.add(((TrajectoryEnvelope)v).getEnvelopeVariable());
+    			tes.add(((TrajectoryEnvelope)v).getReferencePathVariable());
+    		}
+    	}
+    	drawVariables(tes.toArray(new GeometricShapeVariable[tes.size()]));
     }
-    
+        
     public static void main(String[] args) throws Exception { 
         JTSDrawingPanel panel = new JTSDrawingPanel(); 
         JFrame frame = new JFrame("Draw geometries"); 

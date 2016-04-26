@@ -59,6 +59,7 @@ public class Map extends Schedulable {
 		Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
 		return (shape1.intersects(shape2));
 	}
+	
 
 	@Override
 	public void draw(ConstraintNetwork network) {

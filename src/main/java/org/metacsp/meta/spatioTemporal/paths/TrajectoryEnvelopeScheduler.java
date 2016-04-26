@@ -22,21 +22,33 @@
  ******************************************************************************/
 package org.metacsp.meta.spatioTemporal.paths;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.Variable;
 import org.metacsp.framework.meta.MetaConstraintSolver;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
+import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
+import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
+import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
+import org.metacsp.multi.spatioTemporal.paths.Trajectory;
+import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelopeSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+
 public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8551829132754804513L;
+	private HashMap<TrajectoryEnvelope,ArrayList<TrajectoryEnvelope>> refinedWith = new HashMap<TrajectoryEnvelope, ArrayList<TrajectoryEnvelope>>();
 
 	public TrajectoryEnvelopeScheduler(long origin, long horizon, long animationTime) {
 		super(new Class[] {AllenIntervalConstraint.class, DE9IMRelation.class}, animationTime, new TrajectoryEnvelopeSolver(origin, horizon));
@@ -105,6 +117,109 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	protected void resetFalseClause() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public ConstraintNetwork refineTrajectoryEnvelopes() {
+		ConstraintNetwork ret = new ConstraintNetwork(null);
+		Variable[] varsBefore = this.getConstraintSolvers()[0].getVariables();
+		for (int i = 0; i < varsBefore.length; i++) {
+			for (int j = i+1; j < varsBefore.length; j++) {
+				TrajectoryEnvelope te1 = (TrajectoryEnvelope)varsBefore[i];
+				TrajectoryEnvelope te2 = (TrajectoryEnvelope)varsBefore[j];
+				if (!refinedWith.containsKey(te1)) refinedWith.put(te1,new ArrayList<TrajectoryEnvelope>());
+				if (!refinedWith.containsKey(te2)) refinedWith.put(te2,new ArrayList<TrajectoryEnvelope>());
+				
+				//if they intersect
+				GeometricShapeVariable poly1 = te1.getEnvelopeVariable();
+				GeometricShapeVariable poly2 = te2.getEnvelopeVariable();
+				Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
+				Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
+				if (shape1.intersects(shape2)) {
+					
+					if (!refinedWith.get(te1).contains(te2) && te1.getRefinable()) {
+						ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
+						refinedWith.get(te1).add(te2);
+						ret.join(ref1);
+					}
+					if (!refinedWith.get(te2).contains(te1) && te2.getRefinable()) {
+						ConstraintNetwork ref2 = refineTrajectoryEnvelopes(te2, te1);
+						refinedWith.get(te2).add(te1);
+						ret.join(ref2);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
+	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
+		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];
+		ConstraintNetwork toReturn = new ConstraintNetwork(null);
+		GeometryFactory gf = new GeometryFactory();
+		Geometry se1 = ((GeometricShapeDomain)var1.getEnvelopeVariable().getDomain()).getGeometry();
+		Geometry se2 = ((GeometricShapeDomain)var2.getEnvelopeVariable().getDomain()).getGeometry();
+		Geometry intersectionse1se2 = se1.intersection(se2);
+
+		ArrayList<PoseSteering> var1sec1 = new ArrayList<PoseSteering>();
+		ArrayList<PoseSteering> var1sec2 = new ArrayList<PoseSteering>();
+		ArrayList<PoseSteering> var1sec3 = new ArrayList<PoseSteering>();
+		for (int i = 0; i < var1.getPathLength(); i++) {
+			Coordinate coord = var1.getTrajectory().getPositions()[i];
+			PoseSteering ps = var1.getTrajectory().getPoseSteering()[i];
+			Point point = gf.createPoint(coord);
+			if (!intersectionse1se2.contains(point) && var1sec2.isEmpty()) {
+				var1sec1.add(ps);
+			}
+			else if (intersectionse1se2.contains(point)) {
+				var1sec2.add(ps);
+			}
+			else if (!intersectionse1se2.contains(point) && !var1sec2.isEmpty()) {
+				var1sec3.add(ps);
+			}
+		}
+		//add a little to the intersection
+		for (int i = 0; i < 2; i++) {
+			var1sec2.add(var1sec3.get(0));
+			var1sec3.remove(0);
+		}
+
+		Trajectory newPath1sec1 = new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]));
+		Trajectory newPath1sec2 = new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]));
+		Trajectory newPath1sec3 = new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]));
+
+		Variable[] newVars = solver.createVariables(3);
+		TrajectoryEnvelope newVar1sec1 = (TrajectoryEnvelope)newVars[0];
+		TrajectoryEnvelope newVar1sec2 = (TrajectoryEnvelope)newVars[1];
+		TrajectoryEnvelope newVar1sec3 = (TrajectoryEnvelope)newVars[2];
+		
+		newVar1sec2.setRefinable(false);
+
+		newVar1sec1.setTrajectory(newPath1sec1);
+		newVar1sec2.setTrajectory(newPath1sec2);
+		newVar1sec3.setTrajectory(newPath1sec3);
+
+		TrajectoryEnvelope[] newEnvelopes = new TrajectoryEnvelope[3];
+		newEnvelopes[0] = newVar1sec1;
+		newEnvelopes[1] = newVar1sec2;
+		newEnvelopes[2] = newVar1sec3;
+		((Map)this.getMetaConstraints()[0]).setUsage(newEnvelopes);
+
+		AllenIntervalConstraint starts1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
+		starts1.setFrom(newVar1sec1);
+		starts1.setTo(var1);		
+		AllenIntervalConstraint finishes1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes);
+		finishes1.setFrom(newVar1sec3);
+		finishes1.setTo(var1);
+		AllenIntervalConstraint meets1sec1sec2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		meets1sec1sec2.setFrom(newVar1sec1);
+		meets1sec1sec2.setTo(newVar1sec2);
+		AllenIntervalConstraint meets1sec2sec3 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		meets1sec2sec3.setFrom(newVar1sec2);
+		meets1sec2sec3.setTo(newVar1sec3);
+
+		solver.addConstraints(starts1,finishes1,meets1sec1sec2,meets1sec2sec3);
+		toReturn.addConstraints(starts1,finishes1,meets1sec1sec2,meets1sec2sec3);
+		return toReturn;
 	}
 	
 }
