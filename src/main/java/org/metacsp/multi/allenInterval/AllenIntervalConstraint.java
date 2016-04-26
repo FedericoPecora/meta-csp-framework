@@ -1189,6 +1189,4 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 	}
 	
 	
-	
-	
 }

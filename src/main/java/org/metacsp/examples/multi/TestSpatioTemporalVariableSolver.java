@@ -8,6 +8,7 @@ import org.metacsp.multi.spatial.DE9IM.LineStringDomain;
 import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
 import org.metacsp.multi.spatioTemporal.SpatioTemporalVariable;
 import org.metacsp.multi.spatioTemporal.SpatioTemporalVariableSolver;
+import org.metacsp.utility.UI.JTSDrawingPanel;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -45,5 +46,7 @@ public class TestSpatioTemporalVariableSolver {
 		
 		System.out.println(Arrays.toString(((DE9IMRelationSolver)solver.getConstraintSolvers()[1]).getAllImplicitRelations()));
 		
+		JTSDrawingPanel.drawVariables(var0.getSpatialVariable(), var1.getSpatialVariable());
+
 	}
 }

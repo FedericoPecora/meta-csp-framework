@@ -66,6 +66,9 @@ project.group = 'org.metacsp'
 //Repos for dependencies
 repositories {
   mavenCentral()
+  maven {
+  	   url "http://download.osgeo.org/webdav/geotools/"
+   }
 }
 
 dependencies {
@@ -80,6 +83,7 @@ dependencies {
   compile 'junit:junit:4.8.1'
   compile 'com.googlecode.aima-java:aima-core:0.10.5'
   compile 'com.vividsolutions:jts:1.13'
+  compile 'nl.cloudfarming.client:lib-geotools:2.7.5'
   //compile 'com.googlecode.aima-java:aima-core:0.11.0'
 }
 
