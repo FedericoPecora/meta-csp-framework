@@ -81,7 +81,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			Collections.sort(rets, new Comparator<double[]>() {
 				@Override
 				public int compare(double[] o1, double[] o2) {
-					if (o2[0]-o1[0] > 0) return -11;
+					if (o2[0]-o1[0] > 0) return -1;
 					else if (o2[0]-o1[0] == 0) return 0;
 					return 1;
 				}
