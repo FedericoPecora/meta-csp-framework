@@ -78,7 +78,7 @@ public abstract class MetaConstraintSolver extends MultiConstraintSolver {
 	
 	//private Vector<HashMap<ConstraintSolver,ConstraintNetwork>> statesAlongCurrentBranch = new Vector<HashMap<ConstraintSolver,ConstraintNetwork>>(); 
 
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 		
 	public MetaConstraint[] getMetaConstraints() {
 		return this.metaConstraints.toArray(new MetaConstraint[this.metaConstraints.size()]);

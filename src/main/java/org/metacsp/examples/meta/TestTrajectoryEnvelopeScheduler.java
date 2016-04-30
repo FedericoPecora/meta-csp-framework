@@ -38,8 +38,11 @@ public class TestTrajectoryEnvelopeScheduler {
 		Trajectory traj1 = new Trajectory("/home/fpa/paths/path3.path");
 		var1.setTrajectory(traj1);
 		
-		System.out.println("Trajectory 0 has " + var0.getDomain());
-		System.out.println("Trajectory 1 has " + var1.getDomain());
+		var0.setRobotID(1);
+		var1.setRobotID(2);
+		
+		System.out.println(var0 + " has domain " + var0.getDomain());
+		System.out.println(var1 + " has domain " + var1.getDomain());
 		
 		boolean addedDurations = solver.addConstraints(var0.getDurationConstriant(), var1.getDurationConstriant());
 		System.out.println("Added durations? " + addedDurations);
@@ -62,8 +65,8 @@ public class TestTrajectoryEnvelopeScheduler {
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 1: "+  refined1);
 
-//		ConstraintNetwork refined2 = metaSolver.refineTrajectoryEnvelopes();
-//		System.out.println("REFINED 2: "+  refined2);
+		ConstraintNetwork refined2 = metaSolver.refineTrajectoryEnvelopes();
+		System.out.println("REFINED 2: "+  refined2);
 
 		boolean solved = metaSolver.backtrack();
 		System.out.println("Solved? " + solved);

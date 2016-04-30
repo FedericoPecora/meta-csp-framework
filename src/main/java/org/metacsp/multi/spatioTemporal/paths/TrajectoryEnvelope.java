@@ -24,6 +24,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 /**
@@ -42,10 +43,28 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private double deltaL = 0.0;
 	private Trajectory trajectory = null;
 	private boolean refinable = true;
+	private TrajectoryEnvelope superEnvelope  = null;
+	private int robotID = -1;
 	
 	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public void setRobotID(int robotID) {
+		this.robotID = robotID;
+	}
+	
+	public int getRobotID() {
+		return this.robotID;
+	}
+	
+	public void setSuperEnvelope(TrajectoryEnvelope superEnvelope) {
+		this.superEnvelope = superEnvelope;
+	}
+	
+	public boolean getSuperEnvelope() {
+		return this.superEnvelope == null;
 	}
 	
 	public void setRefinable(boolean refinable) {
@@ -122,16 +141,28 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //		return onePoly.getCoordinates();
 //	}
 
+	public Geometry makeFootprint(PoseSteering ps) {
+		return makeFootprint(ps.getX(), ps.getY(), ps.getTheta());
+	}
+	
+	public Geometry makeFootprint(double x, double y, double theta) {
+		AffineTransformation at = new AffineTransformation();
+		at.rotate(theta);
+		at.translate(x,y);
+		GeometricShapeFactory gsf = new GeometricShapeFactory();
+		gsf.setHeight(width);
+		gsf.setWidth(length);
+		gsf.setCentre(new Coordinate(deltaL,deltaW));
+		Polygon shapeRect = gsf.createRectangle();
+		Geometry rect = at.transform(shapeRect);
+		return rect;
+	}
+
 	private Coordinate[] createEnvelope() {
 		Geometry onePoly = null;
 		Geometry prevPoly = null;
 		for (PoseSteering ps : this.trajectory.getPoseSteering()) {
-			GeometricShapeFactory gsf = new GeometricShapeFactory();
-			gsf.setHeight(width);
-			gsf.setWidth(length);
-			gsf.setCentre(new Coordinate(ps.getX()+deltaL*Math.cos(ps.getTheta()),ps.getY()+deltaW*Math.sin(ps.getTheta())));
-			gsf.setRotation(ps.getTheta());
-			Polygon rect = gsf.createRectangle();
+			Geometry rect = makeFootprint(ps);
 			if (onePoly == null) {
 				onePoly = rect;
 				prevPoly = rect;
@@ -181,7 +212,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return this.id+"";
+		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
 	}
 	
 	/**

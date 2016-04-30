@@ -117,34 +117,42 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	protected void resetFalseClause() {
 		// TODO Auto-generated method stub
 		
-	}
+	}	
 	
 	public ConstraintNetwork refineTrajectoryEnvelopes() {
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		Variable[] varsBefore = this.getConstraintSolvers()[0].getVariables();
-		for (int i = 0; i < varsBefore.length; i++) {
+		for (int i = 0; i < varsBefore.length-1; i++) {
 			for (int j = i+1; j < varsBefore.length; j++) {
+				
+				//Get TEs
 				TrajectoryEnvelope te1 = (TrajectoryEnvelope)varsBefore[i];
 				TrajectoryEnvelope te2 = (TrajectoryEnvelope)varsBefore[j];
+
+				//Init data structures
 				if (!refinedWith.containsKey(te1)) refinedWith.put(te1,new ArrayList<TrajectoryEnvelope>());
 				if (!refinedWith.containsKey(te2)) refinedWith.put(te2,new ArrayList<TrajectoryEnvelope>());
 				
-				//if they intersect
-				GeometricShapeVariable poly1 = te1.getEnvelopeVariable();
-				GeometricShapeVariable poly2 = te2.getEnvelopeVariable();
-				Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
-				Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
-				if (shape1.intersects(shape2)) {
+				// If != robots
+				if (te1.getRobotID() != te2.getRobotID()) {
 					
-					if (!refinedWith.get(te1).contains(te2) && te1.getRefinable()) {
-						ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
-						refinedWith.get(te1).add(te2);
-						ret.join(ref1);
-					}
-					if (!refinedWith.get(te2).contains(te1) && te2.getRefinable()) {
-						ConstraintNetwork ref2 = refineTrajectoryEnvelopes(te2, te1);
-						refinedWith.get(te2).add(te1);
-						ret.join(ref2);
+					//if they intersect
+					GeometricShapeVariable poly1 = te1.getEnvelopeVariable();
+					GeometricShapeVariable poly2 = te2.getEnvelopeVariable();
+					Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
+					Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
+					if (shape1.intersects(shape2)) {
+	
+						if (te1.getRefinable() && !refinedWith.get(te1).contains(te2)) {
+							ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
+							refinedWith.get(te1).add(te2);
+							ret.join(ref1);
+						}
+						if (te2.getRefinable() && !refinedWith.get(te2).contains(te1)) {
+							ConstraintNetwork ref2 = refineTrajectoryEnvelopes(te2, te1);
+							refinedWith.get(te2).add(te1);
+							ret.join(ref2);
+						}
 					}
 				}
 			}
@@ -153,6 +161,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	}
 	
 	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
+		logger.fine("Refining " + var1 + " with " + var2);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];
 		ConstraintNetwork toReturn = new ConstraintNetwork(null);
 		GeometryFactory gf = new GeometryFactory();
@@ -177,10 +186,27 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				var1sec3.add(ps);
 			}
 		}
-		//add a little to the intersection
-		for (int i = 0; i < 2; i++) {
-			var1sec2.add(var1sec3.get(0));
-			var1sec3.remove(0);
+		
+		boolean done = false;
+		while (!done) {
+			Geometry lastPolySec1 = var1.makeFootprint(var1sec1.get(var1sec1.size()-1));
+			if (lastPolySec1.disjoint(se2)) done = true;
+			else {
+				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+				var1sec1.remove(var1sec1.size()-1);
+				logger.finest("Added to start...");
+			}
+		}
+
+		done = false;
+		while (!done) {
+			Geometry firstPolySec3 = var1.makeFootprint(var1sec3.get(0));
+			if (firstPolySec3.disjoint(se2)) done = true;
+			else {
+				var1sec2.add(var1sec3.get(0));
+				var1sec3.remove(0);
+				logger.finest("Added to end...");
+			}
 		}
 
 		Trajectory newPath1sec1 = new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]));
@@ -202,6 +228,16 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		newEnvelopes[0] = newVar1sec1;
 		newEnvelopes[1] = newVar1sec2;
 		newEnvelopes[2] = newVar1sec3;
+		newEnvelopes[0].setRefinable(false);
+		newEnvelopes[1].setRefinable(false);
+		newEnvelopes[2].setRefinable(false);
+		newEnvelopes[0].setSuperEnvelope(var1);
+		newEnvelopes[1].setSuperEnvelope(var1);
+		newEnvelopes[2].setSuperEnvelope(var1);
+		newEnvelopes[0].setRobotID(var1.getRobotID());
+		newEnvelopes[1].setRobotID(var1.getRobotID());
+		newEnvelopes[2].setRobotID(var1.getRobotID());
+		refinedWith.get(var2).add(newVar1sec2);
 		((Map)this.getMetaConstraints()[0]).setUsage(newEnvelopes);
 
 		AllenIntervalConstraint starts1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
