@@ -274,7 +274,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 
 	/**
-	 * Returns the spatial part of this {@link TrajectoryEnvelope}.
+	 * Returns the spatial part of this {@link TrajectoryEnvelope} (reference path).
 	 * @return A {@link GeometricShapeVariable} representing the spatial part of this {@link TrajectoryEnvelope}.
 	 */
 	public GeometricShapeVariable getReferencePathVariable() {
@@ -282,7 +282,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 
 	/**
-	 * Returns the spatial part of this {@link TrajectoryEnvelope}.
+	 * Returns the spatial part of this {@link TrajectoryEnvelope} (envelope).
 	 * @return A {@link GeometricShapeVariable} representing the spatial part of this {@link TrajectoryEnvelope}.
 	 */
 	public GeometricShapeVariable getEnvelopeVariable() {
