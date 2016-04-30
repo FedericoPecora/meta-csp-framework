@@ -75,7 +75,8 @@ public class TestTrajectoryEnvelopeScheduler {
 		JTSDrawingPanel.drawConstraintNetwork(refined1);
 		
 		for (Variable v : refined1.getVariables()) {
-			System.out.println("Trajectory DTs: " + Arrays.toString(((TrajectoryEnvelope)v).getTrajectory().getDts()));
+			System.out.println(v + " DTs: " + Arrays.toString(((TrajectoryEnvelope)v).getTrajectory().getDts()));
+			System.out.println(v + " CTs: " + Arrays.toString(((TrajectoryEnvelope)v).getCTs()));
 		}	
 	}
 	

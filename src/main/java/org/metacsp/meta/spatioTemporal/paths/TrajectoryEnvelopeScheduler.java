@@ -209,9 +209,9 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			}
 		}
 
-		Trajectory newPath1sec1 = new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]));
-		Trajectory newPath1sec2 = new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]));
-		Trajectory newPath1sec3 = new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]));
+		Trajectory newPath1sec1 = new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]),var1.getTrajectory().getDts(0, var1sec1.size()));
+		Trajectory newPath1sec2 = new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(var1sec1.size(), var1sec1.size()+var1sec2.size()));
+		Trajectory newPath1sec3 = new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]),var1.getTrajectory().getDts(var1sec1.size()+var1sec2.size(),var1.getTrajectory().getPoseSteering().length));
 
 		Variable[] newVars = solver.createVariables(3);
 		TrajectoryEnvelope newVar1sec1 = (TrajectoryEnvelope)newVars[0];
@@ -238,6 +238,9 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		newEnvelopes[1].setRobotID(var1.getRobotID());
 		newEnvelopes[2].setRobotID(var1.getRobotID());
 		refinedWith.get(var2).add(newVar1sec2);
+		var1.addSubEnvelope(newEnvelopes[0]);
+		var1.addSubEnvelope(newEnvelopes[1]);
+		var1.addSubEnvelope(newEnvelopes[2]);
 		((Map)this.getMetaConstraints()[0]).setUsage(newEnvelopes);
 
 		AllenIntervalConstraint starts1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);

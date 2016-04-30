@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
 import org.metacsp.utility.Gaussian;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -23,6 +25,12 @@ public class Trajectory {
 		this.dts = new double[psa.length];
 		this.updateDts();
 	}
+
+	public Trajectory(PoseSteering[] psa, double[] dts) {
+		this.psa = psa;
+		this.dts = new double[psa.length];
+		this.dts = dts;
+	}
 	
 	public Trajectory(String fileName) {
 		this.psa = readPath(fileName);
@@ -32,6 +40,22 @@ public class Trajectory {
 	
 	public double[] getDts() {
 		return dts;
+	}
+	
+	public double getStart() {
+		return dts[0];
+	}
+
+	public double getEnd() {
+		return dts[dts.length-1];
+	}
+
+	public double[] getDts(int from, int to) {
+		double[] ret = new double[to-from];
+		for (int i = from; i < to; i++) {
+			ret[i-from] = this.dts[i];
+		}
+		return ret;
 	}
 
 	private double getConstantAcceleration(double percentComplete) {

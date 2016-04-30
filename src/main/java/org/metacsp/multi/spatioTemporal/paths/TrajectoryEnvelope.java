@@ -1,6 +1,8 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
@@ -44,11 +46,58 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private Trajectory trajectory = null;
 	private boolean refinable = true;
 	private TrajectoryEnvelope superEnvelope  = null;
+	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
 	private int robotID = -1;
 	
 	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public void addSubEnvelope(TrajectoryEnvelope se) {
+		if (this.subEnvelopes == null) this.subEnvelopes = new ArrayList<TrajectoryEnvelope>();
+		this.subEnvelopes.add(se);
+	}
+	
+	public ArrayList<TrajectoryEnvelope> getSubEnvelopes() {
+		return subEnvelopes;
+	}
+	
+	private double[] createCTVector() {
+		double[] ret = new double[this.getPathLength()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = -1.0;
+		}
+		return ret;
+	}
+	
+	public double[] getCTs() {
+		double[] ret = this.createCTVector();
+		if (this.subEnvelopes != null) {
+			ArrayList<double[]> rets = new ArrayList<double[]>();
+			for (TrajectoryEnvelope te : this.subEnvelopes) {
+				rets.add(te.getCTs());
+			}
+			Collections.sort(rets, new Comparator<double[]>() {
+				@Override
+				public int compare(double[] o1, double[] o2) {
+					if (o2[0]-o1[0] > 0) return -11;
+					else if (o2[0]-o1[0] == 0) return 0;
+					return 1;
+				}
+			});
+			int counter = 0;
+			for (int i = 0; i < rets.size(); i++) {
+				double[] oneRet = rets.get(i);
+				for (int j = 0; j < oneRet.length; j++) {
+					ret[counter++] = oneRet[j];
+				}
+			}
+			return ret;
+		}
+		ret[0] = this.getTrajectory().getStart();
+		ret[ret.length-1] = this.getTrajectory().getEnd();
+		return ret;
 	}
 	
 	public void setRobotID(int robotID) {
