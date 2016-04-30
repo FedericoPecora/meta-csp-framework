@@ -31,7 +31,8 @@ import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 /**
  * A {@link TrajectoryEnvelope} is a {@link MultiVariable} composed of an {@link AllenInterval} (temporal part)
- * and a {@link GeometricShapeVariable} (spatial part). Constraints of type {@link AllenIntervalConstraint} and
+ * and two {@link GeometricShapeVariable}s (two {@link GeometricShapeVariable}s, one representing the reference path, one
+ * representing the envelope). Constraints of type {@link AllenIntervalConstraint} and
  * {@link DE9IMRelation} can be added to {@link TrajectoryEnvelope}s.
  * 
  * @author Federico Pecora
