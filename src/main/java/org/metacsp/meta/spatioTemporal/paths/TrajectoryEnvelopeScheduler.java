@@ -39,6 +39,8 @@ import org.metacsp.multi.spatioTemporal.paths.Trajectory;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelopeSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -249,10 +251,12 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		AllenIntervalConstraint finishes1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes);
 		finishes1.setFrom(newVar1sec3);
 		finishes1.setTo(var1);
-		AllenIntervalConstraint meets1sec1sec2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*(newVar1sec2.getTrajectory().getDts()[0]-newVar1sec1.getTrajectory().getDts()[newVar1sec1.getTrajectory().getDts().length-1]));
+		long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*(newVar1sec3.getTrajectory().getDts()[0]-newVar1sec2.getTrajectory().getDts()[newVar1sec2.getTrajectory().getDts().length-1]));
+		AllenIntervalConstraint meets1sec1sec2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,APSPSolver.INF));
 		meets1sec1sec2.setFrom(newVar1sec1);
 		meets1sec1sec2.setTo(newVar1sec2);
-		AllenIntervalConstraint meets1sec2sec3 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		AllenIntervalConstraint meets1sec2sec3 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition23,APSPSolver.INF));
 		meets1sec2sec3.setFrom(newVar1sec2);
 		meets1sec2sec3.setTo(newVar1sec3);
 

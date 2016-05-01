@@ -3,6 +3,9 @@ package org.metacsp.multi.spatioTemporal.paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
@@ -40,6 +43,7 @@ import com.vividsolutions.jts.util.GeometricShapeFactory;
 public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	private static final long serialVersionUID = 183736569434737103L;
+	public static long RESOLUTION = 1000;
 	private double width = 1.3;
 	private double length= 3.5;
 	private double deltaW = 0.0;
@@ -72,32 +76,35 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return ret;
 	}
 	
+	public TreeSet<TrajectoryEnvelope> getGroundEnvelopes() {
+		TreeSet<TrajectoryEnvelope> ret = new TreeSet<TrajectoryEnvelope>(new Comparator<TrajectoryEnvelope>() {
+			@Override
+			public int compare(TrajectoryEnvelope o1, TrajectoryEnvelope o2) {
+				Bounds o1b = new Bounds(o1.getTemporalVariable().getEST(),o1.getTemporalVariable().getEET());
+				Bounds o2b = new Bounds(o2.getTemporalVariable().getEST(),o2.getTemporalVariable().getEET());
+				if (o2b.min-o1b.min > 0) return -1;
+				else if (o2b.min-o1b.min == 0) return 0;
+				return 1;
+			}
+		});			
+		if (this.getSubEnvelopes() != null) {
+			for (TrajectoryEnvelope te : this.getSubEnvelopes()) {
+				ret.addAll(te.getGroundEnvelopes());
+			}
+		}
+		else ret.add(this);
+		return ret;
+	}
+	
 	public double[] getCTs() {
 		double[] ret = this.createCTVector();
-		if (this.subEnvelopes != null) {
-			ArrayList<double[]> rets = new ArrayList<double[]>();
-			for (TrajectoryEnvelope te : this.subEnvelopes) {
-				rets.add(te.getCTs());
-			}
-			Collections.sort(rets, new Comparator<double[]>() {
-				@Override
-				public int compare(double[] o1, double[] o2) {
-					if (o2[0]-o1[0] > 0) return -1;
-					else if (o2[0]-o1[0] == 0) return 0;
-					return 1;
-				}
-			});
-			int counter = 0;
-			for (int i = 0; i < rets.size(); i++) {
-				double[] oneRet = rets.get(i);
-				for (int j = 0; j < oneRet.length; j++) {
-					ret[counter++] = oneRet[j];
-				}
-			}
-			return ret;
+		TreeSet<TrajectoryEnvelope> rets = this.getGroundEnvelopes();
+		int counter = 0;
+		for (TrajectoryEnvelope te : rets) {
+			ret[counter] = (double)(te.getTemporalVariable().getEST())/RESOLUTION;
+			ret[counter+te.getPathLength()-1] = (double)(te.getTemporalVariable().getEET())/RESOLUTION;
+			counter += te.getPathLength();
 		}
-		ret[0] = this.getTrajectory().getStart();
-		ret[ret.length-1] = this.getTrajectory().getEnd();
 		return ret;
 	}
 	
@@ -232,18 +239,25 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		PolygonalDomain env = new PolygonalDomain(null,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
+		long minDuration = (long)((traj.getDts()[traj.getDts().length-1]-traj.getDts()[0])*RESOLUTION);
+		AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
+		duration.setFrom(this);
+		duration.setTo(this);
+		boolean conAdd = this.getConstraintSolver().addConstraint(duration);
+		if (conAdd) logger.info("Added duration constriant " + duration);
+		else logger.info("Failed to add duration constriant " + duration);
 	}
 	
 	public Trajectory getTrajectory() {
 		return trajectory;
 	}
 	
-	public AllenIntervalConstraint getDurationConstriant() {
-		AllenIntervalConstraint ret = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds((long)(this.getTrajectory().getMinTraversalTime()*1000.0), APSPSolver.INF));
-		ret.setFrom(this);
-		ret.setTo(this);
-		return ret;
-	}
+//	public AllenIntervalConstraint getDurationConstriant() {
+//		AllenIntervalConstraint ret = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds((long)(this.getTrajectory().getMinTraversalTime()*1000.0), APSPSolver.INF));
+//		ret.setFrom(this);
+//		ret.setTo(this);
+//		return ret;
+//	}
 	
 	public int getPathLength() {
 		return this.trajectory.getPoseSteering().length;

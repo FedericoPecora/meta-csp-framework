@@ -52,12 +52,14 @@ public class Map extends Schedulable {
 	@Override
 	public boolean isConflicting(Activity[] peak) {
 		if (peak.length < 2) return false;
-		logger.finest("Resolving peak "  + Arrays.toString(peak));
 		GeometricShapeVariable poly1 = ((TrajectoryEnvelope)peak[0]).getEnvelopeVariable();
 		GeometricShapeVariable poly2 = ((TrajectoryEnvelope)peak[1]).getEnvelopeVariable();
 		Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
 		Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
-		return (shape1.intersects(shape2));
+		boolean conflicting = shape1.intersects(shape2);
+		if (!conflicting) return false;
+		logger.finest("Resolving peak "  + Arrays.toString(peak));
+		return true;
 	}
 	
 

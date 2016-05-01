@@ -116,9 +116,9 @@ public class Trajectory {
 		}
 	}
 	
-	public double getMinTraversalTime() {
-		return dts[dts.length-1];
-	}
+//	public double getMinTraversalTime() {
+//		return dts[dts.length-1];
+//	}
 
 	public PoseSteering[] getPoseSteering() {
 		return psa;
