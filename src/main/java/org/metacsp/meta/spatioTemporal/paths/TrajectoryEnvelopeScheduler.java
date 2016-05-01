@@ -63,26 +63,26 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	@Override
 	public void preBacktrack() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected boolean addResolverSub(ConstraintNetwork metaVariable,
 			ConstraintNetwork metaValue) {
 		return true;
-		
+
 	}
 
 	@Override
 	public void postBacktrack(MetaVariable mv) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	@Override
 	protected void setUpperBound() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	@Override
 	protected void setLowerBound() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -118,50 +118,57 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	@Override
 	protected void resetFalseClause() {
 		// TODO Auto-generated method stub
-		
+
 	}	
-	
+
 	public ConstraintNetwork refineTrajectoryEnvelopes() {
 		ConstraintNetwork ret = new ConstraintNetwork(null);
-		Variable[] varsBefore = this.getConstraintSolvers()[0].getVariables();
-		for (int i = 0; i < varsBefore.length-1; i++) {
-			for (int j = i+1; j < varsBefore.length; j++) {
-				
-				//Get TEs
-				TrajectoryEnvelope te1 = (TrajectoryEnvelope)varsBefore[i];
-				TrajectoryEnvelope te2 = (TrajectoryEnvelope)varsBefore[j];
+		
+		boolean done = false;
+		while (!done) {
+			done = true;
+			Variable[] varsOneIteration = this.getConstraintSolvers()[0].getVariables();
+			for (int i = 0; i < varsOneIteration.length-1; i++) {
+				for (int j = i+1; j < varsOneIteration.length; j++) {
 
-				//Init data structures
-				if (!refinedWith.containsKey(te1)) refinedWith.put(te1,new ArrayList<TrajectoryEnvelope>());
-				if (!refinedWith.containsKey(te2)) refinedWith.put(te2,new ArrayList<TrajectoryEnvelope>());
-				
-				// If != robots
-				if (te1.getRobotID() != te2.getRobotID()) {
-					
-					//if they intersect
-					GeometricShapeVariable poly1 = te1.getEnvelopeVariable();
-					GeometricShapeVariable poly2 = te2.getEnvelopeVariable();
-					Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
-					Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
-					if (shape1.intersects(shape2)) {
-	
-						if (te1.getRefinable() && !refinedWith.get(te1).contains(te2)) {
-							ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
-							refinedWith.get(te1).add(te2);
-							ret.join(ref1);
-						}
-						if (te2.getRefinable() && !refinedWith.get(te2).contains(te1)) {
-							ConstraintNetwork ref2 = refineTrajectoryEnvelopes(te2, te1);
-							refinedWith.get(te2).add(te1);
-							ret.join(ref2);
+					//Get TEs
+					TrajectoryEnvelope te1 = (TrajectoryEnvelope)varsOneIteration[i];
+					TrajectoryEnvelope te2 = (TrajectoryEnvelope)varsOneIteration[j];
+
+					//Init data structures
+					if (!refinedWith.containsKey(te1)) refinedWith.put(te1,new ArrayList<TrajectoryEnvelope>());
+					if (!refinedWith.containsKey(te2)) refinedWith.put(te2,new ArrayList<TrajectoryEnvelope>());
+
+					// If != robots
+					boolean te1HasSub = te1.hasSubEnvelopes();
+					boolean te2HasSub = te2.hasSubEnvelopes();
+					if (te1.getRobotID() != te2.getRobotID()) {
+						//if they intersect
+						GeometricShapeVariable poly1 = te1.getEnvelopeVariable();
+						GeometricShapeVariable poly2 = te2.getEnvelopeVariable();
+						Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
+						Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
+						if (shape1.intersects(shape2)) {
+							if (!te2HasSub && te1.getRefinable() && !refinedWith.get(te1).contains(te2)) {
+								ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
+								refinedWith.get(te1).add(te2);
+								ret.join(ref1);
+								done = false;
+							}
+							if (!te1HasSub && te2.getRefinable() && !refinedWith.get(te2).contains(te1)) {
+								ConstraintNetwork ref2 = refineTrajectoryEnvelopes(te2, te1);
+								refinedWith.get(te2).add(te1);
+								ret.join(ref2);
+								done = false;
+							}
 						}
 					}
 				}
-			}
+			}			
 		}
 		return ret;
 	}
-	
+
 	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
 		logger.fine("Refining " + var1 + " with " + var2);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];
@@ -188,81 +195,137 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				var1sec3.add(ps);
 			}
 		}
+
+		boolean skipSec1 = false;
+		boolean skipSec3 = false;
 		
+		//Add to start
 		boolean done = false;
 		while (!done) {
-			Geometry lastPolySec1 = var1.makeFootprint(var1sec1.get(var1sec1.size()-1));
-			if (lastPolySec1.disjoint(se2)) done = true;
-			else {
-				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
-				var1sec1.remove(var1sec1.size()-1);
-				logger.finest("Added to start...");
-			}
+			try {
+				Geometry lastPolySec1 = var1.makeFootprint(var1sec1.get(var1sec1.size()-1));
+				if (lastPolySec1.disjoint(se2)) done = true;
+				else {
+					var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+					var1sec1.remove(var1sec1.size()-1);
+					logger.info("Added to start... (1)");
+				}
+			} catch (IndexOutOfBoundsException e) { skipSec1 = true; done = true; }
+		}
+		//If sec1 emptied, remove it
+		if (var1sec1.size() == 1) {
+			var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+			var1sec1.remove(var1sec1.size()-1);
+			skipSec1 = true;
+			System.out.println("REDUCED SEC 1");
 		}
 
+		//Add to end
 		done = false;
 		while (!done) {
-			Geometry firstPolySec3 = var1.makeFootprint(var1sec3.get(0));
-			if (firstPolySec3.disjoint(se2)) done = true;
-			else {
+			try {
+				Geometry firstPolySec3 = var1.makeFootprint(var1sec3.get(0));
+				if (firstPolySec3.disjoint(se2)) done = true;
+				else {
+					var1sec2.add(var1sec3.get(0));
+					var1sec3.remove(0);
+					logger.info("Added to end... (1)");
+				}
+			} catch (IndexOutOfBoundsException e) { skipSec3 = true; done = true; }
+		}
+		//If sec3 emptied, remove it
+		if (var1sec3.size() == 1) {
+			var1sec2.add(var1sec3.get(0));
+			var1sec3.remove(0);
+			skipSec3 = true;
+			System.out.println("REDUCED SEC 3");
+		}
+		
+		if (var1sec2.size() < 2) {
+			if (var1sec1.size() > 2) {
+				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+				var1sec1.remove(var1sec1.size()-1);
+				logger.info("Added to start... (2)");
+			}
+			else if (var1sec3.size() > 2) {
 				var1sec2.add(var1sec3.get(0));
-				var1sec3.remove(0);
-				logger.finest("Added to end...");
+				var1sec3.remove(0);				
+				logger.info("Added to end... (2)");
 			}
 		}
 
-		Trajectory newPath1sec1 = new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]),var1.getTrajectory().getDts(0, var1sec1.size()));
-		Trajectory newPath1sec2 = new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(var1sec1.size(), var1sec1.size()+var1sec2.size()));
-		Trajectory newPath1sec3 = new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]),var1.getTrajectory().getDts(var1sec1.size()+var1sec2.size(),var1.getTrajectory().getPoseSteering().length));
+		if ((skipSec1 && skipSec3) || var1sec2.size() < 2) {
+			System.out.println("NOTHING TO DO");
+			return toReturn;
+		}
 
-		Variable[] newVars = solver.createVariables(3);
-		TrajectoryEnvelope newVar1sec1 = (TrajectoryEnvelope)newVars[0];
-		TrajectoryEnvelope newVar1sec2 = (TrajectoryEnvelope)newVars[1];
-		TrajectoryEnvelope newVar1sec3 = (TrajectoryEnvelope)newVars[2];
-		
-		newVar1sec2.setRefinable(false);
+		var1.setRefinable(false);
+		ArrayList<Trajectory> newTrajectories = new ArrayList<Trajectory>();
+		ArrayList<TrajectoryEnvelope> newTrajectoryEnvelopes = new ArrayList<TrajectoryEnvelope>();
+				
+		System.out.println("var1sec1.size() = " + var1sec1.size());
+		System.out.println("var1sec2.size() = " + var1sec2.size());
+		System.out.println("var1sec3.size() = " + var1sec3.size());
+		System.out.println("TOT: " + var1.getTrajectory().getPoseSteering().length);
+		if (!skipSec1) {
+			newTrajectories.add(new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]),var1.getTrajectory().getDts(0, var1sec1.size())));
+			newTrajectories.add(new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(var1sec1.size(), var1sec1.size()+var1sec2.size())));
+			if (!skipSec3) {
+				newTrajectories.add(new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]),var1.getTrajectory().getDts(var1sec1.size()+var1sec2.size(),var1.getTrajectory().getPoseSteering().length)));
+			}
+		}
+		else {
+			newTrajectories.add(new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(0, var1sec2.size())));
+			if (!skipSec3) {
+				newTrajectories.add(new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]),var1.getTrajectory().getDts(var1sec2.size(),var1.getTrajectory().getPoseSteering().length)));
+			}			
+		}
 
-		newVar1sec1.setTrajectory(newPath1sec1);
-		newVar1sec2.setTrajectory(newPath1sec2);
-		newVar1sec3.setTrajectory(newPath1sec3);
+		Variable[] newVars = solver.createVariables(newTrajectories.size());
+		for (int i = 0; i < newVars.length; i++) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)newVars[i];
+			//Only for second!
+			if ((!skipSec1 && i == 1) || (skipSec1 && i == 0)) {
+				te.setRefinable(false);
+				refinedWith.get(var2).add(te);
+			}
+			System.out.println("doing i = " + i + " skipsec1: " + skipSec1 + " skipsec3: " + skipSec3);
+			te.setTrajectory(newTrajectories.get(i));
+			te.setSuperEnvelope(var1);
+			te.setRobotID(var1.getRobotID());
+			var1.addSubEnvelope(te);
+			((Map)this.getMetaConstraints()[0]).setUsage(te);
+			newTrajectoryEnvelopes.add(te);			
+		}
 
-		TrajectoryEnvelope[] newEnvelopes = new TrajectoryEnvelope[3];
-		newEnvelopes[0] = newVar1sec1;
-		newEnvelopes[1] = newVar1sec2;
-		newEnvelopes[2] = newVar1sec3;
-		newEnvelopes[0].setRefinable(false);
-		newEnvelopes[1].setRefinable(false);
-		newEnvelopes[2].setRefinable(false);
-		newEnvelopes[0].setSuperEnvelope(var1);
-		newEnvelopes[1].setSuperEnvelope(var1);
-		newEnvelopes[2].setSuperEnvelope(var1);
-		newEnvelopes[0].setRobotID(var1.getRobotID());
-		newEnvelopes[1].setRobotID(var1.getRobotID());
-		newEnvelopes[2].setRobotID(var1.getRobotID());
-		refinedWith.get(var2).add(newVar1sec2);
-		var1.addSubEnvelope(newEnvelopes[0]);
-		var1.addSubEnvelope(newEnvelopes[1]);
-		var1.addSubEnvelope(newEnvelopes[2]);
-		((Map)this.getMetaConstraints()[0]).setUsage(newEnvelopes);
+		System.out.println("REFINEMENT (w/ " + var2 + "): " + var1 + " --> " + newTrajectoryEnvelopes);
 
-		AllenIntervalConstraint starts1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
-		starts1.setFrom(newVar1sec1);
-		starts1.setTo(var1);		
-		AllenIntervalConstraint finishes1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes);
-		finishes1.setFrom(newVar1sec3);
-		finishes1.setTo(var1);
-		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*(newVar1sec2.getTrajectory().getDTs()[0]-newVar1sec1.getTrajectory().getDTs()[newVar1sec1.getTrajectory().getDTs().length-1]));
-		long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*(newVar1sec3.getTrajectory().getDTs()[0]-newVar1sec2.getTrajectory().getDTs()[newVar1sec2.getTrajectory().getDTs().length-1]));
-		AllenIntervalConstraint meets1sec1sec2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,APSPSolver.INF));
-		meets1sec1sec2.setFrom(newVar1sec1);
-		meets1sec1sec2.setTo(newVar1sec2);
-		AllenIntervalConstraint meets1sec2sec3 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition23,APSPSolver.INF));
-		meets1sec2sec3.setFrom(newVar1sec2);
-		meets1sec2sec3.setTo(newVar1sec3);
+		AllenIntervalConstraint starts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
+		starts.setFrom(newTrajectoryEnvelopes.get(0));
+		starts.setTo(var1);
+		toReturn.addConstraint(starts);
 
-		solver.addConstraints(starts1,finishes1,meets1sec1sec2,meets1sec2sec3);
-		toReturn.addConstraints(starts1,finishes1,meets1sec1sec2,meets1sec2sec3);
+		AllenIntervalConstraint finishes = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes);
+		finishes.setFrom(newTrajectoryEnvelopes.get(newTrajectoryEnvelopes.size()-1));
+		finishes.setTo(var1);
+		toReturn.addConstraint(finishes);
+
+		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*(newTrajectoryEnvelopes.get(1).getTrajectory().getDTs()[0]-newTrajectoryEnvelopes.get(0).getTrajectory().getDTs()[newTrajectoryEnvelopes.get(0).getTrajectory().getDTs().length-1]));
+		AllenIntervalConstraint before1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,APSPSolver.INF));
+		before1.setFrom(newTrajectoryEnvelopes.get(0));
+		before1.setTo(newTrajectoryEnvelopes.get(1));
+		toReturn.addConstraint(before1);
+
+		if (newTrajectoryEnvelopes.size() > 2) {
+			long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*(newTrajectoryEnvelopes.get(2).getTrajectory().getDTs()[0]-newTrajectoryEnvelopes.get(1).getTrajectory().getDTs()[newTrajectoryEnvelopes.get(1).getTrajectory().getDTs().length-1]));
+			AllenIntervalConstraint before2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition23,APSPSolver.INF));
+			before2.setFrom(newTrajectoryEnvelopes.get(1));
+			before2.setTo(newTrajectoryEnvelopes.get(2));
+			toReturn.addConstraint(before2);
+		}
+
+		solver.addConstraints(toReturn.getConstraints());
 		return toReturn;
 	}
-	
+
 }

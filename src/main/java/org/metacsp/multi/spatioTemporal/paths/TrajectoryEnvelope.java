@@ -64,6 +64,10 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		this.subEnvelopes.add(se);
 	}
 	
+	public boolean hasSubEnvelopes() {
+		return this.subEnvelopes != null && !this.subEnvelopes.isEmpty();
+	}
+	
 	public ArrayList<TrajectoryEnvelope> getSubEnvelopes() {
 		return subEnvelopes;
 	}
@@ -279,14 +283,19 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	@Override
 	public String toString() {
-		TreeSet<TrajectoryEnvelope> subEnv = new TreeSet<TrajectoryEnvelope>();
-		if (this.getSubEnvelopes() != null) subEnv = this.getGroundEnvelopes();
-		String ret = "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
-		for (TrajectoryEnvelope te : subEnv) {
-			ret += "\n   " + te;
-		}
-		return ret;
+		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
 	}
+	
+//	@Override
+//	public String toString() {
+//		TreeSet<TrajectoryEnvelope> subEnv = new TreeSet<TrajectoryEnvelope>();
+//		if (this.getSubEnvelopes() != null) subEnv = this.getGroundEnvelopes();
+//		String ret = "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
+//		for (TrajectoryEnvelope te : subEnv) {
+//			ret += "\n   " + te;
+//		}
+//		return ret;
+//	}
 	
 	/**
 	 * Returns the temporal part of this {@link TrajectoryEnvelope}.
