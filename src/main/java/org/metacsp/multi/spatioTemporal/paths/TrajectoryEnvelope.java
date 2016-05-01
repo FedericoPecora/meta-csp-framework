@@ -120,10 +120,14 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		this.superEnvelope = superEnvelope;
 	}
 	
-	public boolean getSuperEnvelope() {
+	public boolean hasSuperEnvelope() {
 		return this.superEnvelope == null;
 	}
-	
+
+//	public boolean getSuperEnvelope() {
+//		return this.superEnvelope == null;
+//	}
+
 	public void setRefinable(boolean refinable) {
 		this.refinable = refinable;
 	}
@@ -239,7 +243,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		PolygonalDomain env = new PolygonalDomain(null,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
-		long minDuration = (long)((traj.getDts()[traj.getDts().length-1]-traj.getDts()[0])*RESOLUTION);
+		long minDuration = (long)((traj.getDTs()[traj.getDTs().length-1]-traj.getDTs()[0])*RESOLUTION);
 		AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
 		duration.setFrom(this);
 		duration.setTo(this);
@@ -275,8 +279,13 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
+		TreeSet<TrajectoryEnvelope> subEnv = new TreeSet<TrajectoryEnvelope>();
+		if (this.getSubEnvelopes() != null) subEnv = this.getGroundEnvelopes();
+		String ret = "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
+		for (TrajectoryEnvelope te : subEnv) {
+			ret += "\n   " + te;
+		}
+		return ret;
 	}
 	
 	/**

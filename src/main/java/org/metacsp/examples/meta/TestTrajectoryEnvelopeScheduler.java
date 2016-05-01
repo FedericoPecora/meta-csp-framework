@@ -26,6 +26,21 @@ import com.vividsolutions.jts.geom.Point;
 
 public class TestTrajectoryEnvelopeScheduler {
 	
+	
+	public static void printInfo(TrajectoryEnvelope te) {
+		
+		double[] teDTs = te.getTrajectory().getDTs();
+		double[] teCTs = te.getCTs();
+
+		DecimalFormat df = new DecimalFormat("#0.00");
+		df.setRoundingMode(RoundingMode.HALF_DOWN);
+		System.out.println("------------------------------------------\n" + te + "\nDTs and CTs\n------------------------------------------");
+		for (int i = 0; i < teDTs.length; i++) {
+			System.out.println(i + ": " + df.format(teDTs[i]) + " \t " + df.format(teCTs[i]));
+		}
+		
+	}
+	
 	public static void main(String[] args) {
 		
 		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 100000);
@@ -46,21 +61,6 @@ public class TestTrajectoryEnvelopeScheduler {
 		System.out.println(var0 + " has domain " + var0.getDomain());
 		System.out.println(var1 + " has domain " + var1.getDomain());
 		
-//		boolean addedDurations = solver.addConstraints(var0.getDurationConstriant(), var1.getDurationConstriant());
-//		System.out.println("Added durations? " + addedDurations);
-		
-//		//Visualize intersection
-//		System.out.println(Arrays.toString(((DE9IMRelationSolver)solver.getConstraintSolvers()[1]).getAllImplicitRelations()));
-//		Geometry intersection = ((GeometricShapeDomain)var0.getEnvelopeVariable().getDomain()).getGeometry().intersection(((GeometricShapeDomain)var1.getEnvelopeVariable().getDomain()).getGeometry());
-//		JTSDrawingPanel.drawVariables(var0.getEnvelopeVariable(), var1.getEnvelopeVariable(), var0.getReferencePathVariable(), var1.getReferencePathVariable(),intersection);
-		
-//		double[] dts0 = traj0.getDts();
-//		for (int i = 1; i < dts0.length; i++) {
-//			System.out.println(""+(dts0[i]-dts0[i-1]));
-//		}
-//		System.out.println("Trajectory 0 DTs: " + Arrays.toString(traj0.getDts()));
-//		System.out.println("Trajectory 1 DTs: " + Arrays.toString(traj1.getDts()));
-
 		Map map = new Map(null, null);		
 		metaSolver.addMetaConstraint(map);
 
@@ -70,53 +70,19 @@ public class TestTrajectoryEnvelopeScheduler {
 		ConstraintNetwork refined2 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 2: "+  refined2);
 
-		double[] var0DTs = ((TrajectoryEnvelope)var0).getTrajectory().getDts();
-		double[] var0CTs = ((TrajectoryEnvelope)var0).getCTs();
-		double[] var1DTs = ((TrajectoryEnvelope)var1).getTrajectory().getDts();
-		double[] var1CTs = ((TrajectoryEnvelope)var1).getCTs();
-
-		DecimalFormat df = new DecimalFormat("#0.00");
-		df.setRoundingMode(RoundingMode.HALF_DOWN);
 		System.out.println("====================\n== BEFORE SOLVING ==\n====================");
-		System.out.println("---------------------------------------\n" + var0 + " DTs and CTs\n---------------------------------------");
-		for (int i = 0; i < var0DTs.length; i++) {
-			System.out.println(i + ": " + df.format(var0DTs[i]) + " \t " + df.format(var0CTs[i]));
-		}
-		System.out.println("---------------------------------------\n" + var1 + " DTs and CTs\n---------------------------------------");
-		for (int i = 0; i < var1DTs.length; i++) {
-			System.out.println(i + ": " + df.format(var1DTs[i]) + " \t " + df.format(var1CTs[i]));
-		}
+		printInfo(var0);
+		printInfo(var1);
 		
 		boolean solved = metaSolver.backtrack();
 		System.out.println("Solved? " + solved);
 		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
 
-		var0CTs = ((TrajectoryEnvelope)var0).getCTs();
-		var1CTs = ((TrajectoryEnvelope)var1).getCTs();
-		
 		System.out.println("===================\n== AFTER SOLVING ==\n===================");
-		System.out.println("---------------------------------------\n" + var0 + " DTs and CTs\n---------------------------------------");
-		for (int i = 0; i < var0DTs.length; i++) {
-			System.out.println(i + ": " + df.format(var0DTs[i]) + " \t " + df.format(var0CTs[i]));
-		}
-		System.out.println("---------------------------------------\n" + var1 + " DTs and CTs\n---------------------------------------");
-		for (int i = 0; i < var1DTs.length; i++) {
-			System.out.println(i + ": " + df.format(var1DTs[i]) + " \t " + df.format(var1CTs[i]));
-		}
-
+		printInfo(var0);
+		printInfo(var1);
+		
 		JTSDrawingPanel.drawConstraintNetwork(refined1);
-
-		
-		
-//		System.out.println(var0 + " DTs: " + Arrays.toString(((TrajectoryEnvelope)var0).getTrajectory().getDts()));
-//		System.out.println(var0 + " CTs: " + Arrays.toString(((TrajectoryEnvelope)var0).getCTs()));
-//		System.out.println(var1 + " DTs: " + Arrays.toString(((TrajectoryEnvelope)var1).getTrajectory().getDts()));
-//		System.out.println(var1 + " CTs: " + Arrays.toString(((TrajectoryEnvelope)var1).getCTs()));
-
-//		for (Variable v : refined1.getVariables()) {
-//			System.out.println(v + " DTs: " + Arrays.toString(((TrajectoryEnvelope)v).getTrajectory().getDts()));
-//			System.out.println(v + " CTs: " + Arrays.toString(((TrajectoryEnvelope)v).getCTs()));
-//		}	
 	}
 	
 }

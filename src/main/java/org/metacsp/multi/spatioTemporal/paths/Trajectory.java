@@ -38,7 +38,7 @@ public class Trajectory {
 		this.updateDts();
 	}
 	
-	public double[] getDts() {
+	public double[] getDTs() {
 		return dts;
 	}
 	
