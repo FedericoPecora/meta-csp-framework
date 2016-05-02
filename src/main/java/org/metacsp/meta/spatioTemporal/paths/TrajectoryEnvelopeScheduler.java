@@ -49,6 +49,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
+	private ArrayList<TrajectoryEnvelope> envelopesForScheduling = new ArrayList<TrajectoryEnvelope>();
 	private static final long serialVersionUID = 8551829132754804513L;
 	private HashMap<TrajectoryEnvelope,ArrayList<TrajectoryEnvelope>> refinedWith = new HashMap<TrajectoryEnvelope, ArrayList<TrajectoryEnvelope>>();
 
@@ -165,6 +166,18 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 					}
 				}
 			}			
+		}
+		//recompute usages
+		for (TrajectoryEnvelope te : envelopesForScheduling) {
+			((Map)this.getMetaConstraints()[0]).removeUsage(te);		
+		}
+		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+			if (!te.hasSuperEnvelope()) {
+				for (TrajectoryEnvelope gte : te.getGroundEnvelopes()) {
+					((Map)this.getMetaConstraints()[0]).setUsage(gte);
+				}
+			}
 		}
 		return ret;
 	}
@@ -294,7 +307,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			te.setSuperEnvelope(var1);
 			te.setRobotID(var1.getRobotID());
 			var1.addSubEnvelope(te);
-			((Map)this.getMetaConstraints()[0]).setUsage(te);
+//			((Map)this.getMetaConstraints()[0]).setUsage(te);
 			newTrajectoryEnvelopes.add(te);			
 		}
 

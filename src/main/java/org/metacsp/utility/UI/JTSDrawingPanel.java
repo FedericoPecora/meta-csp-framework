@@ -1,12 +1,15 @@
 package org.metacsp.utility.UI;
 
 import com.vividsolutions.jts.awt.ShapeWriter;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope; 
 import com.vividsolutions.jts.geom.Geometry; 
 import com.vividsolutions.jts.geom.LineString; 
 import com.vividsolutions.jts.geom.Polygon; 
 import com.vividsolutions.jts.io.WKTReader; 
+import com.vividsolutions.jts.util.GeometricShapeFactory;
 
+import java.awt.BasicStroke;
 import java.awt.Color; 
 import java.awt.GradientPaint; 
 import java.awt.Graphics; 
@@ -14,6 +17,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint; 
 import java.awt.Rectangle; 
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform; 
 import java.util.ArrayList; 
 import java.util.List; 
@@ -47,7 +51,9 @@ public class JTSDrawingPanel extends JPanel {
 //            Paint polyPaint = new GradientPaint(0, 0, Color.CYAN, 100, 100, Color.MAGENTA, true);
 //            Paint polyPaint = Color.GRAY;
             Paint defaultPaint = Color.BLACK; 
-
+            Paint startCircPaint = Color.GREEN; 
+            Paint endCircPaint = Color.RED; 
+            
             for (Geometry geom : geometries) { 
             	ShapeWriter writer = new ShapeWriter();
             	Shape shape = writer.toShape(geom);
@@ -56,9 +62,25 @@ public class JTSDrawingPanel extends JPanel {
                 	Paint polyPaint = Color.getHSBColor((float) Math.random(), .6f, .6f);
                     g2d.setPaint(polyPaint); 
                     g2d.fill(newShape); 
-                } else { 
+                } else {
                     g2d.setPaint(defaultPaint); 
                     g2d.draw(newShape);
+                    
+                	GeometricShapeFactory gsf = new GeometricShapeFactory();
+                    gsf.setSize(3);
+                    gsf.setCentre(geom.getCoordinates()[0]);
+                    Polygon startCirc = gsf.createCircle();
+                    gsf.setCentre(geom.getCoordinates()[geom.getCoordinates().length-1]);
+                    Polygon endCirc = gsf.createCircle();
+                	Shape startCircShape = writer.toShape(startCirc);
+                	Shape endCircShape = writer.toShape(endCirc);
+                	Shape newStartCircShape = geomToScreen.createTransformedShape(startCircShape);
+                	Shape newEndCircShape = geomToScreen.createTransformedShape(endCircShape);
+                	g2d.setStroke(new BasicStroke(2));
+                    g2d.setPaint(startCircPaint); 
+                    g2d.draw(newStartCircShape);
+                    g2d.setPaint(endCircPaint); 
+                    g2d.draw(newEndCircShape);
                 } 
             } 
         } 
