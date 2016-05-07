@@ -11,6 +11,7 @@ import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 import java.awt.BasicStroke;
 import java.awt.Color; 
+import java.awt.Font;
 import java.awt.GradientPaint; 
 import java.awt.Graphics; 
 import java.awt.Graphics2D; 
@@ -54,6 +55,7 @@ public class JTSDrawingPanel extends JPanel {
             Paint startCircPaint = Color.GREEN; 
             Paint endCircPaint = Color.RED; 
             
+            int count = 0;
             for (Geometry geom : geometries) { 
             	ShapeWriter writer = new ShapeWriter();
             	Shape shape = writer.toShape(geom);
@@ -62,10 +64,19 @@ public class JTSDrawingPanel extends JPanel {
                 	Paint polyPaint = Color.getHSBColor((float) Math.random(), .6f, .6f);
                     g2d.setPaint(polyPaint); 
                     g2d.fill(newShape); 
+                    
+                    //Draw label
+                    g2d.setPaint(defaultPaint); 
+                    AffineTransform orig = g2d.getTransform();
+                    g2d.setTransform(geomToScreen);
+                    g2d.setFont(new Font("TimesRoman", Font.PLAIN, 2)); 
+                    g2d.drawString(""+count++, (int)(geom.getCentroid().getX()), (int)(geom.getCentroid().getY()));
+                    g2d.setTransform(orig);
                 } else {
                     g2d.setPaint(defaultPaint); 
                     g2d.draw(newShape);
                     
+                    //draw start/end circles
                 	GeometricShapeFactory gsf = new GeometricShapeFactory();
                     gsf.setSize(3);
                     gsf.setCentre(geom.getCoordinates()[0]);

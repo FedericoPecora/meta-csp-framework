@@ -66,7 +66,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	@Override
 	protected void retractResolverSub(ConstraintNetwork metaVariable, ConstraintNetwork metaValue) {
 		// TODO Auto-generated method stub
@@ -230,7 +230,6 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
 			var1sec1.remove(var1sec1.size()-1);
 			skipSec1 = true;
-			System.out.println("REDUCED SEC 1");
 		}
 
 		//Add to end
@@ -251,7 +250,6 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			var1sec2.add(var1sec3.get(0));
 			var1sec3.remove(0);
 			skipSec3 = true;
-			System.out.println("REDUCED SEC 3");
 		}
 		
 		if (var1sec2.size() < 2) {
@@ -268,7 +266,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		}
 
 		if ((skipSec1 && skipSec3) || var1sec2.size() < 2) {
-			System.out.println("NOTHING TO DO");
+			logger.info("Intersection " + var1 + " with " + var2 + " too small - skipping");
 			return toReturn;
 		}
 
@@ -276,10 +274,10 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		ArrayList<Trajectory> newTrajectories = new ArrayList<Trajectory>();
 		ArrayList<TrajectoryEnvelope> newTrajectoryEnvelopes = new ArrayList<TrajectoryEnvelope>();
 				
-		System.out.println("var1sec1.size() = " + var1sec1.size());
-		System.out.println("var1sec2.size() = " + var1sec2.size());
-		System.out.println("var1sec3.size() = " + var1sec3.size());
-		System.out.println("TOT: " + var1.getTrajectory().getPoseSteering().length);
+//		System.out.println("var1sec1.size() = " + var1sec1.size());
+//		System.out.println("var1sec2.size() = " + var1sec2.size());
+//		System.out.println("var1sec3.size() = " + var1sec3.size());
+//		System.out.println("TOT: " + var1.getTrajectory().getPoseSteering().length);
 		if (!skipSec1) {
 			newTrajectories.add(new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]),var1.getTrajectory().getDts(0, var1sec1.size())));
 			newTrajectories.add(new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(var1sec1.size(), var1sec1.size()+var1sec2.size())));
@@ -302,7 +300,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				te.setRefinable(false);
 				refinedWith.get(var2).add(te);
 			}
-			System.out.println("doing i = " + i + " skipsec1: " + skipSec1 + " skipsec3: " + skipSec3);
+//			System.out.println("doing i = " + i + " skipsec1: " + skipSec1 + " skipsec3: " + skipSec3);
 			te.setTrajectory(newTrajectories.get(i));
 			te.setSuperEnvelope(var1);
 			te.setRobotID(var1.getRobotID());
@@ -311,7 +309,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			newTrajectoryEnvelopes.add(te);			
 		}
 
-		System.out.println("REFINEMENT (w/ " + var2 + "): " + var1 + " --> " + newTrajectoryEnvelopes);
+//		System.out.println("REFINEMENT (w/ " + var2 + "): " + var1 + " --> " + newTrajectoryEnvelopes);
 
 		AllenIntervalConstraint starts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
 		starts.setFrom(newTrajectoryEnvelopes.get(0));
