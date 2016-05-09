@@ -28,7 +28,6 @@ public class Trajectory {
 
 	public Trajectory(PoseSteering[] psa, double[] dts) {
 		this.psa = psa;
-		this.dts = new double[psa.length];
 		this.dts = dts;
 	}
 	

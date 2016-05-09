@@ -1,24 +1,26 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
 public class PoseSteering {
-	double x, y, theta, steering;
+	private Pose pose;
+	private double steering;
 	public PoseSteering(double x, double y, double theta, double steering) {
-		this.x = x;
-		this.y = y;
-		this.theta = theta;
+		this.pose = new Pose(x,y,theta);
 		this.steering = steering;
 	}
 	public double getX() {
-		return x;
+		return this.pose.getX();
 	}
 	public double getY() {
-		return y;
+		return this.pose.getY();
 	}
 	public double getTheta() {
-		return theta;
+		return this.pose.getTheta();
+	}
+	public Pose getPose() {
+		return this.pose;
 	}
 	public double getSteering() {
-		return steering;
+		return this.steering;
 	}
 
 }

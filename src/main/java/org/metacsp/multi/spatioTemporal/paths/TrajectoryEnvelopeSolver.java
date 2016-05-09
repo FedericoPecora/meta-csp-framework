@@ -1,6 +1,9 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
+import java.util.ArrayList;
+
 import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -32,6 +35,15 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 */
 	public TrajectoryEnvelopeSolver(long origin, long horizon) {
 		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon), new int[]{1,2});
+	}
+
+	public TrajectoryEnvelope[] getRootTrajectoryEnvelopes() {
+		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
+		for (Variable var : this.getVariables()) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)var;
+			if (!te.hasSuperEnvelope()) ret.add(te);
+		}
+		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
 	}
 	
 	private static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon) {
