@@ -102,6 +102,8 @@ public class Trajectory {
 			s.add(s.get(s.size()-1)+u.get(u.size()-1)*dt);
 		}
 		totDistance = 0.0;
+		dts[0] = 0.0;
+		double prevSum = 0.0;
 		for (int i = 1; i < dts.length; i++) {
 			Coordinate prev = getPositions()[i-1];
 			Coordinate current = getPositions()[i];
@@ -113,7 +115,8 @@ public class Trajectory {
 					break;
 				}
 			}
-			dts[i] = countDts*dt;
+			prevSum += dts[i-1];
+			dts[i] = countDts*dt-prevSum;
 		}
 	}
 	
