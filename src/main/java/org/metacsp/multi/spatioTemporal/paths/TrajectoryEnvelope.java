@@ -247,7 +247,10 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		PolygonalDomain env = new PolygonalDomain(null,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
-		long minDuration = (long)((traj.getDTs()[traj.getDTs().length-1]-traj.getDTs()[0])*RESOLUTION);
+		long minDuration = 0;
+		for (int i = 0; i < traj.getDTs().length; i++) {
+			minDuration += traj.getDTs()[i]*RESOLUTION;
+		}
 		AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
 		duration.setFrom(this);
 		duration.setTo(this);
