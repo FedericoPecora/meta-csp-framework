@@ -325,7 +325,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 //		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*(newTrajectoryEnvelopes.get(1).getTrajectory().getDTs()[0]-newTrajectoryEnvelopes.get(0).getTrajectory().getDTs()[newTrajectoryEnvelopes.get(0).getTrajectory().getDTs().length-1]));
 		double minTTT12 = var1.getTrajectory().getDTs()[var1sec1.size()];
 		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*minTTT12);
-		AllenIntervalConstraint before1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,APSPSolver.INF));
+		AllenIntervalConstraint before1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,minTimeToTransition12));
 		before1.setFrom(newTrajectoryEnvelopes.get(0));
 		before1.setTo(newTrajectoryEnvelopes.get(1));
 		toReturn.addConstraint(before1);
@@ -334,7 +334,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 //			long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*(newTrajectoryEnvelopes.get(2).getTrajectory().getDTs()[0]-newTrajectoryEnvelopes.get(1).getTrajectory().getDTs()[newTrajectoryEnvelopes.get(1).getTrajectory().getDTs().length-1]));
 			double minTTT23 = var1.getTrajectory().getDTs()[var1sec1.size()+var1sec2.size()];
 			long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*minTTT23);
-			AllenIntervalConstraint before2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition23,APSPSolver.INF));
+			AllenIntervalConstraint before2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition23,minTimeToTransition23));
 			before2.setFrom(newTrajectoryEnvelopes.get(1));
 			before2.setTo(newTrajectoryEnvelopes.get(2));
 			toReturn.addConstraint(before2);
