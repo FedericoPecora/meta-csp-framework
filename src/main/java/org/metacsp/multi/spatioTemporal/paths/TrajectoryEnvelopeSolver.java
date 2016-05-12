@@ -36,6 +36,15 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	public TrajectoryEnvelopeSolver(long origin, long horizon) {
 		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon), new int[]{1,2});
 	}
+	
+	public TrajectoryEnvelope[] getTrajectoryEnvelopes(int robotID) {
+		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
+		for (Variable v : this.getVariables()) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+			if (te.getRobotID() == robotID) ret.add(te);
+		}
+		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
+	}
 
 	public TrajectoryEnvelope[] getRootTrajectoryEnvelopes() {
 		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
