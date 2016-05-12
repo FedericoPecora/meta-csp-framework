@@ -29,8 +29,7 @@ public class Trajectory {
 	public Trajectory(PoseSteering[] psa, double[] dts) {
 		this.psa = psa;
 		this.dts = new double[psa.length];
-		this.dts[0] = 0.0;
-		for (int i = 1; i < this.dts.length; i++) this.dts[i] = dts[i-1];
+		this.dts = dts;
 	}
 	
 	public Trajectory(String fileName) {
