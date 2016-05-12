@@ -79,6 +79,34 @@ public class Trajectory {
 		return getConstantAcceleration(percentComplete);
 	}
 	
+	public double getTimeLeftEstimate(Coordinate positionNow) {
+		int minIndex = 0;
+		double minDist = Double.MAX_VALUE;
+		for (int i = 0; i < this.getPositions().length; i++) {
+			if (this.getPositions()[i].distance(positionNow) < minDist) {
+				minDist = this.getPositions()[i].distance(positionNow);
+				minIndex = i;
+			}
+		}
+		return getTimeLeftEstimate(minIndex);
+	}
+
+	public double getTimeLeftEstimate(int sequenceNum) {
+		double timeCounter = 0.0;
+		for (int i = sequenceNum; i < this.getDTs().length; i++) {
+			timeCounter += this.getDTs()[i];
+		}
+		return timeCounter;
+	}
+	
+//	public double getTimeLeftEstimate(int sequenceNum, int endIndex) {
+//		double timeCounter = 0.0;
+//		for (int i = sequenceNum; i < endIndex; i++) {
+//			timeCounter += this.getDTs()[i];
+//		}
+//		return timeCounter;
+//	}
+
 	private void updateDts() {
 		double dt = 0.1;
 		ArrayList<Double> u = new ArrayList<Double>();

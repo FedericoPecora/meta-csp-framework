@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
@@ -59,6 +60,29 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public double getWidth() {
+		return width;
+	}
+	
+	public double getLength() {
+		return length;
+	}
+	
+	public double getDeltaW() {
+		return deltaW;
+	}
+	
+	public double getDeltaL() {
+		return deltaL;
+	}
+	
+	public void setFootprint(double w, double l, double dw, double dl) {
+		this.width = w;
+		this.length = l;
+		this.deltaW = dw;
+		this.deltaL = dl;
+	}
+	
 	public void addSubEnvelope(TrajectoryEnvelope se) {
 		if (this.subEnvelopes == null) this.subEnvelopes = new ArrayList<TrajectoryEnvelope>();
 		this.subEnvelopes.add(se);
@@ -80,6 +104,14 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return ret;
 	}
 	
+	public double getTimeLeftEstimate(int seqNum) {
+		return this.getTrajectory().getTimeLeftEstimate(seqNum);
+	}
+	
+	public double getPartialTimeLeftEstimate(int seqNum) {
+		return this.getGroundEnvelope(seqNum).getTimeLeftEstimate(seqNum);
+	}
+	
 	public TreeSet<TrajectoryEnvelope> getGroundEnvelopes() {
 		TreeSet<TrajectoryEnvelope> ret = new TreeSet<TrajectoryEnvelope>(new Comparator<TrajectoryEnvelope>() {
 			@Override
@@ -98,6 +130,16 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		}
 		else ret.add(this);
 		return ret;
+	}
+	
+	public TrajectoryEnvelope getGroundEnvelope(int seqNum) {
+		Coordinate currentPos = this.getTrajectory().getPositions()[seqNum];
+		GeometryFactory gf = new GeometryFactory();
+		Point point = gf.createPoint(currentPos);
+		for (TrajectoryEnvelope ge : this.getGroundEnvelopes()) {
+			if (((GeometricShapeDomain)ge.getEnvelopeVariable().getDomain()).getGeometry().contains(point)) return ge;
+		}
+		return this;
 	}
 	
 	public double[] getCTs() {

@@ -134,8 +134,11 @@ public class JTSDrawingPanel extends JPanel {
     	ArrayList<GeometricShapeVariable> tes = new ArrayList<GeometricShapeVariable>();
     	for (Variable v : cn.getVariables()) {
     		if (v instanceof TrajectoryEnvelope) {
-    			tes.add(((TrajectoryEnvelope)v).getEnvelopeVariable());
-    			tes.add(((TrajectoryEnvelope)v).getReferencePathVariable());
+    			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+    			if (!te.hasSubEnvelopes()) {
+    				tes.add(((TrajectoryEnvelope)v).getEnvelopeVariable());
+        			tes.add(((TrajectoryEnvelope)v).getReferencePathVariable());
+    			}
     		}
     	}
     	drawVariables(tes.toArray(new GeometricShapeVariable[tes.size()]));
