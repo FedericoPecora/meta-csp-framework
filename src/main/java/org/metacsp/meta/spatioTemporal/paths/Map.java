@@ -52,8 +52,11 @@ public class Map extends Schedulable {
 	@Override
 	public boolean isConflicting(Activity[] peak) {
 		if (peak.length < 2) return false;
-		GeometricShapeVariable poly1 = ((TrajectoryEnvelope)peak[0]).getEnvelopeVariable();
-		GeometricShapeVariable poly2 = ((TrajectoryEnvelope)peak[1]).getEnvelopeVariable();
+		TrajectoryEnvelope te1 = (TrajectoryEnvelope)peak[0];
+		TrajectoryEnvelope te2 = (TrajectoryEnvelope)peak[1];
+		if (te1.getRobotID() == te2.getRobotID()) return false;
+		GeometricShapeVariable poly1 = te1.getEnvelopeVariable();
+		GeometricShapeVariable poly2 = te2.getEnvelopeVariable();
 		Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
 		Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
 		boolean conflicting = shape1.intersects(shape2);
