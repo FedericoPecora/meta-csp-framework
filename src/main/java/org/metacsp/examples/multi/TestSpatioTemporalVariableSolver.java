@@ -46,7 +46,7 @@ public class TestSpatioTemporalVariableSolver {
 		
 		System.out.println(Arrays.toString(((DE9IMRelationSolver)solver.getConstraintSolvers()[1]).getAllImplicitRelations()));
 		
-		JTSDrawingPanel.drawVariables(var0.getSpatialVariable(), var1.getSpatialVariable());
+		JTSDrawingPanel.drawVariables("Geometries",var0.getSpatialVariable(), var1.getSpatialVariable());
 
 	}
 }

@@ -70,7 +70,7 @@ public class TestTrajectoryEnvelopeSchedulerThree {
 		Map map = new Map(null, null);		
 		metaSolver.addMetaConstraint(map);
 
-		JTSDrawingPanel.drawConstraintNetwork(solver.getConstraintNetwork());
+		JTSDrawingPanel.drawConstraintNetwork("Geometries before refinement",solver.getConstraintNetwork());
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 1: "+  refined1);
@@ -92,7 +92,7 @@ public class TestTrajectoryEnvelopeSchedulerThree {
 		printInfo(var1);
 		printInfo(var2);
 		
-		JTSDrawingPanel.drawConstraintNetwork(refined1);
+		JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined1);
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 	}
 	

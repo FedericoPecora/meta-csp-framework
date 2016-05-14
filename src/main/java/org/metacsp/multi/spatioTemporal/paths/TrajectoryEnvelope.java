@@ -328,7 +328,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	@Override
 	public String toString() {
-		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ")";
+		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ")";
 	}
 	
 //	@Override

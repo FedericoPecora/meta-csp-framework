@@ -59,9 +59,9 @@ public class TestSpatioTemporalVariableSolverOverlapsIntersects {
 		System.out.println("path 1 has " + var1.getDomain());
 		
 		System.out.println(Arrays.toString(((DE9IMRelationSolver)solver.getConstraintSolvers()[1]).getAllImplicitRelations()));
-		JTSDrawingPanel.drawVariables(var0.getEnvelopeVariable(), var1.getEnvelopeVariable(), var0.getReferencePathVariable(), var1.getReferencePathVariable());
-//		JTSDrawingPanel.drawVariables(var0.getEnvelopeVariable());
-//		JTSDrawingPanel.drawVariables(var1.getEnvelopeVariable());
+		JTSDrawingPanel.drawVariables("Geometries",var0.getEnvelopeVariable(), var1.getEnvelopeVariable(), var0.getReferencePathVariable(), var1.getReferencePathVariable());
+//		JTSDrawingPanel.drawVariables("Geometries",var0.getEnvelopeVariable());
+//		JTSDrawingPanel.drawVariables("Geometries",var1.getEnvelopeVariable());
 		
 	}
 }
