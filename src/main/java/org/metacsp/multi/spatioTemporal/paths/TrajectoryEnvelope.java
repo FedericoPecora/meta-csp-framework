@@ -330,7 +330,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public String toString() {
 		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ")";
 	}
-	
+		
 //	@Override
 //	public String toString() {
 //		TreeSet<TrajectoryEnvelope> subEnv = new TreeSet<TrajectoryEnvelope>();
