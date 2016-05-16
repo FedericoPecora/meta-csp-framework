@@ -29,6 +29,7 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.meta.symbolsAndTime.Schedulable;
 import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
@@ -40,9 +41,22 @@ import cern.colt.Arrays;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * A {@link MetaConstraint} for representing the fact that {@link TrajectoryEnvelope}s pertaining to different
+ * robots cannot overlap in time and in space.
+ * 
+ * @author Federico Pecora
+ *
+ */
 public class Map extends Schedulable {
-
 	
+	private static final long serialVersionUID = 1841609052418422805L;
+
+	/**
+	 * Create a new {@link Map} with given variable and value ordering heuristics.
+	 * @param varOH The variable ordering heuristic this {@link Map} should use (provide <code>null</code> none should be used).
+	 * @param valOH The value ordering heuristic this {@link Map} should use (provide <code>null</code> none should be used).
+	 */
 	public Map(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
 		this.setPeakCollectionStrategy(PEAKCOLLECTION.BINARY);

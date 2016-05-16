@@ -13,43 +13,73 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
+/**
+ * Represents a trajectory, namely, a path (sequence of {@link PoseSteering}s) plus a temporal profile.
+ * The latter is represented as fixed durations between between successive {@link PoseSteering}s along the path.
+ * 
+ * @author Federico Pecora
+ *
+ */
 public class Trajectory {
 	
 	private PoseSteering[] psa;
 	private double[] dts;
-	public static double MAX_SPEED = 3.0;
-	public static double MAX_ACCELERATION = 0.3;
+	private static double MAX_SPEED = 3.0;
+	private static double MAX_ACCELERATION = 0.3;
 	
+	/**
+	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s. The
+	 * temporal profile of the trajectory is computed via naive numeric resolution
+	 * assuming constant acceleration and a maximum speed.
+	 * @param psa The list of {@link PoseSteering}s used to build the path.
+	 */
 	public Trajectory(PoseSteering[] psa) {
 		this.psa = psa;
 		this.dts = new double[psa.length];
 		this.updateDts();
 	}
 
+	/**
+	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s and
+	 * the temporal profile of the {@link Trajectory}.
+	 * @param psa The list of {@link PoseSteering}s used to build the path.
+	 * @param dts The temporal profile of the {@link Trajectory} (times between successive points
+	 * along the path). The zero-th element is assumed to represent the time to transition from the
+	 * first point along the path to the second point along the path. The last element of this parameter
+	 * should be zero.
+	 */
 	public Trajectory(PoseSteering[] psa, double[] dts) {
 		this.psa = psa;
 		this.dts = new double[psa.length];
 		this.dts = dts;
 	}
 	
+	/**
+	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s that is read
+	 * from a file. The temporal profile of the trajectory is computed via naive numeric resolution
+	 * assuming constant acceleration and a maximum speed.
+	 * @param psa The path of a file pointing to the list of {@link PoseSteering}s used to build the path.
+	 */	
 	public Trajectory(String fileName) {
 		this.psa = readPath(fileName);
 		this.dts = new double[psa.length];
 		this.updateDts();
 	}
 	
+	/**
+	 * Get the temporal profile of this {@link Trajectory}.
+	 * @return The temporal profile of this {@link Trajectory}.
+	 */
 	public double[] getDTs() {
 		return dts;
 	}
-	
-	public double getStart() {
-		return dts[0];
-	}
 
-	public double getEnd() {
-		return dts[dts.length-1];
-	}
-
+	/**
+	 * Get the temporal profile of a portion of this this {@link Trajectory}.
+	 * @param from The index of the starting path point.
+	 * @param to The index of the last path point.
+	 * @return The temporal profile of a portion of this this {@link Trajectory}.
+	 */
 	public double[] getDts(int from, int to) {
 		double[] ret = new double[to-from];
 		for (int i = from; i < to; i++) {
@@ -78,6 +108,14 @@ public class Trajectory {
 		return getConstantAcceleration(percentComplete);
 	}
 	
+	/**
+	 * Get an estimate of the time left to move on this {@link Trajectory}
+	 * given the current position. The estimate is based on this {@link Trajectory}'s
+	 * temporal profile.
+	 * @param positionNow The position from which the estimate should be computed.
+	 * @return An estimate of the time left to move on this {@link Trajectory}
+	 * given the current position.
+	 */
 	public double getTimeLeftEstimate(Coordinate positionNow) {
 		int minIndex = 0;
 		double minDist = Double.MAX_VALUE;
@@ -90,6 +128,14 @@ public class Trajectory {
 		return getTimeLeftEstimate(minIndex);
 	}
 
+	/**
+	 * Get an estimate of the time left to move on this {@link Trajectory}
+	 * given the current path index. The estimate is based on this {@link Trajectory}'s
+	 * temporal profile.
+	 * @param sequenceNum The path index from which the estimate should be computed.
+	 * @return An estimate of the time left to move on this {@link Trajectory}
+	 * given the current path index.
+	 */
 	public double getTimeLeftEstimate(int sequenceNum) {
 		double timeCounter = 0.0;
 		for (int i = sequenceNum; i < this.getDTs().length; i++) {
@@ -151,10 +197,18 @@ public class Trajectory {
 //		return dts[dts.length-1];
 //	}
 
+	/**
+	 * Get the path (list of {@link PoseSteering}s) of this {@link Trajectory}.
+	 * @return The path (list of {@link PoseSteering}s) of this {@link Trajectory}.
+	 */
 	public PoseSteering[] getPoseSteering() {
 		return psa;
 	}
 	
+	/**
+	 * Get the list of positions in this {@link Trajectory}'s path.
+	 * @return The list of positions in this {@link Trajectory}'s path.
+	 */
 	public Coordinate[] getPositions() {
 		ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
 		for (PoseSteering ps : psa) {

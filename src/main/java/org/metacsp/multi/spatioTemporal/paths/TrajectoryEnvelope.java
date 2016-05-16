@@ -35,8 +35,8 @@ import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 /**
  * A {@link TrajectoryEnvelope} is a {@link MultiVariable} composed of an {@link AllenInterval} (temporal part)
- * and two {@link GeometricShapeVariable}s (two {@link GeometricShapeVariable}s, one representing the reference path, one
- * representing the envelope). Constraints of type {@link AllenIntervalConstraint} and
+ * and two {@link GeometricShapeVariable}s. One {@link GeometricShapeVariable} represents the reference path, the other
+ * represents the spatial envelope. Constraints of type {@link AllenIntervalConstraint} and
  * {@link DE9IMRelation} can be added to {@link TrajectoryEnvelope}s.
  * 
  * @author Federico Pecora
@@ -55,7 +55,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
 	private int robotID = -1;
 	
-	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+	private TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		// TODO Auto-generated constructor stub
 	}
@@ -76,6 +76,13 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return deltaL;
 	}
 	
+	/**
+	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope.
+	 * @param w The width of the robot's footprint (dimension along the perpendicular to the driving direction).
+	 * @param l The length of the robot's footprint (dimension along the driving direction).
+	 * @param dw Lateral displacement of the reference point of the robot (along the perpendicular to the driving direction).
+	 * @param dl Forward displacement of the reference point of the robot (along the driving direction).
+	 */
 	public void setFootprint(double w, double l, double dw, double dl) {
 		this.width = w;
 		this.length = l;
@@ -83,15 +90,27 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		this.deltaL = dl;
 	}
 	
+	/**
+	 * Add a sub-envelope to this {@link TrajectoryEnvelope}.
+	 * @param se A sub-envelope to add to this {@link TrajectoryEnvelope}.
+	 */
 	public void addSubEnvelope(TrajectoryEnvelope se) {
 		if (this.subEnvelopes == null) this.subEnvelopes = new ArrayList<TrajectoryEnvelope>();
 		this.subEnvelopes.add(se);
 	}
 	
+	/**
+	 * Assess whether this {@link TrajectoryEnvelope} has one or more sub-envelopes.
+	 * @return <code>true</code> iff this {@link TrajectoryEnvelope} has one or more sub-envelopes.
+	 */
 	public boolean hasSubEnvelopes() {
 		return this.subEnvelopes != null && !this.subEnvelopes.isEmpty();
 	}
 	
+	/**
+	 * Get the sub-envelopes of this {@link TrajectoryEnvelope}.
+	 * @return The sub-envelopes of this {@link TrajectoryEnvelope}.
+	 */
 	public ArrayList<TrajectoryEnvelope> getSubEnvelopes() {
 		return subEnvelopes;
 	}
@@ -104,14 +123,36 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return ret;
 	}
 	
+	/**
+	 * Get an estimate of the time left to move on the reference {@link Trajectory} of this {@link TrajectoryEnvelope}
+	 * given the current path index. The estimate is based on the reference {@link Trajectory}'s
+	 * temporal profile.
+	 * @param seqNum The path index from which the estimate should be computed.
+	 * @return An estimate of the time left to move on the reference {@link Trajectory}
+	 * of this {@link TrajectoryEnvelope}, given the current path index.
+	 */
 	public double getTimeLeftEstimate(int seqNum) {
 		return this.getTrajectory().getTimeLeftEstimate(seqNum);
 	}
-	
+
+	/**
+	 * Get an estimate of the time left to move on the reference {@link Trajectory} of this {@link TrajectoryEnvelope}
+	 * given the current path index. The estimate is based on the reference {@link Trajectory}'s
+	 * temporal profile. This method returns the time left on the ground {@link TrajectoryEnvelope} on which
+	 * the given path index lies.
+	 * @param seqNum The path index from which the estimate should be computed.
+	 * @return An estimate of the time left to move on the reference {@link Trajectory}
+	 * of this {@link TrajectoryEnvelope}, given the current path index.
+	 */
 	public double getPartialTimeLeftEstimate(int seqNum) {
 		return this.getGroundEnvelope(seqNum).getTimeLeftEstimate(seqNum);
 	}
 	
+	/**
+	 * Get the ground {@link TrajectoryEnvelope}s of this {@link TrajectoryEnvelope}, ordered 
+	 * by increasing start time.
+	 * @return The ground {@link TrajectoryEnvelope}s of this {@link TrajectoryEnvelope}.
+	 */
 	public TreeSet<TrajectoryEnvelope> getGroundEnvelopes() {
 		TreeSet<TrajectoryEnvelope> ret = new TreeSet<TrajectoryEnvelope>(new Comparator<TrajectoryEnvelope>() {
 			@Override
@@ -132,6 +173,11 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return ret;
 	}
 	
+	/**
+	 * Get a given ground {@link TrajectoryEnvelope}.
+	 * @param seqNum The index of the ground {@link TrajectoryEnvelope} to retrieve.
+	 * @return The ground {@link TrajectoryEnvelope} at the given index.
+	 */
 	public TrajectoryEnvelope getGroundEnvelope(int seqNum) {
 		Coordinate currentPos = this.getTrajectory().getPositions()[seqNum];
 		GeometryFactory gf = new GeometryFactory();
@@ -142,6 +188,12 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return this;
 	}
 	
+	/**
+	 * Get the start and end times of the path points representing beginning and ending of
+	 * ground {@link TrajectoryEnvelope}s of this {@link TrajectoryEnvelope}.
+	 * @return The start and end times of the path points representing beginning and ending of
+	 * ground {@link TrajectoryEnvelope}s of this {@link TrajectoryEnvelope}.
+	 */
 	public double[] getCTs() {
 		double[] ret = this.createCTVector();
 		TreeSet<TrajectoryEnvelope> rets = this.getGroundEnvelopes();
@@ -154,18 +206,34 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return ret;
 	}
 	
+	/**
+	 * Set the robot ID of this {@link TrajectoryEnvelope}.
+	 * @param robotID The robot ID of this {@link TrajectoryEnvelope}.
+	 */
 	public void setRobotID(int robotID) {
 		this.robotID = robotID;
 	}
 	
+	/**
+	 * Get the robot ID of this {@link TrajectoryEnvelope}.
+	 * @return The robot ID of this {@link TrajectoryEnvelope}.
+	 */
 	public int getRobotID() {
 		return this.robotID;
 	}
 	
+	/**
+	 * Set the super-envelope of this {@link TrajectoryEnvelope}.
+	 * @param superEnvelope The super-envelope of this {@link TrajectoryEnvelope}.
+	 */
 	public void setSuperEnvelope(TrajectoryEnvelope superEnvelope) {
 		this.superEnvelope = superEnvelope;
 	}
 	
+	/**
+	 * Assess whether this {@link TrajectoryEnvelope} has a super-envelope.
+	 * @return <code>true</code> iff this {@link TrajectoryEnvelope} has a super-envelope.
+	 */
 	public boolean hasSuperEnvelope() {
 		return this.superEnvelope == null;
 	}
@@ -174,10 +242,18 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //		return this.superEnvelope == null;
 //	}
 
+	/**
+	 * Set whether this {@link TrajectoryEnvelope} can be refined into sub-envelopes.
+	 * @param refinable Whether this {@link TrajectoryEnvelope} can be refined into sub-envelopes.
+	 */
 	public void setRefinable(boolean refinable) {
 		this.refinable = refinable;
 	}
 	
+	/**
+	 * Assess whether this {@link TrajectoryEnvelope} can be refined into sub-envelopes.
+	 * @return <code>true</code> iff this {@link TrajectoryEnvelope} can be refined into sub-envelopes.
+	 */
 	public boolean getRefinable() {
 		return this.refinable;
 	}
@@ -359,7 +435,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 
 	/**
-	 * Returns the spatial part of this {@link TrajectoryEnvelope} (envelope).
+	 * Returns the spatial part of this {@link TrajectoryEnvelope} (spatial envelope).
 	 * @return A {@link GeometricShapeVariable} representing the spatial part of this {@link TrajectoryEnvelope}.
 	 */
 	public GeometricShapeVariable getEnvelopeVariable() {

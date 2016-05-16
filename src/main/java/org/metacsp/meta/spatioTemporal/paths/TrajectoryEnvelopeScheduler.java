@@ -47,16 +47,32 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
+/**
+ * This class is used to backtrack over {@link TrajectoryEnvelope} conflicts (see the {@link Map} meta-constraint).
+ * @author Federico Pecora
+ *
+ */
 public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
 	private ArrayList<TrajectoryEnvelope> envelopesForScheduling = new ArrayList<TrajectoryEnvelope>();
 	private static final long serialVersionUID = 8551829132754804513L;
 	private HashMap<TrajectoryEnvelope,ArrayList<TrajectoryEnvelope>> refinedWith = new HashMap<TrajectoryEnvelope, ArrayList<TrajectoryEnvelope>>();
 
+	/**
+	 * Create a {@link TrajectoryEnvelopeScheduler} with a given origin and temporal horizon.
+	 * @param origin The origin of time.
+	 * @param horizon The temporal horizon.
+	 * @param animationTime Time between backtracking (0 if none).
+	 */
 	public TrajectoryEnvelopeScheduler(long origin, long horizon, long animationTime) {
 		super(new Class[] {AllenIntervalConstraint.class, DE9IMRelation.class}, animationTime, new TrajectoryEnvelopeSolver(origin, horizon));
 	}
 
+	/**
+	 * Create a {@link TrajectoryEnvelopeScheduler} with a given origin and temporal horizon.
+	 * @param origin The origin of time.
+	 * @param horizon The temporal horizon.
+	 */
 	public TrajectoryEnvelopeScheduler(long origin, long horizon) {
 		super(new Class[] {AllenIntervalConstraint.class, DE9IMRelation.class}, 0, new TrajectoryEnvelopeSolver(origin, horizon));
 	}
@@ -122,6 +138,13 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
 	}	
 
+	/**
+	 * Refine the {@link TrajectoryEnvelope}s maintained by the {@link TrajectoryEnvelopeSolver} underlying this
+	 * {@link TrajectoryEnvelopeScheduler}. This method splits {@link TrajectoryEnvelope}s that overlap in space.
+	 * @return A {@link ConstraintNetwork} containing the set of {@link TrajectoryEnvelope}s into which the existing
+	 * {@link TrajectoryEnvelope}s were refined. This {@link ConstraintNetwork} is empty if the existing {@link TrajectoryEnvelope}s
+	 * cannot be refined further.
+	 */
 	public ConstraintNetwork refineTrajectoryEnvelopes() {
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		

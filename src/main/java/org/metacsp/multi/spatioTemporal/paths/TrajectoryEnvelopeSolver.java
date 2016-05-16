@@ -2,6 +2,7 @@ package org.metacsp.multi.spatioTemporal.paths;
 
 import java.util.ArrayList;
 
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
@@ -37,6 +38,11 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon), new int[]{1,2});
 	}
 	
+	/**
+	 * Get all the {@link TrajectoryEnvelope}s in this solver's {@link ConstraintNetwork} pertaining to a particular robot.
+	 * @param robotID The ID of the robot for which the {@link TrajectoryEnvelope}s are desired.
+	 * @return All the {@link TrajectoryEnvelope}s in this solver's {@link ConstraintNetwork} pertaining to a particular robot.
+	 */
 	public TrajectoryEnvelope[] getTrajectoryEnvelopes(int robotID) {
 		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
 		for (Variable v : this.getVariables()) {
@@ -46,6 +52,10 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
 	}
 
+	/**
+	 * Get all {@link TrajectoryEnvelope}s that have no super-envelopes.
+	 * @return All {@link TrajectoryEnvelope}s that have no super-envelopes.
+	 */
 	public TrajectoryEnvelope[] getRootTrajectoryEnvelopes() {
 		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
 		for (Variable var : this.getVariables()) {
@@ -68,7 +78,8 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	}
 	
 	/**
-	 * Returns the {@link AllenIntervalNetworkSolver} which propagates temporal constraints (of type {@link AllenIntervalConstraint})
+	 * Returns the {@link AllenIntervalNetworkSolver} which propagates temporal constraints
+	 * (of type {@link AllenIntervalConstraint})
 	 * among the temporal parts ({@link AllenInterval}s) of {@link SpatioTemporalVariable}s.
 	 * @return The temporal solver responsible for propagating the temporal constraints among
 	 * the temporal parts of {@link SpatioTemporalVariable}s.
