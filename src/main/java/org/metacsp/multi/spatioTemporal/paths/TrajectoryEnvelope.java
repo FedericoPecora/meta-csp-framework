@@ -55,7 +55,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
 	private int robotID = -1;
 	
-	private TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
+	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		// TODO Auto-generated constructor stub
 	}
