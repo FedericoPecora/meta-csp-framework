@@ -80,4 +80,4 @@ dependencies {
 * <a href="http://www.oru.se/">&Ouml;rebro University</a>
 * <a href="http://project-race.eu/">FP7 Project RACE (Robustness by Autonomous Competence Enhancement)</a>
 * <a href="http://cordis.europa.eu/fp7/home_en.html">The 7<sup>th</sup> EU Framework Programme</a>
-* <a href="http://www.kk-stiftelsen.org/">The Swedish Knowledge Foundation</a>
+* <a href="http://kks.se">The Swedish Knowledge Foundation</a>
