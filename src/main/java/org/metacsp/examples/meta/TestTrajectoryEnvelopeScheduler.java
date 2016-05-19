@@ -50,13 +50,13 @@ public class TestTrajectoryEnvelopeScheduler {
 		TrajectoryEnvelope var1 = (TrajectoryEnvelope)vars[1];
 //		TrajectoryEnvelope var2 = (TrajectoryEnvelope)vars[2];
 		
-		Trajectory traj0 = new Trajectory("/home/fpa/paths/path1.path");
+		Trajectory traj0 = new Trajectory("paths/path1.path");
 		var0.setTrajectory(traj0);
 
-		Trajectory traj1 = new Trajectory("/home/fpa/paths/path3.path");
+		Trajectory traj1 = new Trajectory("paths/path3.path");
 		var1.setTrajectory(traj1);
 
-//		Trajectory traj2 = new Trajectory("/home/fpa/paths/path4.path");
+//		Trajectory traj2 = new Trajectory("paths/path4.path");
 //		var2.setTrajectory(traj2);
 		
 		var0.setRobotID(1);
