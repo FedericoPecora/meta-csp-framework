@@ -244,7 +244,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				else {
 					var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
 					var1sec1.remove(var1sec1.size()-1);
-					logger.info("Added to start... (1)");
+//					logger.info("Added to start... (1)");
 				}
 			} catch (IndexOutOfBoundsException e) { skipSec1 = true; done = true; }
 		}
@@ -264,7 +264,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				else {
 					var1sec2.add(var1sec3.get(0));
 					var1sec3.remove(0);
-					logger.info("Added to end... (1)");
+//					logger.info("Added to end... (1)");
 				}
 			} catch (IndexOutOfBoundsException e) { skipSec3 = true; done = true; }
 		}
@@ -279,17 +279,17 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			if (var1sec1.size() > 2) {
 				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
 				var1sec1.remove(var1sec1.size()-1);
-				logger.info("Added to start... (2)");
+//				logger.info("Added to start... (2)");
 			}
 			else if (var1sec3.size() > 2) {
 				var1sec2.add(var1sec3.get(0));
 				var1sec3.remove(0);				
-				logger.info("Added to end... (2)");
+//				logger.info("Added to end... (2)");
 			}
 		}
 
 		if ((skipSec1 && skipSec3) || var1sec2.size() < 2) {
-			logger.info("Intersection " + var1 + " with " + var2 + " too small - skipping");
+			logger.fine("Intersection " + var1 + " with " + var2 + " too small - skipping");
 			return toReturn;
 		}
 
@@ -297,10 +297,6 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		ArrayList<Trajectory> newTrajectories = new ArrayList<Trajectory>();
 		ArrayList<TrajectoryEnvelope> newTrajectoryEnvelopes = new ArrayList<TrajectoryEnvelope>();
 				
-//		System.out.println("var1sec1.size() = " + var1sec1.size());
-//		System.out.println("var1sec2.size() = " + var1sec2.size());
-//		System.out.println("var1sec3.size() = " + var1sec3.size());
-//		System.out.println("TOT: " + var1.getTrajectory().getPoseSteering().length);
 		if (!skipSec1) {
 			newTrajectories.add(new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]),var1.getTrajectory().getDts(0, var1sec1.size())));
 			newTrajectories.add(new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(var1sec1.size(), var1sec1.size()+var1sec2.size())));
@@ -329,11 +325,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			te.setSuperEnvelope(var1);
 			te.setRobotID(var1.getRobotID());
 			var1.addSubEnvelope(te);
-//			((Map)this.getMetaConstraints()[0]).setUsage(te);
 			newTrajectoryEnvelopes.add(te);			
 		}
-
-//		System.out.println("REFINEMENT (w/ " + var2 + "): " + var1 + " --> " + newTrajectoryEnvelopes);
 
 		AllenIntervalConstraint starts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
 		starts.setFrom(newTrajectoryEnvelopes.get(0));
@@ -345,7 +338,6 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		finishes.setTo(var1);
 		toReturn.addConstraint(finishes);
 
-//		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*(newTrajectoryEnvelopes.get(1).getTrajectory().getDTs()[0]-newTrajectoryEnvelopes.get(0).getTrajectory().getDTs()[newTrajectoryEnvelopes.get(0).getTrajectory().getDTs().length-1]));
 		double minTTT12 = var1.getTrajectory().getDTs()[var1sec1.size()];
 		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*minTTT12);
 		AllenIntervalConstraint before1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,minTimeToTransition12));
@@ -354,7 +346,6 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		toReturn.addConstraint(before1);
 
 		if (newTrajectoryEnvelopes.size() > 2) {
-//			long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*(newTrajectoryEnvelopes.get(2).getTrajectory().getDTs()[0]-newTrajectoryEnvelopes.get(1).getTrajectory().getDTs()[newTrajectoryEnvelopes.get(1).getTrajectory().getDTs().length-1]));
 			double minTTT23 = var1.getTrajectory().getDTs()[var1sec1.size()+var1sec2.size()];
 			long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*minTTT23);
 			AllenIntervalConstraint before2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition23,minTimeToTransition23));
