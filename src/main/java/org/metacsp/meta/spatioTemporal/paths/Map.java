@@ -60,7 +60,7 @@ public class Map extends Schedulable {
 	public Map(VariableOrderingH varOH, ValueOrderingH valOH) {
 		super(varOH, valOH);
 		this.setPeakCollectionStrategy(PEAKCOLLECTION.BINARY);
-		logger.setLevel(Level.FINEST);
+//		logger.setLevel(Level.FINEST);
 	}
 
 	@Override

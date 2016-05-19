@@ -98,17 +98,17 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 			return true;
 		}
 		if (removedConstraints) {
-			logger.info("Propagation skipped because only removing constriants");
+			logger.fine("Propagation skipped because only removing constriants");
 			removedConstraints = false;
 			return true;
 		}
 		if (addedVariables) {
-			logger.info("Propagation skipped because only adding variables");
+			logger.fine("Propagation skipped because only adding variables");
 			addedVariables = false;
 			return true;
 		}
 		if (removedVariables) {
-			logger.info("Propagation skipped because only removing variables");
+			logger.fine("Propagation skipped because only removing variables");
 			removedVariables = false;
 			return true;
 		}
@@ -116,7 +116,7 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 	}
 
 	private boolean propagateEdge(DE9IMRelation con) {
-		logger.info("Edge propagation performed");
+		logger.fine("Edge propagation performed");
 		GeometricShapeVariable g1 = (GeometricShapeVariable)con.getFrom();
 		GeometricShapeVariable g2 = (GeometricShapeVariable)con.getTo();
 		//Are explicit (given) relations compatible with implicit ones?
@@ -135,7 +135,7 @@ public class DE9IMRelationSolver extends ConstraintSolver {
 	}
 
 	private boolean propagateFull() {
-		logger.info("Full propagation performed");
+		logger.fine("Full propagation performed");
 		Variable[] vars = this.getVariables();
 		for (int i = 0; i < vars.length; i++) {
 			GeometricShapeVariable g1 = (GeometricShapeVariable)vars[i];

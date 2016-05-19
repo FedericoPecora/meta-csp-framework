@@ -373,8 +373,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		duration.setFrom(this);
 		duration.setTo(this);
 		boolean conAdd = this.getConstraintSolver().addConstraint(duration);
-		if (conAdd) logger.info("Added duration constriant " + duration);
-		else logger.info("Failed to add duration constriant " + duration);
+		if (conAdd) logger.fine("Added duration constriant " + duration);
+		else logger.severe("Failed to add duration constriant " + duration);
 	}
 	
 	public Trajectory getTrajectory() {
