@@ -20,6 +20,7 @@ import java.awt.Paint;
 import java.awt.Rectangle; 
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform; 
 import java.util.ArrayList; 
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 public class JTSDrawingPanel extends JPanel { 
     private static final int MARGIN = 5; 
     private HashMap<Integer,Geometry> geometries = new HashMap<Integer,Geometry>(); 
+    private HashMap<Integer,Boolean> emptyGeoms = new HashMap<Integer,Boolean>(); 
     private AffineTransform geomToScreen; 
 
     public void addGeometry(int id, Geometry geom) { 
@@ -48,6 +50,32 @@ public class JTSDrawingPanel extends JPanel {
     	  int type = AlphaComposite.SRC_OVER;
     	  return(AlphaComposite.getInstance(type, alpha));
     	 }
+    
+    private void drawText(Graphics2D g2d, String text, int x, int y, Paint polyPaint, boolean empty) {
+//      g2d.setPaint(defaultPaint);	
+    	g2d.setComposite(makeComposite(1.0f));
+    	g2d.setPaint(polyPaint); 
+    	AffineTransform orig = g2d.getTransform();
+//    	g2d.setTransform(geomToScreen);
+    	AffineTransform newTrans = new AffineTransform(geomToScreen);
+    	newTrans.translate(x,y);
+    	newTrans.scale(1/geomToScreen.getScaleX(), 1/geomToScreen.getScaleY());
+    	g2d.setTransform(newTrans);
+    	Font f = new Font("TimesRoman", Font.PLAIN, 36);
+    	if (!empty) {
+//	    	g2d.setFont(f); 
+//	    	g2d.drawString(text, x, y);
+    		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
+    		Shape shape = tl.getOutline(null);
+    		g2d.fill(shape);
+    	}
+    	else {
+    		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
+    		Shape shape = tl.getOutline(null);
+    		g2d.draw(shape);
+    	}
+    	g2d.setTransform(orig);
+    }
     
     @Override 
     protected void paintComponent(Graphics g) { 
@@ -65,6 +93,7 @@ public class JTSDrawingPanel extends JPanel {
             
             for (Entry<Integer,Geometry> e : geometries.entrySet()) { 
             	Geometry geom = e.getValue();
+            	boolean empty = emptyGeoms.get(e.getKey());
             	ShapeWriter writer = new ShapeWriter();
             	Shape shape = writer.toShape(geom);
             	Shape newShape = geomToScreen.createTransformedShape(shape);
@@ -72,17 +101,13 @@ public class JTSDrawingPanel extends JPanel {
                 	Paint polyPaint = Color.getHSBColor((float) Math.random(), .6f, .6f);
                 	g2d.setComposite(makeComposite(0.5f));
                     g2d.setPaint(polyPaint); 
-                    g2d.fill(newShape); 
+                    if (empty) g2d.draw(newShape);
+                    else g2d.fill(newShape);
                     
                     //Draw label
-//                    g2d.setPaint(defaultPaint);
-                	g2d.setComposite(makeComposite(1.0f));
-                    g2d.setPaint(polyPaint); 
-                    AffineTransform orig = g2d.getTransform();
-                    g2d.setTransform(geomToScreen);
-                    g2d.setFont(new Font("TimesRoman", Font.PLAIN, 2)); 
-                    g2d.drawString(""+e.getKey(), (int)(geom.getCentroid().getX()), (int)(geom.getCentroid().getY()));
-                    g2d.setTransform(orig);
+                    String text = ""+e.getKey();
+                    drawText(g2d, text, (int)(geom.getCentroid().getX()), (int)(geom.getCentroid().getY()), polyPaint, empty);
+                    
                 } else {
                     g2d.setPaint(defaultPaint); 
                     g2d.draw(newShape);
@@ -132,14 +157,28 @@ public class JTSDrawingPanel extends JPanel {
         return env; 
     } 
 
+    public static void drawVariables(String title, boolean[] empty, GeometricShapeVariable[] vars) {
+        JTSDrawingPanel panel = new JTSDrawingPanel(); 
+        JFrame frame = new JFrame(title); 
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        frame.add(panel); 
+        frame.setSize(500, 500);
+        for (int i = 0; i < vars.length; i++) {
+        	panel.emptyGeoms.put(vars[i].getID(), empty[i]);
+        	panel.addGeometry(vars[i].getID(),((GeometricShapeDomain)vars[i].getDomain()).getGeometry());
+        }
+        frame.setVisible(true);     	
+    }
+
     public static void drawVariables(String title, GeometricShapeVariable ... vars) {
         JTSDrawingPanel panel = new JTSDrawingPanel(); 
         JFrame frame = new JFrame(title); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.add(panel); 
         frame.setSize(500, 500); 
-        for (GeometricShapeVariable var : vars) {
-        	panel.addGeometry(var.getID(),((GeometricShapeDomain)var.getDomain()).getGeometry());
+        for (int i = 0; i < vars.length; i++) {
+        	panel.emptyGeoms.put(vars[i].getID(), false);
+        	panel.addGeometry(vars[i].getID(),((GeometricShapeDomain)vars[i].getDomain()).getGeometry());
         }
         frame.setVisible(true);     	
     }
@@ -158,32 +197,32 @@ public class JTSDrawingPanel extends JPanel {
     	drawVariables(title, tes.toArray(new GeometricShapeVariable[tes.size()]));
     }
         
-    public static void main(String[] args) throws Exception { 
-        JTSDrawingPanel panel = new JTSDrawingPanel(); 
-        JFrame frame = new JFrame("Draw geometries"); 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        frame.add(panel); 
-        frame.setSize(500, 500); 
-
-        WKTReader reader = new WKTReader(); 
-
-        LineString line = (LineString) reader.read( 
-                "LINESTRING(20 20, 20 25, 25 25, " + 
-                "25 15, 15 15, 15 30, 30 30, 30 10, " + 
-                "10 10, 10 35, 35 35, 35 5)"); 
-        panel.addGeometry(1,line); 
-
-        line = (LineString) reader.read("LINESTRING(-10 40, 5 50, 20 40, 35 50, 50 40)"); 
-        panel.addGeometry(2,line); 
-
-        Polygon poly = (Polygon) reader.read( 
-                "POLYGON((-10 -10, 0 0, 40 0, 50 -10, 40 -20, 0 -20, -10 -10), " + 
-                "(0 -10, 5 -5, 10 -10, 5 -15, 0 -10), " + 
-                "(30 -10, 35 -5, 40 -10, 35 -15, 30 -10))"); 
-
-        panel.addGeometry(4,poly); 
-
-        frame.setVisible(true); 
-
-    } 
+//    public static void main(String[] args) throws Exception { 
+//        JTSDrawingPanel panel = new JTSDrawingPanel(); 
+//        JFrame frame = new JFrame("Draw geometries"); 
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+//        frame.add(panel); 
+//        frame.setSize(500, 500); 
+//
+//        WKTReader reader = new WKTReader(); 
+//
+//        LineString line = (LineString) reader.read( 
+//                "LINESTRING(20 20, 20 25, 25 25, " + 
+//                "25 15, 15 15, 15 30, 30 30, 30 10, " + 
+//                "10 10, 10 35, 35 35, 35 5)"); 
+//        panel.addGeometry(1,line); 
+//
+//        line = (LineString) reader.read("LINESTRING(-10 40, 5 50, 20 40, 35 50, 50 40)"); 
+//        panel.addGeometry(2,line); 
+//
+//        Polygon poly = (Polygon) reader.read( 
+//                "POLYGON((-10 -10, 0 0, 40 0, 50 -10, 40 -20, 0 -20, -10 -10), " + 
+//                "(0 -10, 5 -5, 10 -10, 5 -15, 0 -10), " + 
+//                "(30 -10, 35 -5, 40 -10, 35 -15, 30 -10))"); 
+//
+//        panel.addGeometry(4,poly); 
+//
+//        frame.setVisible(true); 
+//
+//    } 
 } 
