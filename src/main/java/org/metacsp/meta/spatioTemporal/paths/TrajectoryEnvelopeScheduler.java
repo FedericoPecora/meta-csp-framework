@@ -41,6 +41,7 @@ import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelopeSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.UI.JTSDrawingPanel;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -221,15 +222,25 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			Coordinate coord = var1.getTrajectory().getPositions()[i];
 			PoseSteering ps = var1.getTrajectory().getPoseSteering()[i];
 			Point point = gf.createPoint(coord);
-			if (!intersectionse1se2.contains(point) && var1sec2.isEmpty()) {
+			Geometry fp = var1.makeFootprint(ps);
+			if (!intersectionse1se2.intersects(fp) && var1sec2.isEmpty()) {
 				var1sec1.add(ps);
 			}
-			else if (intersectionse1se2.contains(point)) {
+			else if (intersectionse1se2.intersects(fp)) {
 				var1sec2.add(ps);
 			}
-			else if (!intersectionse1se2.contains(point) && !var1sec2.isEmpty()) {
+			else if (!intersectionse1se2.intersects(fp) && !var1sec2.isEmpty()) {
 				var1sec3.add(ps);
 			}
+//			if (!intersectionse1se2.contains(point) && var1sec2.isEmpty()) {
+//				var1sec1.add(ps);
+//			}
+//			else if (intersectionse1se2.contains(point)) {
+//				var1sec2.add(ps);
+//			}
+//			else if (!intersectionse1se2.contains(point) && !var1sec2.isEmpty()) {
+//				var1sec3.add(ps);
+//			}
 		}
 
 		boolean skipSec1 = false;

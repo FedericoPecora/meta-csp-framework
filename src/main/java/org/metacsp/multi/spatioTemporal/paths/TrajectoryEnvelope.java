@@ -30,7 +30,10 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
+import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
+import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducer;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 /**
@@ -356,12 +359,15 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 				prevPoly = rect;
 			}
 		}
+//		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
+//		return ret.getCoordinates();
 		return onePoly.getCoordinates();
 	}
 
 	public void setTrajectory(Trajectory traj) {
 		this.trajectory = traj;
-		this.setDomain(new LineStringDomain(this,traj.getPositions()));
+		LineStringDomain lsd = new LineStringDomain(this,traj.getPositions());
+		this.setDomain(lsd);
 		PolygonalDomain env = new PolygonalDomain(null,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
