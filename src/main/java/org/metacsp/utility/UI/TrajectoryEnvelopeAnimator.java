@@ -126,7 +126,18 @@ public class TrajectoryEnvelopeAnimator {
 			@Override
 			public void keyReleased(KeyEvent e) { }
 			@Override
-			public void keyPressed(KeyEvent e) { }
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_END) {
+					timeL = getHorizon();
+					updateTime();
+					updateValue();					
+				}
+				else if (e.getKeyCode() == KeyEvent.VK_HOME) {
+					timeL = getOrigin();
+					updateTime();
+					updateValue();					
+				}
+			}
 		};
 		
 		frame.addMouseListener(ml);
