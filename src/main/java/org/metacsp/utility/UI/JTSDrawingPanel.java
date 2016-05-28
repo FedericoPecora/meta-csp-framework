@@ -173,13 +173,6 @@ public class JTSDrawingPanel extends JPanel {
 	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty) {
 		g2d.setComposite(makeComposite(1.0f));
 		g2d.setPaint(polyPaint); 
-
-//		AffineTransform orig = g2d.getTransform();
-//		AffineTransform newTrans = new AffineTransform(geomToScreen);
-//		newTrans.translate(x,y);
-//		newTrans.scale(1/geomToScreen.getScaleX(), 1/geomToScreen.getScaleY());
-//		g2d.setTransform(newTrans);
-		
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
 		newTrans.translate(x, y);
 		Font f = new Font("TimesRoman", Font.PLAIN, 3);
@@ -188,8 +181,6 @@ public class JTSDrawingPanel extends JPanel {
 		Shape newShape = newTrans.createTransformedShape(shape);
 		if (!empty) g2d.fill(newShape);
 		else g2d.draw(newShape);
-
-//		g2d.setTransform(orig);
 	}
 
 	@Override 
