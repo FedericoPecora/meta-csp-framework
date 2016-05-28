@@ -28,6 +28,22 @@ public class Trajectory {
 	private static double MAX_ACCELERATION = 0.3;
 	
 	/**
+	 * Create a new {@link Trajectory} given a list of {@link Pose}s. The
+	 * temporal profile of the trajectory is computed via naive numeric resolution
+	 * assuming constant acceleration and a maximum speed.
+	 * @param pa The list of {@link Pose}s used to build the path.
+	 */
+	public Trajectory(Pose[] pa) {
+		this.psa = new PoseSteering[pa.length];
+		for (int i = 0; i < pa.length; i++) {
+			PoseSteering ps = new PoseSteering(pa[i].getX(), pa[i].getY(), pa[i].getTheta(), 0.0);
+			this.psa[i] = ps;
+		}
+		this.dts = new double[psa.length];
+		this.updateDts();
+	}
+	
+	/**
 	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s. The
 	 * temporal profile of the trajectory is computed via naive numeric resolution
 	 * assuming constant acceleration and a maximum speed.
@@ -39,6 +55,25 @@ public class Trajectory {
 		this.updateDts();
 	}
 
+	/**
+	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s and
+	 * the temporal profile of the {@link Trajectory}.
+	 * @param pa The list of {@link PoseSteering}s used to build the path.
+	 * @param dts The temporal profile of the {@link Trajectory} (times between successive points
+	 * along the path). The zero-th element is assumed to represent the time to transition from the
+	 * first point along the path to the second point along the path. The last element of this parameter
+	 * should be zero.
+	 */
+	public Trajectory(Pose[] pa, double[] dts) {
+		this.psa = new PoseSteering[pa.length];
+		for (int i = 0; i < pa.length; i++) {
+			PoseSteering ps = new PoseSteering(pa[i].getX(), pa[i].getY(), pa[i].getTheta(), 0.0);
+			this.psa[i] = ps;
+		}
+		this.dts = new double[psa.length];
+		this.dts = dts;
+	}
+	
 	/**
 	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s and
 	 * the temporal profile of the {@link Trajectory}.
@@ -235,5 +270,5 @@ public class Trajectory {
 		catch (FileNotFoundException e) { e.printStackTrace(); }
 		return ret.toArray(new PoseSteering[ret.size()]);
 	}
-	
+		
 }

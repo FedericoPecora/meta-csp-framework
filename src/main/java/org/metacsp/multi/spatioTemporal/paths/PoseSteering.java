@@ -61,6 +61,17 @@ public class PoseSteering {
 	public double getSteering() {
 		return this.steering;
 	}
+	
+	/**
+	 * Computes the {@link PoseSteering} between this {@link PoseSteering} and a given {@link PoseSteering} via bilinear interpolation.
+	 * @param p2 The second {@link PoseSteering} used for interpolation.
+	 * @param ratio Parameter in [0,1] used for bilinear interpolation.
+	 * @return The {@link PoseSteering} between this {@link PoseSteering} and a given {@link PoseSteering} via bilinear interpolation.
+	 */
+	public PoseSteering interpolate(PoseSteering p2, double ratio) {
+		Pose interp = this.getPose().interpolate(p2.getPose(), ratio);		
+		return new PoseSteering(interp.getX(), interp.getY(), interp.getTheta(), Pose.lerpDegrees(getSteering(),p2.getSteering(),ratio));
+	}
 
 }
 

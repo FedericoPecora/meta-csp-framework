@@ -19,6 +19,7 @@ import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatial.DE9IM.LineStringDomain;
+import org.metacsp.multi.spatial.DE9IM.PointDomain;
 import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
@@ -177,9 +178,10 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 	/**
-	 * Get a given ground {@link TrajectoryEnvelope}.
-	 * @param seqNum The index of the ground {@link TrajectoryEnvelope} to retrieve.
-	 * @return The ground {@link TrajectoryEnvelope} at the given index.
+	 * Get the ground {@link TrajectoryEnvelope} in which the robot will be a the given sequence number along
+	 * the trajectory.
+	 * @param seqNum The index of sequence number which the returned ground {@link TrajectoryEnvelope} should contain.
+	 * @return The ground {@link TrajectoryEnvelope} at the given index in the reference {@link Trajectory}.
 	 */
 	public TrajectoryEnvelope getGroundEnvelope(int seqNum) {
 		Coordinate currentPos = this.getTrajectory().getPositions()[seqNum];
@@ -189,6 +191,65 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			if (((GeometricShapeDomain)ge.getEnvelopeVariable().getDomain()).getGeometry().contains(point)) return ge;
 		}
 		return this;
+	}
+
+
+	/**
+	 * Get the ground {@link TrajectoryEnvelope} in which the robot will be
+	 * at a given time. Returns <code>null</code> if the robot will not be in this
+	 * {@link TrajectoryEnvelope} at the given time.
+	 * @param time The time at which to return the {@link TrajectoryEnvelope}.
+	 * @return The ground {@link TrajectoryEnvelope} in which the robot will be
+	 * at a given time.
+	 */
+	public TrajectoryEnvelope getGroundEnvelope(long time) {
+		if (this.getTemporalVariable().getEST() > time || this.getTemporalVariable().getEET() < time) return null;
+		if (!this.hasSubEnvelopes()) return this;
+		for (TrajectoryEnvelope te : this.getGroundEnvelopes()) {
+			if (te.getTemporalVariable().getEST() <= time) {
+				if (te.getTemporalVariable().getEET() >= time) {
+					return te;
+				}				
+				else if (this.getGroundEnvelopes().higher(te) != null) {
+					if (this.getGroundEnvelopes().higher(te).getTemporalVariable().getEST() >= time) {
+						return this.getGroundEnvelopes().higher(te);
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the {@link PoseSteering} along the {@link Trajectory} where the robot will be
+	 * at a given time. Returns <code>null</code> if the robot will not be in this
+	 * {@link TrajectoryEnvelope} at the given time.
+	 * @param time The time at which to return the {@link PoseSteering}.
+	 * @return The {@link PoseSteering} along the {@link Trajectory} where the robot will be
+	 * at a given time.
+	 */
+	public PoseSteering getPoseSteering(long time) {
+		long startTime = this.getTemporalVariable().getEST();
+		long endTime = this.getTemporalVariable().getEET();
+		if (time  < startTime || time > endTime) return null;
+		int index = 0;
+		int previousIndex = 0;
+		long scannedTime = startTime;
+		long prevTime = startTime;
+		while (time > scannedTime) {
+			try {
+				prevTime = scannedTime;
+				previousIndex = index;
+				scannedTime += (long)(this.getTrajectory().getDTs()[++index]*RESOLUTION);
+			}
+			catch(ArrayIndexOutOfBoundsException e) {
+				return this.getTrajectory().getPoseSteering()[--index];
+			}
+		}
+		PoseSteering previousPS = this.getTrajectory().getPoseSteering()[previousIndex];
+		PoseSteering nextPS = this.getTrajectory().getPoseSteering()[index];
+		double ratio = ((double)time-(double)prevTime)/((double)scannedTime-(double)prevTime);
+		return previousPS.interpolate(nextPS, ratio);
 	}
 	
 	/**
@@ -327,10 +388,22 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //		return onePoly.getCoordinates();
 //	}
 
+	/**
+	 * Returns a {@link Geometry} representing the footprint of the robot in a given {@link PoseSteering}.
+	 * @param ps The pose and steering used to create the footprint.
+	 * @return A {@link Geometry} representing the footprint of the robot in a given {@link PoseSteering}.
+	 */
 	public Geometry makeFootprint(PoseSteering ps) {
 		return makeFootprint(ps.getX(), ps.getY(), ps.getTheta());
 	}
 	
+	/**
+	 * Returns a {@link Geometry} representing the footprint of the robot in a given pose.
+	 * @param x The x coordinate of the pose used to create the footprint.
+	 * @param y The y coordinate of the pose used to create the footprint.
+	 * @param theta The orientation of the pose used to create the footprint.
+	 * @return A {@link Geometry} representing the footprint of the robot in a given pose.
+	 */
 	public Geometry makeFootprint(double x, double y, double theta) {
 		AffineTransformation at = new AffineTransformation();
 		at.rotate(theta);
@@ -364,10 +437,20 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return onePoly.getCoordinates();
 	}
 
+	/**
+	 * Set the {@link Trajectory} of this {@link TrajectoryEnvelope}.
+	 * @param traj The {@link Trajectory} of this {@link TrajectoryEnvelope}.
+	 */
 	public void setTrajectory(Trajectory traj) {
 		this.trajectory = traj;
-		LineStringDomain lsd = new LineStringDomain(this,traj.getPositions());
-		this.setDomain(lsd);
+		if (traj.getPoseSteering().length == 1) {
+			PointDomain pd = new PointDomain(this, traj.getPositions()[0]);
+			this.setDomain(pd);
+		}
+		else {
+			LineStringDomain lsd = new LineStringDomain(this,traj.getPositions());
+			this.setDomain(lsd);
+		}
 		PolygonalDomain env = new PolygonalDomain(null,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
@@ -383,6 +466,10 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		else logger.severe("Failed to add duration constriant " + duration);
 	}
 	
+	/**
+	 * Get the {@link Trajectory} of this {@link TrajectoryEnvelope}.
+	 * @return The {@link Trajectory} of this {@link TrajectoryEnvelope}.
+	 */
 	public Trajectory getTrajectory() {
 		return trajectory;
 	}
@@ -394,13 +481,17 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //		return ret;
 //	}
 	
+	/**
+	 * Get the length of the {@link Trajectory} underlying this {@link TrajectoryEnvelope}.
+	 * @return The length of the {@link Trajectory} underlying this {@link TrajectoryEnvelope}.
+	 */
 	public int getPathLength() {
 		return this.trajectory.getPoseSteering().length;
 	}
 	
 	@Override
 	public void setDomain(Domain d) {
-		if (d instanceof LineStringDomain) {
+		if (d instanceof LineStringDomain || d instanceof PointDomain) {
 			this.getInternalVariables()[1].setDomain(d);
 		}
 		else if (d instanceof PolygonalDomain) {
@@ -433,7 +524,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 
 	/**
-	 * Returns the spatial part of this {@link TrajectoryEnvelope} (reference path).
+	 * Returns the spatial part of this {@link TrajectoryEnvelope} (reference path or point). Returns a
+	 * {@link GeometricShapeVariable} whose domain is either a {@link LineStringDomain} or a {@link PointDomain}.
 	 * @return A {@link GeometricShapeVariable} representing the spatial part of this {@link TrajectoryEnvelope}.
 	 */
 	public GeometricShapeVariable getReferencePathVariable() {

@@ -60,6 +60,22 @@ public class AllenIntervalNetworkSolver extends MultiConstraintSolver {
 			stpSolver = new APSPSolver(origin, horizon);
 		return new ConstraintSolver[] {stpSolver};
 	}
+	
+	/**
+	 * Get the origin of time.
+	 * @return The origin of time.
+	 */
+	public long getOrigin() {
+		return ((APSPSolver)this.getConstraintSolvers()[0]).getO();
+	}
+
+	/**
+	 * Get the temporal horizon.
+	 * @return The temporal horizon.
+	 */
+	public long getHorizon() {
+		return ((APSPSolver)this.getConstraintSolvers()[0]).getH();
+	}
 
 	/**
 	 * Gets the minimum and maximum allowed distance between a pair of {@link TimePoint}s.

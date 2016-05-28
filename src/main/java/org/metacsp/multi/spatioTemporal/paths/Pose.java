@@ -1,5 +1,9 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
+import javafx.geometry.Pos;
+
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
  * Represents the pose of a robot in 2D.
  * 
@@ -45,5 +49,33 @@ public class Pose {
 		return theta;
 	}
 	
+	public static double lerp(double a, double b, double ratio) {
+	    return (a * (1.0 - ratio)) + (b * ratio);
+	}
+	
+	public static double lerpDegrees(double a, double b, double ratio) {
+        double difference = Math.abs(b - a);
+        if (difference > Math.PI) {
+        	if (b > a) a += 2*Math.PI;
+            else b += 2*Math.PI;
+        }
+        double value = (a * (1.0 - ratio)) + (b * ratio);
+        double rangeZero = 2*Math.PI;
+        if (value >= 0 && value <= 2*Math.PI) return value;
+        return (value % rangeZero);
+    }
+	
+	/**
+	 * Computes the {@link Pose} between this {@link Pose} and a given {@link Pose} via bilinear interpolation.
+	 * @param p2 The second {@link Pose} used for interpolation.
+	 * @param ratio Parameter in [0,1] used for bilinear interpolation.
+	 * @return The {@link Pose} between this {@link Pose} and a given {@link Pose} via bilinear interpolation.
+	 */
+	public Pose interpolate(Pose p2, double ratio) {
+		double newX = lerp(getX(),p2.getX(),ratio);
+		double newY = lerp(getY(),p2.getY(),ratio);
+		double newTheta = lerpDegrees(getTheta(),p2.getTheta(),ratio);
+		return new Pose(newX,newY,newTheta);
+	}
 
 }

@@ -30,6 +30,22 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	}
 	
 	/**
+	 * Get the origin of time.
+	 * @return The origin of time.
+	 */
+	public long getOrigin() {
+		return this.getTemporalSolver().getOrigin();
+	}
+
+	/**
+	 * Get the temporal horizon.
+	 * @return The temporal horizon.
+	 */
+	public long getHorizon() {
+		return this.getTemporalSolver().getHorizon();
+	}
+
+	/**
 	 * Create a {@link TrajectoryEnvelopeSolver} with given temporal origin and horizon.
 	 * @param origin The origin of the temporal solver underlying this {@link TrajectoryEnvelopeSolver}.
 	 * @param horizon The horizon of the temporal solver underlying this {@link TrajectoryEnvelopeSolver}.
