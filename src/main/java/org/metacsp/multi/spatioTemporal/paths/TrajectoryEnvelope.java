@@ -209,11 +209,6 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			if (te.getTemporalVariable().getEST() <= time) {
 				if (te.getTemporalVariable().getEET() >= time) {
 					return te;
-				}				
-				else if (this.getGroundEnvelopes().higher(te) != null) {
-					if (this.getGroundEnvelopes().higher(te).getTemporalVariable().getEST() >= time) {
-						return this.getGroundEnvelopes().higher(te);
-					}
 				}
 			}
 		}

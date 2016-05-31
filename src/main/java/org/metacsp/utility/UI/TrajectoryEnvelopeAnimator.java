@@ -192,16 +192,21 @@ public class TrajectoryEnvelopeAnimator {
 		for (TrajectoryEnvelope te : tes) {
 			panel.addGeometry("_"+te.getID(), ((GeometricShapeDomain)te.getEnvelopeVariable().getDomain()).getGeometry(),true);
 			TrajectoryEnvelope gte = te.getGroundEnvelope(timeL);
-			if (gte != null) {
-				PoseSteering ps = te.getPoseSteering(timeL);
-				if (gte.getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
-					panel.addGeometry("_"+gte.getID(), ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
-					panel.addGeometry("_ObstacleActive" + te.getID(), te.makeFootprint(ps), true, true, false);
-				}
-				else {
-					panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
-					panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);					
-				}
+			long newTimeL = timeL;
+			//If could not fine ground TE, it means the vehicle is between envelopes at this time...
+			//let's back up a little and find the previous ground envelope
+			while (gte == null) {
+				newTimeL -= 10;
+				gte = te.getGroundEnvelope(newTimeL);
+			}
+			PoseSteering ps = gte.getPoseSteering(newTimeL);
+			if (gte.getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
+				panel.addGeometry("_"+gte.getID(), ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
+				panel.addGeometry("_ObstacleActive" + te.getID(), te.makeFootprint(ps), true, true, false);
+			}
+			else {
+				panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
+				panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);					
 			}
 		}
 		currentTimeField.setText("" + timeL);
