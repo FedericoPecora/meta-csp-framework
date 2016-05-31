@@ -1,6 +1,6 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
-import javafx.geometry.Pos;
+
 
 import com.vividsolutions.jts.geom.Coordinate;
 

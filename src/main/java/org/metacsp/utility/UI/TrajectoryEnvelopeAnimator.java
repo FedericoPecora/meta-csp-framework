@@ -192,14 +192,16 @@ public class TrajectoryEnvelopeAnimator {
 		for (TrajectoryEnvelope te : tes) {
 			panel.addGeometry("_"+te.getID(), ((GeometricShapeDomain)te.getEnvelopeVariable().getDomain()).getGeometry(),true);
 			TrajectoryEnvelope gte = te.getClosestGroundEnvelope(timeL);
-			PoseSteering ps = gte.getPoseSteering(timeL);
-			if (gte.getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
-				panel.addGeometry("_"+gte.getID(), ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
-				panel.addGeometry("_ObstacleActive" + te.getID(), te.makeFootprint(ps), true, true, false);
-			}
-			else {
-				panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
-				panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);					
+			if (gte != null) {
+				PoseSteering ps = gte.getPoseSteering(timeL);
+				if (gte.getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
+					panel.addGeometry("_"+gte.getID(), ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
+					panel.addGeometry("_ObstacleActive" + te.getID(), te.makeFootprint(ps), true, true, false);
+				}
+				else {
+					panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
+					panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);					
+				}
 			}
 		}
 		currentTimeField.setText("" + timeL);

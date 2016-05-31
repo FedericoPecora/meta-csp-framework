@@ -62,12 +62,14 @@ public class TestTrajectoryEnvelopeAsObstacle {
 		Trajectory traj2 = new Trajectory("paths/newpath3.path");
 		var2.setTrajectory(traj2);
 		
+		// This is an obstacle!
 		var3.setFootprint(1, 1, 0, 0);
 		Pose obsPosition = new Pose(-10, -2, 0.0);
 		Trajectory traj3 = new Trajectory(new Pose[] {obsPosition});
 		var3.setTrajectory(traj3);
 		var3.setRefinable(false);
 		
+		// When the obstacle should appear
 		AllenIntervalConstraint obstacleRelease = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(5000,5000));
 		obstacleRelease.setFrom(var3);
 		obstacleRelease.setTo(var3);
