@@ -69,6 +69,8 @@ public class JTSDrawingPanel extends JPanel {
 	private AffineTransform zoomTrans = AffineTransform.getScaleInstance(1.0, 1.0);
 	private AffineTransform panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	private AffineTransform rotateTrans = AffineTransform.getRotateInstance(0.0);
+	
+//	private Object semaphore = new Object();
 
 	public JTSDrawingPanel() {
 		this.setDoubleBuffered(true);
@@ -110,7 +112,7 @@ public class JTSDrawingPanel extends JPanel {
 		updatePanel();
 	}
 	
-	public void addGeometry(String id, Geometry geom) { 
+	public synchronized void addGeometry(String id, Geometry geom) { 
 		geometries.put(id,geom);
 		emptyGeoms.put(id,false);
 		thickGeoms.put(id,false);
@@ -119,14 +121,14 @@ public class JTSDrawingPanel extends JPanel {
 		polyColors.put(id,polyPaint);
 	}
 
-	public void flushGeometries() {
+	public synchronized void flushGeometries() {
 		geometries.clear();
 		emptyGeoms.clear();
 		thickGeoms.clear();
 		transpGeoms.clear();
 	}
 
-	public void addGeometry(String id, Geometry geom, boolean empty) { 
+	public synchronized void addGeometry(String id, Geometry geom, boolean empty) { 
 		geometries.put(id,geom);
 		emptyGeoms.put(id,empty);
 		thickGeoms.put(id,false);
@@ -135,7 +137,7 @@ public class JTSDrawingPanel extends JPanel {
 		polyColors.put(id,polyPaint);
 	}
 
-	public void addGeometry(String id, Geometry geom, boolean empty, boolean thick) { 
+	public synchronized void addGeometry(String id, Geometry geom, boolean empty, boolean thick) { 
 		geometries.put(id,geom);
 		emptyGeoms.put(id,empty);
 		thickGeoms.put(id,thick);
@@ -144,7 +146,7 @@ public class JTSDrawingPanel extends JPanel {
 		polyColors.put(id,polyPaint);
 	}
 
-	public void addGeometry(String id, Geometry geom, boolean empty, boolean thick, boolean transp) { 
+	public synchronized void addGeometry(String id, Geometry geom, boolean empty, boolean thick, boolean transp) { 
 		geometries.put(id,geom);
 		emptyGeoms.put(id,empty);
 		thickGeoms.put(id,thick);
@@ -153,7 +155,7 @@ public class JTSDrawingPanel extends JPanel {
 		polyColors.put(id,polyPaint);
 	}
 
-	public void removeGeometry(String id) { 
+	public synchronized void removeGeometry(String id) { 
 		geometries.remove(id); 
 		emptyGeoms.remove(id);
 		thickGeoms.remove(id);
@@ -184,9 +186,9 @@ public class JTSDrawingPanel extends JPanel {
 	}
 
 	@Override 
-	protected void paintComponent(Graphics g) { 
+	protected synchronized void paintComponent(Graphics g) { 
 		super.paintComponent(g); 
-
+		
 		if (!geometries.isEmpty()) { 
 			setTransform(); 
 
@@ -249,7 +251,7 @@ public class JTSDrawingPanel extends JPanel {
 					g2d.draw(newEndCircShape);
 				} 
 			} 
-		} 
+		}
 	} 
 
 	private void setTransform() { 

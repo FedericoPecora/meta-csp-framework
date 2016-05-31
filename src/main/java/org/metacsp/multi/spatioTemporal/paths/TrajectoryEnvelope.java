@@ -232,25 +232,54 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		long startTime = this.getTemporalVariable().getEST();
 		long endTime = this.getTemporalVariable().getEET();
 		if (time  < startTime || time > endTime) return null;
+		
+		long total = endTime-startTime;
+		long soFar = time-startTime;
+		double percent = ((double)soFar)/((double)total);
+		
+		double totDistance = ((LineStringDomain)this.getReferencePathVariable().getDomain()).getGeometry().getLength();
+		double scannedDistance = 0.0;
+		PoseSteering previousPS = null;
+		PoseSteering currentPS = null;
+		double previousRatio = 0.0;
+		double currentRatio = 0.0;
 		int index = 0;
-		int previousIndex = 0;
-		long scannedTime = startTime;
-		long prevTime = startTime;
-		while (time > scannedTime) {
-			try {
-				prevTime = scannedTime;
-				previousIndex = index;
-				scannedTime += (long)(this.getTrajectory().getDTs()[++index]*RESOLUTION);
-			}
-			catch(ArrayIndexOutOfBoundsException e) {
-				return this.getTrajectory().getPoseSteering()[--index];
-			}
+		while (scannedDistance/totDistance < percent) {
+			previousRatio = scannedDistance/totDistance;
+			previousPS = this.getTrajectory().getPoseSteering()[index];
+			currentPS = this.getTrajectory().getPoseSteering()[++index];
+			scannedDistance += new Coordinate(currentPS.getPose().getX(),currentPS.getPose().getY()).distance(new Coordinate(previousPS.getPose().getX(),previousPS.getPose().getY()));
+			currentRatio = scannedDistance/totDistance;
 		}
-		PoseSteering previousPS = this.getTrajectory().getPoseSteering()[previousIndex];
-		PoseSteering nextPS = this.getTrajectory().getPoseSteering()[index];
-		double ratio = ((double)time-(double)prevTime)/((double)scannedTime-(double)prevTime);
-		return previousPS.interpolate(nextPS, ratio);
+		if (previousPS == null) return this.getTrajectory().getPoseSteering()[0];
+		double ratio = (percent-previousRatio)/(currentRatio-previousRatio);
+		PoseSteering ret = previousPS.interpolate(currentPS, ratio);
+		return ret;
 	}
+
+//	public PoseSteering getPoseSteering(long time) {
+//		long startTime = this.getTemporalVariable().getEST();
+//		long endTime = this.getTemporalVariable().getEET();
+//		if (time  < startTime || time > endTime) return null;
+//		int index = 0;
+//		int previousIndex = 0;
+//		long scannedTime = startTime;
+//		long prevTime = startTime;
+//		while (time > scannedTime) {
+//			try {
+//				prevTime = scannedTime;
+//				previousIndex = index;
+//				scannedTime += (long)(this.getTrajectory().getDTs()[++index]*RESOLUTION);
+//			}
+//			catch(ArrayIndexOutOfBoundsException e) {
+//				return this.getTrajectory().getPoseSteering()[--index];
+//			}
+//		}
+//		PoseSteering previousPS = this.getTrajectory().getPoseSteering()[previousIndex];
+//		PoseSteering nextPS = this.getTrajectory().getPoseSteering()[index];
+//		double ratio = ((double)time-(double)prevTime)/((double)scannedTime-(double)prevTime);
+//		return previousPS.interpolate(nextPS, ratio);
+//	}
 	
 	/**
 	 * Get the start and end times of the path points representing beginning and ending of

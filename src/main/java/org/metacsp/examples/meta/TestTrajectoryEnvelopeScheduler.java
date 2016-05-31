@@ -18,6 +18,7 @@ import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelopeSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.JTSDrawingPanel;
+import org.metacsp.utility.UI.TrajectoryEnvelopeAnimator;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -70,7 +71,7 @@ public class TestTrajectoryEnvelopeScheduler {
 		Map map = new Map(null, null);		
 		metaSolver.addMetaConstraint(map);
 
-		JTSDrawingPanel.drawConstraintNetwork("Geometries before refinement",solver.getConstraintNetwork());
+//		JTSDrawingPanel.drawConstraintNetwork("Geometries before refinement",solver.getConstraintNetwork());
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 1: "+  refined1);
@@ -91,9 +92,12 @@ public class TestTrajectoryEnvelopeScheduler {
 		printInfo(var0);
 		printInfo(var1);
 //		printInfo(var2);
-		
-		JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined1);
-		ConstraintNetwork.draw(solver.getConstraintNetwork());
+
+		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
+		tea.addTrajectoryEnvelopes(var0, var1);
+
+//		JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined1);
+//		ConstraintNetwork.draw(solver.getConstraintNetwork());
 	}
 	
 }
