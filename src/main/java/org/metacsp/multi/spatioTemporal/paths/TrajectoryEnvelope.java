@@ -197,7 +197,9 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	/**
 	 * Get the ground {@link TrajectoryEnvelope} in which the robot will be
 	 * at a given time. Returns <code>null</code> if the robot will not be in this
-	 * {@link TrajectoryEnvelope} at the given time.
+	 * {@link TrajectoryEnvelope} at the given time, or if the robot is not in any ground envelope
+	 * at the given time (e.g., traveling between the end point of one ground envelope and
+	 * the starting point of the next one).
 	 * @param time The time at which to return the {@link TrajectoryEnvelope}.
 	 * @return The ground {@link TrajectoryEnvelope} in which the robot will be
 	 * at a given time.
@@ -216,6 +218,40 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 	/**
+	 * Get the ground {@link TrajectoryEnvelope} in which the robot will be
+	 * at a given time. Returns <code>null</code> if the robot will not be in this
+	 * {@link TrajectoryEnvelope} at the given time.
+	 * @param time The time at which to return the {@link TrajectoryEnvelope}.
+	 * @return The ground {@link TrajectoryEnvelope} in which the robot will be
+	 * at a given time, or the ground {@link TrajectoryEnvelope} it is leaving in case
+	 * the robot is traveling between the end point of one ground envelope and
+	 * the starting point of the next one.
+	 */
+	public TrajectoryEnvelope getClosestGroundEnvelope(long time) {
+		if (this.getTemporalVariable().getEST() > time || this.getTemporalVariable().getEET() < time) return null;
+		if (!this.hasSubEnvelopes()) return this;
+		for (TrajectoryEnvelope te : this.getGroundEnvelopes()) {
+			if (te.getTemporalVariable().getEST() <= time) {
+				if (te.getTemporalVariable().getEET() >= time) {
+					return te;
+				}
+				else if (this.getGroundEnvelopes().higher(te).getTemporalVariable().getEST() > time) {
+					return te;//this.getGroundEnvelopes().higher(te);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the super-envelope of this {@link TrajectoryEnvelope}.
+	 * @return The super-envelope of this {@link TrajectoryEnvelope}.
+	 */
+	public TrajectoryEnvelope getSuperEnvelope() {
+		return superEnvelope;
+	}
+
+	/**
 	 * Get the {@link PoseSteering} along the {@link Trajectory} where the robot will be
 	 * at a given time. Returns <code>null</code> if the robot will not be in this
 	 * {@link TrajectoryEnvelope} at the given time.
@@ -226,7 +262,13 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public PoseSteering getPoseSteering(long time) {
 		long startTime = this.getTemporalVariable().getEST();
 		long endTime = this.getTemporalVariable().getEET();
-		if (time  < startTime || time > endTime) return null;
+		if (time  < startTime || time > endTime) {
+			return this.getTrajectory().getPoseSteering()[this.getTrajectory().getPoseSteering().length-1];
+//			if (this.hasSuperEnvelope()) {
+//				return this.getSuperEnvelope().getPoseSteering(time);
+//			}
+//			return null;
+		}
 		
 		long total = endTime-startTime;
 		long soFar = time-startTime;
@@ -323,12 +365,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @return <code>true</code> iff this {@link TrajectoryEnvelope} has a super-envelope.
 	 */
 	public boolean hasSuperEnvelope() {
-		return this.superEnvelope == null;
+		return this.superEnvelope != null;
 	}
-
-//	public boolean getSuperEnvelope() {
-//		return this.superEnvelope == null;
-//	}
 
 	/**
 	 * Set whether this {@link TrajectoryEnvelope} can be refined into sub-envelopes.

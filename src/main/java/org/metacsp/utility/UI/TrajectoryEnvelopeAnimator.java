@@ -191,15 +191,8 @@ public class TrajectoryEnvelopeAnimator {
 		panel.flushGeometries();
 		for (TrajectoryEnvelope te : tes) {
 			panel.addGeometry("_"+te.getID(), ((GeometricShapeDomain)te.getEnvelopeVariable().getDomain()).getGeometry(),true);
-			TrajectoryEnvelope gte = te.getGroundEnvelope(timeL);
-			long newTimeL = timeL;
-			//If could not fine ground TE, it means the vehicle is between envelopes at this time...
-			//let's back up a little and find the previous ground envelope
-			while (gte == null) {
-				newTimeL -= 10;
-				gte = te.getGroundEnvelope(newTimeL);
-			}
-			PoseSteering ps = gte.getPoseSteering(newTimeL);
+			TrajectoryEnvelope gte = te.getClosestGroundEnvelope(timeL);
+			PoseSteering ps = gte.getPoseSteering(timeL);
 			if (gte.getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
 				panel.addGeometry("_"+gte.getID(), ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
 				panel.addGeometry("_ObstacleActive" + te.getID(), te.makeFootprint(ps), true, true, false);
