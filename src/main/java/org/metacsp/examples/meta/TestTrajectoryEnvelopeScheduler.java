@@ -49,29 +49,24 @@ public class TestTrajectoryEnvelopeScheduler {
 		Variable[] vars = solver.createVariables(2);
 		TrajectoryEnvelope var0 = (TrajectoryEnvelope)vars[0];
 		TrajectoryEnvelope var1 = (TrajectoryEnvelope)vars[1];
-//		TrajectoryEnvelope var2 = (TrajectoryEnvelope)vars[2];
-		
+				
 		Trajectory traj0 = new Trajectory("paths/path1.path");
+		var0.setFootprint(1.3, 3.5, 0.0, 0.0);
 		var0.setTrajectory(traj0);
 
 		Trajectory traj1 = new Trajectory("paths/path3.path");
+		var1.setFootprint(1.3, 3.5, 0.0, 0.0);
 		var1.setTrajectory(traj1);
-
-//		Trajectory traj2 = new Trajectory("paths/path4.path");
-//		var2.setTrajectory(traj2);
 		
 		var0.setRobotID(1);
 		var1.setRobotID(2);
-//		var2.setRobotID(3);
 		
 		System.out.println(var0 + " has domain " + var0.getDomain());
 		System.out.println(var1 + " has domain " + var1.getDomain());
-//		System.out.println(var2 + " has domain " + var2.getDomain());
 		
 		Map map = new Map(null, null);		
 		metaSolver.addMetaConstraint(map);
 
-//		JTSDrawingPanel.drawConstraintNetwork("Geometries before refinement",solver.getConstraintNetwork());
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 1: "+  refined1);
@@ -82,7 +77,6 @@ public class TestTrajectoryEnvelopeScheduler {
 		System.out.println("====================\n== BEFORE SOLVING ==\n====================");
 		printInfo(var0);
 		printInfo(var1);
-//		printInfo(var2);
 		
 		boolean solved = metaSolver.backtrack();
 		System.out.println("Solved? " + solved);
@@ -91,13 +85,9 @@ public class TestTrajectoryEnvelopeScheduler {
 		System.out.println("===================\n== AFTER SOLVING ==\n===================");
 		printInfo(var0);
 		printInfo(var1);
-//		printInfo(var2);
 
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
 		tea.addTrajectoryEnvelopes(var0, var1);
-
-//		JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined1);
-//		ConstraintNetwork.draw(solver.getConstraintNetwork());
 	}
 	
 }

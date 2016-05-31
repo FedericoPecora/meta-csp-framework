@@ -54,30 +54,42 @@ public class TestTrajectoryEnvelopeDebug {
 		TrajectoryEnvelope var4 = (TrajectoryEnvelope)vars[4];
 		TrajectoryEnvelope var5 = (TrajectoryEnvelope)vars[5];
 		
+		// Footprint coordinates (reference point in (0,0), as in SemRob)
+		Coordinate frontLeft = new Coordinate(8.100, 4.125);
+		Coordinate frontRight = new Coordinate(8.100, -3.430);
+		Coordinate backRight = new Coordinate(-6.920, -3.430);
+		Coordinate backLeft = new Coordinate(-6.920, 4.125);
+
 		Trajectory traj0 = new Trajectory("paths/debugPaths/test0.path");
+		var0.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var0.setTrajectory(traj0);
 		var0.setRobotID(1);
 
 		Trajectory traj1 = new Trajectory("paths/debugPaths/test1.path");
+		var1.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var1.setTrajectory(traj1);
 		var1.setRobotID(1);
 
 		Trajectory traj2 = new Trajectory("paths/debugPaths/test2.path");
+		var2.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var2.setTrajectory(traj2);
 		var2.setRobotID(1);
 
 		Trajectory traj3 = new Trajectory("paths/debugPaths/test3.path");
+		var3.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var3.setTrajectory(traj3);
 		var3.setRobotID(1);
 
 		Trajectory traj4 = new Trajectory("paths/debugPaths/test4.path");
+		var4.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var4.setTrajectory(traj4);
 		var4.setRobotID(1);
 
 		Trajectory traj5 = new Trajectory("paths/debugPaths/test5.path");
+		var5.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var5.setTrajectory(traj5);
 		var5.setRobotID(1);
-	
+
 		AllenIntervalConstraint meets0 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
 		meets0.setFrom(var4);
 		meets0.setTo(var5);

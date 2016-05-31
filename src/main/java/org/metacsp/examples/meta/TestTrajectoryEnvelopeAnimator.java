@@ -52,12 +52,15 @@ public class TestTrajectoryEnvelopeAnimator {
 		TrajectoryEnvelope var2 = (TrajectoryEnvelope)vars[2];
 		
 		Trajectory traj0 = new Trajectory("paths/newpath1.path");
+		var0.setFootprint(1.3, 3.5, 0.0, 0.0);
 		var0.setTrajectory(traj0);
 
 		Trajectory traj1 = new Trajectory("paths/newpath2.path");
+		var1.setFootprint(1.3, 3.5, 0.0, 0.0);
 		var1.setTrajectory(traj1);
 
 		Trajectory traj2 = new Trajectory("paths/newpath3.path");
+		var2.setFootprint(1.3, 3.5, 0.0, 0.0);
 		var2.setTrajectory(traj2);
 		
 		var0.setRobotID(1);

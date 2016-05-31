@@ -325,7 +325,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		Variable[] newVars = solver.createVariables(newTrajectories.size());
 		for (int i = 0; i < newVars.length; i++) {
 			TrajectoryEnvelope te = (TrajectoryEnvelope)newVars[i];
-			te.setFootprint(var1.getWidth(), var1.getLength(), var1.getDeltaW(), var1.getDeltaL());
+			//te.setFootprint(var1.getWidth(), var1.getLength(), var1.getDeltaW(), var1.getDeltaL());
+			te.setFootprint(var1.getFootprint());
 			//Only for second!
 			if ((!skipSec1 && i == 1) || (skipSec1 && i == 0)) {
 				te.setRefinable(false);

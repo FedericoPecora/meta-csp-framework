@@ -21,6 +21,7 @@ import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatial.DE9IM.LineStringDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
 import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
+import org.metacsp.throwables.NoFootprintException;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 
@@ -49,35 +50,44 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	private static final long serialVersionUID = 183736569434737103L;
 	public static long RESOLUTION = 1000;
-	private double width = 1.3;
-	private double length= 3.5;
-	private double deltaW = 0.0;
-	private double deltaL = 0.0;
+//	private double width = 1.3;
+//	private double length= 3.5;
+//	private double deltaW = 0.0;
+//	private double deltaL = 0.0;
 	private Trajectory trajectory = null;
 	private boolean refinable = true;
 	private TrajectoryEnvelope superEnvelope  = null;
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
 	private int robotID = -1;
+	private Polygon footprint = null;
 	
 	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		// TODO Auto-generated constructor stub
 	}
-	
-	public double getWidth() {
-		return width;
+		
+	/**
+	 * Get a {@link Polygon} representing the footprint of this {@link TrajectoryEnvelope}.
+	 * @return A {@link Polygon} representing the footprint of this {@link TrajectoryEnvelope}.
+	 */
+	public Polygon getFootprint() {
+		return footprint;
 	}
 	
-	public double getLength() {
-		return length;
+	public void setFootprint(Polygon footprint) {
+		this.footprint = footprint;
 	}
 	
-	public double getDeltaW() {
-		return deltaW;
-	}
-	
-	public double getDeltaL() {
-		return deltaL;
+	/**
+	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
+	 * the bounding box of the machine assuming its reference point is in (0,0).
+	 * @param backLeft The rear left coordinate of the bounding box.
+	 * @param backRight The rear right coordinate of the bounding box.
+	 * @param frontLeft The front left coordinate of the bounding box.
+	 * @param frontRight The front right coordinate of the bounding box.
+	 */
+	public void setFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
+		this.initFootprint(backLeft, backRight, frontLeft, frontRight);
 	}
 	
 	/**
@@ -88,10 +98,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @param dl Forward displacement of the reference point of the robot (along the driving direction).
 	 */
 	public void setFootprint(double w, double l, double dw, double dl) {
-		this.width = w;
-		this.length = l;
-		this.deltaW = dw;
-		this.deltaL = dl;
+		this.initFootprint(w, l, dw, dl);
 	}
 	
 	/**
@@ -398,13 +405,6 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public void setProfile(double width, double length, double deltaW, double deltaL) {
-		this.width = width;
-		this.length = length;
-		this.deltaW = deltaW;
-		this.deltaL = deltaL;
-	}
 		
 
 //	private Coordinate[] createEnvelope() {
@@ -473,13 +473,21 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		AffineTransformation at = new AffineTransformation();
 		at.rotate(theta);
 		at.translate(x,y);
+		Geometry rect = at.transform(footprint);
+		return rect;
+	}
+	
+	private void initFootprint(double width, double length, double deltaW, double deltaL) {
 		GeometricShapeFactory gsf = new GeometricShapeFactory();
 		gsf.setHeight(width);
 		gsf.setWidth(length);
 		gsf.setCentre(new Coordinate(deltaL,deltaW));
-		Polygon shapeRect = gsf.createRectangle();
-		Geometry rect = at.transform(shapeRect);
-		return rect;
+		footprint = gsf.createRectangle();
+	}
+
+	private void initFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
+		GeometryFactory gf = new GeometryFactory();
+		footprint = gf.createPolygon(new Coordinate[] {backLeft,backRight,frontRight,frontLeft,backLeft});
 	}
 
 	private Coordinate[] createEnvelope() {
@@ -507,6 +515,9 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @param traj The {@link Trajectory} of this {@link TrajectoryEnvelope}.
 	 */
 	public void setTrajectory(Trajectory traj) {
+		if (this.footprint == null) {
+			throw new NoFootprintException("No footprint set for " + this + ", please specify one before setting the trajecotry.");
+		}
 		this.trajectory = traj;
 		if (traj.getPoseSteering().length == 1) {
 			PointDomain pd = new PointDomain(this, traj.getPositions()[0]);
