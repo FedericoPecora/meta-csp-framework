@@ -257,13 +257,26 @@ public class Trajectory {
 		try {
 			Scanner in = new Scanner(new FileReader(fileName));
 			while (in.hasNextLine()) {
-				String[] oneline = in.nextLine().trim().split(" ");
-				PoseSteering ps = new PoseSteering(
-						new Double(oneline[0]).doubleValue(),
-						new Double(oneline[1]).doubleValue(),
-						new Double(oneline[2]).doubleValue(),
-						new Double(oneline[3]).doubleValue());
-				ret.add(ps);
+				String line = in.nextLine().trim();
+				if (line.length() != 0) {
+					String[] oneline = line.split(" ");
+					PoseSteering ps = null;
+					if (oneline.length == 4) {
+					ps = new PoseSteering(
+							new Double(oneline[0]).doubleValue(),
+							new Double(oneline[1]).doubleValue(),
+							new Double(oneline[2]).doubleValue(),
+							new Double(oneline[3]).doubleValue());
+					}
+					else {
+						ps = new PoseSteering(
+								new Double(oneline[0]).doubleValue(),
+								new Double(oneline[1]).doubleValue(),
+								new Double(oneline[2]).doubleValue(),
+								0.0);					
+					}
+					ret.add(ps);
+				}
 			}
 			in.close();
 		}

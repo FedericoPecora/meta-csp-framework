@@ -269,6 +269,9 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //			}
 //			return null;
 		}
+		if (this.getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
+			return this.getTrajectory().getPoseSteering()[0];
+		}
 		
 		long total = endTime-startTime;
 		long soFar = time-startTime;

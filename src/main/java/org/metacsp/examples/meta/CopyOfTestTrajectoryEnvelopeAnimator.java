@@ -51,7 +51,8 @@ public class CopyOfTestTrajectoryEnvelopeAnimator {
 		TrajectoryEnvelope var0 = (TrajectoryEnvelope)vars[0];
 		TrajectoryEnvelope var1 = (TrajectoryEnvelope)vars[1];
 		TrajectoryEnvelope var2 = (TrajectoryEnvelope)vars[2];
-		TrajectoryEnvelope var3 = (TrajectoryEnvelope)vars[2];
+		//TrajectoryEnvelope var3 = (TrajectoryEnvelope)vars[2];
+		TrajectoryEnvelope var3 = (TrajectoryEnvelope)vars[3];
 		
 		Trajectory traj0 = new Trajectory("paths/newpath1.path");
 		var0.setTrajectory(traj0);
