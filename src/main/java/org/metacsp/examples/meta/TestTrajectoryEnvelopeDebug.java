@@ -116,14 +116,11 @@ public class TestTrajectoryEnvelopeDebug {
 		metaSolver.addMetaConstraint(map);
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
-		System.out.println("REFINED 1: "+  refined1);
-//
-//		ConstraintNetwork refined2 = metaSolver.refineTrajectoryEnvelopes();
-//		System.out.println("REFINED 2: "+  refined2);
-//		
-//		boolean solved = metaSolver.backtrack();
-//		System.out.println("Solved? " + solved);
-//		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
+		System.out.println("REFINED: "+  refined1);
+
+		boolean solved = metaSolver.backtrack();
+		System.out.println("Solved? " + solved);
+		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
 
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
 		tea.addTrajectoryEnvelopes(var0,var1,var2,var3,var4,var5);

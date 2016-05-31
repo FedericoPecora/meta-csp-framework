@@ -49,13 +49,20 @@ public class TestTrajectoryEnvelopeScheduler {
 		Variable[] vars = solver.createVariables(2);
 		TrajectoryEnvelope var0 = (TrajectoryEnvelope)vars[0];
 		TrajectoryEnvelope var1 = (TrajectoryEnvelope)vars[1];
-				
+		
+		Coordinate frontLeft = new Coordinate(8.100, 4.125);
+		Coordinate frontRight = new Coordinate(8.100, -3.430);
+		Coordinate backRight = new Coordinate(-6.920, -3.430);
+		Coordinate backLeft = new Coordinate(-6.920, 4.125);
+
 		Trajectory traj0 = new Trajectory("paths/path1.path");
 		var0.setFootprint(1.3, 3.5, 0.0, 0.0);
+//		var0.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var0.setTrajectory(traj0);
-
+		
 		Trajectory traj1 = new Trajectory("paths/path3.path");
 		var1.setFootprint(1.3, 3.5, 0.0, 0.0);
+//		var1.setFootprint(backLeft,backRight,frontLeft,frontRight);
 		var1.setTrajectory(traj1);
 		
 		var0.setRobotID(1);
@@ -66,13 +73,9 @@ public class TestTrajectoryEnvelopeScheduler {
 		
 		Map map = new Map(null, null);		
 		metaSolver.addMetaConstraint(map);
-
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 1: "+  refined1);
-
-		ConstraintNetwork refined2 = metaSolver.refineTrajectoryEnvelopes();
-		System.out.println("REFINED 2: "+  refined2);
 
 		System.out.println("====================\n== BEFORE SOLVING ==\n====================");
 		printInfo(var0);
