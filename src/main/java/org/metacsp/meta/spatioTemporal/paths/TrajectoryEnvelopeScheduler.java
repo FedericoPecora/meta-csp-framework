@@ -43,6 +43,8 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.JTSDrawingPanel;
 
+import cern.colt.Arrays;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -207,13 +209,31 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	}
 
 	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
-		logger.fine("Refining " + var1 + " with " + var2);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];
 		ConstraintNetwork toReturn = new ConstraintNetwork(null);
 		GeometryFactory gf = new GeometryFactory();
 		Geometry se1 = ((GeometricShapeDomain)var1.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry se2 = ((GeometricShapeDomain)var2.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry intersectionse1se2 = se1.intersection(se2);
+
+		boolean in  = false;
+		int countIn = 0;
+		for (int i = 0; i < var1.getPathLength(); i++) {
+			Coordinate coord = var1.getTrajectory().getPositions()[i];
+			Point point = gf.createPoint(coord);
+			if (intersectionse1se2.contains(point) && !in) {
+				in = true;
+				if (++countIn > 1) {
+					logger.info("Intersection " + var1 + " with " + var2 + " is not simple - skipping");
+					return toReturn;					
+				}
+			}
+			if (!intersectionse1se2.contains(point)) {
+				in = false;
+			}
+		}
+
+		logger.info("Refining " + var1 + " with " + var2);
 
 		ArrayList<PoseSteering> var1sec1 = new ArrayList<PoseSteering>();
 		ArrayList<PoseSteering> var1sec2 = new ArrayList<PoseSteering>();
@@ -260,6 +280,10 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			} catch (IndexOutOfBoundsException e) { skipSec1 = true; done = true; }
 		}
 		//If sec1 emptied, remove it
+		if (var1sec1.size() == 1) {
+			skipSec1 = true;
+		}
+			
 		if (var1sec1.size() == 1) {
 			var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
 			var1sec1.remove(var1sec1.size()-1);
@@ -350,13 +374,16 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		finishes.setTo(var1);
 		toReturn.addConstraint(finishes);
 
-		double minTTT12 = var1.getTrajectory().getDTs()[var1sec1.size()];
+		double minTTT12 = 0.0;
+		
+		if (!skipSec1) minTTT12 = var1.getTrajectory().getDTs()[var1sec1.size()];
+		else minTTT12 = var1.getTrajectory().getDTs()[var1sec2.size()];
 		long minTimeToTransition12 = (long)(TrajectoryEnvelope.RESOLUTION*minTTT12);
 		AllenIntervalConstraint before1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(minTimeToTransition12,minTimeToTransition12));
 		before1.setFrom(newTrajectoryEnvelopes.get(0));
 		before1.setTo(newTrajectoryEnvelopes.get(1));
 		toReturn.addConstraint(before1);
-
+	
 		if (newTrajectoryEnvelopes.size() > 2) {
 			double minTTT23 = var1.getTrajectory().getDTs()[var1sec1.size()+var1sec2.size()];
 			long minTimeToTransition23 = (long)(TrajectoryEnvelope.RESOLUTION*minTTT23);
@@ -366,6 +393,9 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			toReturn.addConstraint(before2);
 		}
 
+//		System.out.println("var1sec1 (" + skipSec1 + "): " + var1sec1);
+//		System.out.println("var1sec2: " + var1sec2);
+//		System.out.println("var1sec3 (" + skipSec3 + "): " + var1sec3);
 		solver.addConstraints(toReturn.getConstraints());
 		return toReturn;
 	}
