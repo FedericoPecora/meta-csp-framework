@@ -398,6 +398,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 //		System.out.println("var1sec1 (" + skipSec1 + "): " + var1sec1);
 //		System.out.println("var1sec2: " + var1sec2);
 //		System.out.println("var1sec3 (" + skipSec3 + "): " + var1sec3);
+//		System.out.println("DTs of var1sec2: " + Arrays.toString(var1.getTrajectory().getDts( var1sec2.size(),var1.getTrajectory().getDTs().length-1 )));
 		solver.addConstraints(toReturn.getConstraints());
 		return toReturn;
 	}

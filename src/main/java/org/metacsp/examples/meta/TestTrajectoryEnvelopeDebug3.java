@@ -81,7 +81,7 @@ public class TestTrajectoryEnvelopeDebug3 {
 		}
 	}
 	
-	public static TrajectoryEnvelope[] makeTrajectoryEnvelopes(TrajectoryEnvelopeSolver solver, ArrayList<PathSpecification> pss) {
+	public static TrajectoryEnvelope[] makeTrajectoryEnvelopes(Map map, TrajectoryEnvelopeSolver solver, ArrayList<PathSpecification> pss) {
 		// Footprint coordinates (reference point in (0,0), as in SemRob)
 		Coordinate frontLeft = new Coordinate(8.100, 4.125);
 		Coordinate frontRight = new Coordinate(8.100, -3.430);
@@ -96,6 +96,7 @@ public class TestTrajectoryEnvelopeDebug3 {
 			ret[i].setFootprint(backLeft,backRight,frontLeft,frontRight);
 			ret[i].setTrajectory(traj);
 			ret[i].setRobotID(pss.get(i).getRobotID());
+//			map.setUsage(ret[i]);
 		}
 		
 		AllenIntervalConstraint[] meetsConstraints = new AllenIntervalConstraint[ret.length-1];		
@@ -116,13 +117,16 @@ public class TestTrajectoryEnvelopeDebug3 {
 		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 10000000);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
 
-		File dir = new File("paths/debugPaths/new/");
+		File dir = new File("paths/debugPaths/problematic");
 		File[] files = dir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		        return name.toLowerCase().endsWith(".path");
 		    }
 		});
-		
+
+		Map map = new Map(null, null);		
+		metaSolver.addMetaConstraint(map);
+
 		String prefix = "test";
 		String separator = "_";
 		String suffix = ".path";
@@ -142,18 +146,15 @@ public class TestTrajectoryEnvelopeDebug3 {
 		HashMap<Integer,TrajectoryEnvelope[]> tes = new HashMap<Integer, TrajectoryEnvelope[]>();
 		for (Entry<Integer,ArrayList<PathSpecification>> e : paths.entrySet()) {
 			Collections.sort(e.getValue());
-			tes.put(e.getKey(), makeTrajectoryEnvelopes(solver, e.getValue()));
+			tes.put(e.getKey(), makeTrajectoryEnvelopes(map, solver, e.getValue()));
 		}
-
-		Map map = new Map(null, null);		
-		metaSolver.addMetaConstraint(map);
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED: "+  refined1);
-//
-//		boolean solved = metaSolver.backtrack();
-//		System.out.println("Solved? " + solved);
-//		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
+
+		boolean solved = metaSolver.backtrack();
+		System.out.println("Solved? " + solved);
+		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
 
 		ArrayList<TrajectoryEnvelope> allTes = new ArrayList<TrajectoryEnvelope>();
 		for (Entry<Integer,TrajectoryEnvelope[]> e : tes.entrySet()) {

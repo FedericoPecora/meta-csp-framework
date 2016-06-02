@@ -224,7 +224,7 @@ public class Trajectory {
 				}
 			}
 			prevSum += dts[i-1];
-			dts[i] = countDts*dt-prevSum;
+			dts[i] = Math.max(countDts*dt-prevSum,0.001);
 		}
 	}
 	
