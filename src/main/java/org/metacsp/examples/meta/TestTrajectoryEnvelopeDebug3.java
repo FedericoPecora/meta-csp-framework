@@ -1,8 +1,14 @@
 package org.metacsp.examples.meta;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
@@ -19,6 +25,8 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.JTSDrawingPanel;
 import org.metacsp.utility.UI.TrajectoryEnvelopeAnimator;
+
+import aima.core.probability.CategoricalDistribution.Iterator;
 
 import com.sun.corba.se.spi.ior.MakeImmutable;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -43,22 +51,63 @@ public class TestTrajectoryEnvelopeDebug3 {
 		
 	}
 	
-	public static TrajectoryEnvelope[] makeTrajectoryEnvelopes(TrajectoryEnvelopeSolver solver, int robotID, String ... files) {
+	private static class PathSpecification implements Comparable {
+		private int seqNo = -1;
+		private String filename = null;
+		private int robotID = -1;
+		
+		public PathSpecification(int seqNo, String filename, int robotID) {
+			this.robotID = robotID;
+			this.filename = filename;
+			this.seqNo = seqNo;
+		}
+
+		public String getFilename() {
+			return filename;
+		}
+		
+		public int getSeqNo() {
+			return seqNo;
+		}
+		
+		public int getRobotID() {
+			return robotID;
+		}
+		
+		@Override
+		public int compareTo(Object o) {
+			if (!(o instanceof PathSpecification)) return 0;
+			return this.getSeqNo()-((PathSpecification)o).getSeqNo();
+		}
+	}
+	
+	public static TrajectoryEnvelope[] makeTrajectoryEnvelopes(TrajectoryEnvelopeSolver solver, ArrayList<PathSpecification> pss) {
 		// Footprint coordinates (reference point in (0,0), as in SemRob)
 		Coordinate frontLeft = new Coordinate(8.100, 4.125);
 		Coordinate frontRight = new Coordinate(8.100, -3.430);
 		Coordinate backRight = new Coordinate(-6.920, -3.430);
 		Coordinate backLeft = new Coordinate(-6.920, 4.125);
 
-		Variable[] vars = solver.createVariables(files.length);
-		TrajectoryEnvelope[] ret = new TrajectoryEnvelope[files.length];
-		for (int i = 0; i < files.length; i++) {
+		Variable[] vars = solver.createVariables(pss.size());
+		TrajectoryEnvelope[] ret = new TrajectoryEnvelope[pss.size()];
+		for (int i = 0; i < pss.size(); i++) {
 			ret[i] = (TrajectoryEnvelope)vars[i];
-			Trajectory traj = new Trajectory(files[i]);
+			Trajectory traj = new Trajectory(pss.get(i).getFilename());
 			ret[i].setFootprint(backLeft,backRight,frontLeft,frontRight);
 			ret[i].setTrajectory(traj);
-			ret[i].setRobotID(robotID);
+			ret[i].setRobotID(pss.get(i).getRobotID());
 		}
+		
+		AllenIntervalConstraint[] meetsConstraints = new AllenIntervalConstraint[ret.length-1];		
+		for (int i = 0; i < ret.length-1; i++) {
+			AllenIntervalConstraint meets = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+			meets.setFrom(ret[i]);
+			meets.setTo(ret[i+1]);
+			meetsConstraints[i] = meets;
+		}
+		
+		System.out.println("Added meets constraints for robot " + pss.get(0).getRobotID() + "? " + solver.addConstraints(meetsConstraints));
+		
 		return ret;	
 	}
 	
@@ -66,46 +115,53 @@ public class TestTrajectoryEnvelopeDebug3 {
 		
 		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 10000000);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+
+		File dir = new File("paths/debugPaths/new/");
+		File[] files = dir.listFiles(new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
+		        return name.toLowerCase().endsWith(".path");
+		    }
+		});
 		
-		TrajectoryEnvelope[] robot1Envelopes = makeTrajectoryEnvelopes(solver, 1,
-				"paths/debugPaths/new/test0_1.path",
-				"paths/debugPaths/new/test1_1.path",
-				"paths/debugPaths/new/test2_1.path",
-				"paths/debugPaths/new/test3_1.path",
-				"paths/debugPaths/new/test4_1.path",
-				"paths/debugPaths/new/test5_1.path"
-				);
-
-		TrajectoryEnvelope[] robot2Envelopes = makeTrajectoryEnvelopes(solver, 2,
-				"paths/debugPaths/new/test6_2.path",
-				"paths/debugPaths/new/test7_2.path",
-				"paths/debugPaths/new/test8_2.path",
-				"paths/debugPaths/new/test9_2.path"
-				);
-
-
-		AllenIntervalConstraint[] meetsRobot1 = new AllenIntervalConstraint[robot1Envelopes.length-1];		
-		for (int i = 0; i < robot1Envelopes.length-1; i++) {
-			AllenIntervalConstraint meets = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-			meets.setFrom(robot1Envelopes[i]);
-			meets.setTo(robot1Envelopes[i+1]);
-			meetsRobot1[i] = meets;
+		String prefix = "test";
+		String separator = "_";
+		String suffix = ".path";
+		HashMap<Integer,ArrayList<PathSpecification>> paths = new HashMap<Integer, ArrayList<PathSpecification>>();
+		for (File file : files) {
+			String filename = file.getName();
+			String fullPath = file.getPath();
+			String pathID = filename.substring(prefix.length(), filename.indexOf(separator));
+			String robotID = filename.substring(filename.indexOf(separator)+separator.length(),filename.indexOf(suffix));
+			int pathIDInt = Integer.parseInt(pathID);
+			int robotIDInt = Integer.parseInt(robotID);
+			PathSpecification ps = new PathSpecification(pathIDInt, fullPath, robotIDInt);
+			if (!paths.containsKey(robotIDInt)) paths.put(robotIDInt, new ArrayList<PathSpecification>());
+			paths.get(robotIDInt).add(ps);
 		}
 		
-		System.out.println(solver.addConstraints(meetsRobot1));
+		HashMap<Integer,TrajectoryEnvelope[]> tes = new HashMap<Integer, TrajectoryEnvelope[]>();
+		for (Entry<Integer,ArrayList<PathSpecification>> e : paths.entrySet()) {
+			Collections.sort(e.getValue());
+			tes.put(e.getKey(), makeTrajectoryEnvelopes(solver, e.getValue()));
+		}
+
+		Map map = new Map(null, null);		
+		metaSolver.addMetaConstraint(map);
 		
-//		Map map = new Map(null, null);		
-//		metaSolver.addMetaConstraint(map);
-//		
-//		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
-//		System.out.println("REFINED: "+  refined1);
+		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
+		System.out.println("REFINED: "+  refined1);
 //
 //		boolean solved = metaSolver.backtrack();
 //		System.out.println("Solved? " + solved);
 //		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
 
+		ArrayList<TrajectoryEnvelope> allTes = new ArrayList<TrajectoryEnvelope>();
+		for (Entry<Integer,TrajectoryEnvelope[]> e : tes.entrySet()) {
+			for (TrajectoryEnvelope te : e.getValue()) allTes.add(te);
+		}
+
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
-		tea.addTrajectoryEnvelopes(robot1Envelopes);
+		tea.addTrajectoryEnvelopes(allTes.toArray(new TrajectoryEnvelope[allTes.size()]));
 
 //		JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined1);
 //		ConstraintNetwork.draw(solver.getConstraintNetwork());

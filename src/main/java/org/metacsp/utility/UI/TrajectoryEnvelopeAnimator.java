@@ -111,7 +111,8 @@ public class TrajectoryEnvelopeAnimator {
 		KeyListener kl = new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
-				double change = ((getHorizon()-getOrigin())*0.01);
+				//double change = ((getHorizon()-getOrigin())*0.01);
+				double change = 1000;
 				if (e.getKeyChar() == '+') {
 					timeL = Math.min(horizon, timeL+(long)change);
 					updateTime();

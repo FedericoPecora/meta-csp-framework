@@ -3,6 +3,7 @@ package org.metacsp.multi.spatial.DE9IM;
 import org.metacsp.framework.Variable;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
@@ -44,7 +45,10 @@ public class PolygonalDomain extends GeometricShapeDomain {
 	protected void updateGeometry() {
 		if (this.coordinates == null) {
 			LinearRing nullLR = new LinearRing(null, new GeometryFactory());
-			this.geom = new GeometryFactory().createPolygon(nullLR);			
+			this.geom = new GeometryFactory().createPolygon(nullLR);
+			if (!this.geom.isValid()) {
+				this.geom = this.geom.symDifference(this.geom.getBoundary());
+			}
 		}
 		else {
 			Coordinate[] newCoords = new Coordinate[coordinates.length+1];
@@ -53,6 +57,9 @@ public class PolygonalDomain extends GeometricShapeDomain {
 			}
 			newCoords[coordinates.length] = this.coordinates[0];
 			this.geom = new GeometryFactory().createPolygon(newCoords);						
+			if (!this.geom.isValid()) {
+				this.geom = this.geom.symDifference(this.geom.getBoundary());
+			}
 		}
 	}
 
