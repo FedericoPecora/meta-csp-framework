@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -46,9 +47,6 @@ public class PolygonalDomain extends GeometricShapeDomain {
 		if (this.coordinates == null) {
 			LinearRing nullLR = new LinearRing(null, new GeometryFactory());
 			this.geom = new GeometryFactory().createPolygon(nullLR);
-			if (!this.geom.isValid()) {
-				this.geom = this.geom.symDifference(this.geom.getBoundary());
-			}
 		}
 		else {
 			Coordinate[] newCoords = new Coordinate[coordinates.length+1];

@@ -75,17 +75,17 @@ public class VolvoCEDynamicCoordinationTest1 {
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
 		System.out.println("REFINED 1: "+  refined1);
 
-		System.out.println("====================\n== BEFORE SOLVING ==\n====================");
-		printInfo(trajEnvelopeRobot1);
-		printInfo(trajEnvelopeRobot2);
-		
-		boolean solved = metaSolver.backtrack();
-		System.out.println("Solved? " + solved);
-		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
-
-		System.out.println("===================\n== AFTER SOLVING ==\n===================");
-		printInfo(trajEnvelopeRobot1);
-		printInfo(trajEnvelopeRobot2);
+//		System.out.println("====================\n== BEFORE SOLVING ==\n====================");
+//		printInfo(trajEnvelopeRobot1);
+//		printInfo(trajEnvelopeRobot2);
+//		
+//		boolean solved = metaSolver.backtrack();
+//		System.out.println("Solved? " + solved);
+//		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
+//
+//		System.out.println("===================\n== AFTER SOLVING ==\n===================");
+//		printInfo(trajEnvelopeRobot1);
+//		printInfo(trajEnvelopeRobot2);
 
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
 		tea.addTrajectoryEnvelopes(trajEnvelopeRobot1, trajEnvelopeRobot2);

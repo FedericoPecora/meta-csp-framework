@@ -49,6 +49,7 @@ import cern.colt.Arrays;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -217,7 +218,12 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		Geometry se1 = ((GeometricShapeDomain)var1.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry se2 = ((GeometricShapeDomain)var2.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry intersectionse1se2 = se1.intersection(se2);
-	
+
+		if (intersectionse1se2 instanceof MultiPolygon) {
+			logger.info("Intersection " + var1 + " with " + var2 + " too complex - skipping");
+			return toReturn;								
+		}
+		
 		boolean in  = false;
 		int countIn = 0;
 		for (int i = 0; i < var1.getPathLength(); i++) {
@@ -226,7 +232,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			if (intersectionse1se2.contains(point) && !in) {
 				in = true;
 				if (++countIn > 1) {
-					logger.info("Intersection " + var1 + " with " + var2 + " is not simple - skipping");
+					logger.info("Reference path of " + var1 + " enters intersection with " + var2 + " multiple times - skipping");
 					return toReturn;					
 				}
 			}
