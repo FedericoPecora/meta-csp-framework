@@ -240,6 +240,11 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				in = false;
 			}
 		}
+		
+		if (!intersectionse1se2.coveredBy(se1)) {
+			logger.info("Intersection " + var1 + " with " + var2 + " is corrupted - skipping");
+			return toReturn;											
+		}
 
 		logger.info("Refining " + var1 + " with " + var2);
 
