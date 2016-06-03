@@ -73,10 +73,10 @@ public class VolvoCEDynamicCoordinationTest3 {
 		trajEnvelopeRobot3.setTrajectory(trajRobot3);
 		trajEnvelopeRobot3.setRobotID(3);
 		
-//		AllenIntervalConstraint robot1StartsAt = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1500,APSPSolver.INF));
-//		robot1StartsAt.setFrom(trajEnvelopeRobot1);
-//		robot1StartsAt.setTo(trajEnvelopeRobot1);
-//		solver.addConstraint(robot1StartsAt);
+		AllenIntervalConstraint robot1StartsAt = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1500,APSPSolver.INF));
+		robot1StartsAt.setFrom(trajEnvelopeRobot1);
+		robot1StartsAt.setTo(trajEnvelopeRobot1);
+		solver.addConstraint(robot1StartsAt);
 						
 		System.out.println(trajEnvelopeRobot1 + " has domain " + trajEnvelopeRobot1.getDomain());
 		System.out.println(trajEnvelopeRobot2 + " has domain " + trajEnvelopeRobot2.getDomain());

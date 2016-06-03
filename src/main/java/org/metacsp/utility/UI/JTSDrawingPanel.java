@@ -66,7 +66,7 @@ public class JTSDrawingPanel extends JPanel {
 	private HashMap<String,Boolean> transpGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Paint> polyColors = new HashMap<String,Paint>(); 
 	private AffineTransform geomToScreen;
-	private AffineTransform zoomTrans = AffineTransform.getScaleInstance(1.0, 1.0);
+	private double globalScale = 1.0;
 	private AffineTransform panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	private AffineTransform rotateTrans = AffineTransform.getRotateInstance(0.0);
 	
@@ -89,11 +89,11 @@ public class JTSDrawingPanel extends JPanel {
 		        int x = e.getX();
 		        int y = e.getY();
 		    	if (SwingUtilities.isLeftMouseButton(e)) {
-			        zoomTrans = AffineTransform.getScaleInstance(zoomTrans.getScaleX()+Math.signum(y-previousY)*0.1,zoomTrans.getScaleY()+Math.signum(y-previousY)*0.1);
-			        if (zoomTrans.getScaleX() < 0.1) zoomTrans = AffineTransform.getScaleInstance(0.1, 0.1);
+		    		globalScale += Math.signum(y-previousY)*0.05;
+		    		if (globalScale < 0.1) globalScale = 0.1;		    		
 		    	}
 		    	else if (SwingUtilities.isMiddleMouseButton(e)) {
-		    		panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)/zoomTrans.getScaleX(), panTrans.getTranslateY()+Math.signum(y-previousY)/zoomTrans.getScaleY());
+		    		panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)*globalScale, panTrans.getTranslateY()+Math.signum(y-previousY)*globalScale);
 		    	}
 		    	else if (SwingUtilities.isRightMouseButton(e)) {
 		    		rotateTrans.rotate(Math.signum(x-previousX)*0.1);
@@ -106,7 +106,7 @@ public class JTSDrawingPanel extends JPanel {
 	}
 	
 	public void resetVisualization() {
-		zoomTrans = AffineTransform.getScaleInstance(1.0, 1.0);
+		globalScale = 1.0;
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 		rotateTrans = AffineTransform.getRotateInstance(0.0);
 		updatePanel();
@@ -259,13 +259,12 @@ public class JTSDrawingPanel extends JPanel {
 		Rectangle visRect = getVisibleRect(); 
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
 
-		double scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()); 
+		double scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * globalScale; 
 		double xoff = MARGIN - scale * env.getMinX();
 		//        double yoff = MARGIN + env.getMaxY() * scale; 
 		double yoff = MARGIN - env.getMinY() * scale; 
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff);
 		geomToScreen.concatenate(AffineTransform.getScaleInstance(1, -1));
-		geomToScreen.concatenate(zoomTrans);
 		geomToScreen.concatenate(panTrans);
 		geomToScreen.concatenate(rotateTrans);
 	} 
