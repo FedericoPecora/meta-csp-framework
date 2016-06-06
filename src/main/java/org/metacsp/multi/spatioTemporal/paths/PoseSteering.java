@@ -1,12 +1,16 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
+import java.io.Serializable;
+
 /**
  * Represents a pose with a steering angle.
  * 
  * @author Federico Pecora
  *
  */
-public class PoseSteering {
+public class PoseSteering implements Serializable {
+
+	private static final long serialVersionUID = -8099332582394979566L;
 	private Pose pose;
 	private double steering;
 	

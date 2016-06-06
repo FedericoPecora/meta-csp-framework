@@ -2,6 +2,8 @@ package org.metacsp.multi.spatioTemporal.paths;
 
 
 
+import java.io.Serializable;
+
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -10,7 +12,9 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Federico Pecora
  *
  */
-public class Pose {
+public class Pose implements Serializable {
+	
+	private static final long serialVersionUID = -6109720311463668670L;
 	private double x, y, theta;
 	
 	/**

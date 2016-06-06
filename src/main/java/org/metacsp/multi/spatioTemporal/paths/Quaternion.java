@@ -1,12 +1,15 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
+import java.io.Serializable;
+
 /**
  * Class for maintaining and converting from/to Quaternion representations.
  * @author Federico Pecora
  *
  */
-public class Quaternion {
+public class Quaternion implements Serializable {
 	
+	private static final long serialVersionUID = -5541257184074383188L;
 	private double x, y, z, w;
 	
 	/**

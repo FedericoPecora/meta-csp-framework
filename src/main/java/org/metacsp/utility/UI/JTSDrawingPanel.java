@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -16,9 +17,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -28,12 +32,17 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
+import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 import com.vividsolutions.jts.awt.ShapeWriter;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 public class JTSDrawingPanel extends JPanel {
@@ -69,15 +78,33 @@ public class JTSDrawingPanel extends JPanel {
 	private double globalScale = 1.0;
 	private AffineTransform panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	private AffineTransform rotateTrans = AffineTransform.getRotateInstance(0.0);
+	private Logger metacsplogger = MetaCSPLogging.getLogger(this.getClass());
 	
-//	private Object semaphore = new Object();
-
 	public JTSDrawingPanel() {
 		this.setDoubleBuffered(true);
+		
+		this.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		    	if (SwingUtilities.isMiddleMouseButton(e)) {
+		    		try {
+						AffineTransform geomToScreenInv = geomToScreen.createInverse();
+						Point2D.Double clickedPoint = new Point2D.Double((double)e.getX(),(double)e.getY());
+						Point2D.Double tClickedPoint = new Point2D.Double();
+						geomToScreenInv.transform(clickedPoint, tClickedPoint);
+						metacsplogger.info("Clicked point (x,y) = (" + tClickedPoint.getX() + "," + tClickedPoint.getY() + ")");
+					} catch (NoninvertibleTransformException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+		    	}
+		    }
+		});
+		
 		this.addMouseMotionListener(new MouseAdapter() {
 			int previousX;
 			int previousY;
-
+			
 			@Override
 			public void mousePressed(MouseEvent e) {
 				previousX = e.getX();
@@ -88,21 +115,46 @@ public class JTSDrawingPanel extends JPanel {
 		    public void mouseDragged(MouseEvent e) {
 		        int x = e.getX();
 		        int y = e.getY();
-		    	if (SwingUtilities.isLeftMouseButton(e)) {
+		    	if (SwingUtilities.isRightMouseButton(e)) {
 		    		globalScale += Math.signum(y-previousY)*0.05;
 		    		if (globalScale < 0.1) globalScale = 0.1;		    		
 		    	}
-		    	else if (SwingUtilities.isMiddleMouseButton(e)) {
+		    	else if (SwingUtilities.isLeftMouseButton(e)) {
 		    		panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)*globalScale, panTrans.getTranslateY()+Math.signum(y-previousY)*globalScale);
-		    	}
-		    	else if (SwingUtilities.isRightMouseButton(e)) {
-		    		rotateTrans.rotate(Math.signum(x-previousX)*0.1);
 		    	}
 	    		previousX = x;
 	    		previousY = y;
 	        	updatePanel();
 		    }
+		    
 		});
+	}
+	
+	private Geometry createArrow(Pose pose) {
+		GeometryFactory gf = new GeometryFactory();
+		Coordinate[] coords = new Coordinate[8];
+		coords[0] = new Coordinate(0.0,-0.3);
+		coords[1] = new Coordinate(2.0,-0.3);
+		coords[2] = new Coordinate(2.0,-0.8);
+		coords[3] = new Coordinate(3.0,0.0);
+		coords[4] = new Coordinate(2.0,0.8);
+		coords[5] = new Coordinate(2.0,0.3);
+		coords[6] = new Coordinate(0.0,0.3);
+		coords[7] = new Coordinate(0.0,-0.3);
+		Polygon arrow = gf.createPolygon(coords);
+		AffineTransformation at = new AffineTransformation();
+		at.rotate(pose.getTheta());
+		at.translate(pose.getX(), pose.getY());
+		Geometry ret = at.transform(arrow);
+		return ret;
+	}
+	
+	public void addArrow(String arrowId, Pose pose) {
+		geometries.put(arrowId, createArrow(pose));
+		emptyGeoms.put(arrowId, false);
+		transpGeoms.put(arrowId, false);
+		thickGeoms.put(arrowId, false);
+		polyColors.put(arrowId, Color.black);
 	}
 	
 	public void resetVisualization() {

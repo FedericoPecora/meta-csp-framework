@@ -63,6 +63,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	private ArrayList<TrajectoryEnvelope> envelopesForScheduling = new ArrayList<TrajectoryEnvelope>();
 	private static final long serialVersionUID = 8551829132754804513L;
 	private HashMap<TrajectoryEnvelope,ArrayList<TrajectoryEnvelope>> refinedWith = new HashMap<TrajectoryEnvelope, ArrayList<TrajectoryEnvelope>>();
+	private static final int MINIMUM_SIZE = 5;
 
 	/**
 	 * Create a {@link TrajectoryEnvelopeScheduler} with a given origin and temporal horizon.
@@ -149,7 +150,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	 * {@link TrajectoryEnvelopeScheduler}. This method splits {@link TrajectoryEnvelope}s that overlap in space.
 	 * @return A {@link ConstraintNetwork} containing the set of {@link TrajectoryEnvelope}s into which the existing
 	 * {@link TrajectoryEnvelope}s were refined. This {@link ConstraintNetwork} is empty if the existing {@link TrajectoryEnvelope}s
-	 * cannot be refined further.
+	 * cannot be refined any further.
 	 */
 	public ConstraintNetwork refineTrajectoryEnvelopes() {
 		ConstraintNetwork ret = new ConstraintNetwork(null);
@@ -218,6 +219,11 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		Geometry se1 = ((GeometricShapeDomain)var1.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry se2 = ((GeometricShapeDomain)var2.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry intersectionse1se2 = se1.intersection(se2);
+		
+		if (!intersectionse1se2.isValid()) {
+			intersectionse1se2 = intersectionse1se2.symDifference(intersectionse1se2.getBoundary());
+			logger.info("Intersection " + var1 + " with " + var2 + " invalid - fixing");
+		}
 
 		if (intersectionse1se2 instanceof MultiPolygon) {
 			logger.info("Intersection " + var1 + " with " + var2 + " too complex - skipping");
@@ -240,13 +246,19 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				in = false;
 			}
 		}
-		
-		if (!intersectionse1se2.coveredBy(se1)) {
-			logger.info("Intersection " + var1 + " with " + var2 + " is corrupted - skipping");
+
+		double areaDifference = intersectionse1se2.symDifference(intersectionse1se2.getBoundary()).union(se1).getArea()-se1.getArea();
+		if (areaDifference > 0.001) {
+			logger.info("Intersection " + var1 + " with " + var2 + " seems corrupt (area increased by " + areaDifference + ") - skipping ");
 			return toReturn;											
 		}
 
-		logger.info("Refining " + var1 + " with " + var2);
+//		if (!intersectionse1se2.coveredBy(se1)) {
+//			logger.info("Intersection " + var1 + " with " + var2 + " is corrupted - skipping");
+//			return toReturn;											
+//		}
+
+//		logger.info("Refining " + var1 + " with " + var2);
 
 		ArrayList<PoseSteering> var1sec1 = new ArrayList<PoseSteering>();
 		ArrayList<PoseSteering> var1sec2 = new ArrayList<PoseSteering>();
@@ -293,13 +305,11 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			} catch (IndexOutOfBoundsException e) { skipSec1 = true; done = true; }
 		}
 		//If sec1 emptied, remove it
-		if (var1sec1.size() == 1) {
-			skipSec1 = true;
-		}
-			
-		if (var1sec1.size() == 1) {
-			var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
-			var1sec1.remove(var1sec1.size()-1);
+		if (var1sec1.size() < MINIMUM_SIZE) {
+			while (var1sec1.size() > 0) {
+				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+				var1sec1.remove(var1sec1.size()-1);
+			}
 			skipSec1 = true;
 		}
 
@@ -317,26 +327,28 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			} catch (IndexOutOfBoundsException e) { skipSec3 = true; done = true; }
 		}
 		//If sec3 emptied, remove it
-		if (var1sec3.size() == 1) {
-			var1sec2.add(var1sec3.get(0));
-			var1sec3.remove(0);
+		if (var1sec3.size() < MINIMUM_SIZE) {
+			while (var1sec3.size() > 0) {
+				var1sec2.add(var1sec3.get(0));
+				var1sec3.remove(0);
+			}
 			skipSec3 = true;
 		}
 		
-		if (var1sec2.size() < 2) {
-			if (var1sec1.size() > 2) {
+		if (var1sec2.size() < MINIMUM_SIZE) {
+			if (var1sec1.size() > MINIMUM_SIZE) {
 				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
 				var1sec1.remove(var1sec1.size()-1);
 //				logger.info("Added to start... (2)");
 			}
-			else if (var1sec3.size() > 2) {
+			else if (var1sec3.size() > MINIMUM_SIZE) {
 				var1sec2.add(var1sec3.get(0));
 				var1sec3.remove(0);				
 //				logger.info("Added to end... (2)");
 			}
 		}
 
-		if ((skipSec1 && skipSec3) || var1sec2.size() < 2) {
+		if ((skipSec1 && skipSec3) || (!skipSec1 && var1sec1.size() < MINIMUM_SIZE) || (!skipSec3 && var1sec3.size() < MINIMUM_SIZE) || var1sec2.size() < MINIMUM_SIZE) {
 			logger.fine("Intersection " + var1 + " with " + var2 + " too small - skipping");
 			return toReturn;
 		}
@@ -411,6 +423,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 //		System.out.println("var1sec3 (" + skipSec3 + "): " + var1sec3);
 //		System.out.println("DTs of var1sec2: " + Arrays.toString(var1.getTrajectory().getDts( var1sec2.size(),var1.getTrajectory().getDTs().length-1 )));
 		solver.addConstraints(toReturn.getConstraints());
+		
 		return toReturn;
 	}
 

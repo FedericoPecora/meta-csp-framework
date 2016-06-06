@@ -103,8 +103,27 @@ public class TestTrajectoryEnvelopeAsObstacle {
 		System.out.println("Solved? " + solved);
 		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
 
+		// Try a geofence-like polygon...
+		Coordinate[] gfence = new Coordinate[12];
+		gfence[0] = new Coordinate(-40.33803932001092,-8.154954385842458);
+		gfence[1] = new Coordinate(-34.64588573670587,-18.70218014314299);
+		gfence[2] = new Coordinate(-22.089664597062377,-33.43481294699136);
+		gfence[3] = new Coordinate(-10.705357430452281,-39.46179909402023);
+		gfence[4] = new Coordinate(10.389094084148788,-36.61572230236771);
+		gfence[5] = new Coordinate(19.4295733046921,-25.063998853895693);
+		gfence[6] = new Coordinate(22.777898941930374,-8.154954385842458);
+		gfence[7] = new Coordinate(7.375601010634355,15.45074135668731);
+		gfence[8] = new Coordinate(-15.058180758862022,20.47322981254471);
+		gfence[9] = new Coordinate(-33.30655548181056,19.63614840323514);
+		gfence[10] = new Coordinate(-42.01220213863005,5.405764444972519);
+		gfence[11] = new Coordinate(-40.33803932001092,-8.154954385842458);
+		GeometryFactory gf = new GeometryFactory();
+		Geometry geofence = gf.createPolygon(gfence);
+		
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
 		tea.addTrajectoryEnvelopes(var0, var1, var2, var3);
+		tea.addMarkers(new String[] {"DT1","DT2","DT3"}, new Pose[] {var0.getTrajectory().getPose()[0], var1.getTrajectory().getPose()[0], var2.getTrajectory().getPose()[0]});
+		tea.addExtraGeometries(geofence);
 
 	}
 	

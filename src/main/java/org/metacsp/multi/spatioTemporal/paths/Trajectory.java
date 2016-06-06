@@ -2,6 +2,7 @@ package org.metacsp.multi.spatioTemporal.paths;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,8 +21,9 @@ import com.vividsolutions.jts.geom.Point;
  * @author Federico Pecora
  *
  */
-public class Trajectory {
+public class Trajectory implements Serializable {
 	
+	private static final long serialVersionUID = 1314671681021590724L;
 	private PoseSteering[] psa;
 	private double[] dts;
 	private static double MAX_SPEED = 3.0;
@@ -238,6 +240,18 @@ public class Trajectory {
 	 */
 	public PoseSteering[] getPoseSteering() {
 		return psa;
+	}
+	
+	/**
+	 * Get the path (list of {@link Pose}s) of this {@link Trajectory}.
+	 * @return The path (list of {@link Pose}s) of this {@link Trajectory}.
+	 */
+	public Pose[] getPose() {
+		Pose[] ret = new Pose[psa.length];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = psa[i].getPose();
+		}
+		return ret;
 	}
 	
 	/**

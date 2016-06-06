@@ -21,6 +21,8 @@ import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -34,13 +36,18 @@ import javax.swing.event.ChangeListener;
 
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
+import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class TrajectoryEnvelopeAnimator {
 	
 	private JTSDrawingPanel panel = null;
 	private ArrayList<TrajectoryEnvelope> tes = new ArrayList<TrajectoryEnvelope>();
+	private HashMap<String,Pose> markers = new HashMap<String, Pose>();
+	private ArrayList<Geometry> extraGeoms = new ArrayList<Geometry>();
 	private long origin = 0;
 	private long horizon = 1000;
 	private JSlider slider = null;
@@ -172,6 +179,22 @@ public class TrajectoryEnvelopeAnimator {
 		updateBounds();
 		updateTime();
 	}
+	
+	public void addMarkers(String[] ids, Pose[] poses) {
+		for (int i = 0; i < poses.length; i++) {
+			this.markers.put(ids[i], poses[i]);
+		}
+		updateBounds();
+		updateTime();
+	}
+	
+	public void addExtraGeometries(Geometry ... geoms) {
+		for (int i = 0; i < geoms.length; i++) {
+			this.extraGeoms.add(geoms[i]);
+		}
+		updateBounds();
+		updateTime();
+	}
 
 	private void updateBounds() {
 		ArrayList<Long> starts = new ArrayList<Long>();
@@ -204,6 +227,12 @@ public class TrajectoryEnvelopeAnimator {
 					panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);					
 				}
 			}
+		}
+		for (Entry<String, Pose> e : this.markers.entrySet()) {
+			panel.addArrow(e.getKey(), e.getValue());
+		}
+		for (int i = 0; i < this.extraGeoms.size(); i++) {
+			panel.addGeometry("_extraGeom"+i, this.extraGeoms.get(i), true, true);
 		}
 		currentTimeField.setText("" + timeL);
 		panel.updatePanel();
