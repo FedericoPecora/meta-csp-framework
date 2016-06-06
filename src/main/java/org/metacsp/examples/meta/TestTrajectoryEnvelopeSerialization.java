@@ -116,8 +116,8 @@ public class TestTrajectoryEnvelopeSerialization {
 		Map map = new Map(null, null);		
 		metaSolver.addMetaConstraint(map);
 		
-		saveConstraintNetwork(solver.getConstraintNetwork(),"/home/fpa/constraintNetworkBeforeSolving.cn");
-		ConstraintNetwork conBefore = loadConstraintNetwork("/home/fpa/constraintNetworkBeforeSolving.cn");
+		saveConstraintNetwork(solver.getConstraintNetwork(),"savedConstraintNetworks/constraintNetworkBeforeSolving.cn");
+		ConstraintNetwork conBefore = loadConstraintNetwork("savedConstraintNetworks/constraintNetworkBeforeSolving.cn");
 		drawTrajectoryEnvelopes(conBefore, "Trajectory Envelopes - before solving");
 		
 		ConstraintNetwork refined1 = metaSolver.refineTrajectoryEnvelopes();
@@ -127,8 +127,8 @@ public class TestTrajectoryEnvelopeSerialization {
 		System.out.println("Solved? " + solved);
 		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
 
-		saveConstraintNetwork(solver.getConstraintNetwork(),"/home/fpa/constraintNetworkAfterSolving.cn");
-		ConstraintNetwork conAfter = loadConstraintNetwork("/home/fpa/constraintNetworkAfterSolving.cn");
+		saveConstraintNetwork(solver.getConstraintNetwork(),"savedConstraintNetworks/constraintNetworkAfterSolving.cn");
+		ConstraintNetwork conAfter = loadConstraintNetwork("savedConstraintNetworks/constraintNetworkAfterSolving.cn");
 		drawTrajectoryEnvelopes(conAfter, "Trajectory Envelopes - after solving");
 
 	}
