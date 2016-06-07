@@ -88,7 +88,7 @@ public class TestTrajectoryEnvelopeDebug3 {
 		Coordinate backRight = new Coordinate(-6.920, -3.430);
 		Coordinate backLeft = new Coordinate(-6.920, 4.125);
 
-		Variable[] vars = solver.createVariables(pss.size());
+		Variable[] vars = solver.createVariables(pss.size()*3);
 		TrajectoryEnvelope[] ret = new TrajectoryEnvelope[pss.size()];
 		for (int i = 0; i < pss.size(); i++) {
 			ret[i] = (TrajectoryEnvelope)vars[i];
