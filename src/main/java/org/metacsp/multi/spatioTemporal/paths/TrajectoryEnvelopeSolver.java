@@ -51,9 +51,19 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 * @param horizon The horizon of the temporal solver underlying this {@link TrajectoryEnvelopeSolver}.
 	 */
 	public TrajectoryEnvelopeSolver(long origin, long horizon) {
-		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon), new int[]{1,2});
+		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon, -1), new int[]{1,2});
 	}
-	
+
+	/**
+	 * Create a {@link TrajectoryEnvelopeSolver} with given temporal origin and horizon.
+	 * @param origin The origin of the temporal solver underlying this {@link TrajectoryEnvelopeSolver}.
+	 * @param horizon The horizon of the temporal solver underlying this {@link TrajectoryEnvelopeSolver}.
+	 * @param maxTrajectories The maximum number of {@link TrajectoryEnvelope}s that can be created with this solver. 
+	 */
+	public TrajectoryEnvelopeSolver(long origin, long horizon, int maxTrajectories) {
+		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon, maxTrajectories), new int[]{1,2});
+	}
+
 	/**
 	 * Get all the {@link TrajectoryEnvelope}s in this solver's {@link ConstraintNetwork} pertaining to a particular robot.
 	 * @param robotID The ID of the robot for which the {@link TrajectoryEnvelope}s are desired.
@@ -81,9 +91,14 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
 	}
 	
-	private static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon) {
+	private static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon, int maxTrajectories) {
 		ConstraintSolver[] ret = new ConstraintSolver[2];
-		ret[0] = new AllenIntervalNetworkSolver(origin, horizon);
+		if (maxTrajectories >= 1) {
+			ret[0] = new AllenIntervalNetworkSolver(origin, horizon, maxTrajectories);
+		}
+		else {
+			ret[0] = new AllenIntervalNetworkSolver(origin, horizon);
+		}
 		ret[1] = new DE9IMRelationSolver();
 		return ret;
 	}

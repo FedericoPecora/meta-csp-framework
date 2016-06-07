@@ -54,7 +54,11 @@ public class TrajectoryEnvelopeAnimator {
 	private int value = 0;
 	private long timeL = 0;
 	private JButton resetViz = null;
+	private JButton updateTime = null;
 	private JTextField currentTimeField = null;
+	private boolean recomputeTime = true;
+	private boolean addMakespanVisualizer = true;
+	private MakespanVisualizer mv = null;
 	
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
@@ -69,9 +73,12 @@ public class TrajectoryEnvelopeAnimator {
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				value = ((JSlider)e.getSource()).getValue();
-				double time = (getHorizon()-getOrigin())*(((double)value)/100)+getOrigin();
-				timeL = (long)time;
-				updateTime();
+				if (recomputeTime) {
+					double time = (getHorizon()-getOrigin())*(((double)value)/100)+getOrigin();
+					timeL = (long)time;
+					updateTime();
+				}
+				recomputeTime = true;
 			}
 		});
 //		p.add(new JLabel("-"));
@@ -79,10 +86,30 @@ public class TrajectoryEnvelopeAnimator {
 //		p.add(new JLabel("+"));
 		p.add(new JLabel("Time:"));
 		currentTimeField = new JTextField(10);
-		currentTimeField.setEditable(false);
+		currentTimeField.setEditable(true);
 		currentTimeField.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(currentTimeField);
-		resetViz = new JButton("Reset");
+		updateTime = new JButton("Update");
+		updateTime.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					long newtime = Long.parseLong(currentTimeField.getText());
+					if (newtime < origin) newtime = origin;
+					if (newtime > horizon) newtime = horizon;
+					timeL = newtime;
+					updateTime();
+					recomputeTime = false;
+					updateValue();
+				}
+				catch(NumberFormatException e1) {
+					currentTimeField.setText(""+timeL);
+				}
+				frame.requestFocus();
+			}
+		});
+		p.add(updateTime);
+		resetViz = new JButton("Fit screen");
 		resetViz.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -95,7 +122,7 @@ public class TrajectoryEnvelopeAnimator {
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		frame.add(panel); 
-		frame.setSize(500, 500); 
+		frame.setSize(600, 500); 
 		frame.setVisible(true); 
 		frame.setFocusable(true);
 		frame.setFocusableWindowState(true);
@@ -151,7 +178,14 @@ public class TrajectoryEnvelopeAnimator {
 		frame.addMouseListener(ml);
 		slider.addMouseListener(ml);
 		frame.addKeyListener(kl);
-	
+		
+		if (addMakespanVisualizer) {
+			mv = new MakespanVisualizer() {
+				private static final long serialVersionUID = -911507104369026648L;
+				@Override
+				public long getTime() { return getCurrentTime(); }
+			};
+		}
 	}
 	
 	private void updateValue() {
@@ -209,6 +243,7 @@ public class TrajectoryEnvelopeAnimator {
 		Collections.sort(ends);
 		this.origin = starts.get(0);
 		this.horizon = ends.get(ends.size()-1);
+		if (mv != null) this.mv.setCompletionDate(this.horizon);
 	}
 	
 	public void updateTime() {
@@ -236,6 +271,10 @@ public class TrajectoryEnvelopeAnimator {
 		}
 		currentTimeField.setText("" + timeL);
 		panel.updatePanel();
+	}
+	
+	public long getCurrentTime() {
+		return timeL;
 	}
 
 }
