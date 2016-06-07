@@ -221,6 +221,30 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Refine the {@link TrajectoryEnvelope}s maintained by the {@link TrajectoryEnvelopeSolver} underlying this
+	 * {@link TrajectoryEnvelopeScheduler}. This method does not actually splits {@link TrajectoryEnvelope}s.
+	 * @return A {@link ConstraintNetwork} containing the set of {@link TrajectoryEnvelope}s into which the existing
+	 * {@link TrajectoryEnvelope}s were refined. This {@link ConstraintNetwork} is empty if the existing {@link TrajectoryEnvelope}s
+	 * cannot be refined any further.
+	 */
+	public ConstraintNetwork refineTrajectoryEnvelopesLight() {
+		ConstraintNetwork ret = new ConstraintNetwork(null);		
+		//recompute usages
+		for (TrajectoryEnvelope te : envelopesForScheduling) {
+			((Map)this.getMetaConstraints()[0]).removeUsage(te);		
+		}
+		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+			if (!te.hasSuperEnvelope()) {
+				for (TrajectoryEnvelope gte : te.getGroundEnvelopes()) {
+					((Map)this.getMetaConstraints()[0]).setUsage(gte);
+				}
+			}
+		}
+		return ret;
+	}
 
 	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];

@@ -114,7 +114,7 @@ public class DP3SolverUserInterface {
 	
 	public static void main(String[] args) {
 		
-		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 10000000, 500);
+		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 10000000, 5000);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
 
 		//File dir = new File("paths/debugPaths/npe");
