@@ -83,6 +83,16 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	public TrajectoryEnvelopeScheduler(long origin, long horizon) {
 		super(new Class[] {AllenIntervalConstraint.class, DE9IMRelation.class}, 0, new TrajectoryEnvelopeSolver(origin, horizon));
 	}
+	
+	/**
+	 * Create a {@link TrajectoryEnvelopeScheduler} with a given origin and temporal horizon.
+	 * @param origin The origin of time.
+	 * @param horizon The temporal horizon.
+	 * @param maxTrajectories The maximum number of {@link TrajectoryEnvelope}s that can be created with this solver.
+	 */
+	public TrajectoryEnvelopeScheduler(long origin, long horizon, int maxTrajectories) {
+		super(new Class[] {AllenIntervalConstraint.class, DE9IMRelation.class}, 0, new TrajectoryEnvelopeSolver(origin, horizon, maxTrajectories));
+	}
 
 	@Override
 	public void preBacktrack() {
@@ -253,6 +263,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			return toReturn;											
 		}
 
+		// IRAN: UNOCMMENT THIS IF YOU HAVE PROBLEMS WITH SCHEDULING
 //		if (!intersectionse1se2.coveredBy(se1)) {
 //			logger.info("Intersection " + var1 + " with " + var2 + " is corrupted - skipping");
 //			return toReturn;											

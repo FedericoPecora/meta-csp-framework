@@ -34,7 +34,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-public class TestTrajectoryEnvelopeDebug3 {
+public class DP3SolverUserInterface {
 	
 	
 	public static void printInfo(TrajectoryEnvelope te) {
@@ -114,10 +114,11 @@ public class TestTrajectoryEnvelopeDebug3 {
 	
 	public static void main(String[] args) {
 		
-		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 10000000);
+		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 10000000, 500);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
 
-		File dir = new File("paths/debugPaths/npe");
+		//File dir = new File("paths/debugPaths/npe");
+		File dir = new File("paths/debugPaths/new");
 		File[] files = dir.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		        return name.toLowerCase().endsWith(".path");
@@ -163,6 +164,9 @@ public class TestTrajectoryEnvelopeDebug3 {
 
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
 		tea.addTrajectoryEnvelopes(allTes.toArray(new TrajectoryEnvelope[allTes.size()]));
+		//Get geofence
+		
+		
 
 //		JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined1);
 //		ConstraintNetwork.draw(solver.getConstraintNetwork());
