@@ -1,6 +1,9 @@
 package org.metacsp.framework;
 
 import java.awt.EventQueue;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -68,6 +71,8 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	//end for changelistener
 	
 	public static HashMap<FieldOfObject,Object> backupForSerialization = new HashMap<FieldOfObject,Object>();
+	//This will back up the domain valuechoice functions for serialization
+	private HashMap<Class<?>,HashMap<String,ValueChoiceFunction>> domainValueChoiceFunctions = new HashMap<Class<?>, HashMap<String,ValueChoiceFunction>>();
 
 	private class FieldOfObject {
 		private Field field;
@@ -729,6 +734,7 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
+		this.domainValueChoiceFunctions = Domain.valueChoiceFunctions;
 		out.defaultWriteObject();
 		for (Field f : ConstraintNetwork.class.getDeclaredFields()) {
 			if (Modifier.isTransient(f.getModifiers())) {
@@ -749,6 +755,7 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 				catch (IllegalAccessException e) { e.printStackTrace(); }
 			}
 		}
+		Domain.valueChoiceFunctions = this.domainValueChoiceFunctions;
 	}
 
 	/**
@@ -826,6 +833,29 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 			if (con.isMasked()) ret.add(con);
 		}
 		return ret.toArray(new Constraint[ret.size()]);
+	}
+	
+	public static void saveConstraintNetwork(ConstraintNetwork cn, String filename) {
+		try {
+			FileOutputStream out = new FileOutputStream(filename);
+			ObjectOutputStream oos = new ObjectOutputStream(out);
+			oos.writeObject(cn);
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }		
+	}
+	
+	public static ConstraintNetwork loadConstraintNetwork(String filename) {
+		try {
+			FileInputStream in = new FileInputStream(filename);
+			ObjectInputStream ois = new ObjectInputStream(in);
+			ConstraintNetwork con = (ConstraintNetwork)ois.readObject();
+			return con;
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }
+		catch (ClassNotFoundException e) { e.printStackTrace(); }
+		return null;
 	}
 
 }

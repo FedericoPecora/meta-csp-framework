@@ -1,5 +1,7 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,6 +74,20 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 */
 	public Polygon getFootprint() {
 		return footprint;
+	}
+	
+	public void printInfo() {
+		
+		double[] teDTs = this.getTrajectory().getDTs();
+		double[] teCTs = this.getCTs();
+
+		DecimalFormat df = new DecimalFormat("#0.00");
+		df.setRoundingMode(RoundingMode.HALF_DOWN);
+		System.out.println("------------------------------------------\n" + this + "\nGround env: " + this.getGroundEnvelopes()  + "\nDTs and CTs\n------------------------------------------");
+		for (int i = 0; i < teDTs.length; i++) {
+			System.out.println(i + ": " + df.format(teDTs[i]) + " \t " + df.format(teCTs[i]));
+		}
+		
 	}
 	
 	public void setFootprint(Polygon footprint) {

@@ -61,7 +61,7 @@ public class APSPSolver extends ConstraintSolver {
 	 */
 	private static final long serialVersionUID = -5029122662268797937L;
 
-	transient private Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	private boolean doFromScratchInsteadOfIncremental = false;
 	private boolean addingIndependentConstraints = false;

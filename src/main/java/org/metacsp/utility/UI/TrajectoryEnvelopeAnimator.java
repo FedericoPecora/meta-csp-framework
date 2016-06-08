@@ -34,6 +34,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
 import org.metacsp.multi.spatioTemporal.paths.Pose;
@@ -214,6 +216,19 @@ public class TrajectoryEnvelopeAnimator {
 		updateTime();
 	}
 	
+	public void addTrajectoryEnvelopes(ConstraintNetwork con) {
+		for (Variable v : con.getVariables()) {
+			if (v instanceof TrajectoryEnvelope) {
+				TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+				if (!te.hasSubEnvelopes()) {
+					this.tes.add(te);
+				}
+			}
+		}
+		updateBounds();
+		updateTime();
+	}
+		
 	public void addMarkers(String[] ids, Pose[] poses) {
 		for (int i = 0; i < poses.length; i++) {
 			this.markers.put(ids[i], poses[i]);
