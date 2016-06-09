@@ -18,11 +18,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,6 +47,8 @@ import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 
+import sun.util.resources.CalendarData;
+
 import com.vividsolutions.jts.geom.Geometry;
 
 public class TrajectoryEnvelopeAnimator {
@@ -58,19 +65,32 @@ public class TrajectoryEnvelopeAnimator {
 	private JButton resetViz = null;
 	private JButton updateTime = null;
 	private JTextField currentTimeField = null;
+	private JTextField currentTTCField = null;
 	private boolean recomputeTime = true;
 	private boolean addMakespanVisualizer = true;
 	private MakespanVisualizer mv = null;
+	private static final int panelWidth = 700;
+	private static final int panelHeight = 500;
 	
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
 		final JFrame frame = new JFrame(title); 
 		Container cp = frame.getContentPane();
 		cp.setLayout(new BorderLayout());
-		cp.add(panel, BorderLayout.CENTER);
 		
-		final JPanel p = new JPanel();
-		p.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 2));
+		resetViz = new JButton("Fit screen");
+		resetViz.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				panel.resetVisualization();
+				frame.requestFocus();
+			}
+		});
+		frame.getContentPane().add(resetViz, BorderLayout.NORTH);
+		
+		cp.add(panel, BorderLayout.CENTER);
+		final JPanel pBottom = new JPanel();
+		pBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 2));
 		slider = new JSlider(0, 100, 0);
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -83,14 +103,12 @@ public class TrajectoryEnvelopeAnimator {
 				recomputeTime = true;
 			}
 		});
-//		p.add(new JLabel("-"));
-		p.add(slider);
-//		p.add(new JLabel("+"));
-		p.add(new JLabel("Time:"));
+		pBottom.add(slider);
+		pBottom.add(new JLabel("Time:"));
 		currentTimeField = new JTextField(10);
 		currentTimeField.setEditable(true);
 		currentTimeField.setHorizontalAlignment(SwingConstants.RIGHT);
-		p.add(currentTimeField);
+		pBottom.add(currentTimeField);
 		updateTime = new JButton("Update");
 		updateTime.addActionListener(new ActionListener() {			
 			@Override
@@ -106,29 +124,29 @@ public class TrajectoryEnvelopeAnimator {
 				}
 				catch(NumberFormatException e1) {
 					currentTimeField.setText(""+timeL);
+					currentTTCField.setText(formatTTC());
 				}
 				frame.requestFocus();
 			}
 		});
-		p.add(updateTime);
-		resetViz = new JButton("Fit screen");
-		resetViz.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				panel.resetVisualization();
-				frame.requestFocus();
-			}
-		});
-		p.add(resetViz);
-		cp.add(p, BorderLayout.SOUTH);
+		pBottom.add(updateTime);
+
+		pBottom.add(new JLabel("TTC:"));
+		currentTTCField = new JTextField(8);
+		currentTTCField.setEditable(false);
+		currentTTCField.setHorizontalAlignment(SwingConstants.RIGHT);
+		pBottom.add(currentTTCField);
+
+		cp.add(pBottom, BorderLayout.SOUTH);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-		frame.add(panel); 
-		frame.setSize(600, 500); 
+		frame.add(panel);
+		frame.setSize(panelWidth, panelHeight); 
 		frame.setVisible(true); 
 		frame.setFocusable(true);
 		frame.setFocusableWindowState(true);
 		frame.requestFocus();
+
 		//slider.setPreferredSize(new Dimension(p.getSize().width, slider.getPreferredSize().height));
 		
 		MouseListener ml = new MouseListener() {
@@ -285,7 +303,16 @@ public class TrajectoryEnvelopeAnimator {
 			panel.addGeometry("_extraGeom"+i, this.extraGeoms.get(i), true, true);
 		}
 		currentTimeField.setText("" + timeL);
+		currentTTCField.setText(formatTTC());
 		panel.updatePanel();
+	}
+	
+	private String formatTTC() {
+		long currentTTC = horizon-timeL;
+		int seconds = (int) (currentTTC / 1000) % 60 ;
+		int minutes = (int) ((currentTTC / (1000*60)) % 60);
+		int hours   = (int) ((currentTTC / (1000*60*60)) % 24);
+		return String.format("%02d", hours) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);	
 	}
 	
 	public long getCurrentTime() {

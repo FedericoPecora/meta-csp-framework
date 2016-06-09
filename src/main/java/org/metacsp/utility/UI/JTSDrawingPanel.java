@@ -75,9 +75,9 @@ public class JTSDrawingPanel extends JPanel {
 	private HashMap<String,Boolean> transpGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Paint> polyColors = new HashMap<String,Paint>(); 
 	private AffineTransform geomToScreen;
-	private double globalScale = 1.0;
+	private double scale = 1.0;
+	private double userScale = 1.0;
 	private AffineTransform panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
-	private AffineTransform rotateTrans = AffineTransform.getRotateInstance(0.0);
 	private Logger metacsplogger = MetaCSPLogging.getLogger(this.getClass());
 	
 	public JTSDrawingPanel() {
@@ -116,11 +116,11 @@ public class JTSDrawingPanel extends JPanel {
 		        int x = e.getX();
 		        int y = e.getY();
 		    	if (SwingUtilities.isRightMouseButton(e)) {
-		    		globalScale += Math.signum(y-previousY)*0.05;
-		    		if (globalScale < 0.1) globalScale = 0.1;		    		
+		    		userScale += Math.signum(y-previousY)*0.05;
+		    		if (userScale < 0.1) userScale = 0.1;		    		
 		    	}
 		    	else if (SwingUtilities.isLeftMouseButton(e)) {
-		    		panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)*globalScale, panTrans.getTranslateY()+Math.signum(y-previousY)*globalScale);
+		    		panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)*10.0, panTrans.getTranslateY()+Math.signum(y-previousY)*10.0);
 		    	}
 	    		previousX = x;
 	    		previousY = y;
@@ -158,9 +158,8 @@ public class JTSDrawingPanel extends JPanel {
 	}
 	
 	public void resetVisualization() {
-		globalScale = 1.0;
+		userScale = 1.0;
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
-		rotateTrans = AffineTransform.getRotateInstance(0.0);
 		updatePanel();
 	}
 	
@@ -310,15 +309,18 @@ public class JTSDrawingPanel extends JPanel {
 		Envelope env = getGeometryBounds(); 
 		Rectangle visRect = getVisibleRect(); 
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
-
-		double scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * globalScale; 
+		boolean rotate = false;
+		if (env.getWidth() < env.getHeight()) rotate = true;
+		
+		scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * userScale; 
 		double xoff = MARGIN - scale * env.getMinX();
-		//        double yoff = MARGIN + env.getMaxY() * scale; 
+		if (rotate) xoff += scale*(env.getMaxY()-env.getMinY())/2.0;
 		double yoff = MARGIN - env.getMinY() * scale; 
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff);
 		geomToScreen.concatenate(AffineTransform.getScaleInstance(1, -1));
 		geomToScreen.concatenate(panTrans);
-		geomToScreen.concatenate(rotateTrans);
+		if (rotate) geomToScreen.rotate(Math.PI/2.0, env.getMinX()+(env.getMaxX()-env.getMinX())/2, env.getMinY()+(env.getMaxY()-env.getMinY())/2);
+		//geomToScreen.concatenate(rotateTrans);
 	} 
 
 	private Envelope getGeometryBounds() { 
