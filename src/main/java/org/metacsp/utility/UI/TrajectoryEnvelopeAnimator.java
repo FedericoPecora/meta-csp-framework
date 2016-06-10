@@ -18,6 +18,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +31,12 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -62,7 +67,6 @@ public class TrajectoryEnvelopeAnimator {
 	private JSlider slider = null;
 	private int value = 0;
 	private long timeL = 0;
-	private JButton resetViz = null;
 	private JButton updateTime = null;
 	private JTextField currentTimeField = null;
 	private JTextField currentTTCField = null;
@@ -72,23 +76,63 @@ public class TrajectoryEnvelopeAnimator {
 	private static final int panelWidth = 700;
 	private static final int panelHeight = 500;
 	
+	private JMenuBar menuBar;
+	private JMenu menu;
+	private JMenuItem itemSave;
+	private JMenuItem itemOpen;
+	private JMenuItem itemQuit;
+    
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
 		final JFrame frame = new JFrame(title); 
-		Container cp = frame.getContentPane();
+		final Container cp = frame.getContentPane();
 		cp.setLayout(new BorderLayout());
+
+		//Menu bar
+		menuBar = new JMenuBar();
+		menu = new JMenu("File");
+		itemOpen = new JMenuItem("Open");
+		itemSave = new JMenuItem("Save");
+		itemQuit = new JMenuItem("Quit");
+        menu.add(itemOpen);
+		menu.add(itemSave);
+		menu.add(itemQuit);
+        itemSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.showOpenDialog(null);
+            }
+        });
+        itemOpen.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.showOpenDialog(null);
+                File file = chooser.getSelectedFile();
+                if (file != null) {
+	                ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file);
+	            	tes = new ArrayList<TrajectoryEnvelope>();
+	            	markers = new HashMap<String, Pose>();
+	            	extraGeoms = new ArrayList<Geometry>();
+	            	origin = 0;
+	            	horizon = 1000;
+	            	timeL = 0;
+	                panel.flushGeometries();
+	                panel.reinitVisualization();
+	                addTrajectoryEnvelopes(con);
+	                frame.setTitle(file.getName());
+	            	updateValue();
+                }
+            }
+        });
+        itemQuit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        menuBar.add(menu);
+		frame.setJMenuBar(menuBar);
 		
-		resetViz = new JButton("Fit screen");
-		resetViz.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				panel.resetVisualization();
-				frame.requestFocus();
-			}
-		});
-		frame.getContentPane().add(resetViz, BorderLayout.NORTH);
-		
-		cp.add(panel, BorderLayout.CENTER);
+		cp.add(panel, BorderLayout.NORTH);
 		final JPanel pBottom = new JPanel();
 		pBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 2));
 		slider = new JSlider(0, 100, 0);
@@ -205,7 +249,7 @@ public class TrajectoryEnvelopeAnimator {
 				@Override
 				public long getTime() { return getCurrentTime(); }
 			};
-		}
+		}		
 	}
 	
 	private void updateValue() {

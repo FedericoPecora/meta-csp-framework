@@ -1,6 +1,7 @@
 package org.metacsp.framework;
 
 import java.awt.EventQueue;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -848,6 +849,19 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 	public static ConstraintNetwork loadConstraintNetwork(String filename) {
 		try {
 			FileInputStream in = new FileInputStream(filename);
+			ObjectInputStream ois = new ObjectInputStream(in);
+			ConstraintNetwork con = (ConstraintNetwork)ois.readObject();
+			return con;
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }
+		catch (ClassNotFoundException e) { e.printStackTrace(); }
+		return null;
+	}
+
+	public static ConstraintNetwork loadConstraintNetwork(File file) {
+		try {
+			FileInputStream in = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(in);
 			ConstraintNetwork con = (ConstraintNetwork)ois.readObject();
 			return con;

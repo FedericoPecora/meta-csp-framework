@@ -74,7 +74,7 @@ public class JTSDrawingPanel extends JPanel {
 	private HashMap<String,Boolean> thickGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Boolean> transpGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Paint> polyColors = new HashMap<String,Paint>(); 
-	private AffineTransform geomToScreen;
+	private AffineTransform geomToScreen = null;
 	private double scale = 1.0;
 	private double userScale = 1.0;
 	private AffineTransform panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
@@ -87,6 +87,11 @@ public class JTSDrawingPanel extends JPanel {
 		this.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
+		    	if (SwingUtilities.isLeftMouseButton(e)) {
+		    		if (e.getClickCount() == 2) {
+		    			resetVisualization();
+		    		}
+		    	}
 		    	if (SwingUtilities.isMiddleMouseButton(e)) {
 		    		try {
 						AffineTransform geomToScreenInv = geomToScreen.createInverse();
@@ -150,7 +155,7 @@ public class JTSDrawingPanel extends JPanel {
 		return ret;
 	}
 	
-	public void addArrow(String arrowId, Pose pose) {
+	public synchronized void addArrow(String arrowId, Pose pose) {
 		geometries.put(arrowId, createArrow(pose));
 		emptyGeoms.put(arrowId, false);
 		transpGeoms.put(arrowId, false);
@@ -158,10 +163,18 @@ public class JTSDrawingPanel extends JPanel {
 		polyColors.put(arrowId, Color.black);
 	}
 	
-	public void resetVisualization() {
+	public synchronized void resetVisualization() {
 		userScale = 1.0;
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 		updatePanel();
+	}
+	
+	public synchronized void reinitVisualization() {
+		userScale = 1.0;
+		scale = 1.0;
+		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
+		rotateMode = false;
+		geomToScreen = null;
 	}
 	
 	public synchronized void addGeometry(String id, Geometry geom) { 
@@ -178,6 +191,7 @@ public class JTSDrawingPanel extends JPanel {
 		emptyGeoms.clear();
 		thickGeoms.clear();
 		transpGeoms.clear();
+		polyColors.clear();
 	}
 
 	public synchronized void addGeometry(String id, Geometry geom, boolean empty) { 
@@ -309,7 +323,7 @@ public class JTSDrawingPanel extends JPanel {
 
 	private void setTransform() { 
 		Envelope env = getGeometryBounds(); 
-		Rectangle visRect = getVisibleRect(); 
+		Rectangle visRect = getVisibleRect();
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
 		if (env.getWidth() < env.getHeight()) rotateMode = true;
 		
