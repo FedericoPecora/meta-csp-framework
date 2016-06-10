@@ -845,7 +845,17 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 		catch (FileNotFoundException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }		
 	}
-	
+
+	public static void saveConstraintNetwork(ConstraintNetwork cn, File file) {
+		try {
+			FileOutputStream out = new FileOutputStream(file);
+			ObjectOutputStream oos = new ObjectOutputStream(out);
+			oos.writeObject(cn);
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }		
+	}
+
 	public static ConstraintNetwork loadConstraintNetwork(String filename) {
 		try {
 			FileInputStream in = new FileInputStream(filename);

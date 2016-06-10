@@ -45,6 +45,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
@@ -82,6 +83,11 @@ public class TrajectoryEnvelopeAnimator {
 	private JMenuItem itemOpen;
 	private JMenuItem itemQuit;
     
+	private ConstraintNetwork getConstraintNetwork() {
+		if (tes == null || tes.isEmpty()) return null;
+		return tes.get(0).getConstraintSolver().getConstraintNetwork();
+	}
+	
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
 		final JFrame frame = new JFrame(title); 
@@ -91,8 +97,8 @@ public class TrajectoryEnvelopeAnimator {
 		//Menu bar
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");
-		itemOpen = new JMenuItem("Open");
-		itemSave = new JMenuItem("Save");
+		itemOpen = new JMenuItem("Open...");
+		itemSave = new JMenuItem("Save As...");
 		itemQuit = new JMenuItem("Quit");
         menu.add(itemOpen);
 		menu.add(itemSave);
@@ -101,6 +107,11 @@ public class TrajectoryEnvelopeAnimator {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
                 chooser.showOpenDialog(null);
+                File file = chooser.getSelectedFile();
+                if (file != null) {
+                	ConstraintNetwork.saveConstraintNetwork(getConstraintNetwork(), file);
+	                frame.setTitle(file.getName());
+                }
             }
         });
         itemOpen.addActionListener(new ActionListener() {
@@ -109,7 +120,7 @@ public class TrajectoryEnvelopeAnimator {
                 chooser.showOpenDialog(null);
                 File file = chooser.getSelectedFile();
                 if (file != null) {
-	                ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file);
+                	ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file);
 	            	tes = new ArrayList<TrajectoryEnvelope>();
 	            	markers = new HashMap<String, Pose>();
 	            	extraGeoms = new ArrayList<Geometry>();
