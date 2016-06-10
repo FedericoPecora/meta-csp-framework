@@ -79,6 +79,7 @@ public class JTSDrawingPanel extends JPanel {
 	private double userScale = 1.0;
 	private AffineTransform panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	private Logger metacsplogger = MetaCSPLogging.getLogger(this.getClass());
+	private boolean rotateMode = false;
 	
 	public JTSDrawingPanel() {
 		this.setDoubleBuffered(true);
@@ -227,6 +228,7 @@ public class JTSDrawingPanel extends JPanel {
 		g2d.setComposite(makeComposite(1.0f));
 		g2d.setPaint(polyPaint); 
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
+		if (rotateMode) newTrans.rotate(-Math.PI/2, x, y);
 		newTrans.translate(x, y);
 		Font f = new Font("TimesRoman", Font.PLAIN, 3);
 		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
@@ -309,17 +311,16 @@ public class JTSDrawingPanel extends JPanel {
 		Envelope env = getGeometryBounds(); 
 		Rectangle visRect = getVisibleRect(); 
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
-		boolean rotate = false;
-		if (env.getWidth() < env.getHeight()) rotate = true;
+		if (env.getWidth() < env.getHeight()) rotateMode = true;
 		
 		scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * userScale; 
 		double xoff = MARGIN - scale * env.getMinX();
-		if (rotate) xoff += scale*(env.getMaxY()-env.getMinY())/2.0;
+		if (rotateMode) xoff += scale*(env.getMaxY()-env.getMinY())/2.0;
 		double yoff = MARGIN - env.getMinY() * scale; 
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff);
 		geomToScreen.concatenate(AffineTransform.getScaleInstance(1, -1));
 		geomToScreen.concatenate(panTrans);
-		if (rotate) geomToScreen.rotate(Math.PI/2.0, env.getMinX()+(env.getMaxX()-env.getMinX())/2, env.getMinY()+(env.getMaxY()-env.getMinY())/2);
+		if (rotateMode) geomToScreen.rotate(Math.PI/2.0, env.getMinX()+(env.getMaxX()-env.getMinX())/2, env.getMinY()+(env.getMaxY()-env.getMinY())/2);
 		//geomToScreen.concatenate(rotateTrans);
 	} 
 

@@ -67,7 +67,7 @@ public class TrajectoryEnvelopeAnimator {
 	private JTextField currentTimeField = null;
 	private JTextField currentTTCField = null;
 	private boolean recomputeTime = true;
-	private boolean addMakespanVisualizer = true;
+	private boolean addMakespanVisualizer = false;
 	private MakespanVisualizer mv = null;
 	private static final int panelWidth = 700;
 	private static final int panelHeight = 500;
