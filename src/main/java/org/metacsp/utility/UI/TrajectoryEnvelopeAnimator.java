@@ -2,33 +2,21 @@ package org.metacsp.utility.UI;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.io.File;
-import java.text.SimpleDateFormat;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -45,7 +33,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.metacsp.framework.ConstraintNetwork;
-import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
@@ -53,9 +40,9 @@ import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 
-import sun.util.resources.CalendarData;
-
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class TrajectoryEnvelopeAnimator {
 	
@@ -86,6 +73,26 @@ public class TrajectoryEnvelopeAnimator {
 	private ConstraintNetwork getConstraintNetwork() {
 		if (tes == null || tes.isEmpty()) return null;
 		return tes.get(0).getConstraintSolver().getConstraintNetwork();
+	}
+	
+	private Coordinate[] parseGeofenceFile(File file) {
+		ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
+		try {
+			Scanner in = new Scanner(new FileReader(file));
+			while (in.hasNextLine()) {
+				String line = in.nextLine().trim();
+				if (line.length() != 0) {
+					String[] oneline = line.split(",");
+					if (oneline.length == 2) {
+						coords.add(new Coordinate(Double.parseDouble(oneline[0]), Double.parseDouble(oneline[1])));
+					}
+				}
+			}
+//			if (!coords.isEmpty()) coords.add(coords.get(0));
+			in.close();
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
+		return coords.toArray(new Coordinate[coords.size()]);
 	}
 	
 	public TrajectoryEnvelopeAnimator(String title) {
@@ -120,18 +127,26 @@ public class TrajectoryEnvelopeAnimator {
                 chooser.showOpenDialog(null);
                 File file = chooser.getSelectedFile();
                 if (file != null) {
-                	ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file);
-	            	tes = new ArrayList<TrajectoryEnvelope>();
-	            	markers = new HashMap<String, Pose>();
-	            	extraGeoms = new ArrayList<Geometry>();
-	            	origin = 0;
-	            	horizon = 1000;
-	            	timeL = 0;
-	                panel.flushGeometries();
-	                panel.reinitVisualization();
-	                addTrajectoryEnvelopes(con);
-	                frame.setTitle(file.getName());
-	            	updateValue();
+                	if (file.getName().endsWith(".cn")) {
+	                	ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file);
+		            	tes = new ArrayList<TrajectoryEnvelope>();
+		            	markers = new HashMap<String, Pose>();
+		            	extraGeoms = new ArrayList<Geometry>();
+		            	origin = 0;
+		            	horizon = 1000;
+		            	timeL = 0;
+		                panel.flushGeometries();
+		                panel.reinitVisualization();
+		                addTrajectoryEnvelopes(con);
+		                frame.setTitle(file.getName());
+		            	updateValue();
+                	}
+                	else if (file.getName().endsWith(".gf")) {
+                		Coordinate[] gfence = parseGeofenceFile(file);
+                		GeometryFactory gf = new GeometryFactory();
+                		Geometry geofence = gf.createLineString(gfence);
+                		addExtraGeometries(geofence);
+                	}
                 }
             }
         });
@@ -306,7 +321,7 @@ public class TrajectoryEnvelopeAnimator {
 		for (int i = 0; i < poses.length; i++) {
 			this.markers.put(ids[i], poses[i]);
 		}
-		updateBounds();
+//		updateBounds();
 		updateTime();
 	}
 	
@@ -314,7 +329,7 @@ public class TrajectoryEnvelopeAnimator {
 		for (int i = 0; i < geoms.length; i++) {
 			this.extraGeoms.add(geoms[i]);
 		}
-		updateBounds();
+//		updateBounds();
 		updateTime();
 	}
 
