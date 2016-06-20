@@ -22,7 +22,6 @@ import com.vividsolutions.jts.geom.TopologyException;
 public class PolygonalDomain extends GeometricShapeDomain {
 
 	private static final long serialVersionUID = 1543675650668270396L;
-	private transient Logger metaCSPLogger = MetaCSPLogging.getLogger(this.getClass());
 
 	protected PolygonalDomain(Variable v) {
 		super(v);
@@ -65,10 +64,10 @@ public class PolygonalDomain extends GeometricShapeDomain {
 					this.geom = this.geom.symDifference(this.geom.getBoundary());
 				}
 				catch(TopologyException e) {
-					metaCSPLogger.info("Trying to fix GeometricShapeVariable " + this.getVariable().getID());
+					logger.info("Trying to fix GeometricShapeVariable " + this.getVariable().getID());
 					this.geom = this.geom.buffer(0.1);
 					if (!this.geom.isValid()) {
-						metaCSPLogger.severe("... giving up!");
+						logger.severe("... giving up!");
 						throw e;
 					}
 				}

@@ -24,8 +24,13 @@ package org.metacsp.framework;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.logging.Logger;
+
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * This class is used to represent n-ary constraints in the MetaCSP framework.
@@ -57,6 +62,8 @@ public abstract class Constraint implements Cloneable, Serializable {
 	protected boolean autoRemovable = false;
 	
 	protected Paint color= Color.black;
+	
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	/**
 	 * Provide a list of solvers that should not process this constraint.
@@ -188,5 +195,11 @@ public abstract class Constraint implements Cloneable, Serializable {
 	public void setColor(Paint color) {
 		this.color = color;
 	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		logger = MetaCSPLogging.getLogger(this.getClass());
+	}
+
 
 }

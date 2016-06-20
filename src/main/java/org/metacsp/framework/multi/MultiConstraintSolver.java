@@ -53,8 +53,6 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 
 	private static final long serialVersionUID = 3328919153619683198L;
 	
-	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
-
 	/**
 	 * These are options used by the {@link ConstraintSolver} class to determine
 	 * whether inconsistencies should be allowed in the constraitn networks of the

@@ -46,8 +46,6 @@ public abstract class MultiConstraint extends Constraint {
 	private static final long serialVersionUID = -2743945338930729256L;
 
 	protected Constraint[] constraints;
-
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	private boolean propagateImmediately = true;
 

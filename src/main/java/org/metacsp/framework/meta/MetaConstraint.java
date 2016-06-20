@@ -59,7 +59,6 @@ public abstract class MetaConstraint extends Constraint {
 	protected ValueOrderingH valOH;
 	protected MetaConstraintSolver metaCS = null;
 	protected boolean independentMC = false;
-	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	/**
 	 * Creates a {@link MetaConstraint} with given variable and value ordering heuristics (one or both of these can be <code>null</code>).

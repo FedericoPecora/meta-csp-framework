@@ -757,6 +757,7 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 			}
 		}
 		Domain.valueChoiceFunctions = this.domainValueChoiceFunctions;
+		logger = MetaCSPLogging.getLogger(this.getClass());
 	}
 
 	/**

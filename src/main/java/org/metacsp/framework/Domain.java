@@ -22,10 +22,14 @@
  ******************************************************************************/
 package org.metacsp.framework;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.metacsp.throwables.IllegalValueChoiceFunction;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * This class is used to represent domains of variables.  Its main capability is to provide functionality for choosing values
@@ -43,6 +47,8 @@ public abstract class Domain implements Comparable<Object>, Serializable {
 	protected Variable myVariable;
 	
 	protected String defaultValueChoiceFunction;
+	
+	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	//So that extending classes must invoke 2-arg constructor
 	@SuppressWarnings("unused")
@@ -120,4 +126,10 @@ public abstract class Domain implements Comparable<Object>, Serializable {
 	 * @return The {@link Variable} of which this object is the {@link Domain}.
 	 */
 	public Variable getVariable() { return myVariable; }
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		logger = MetaCSPLogging.getLogger(this.getClass());
+	}
+
 }

@@ -49,7 +49,6 @@ public abstract class Schedulable extends MetaConstraint {
 	 * 
 	 */
 	private static final long serialVersionUID = 5719994497319584156L;
-	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	public long getBeforeParameter() {
 		return beforeParameter;

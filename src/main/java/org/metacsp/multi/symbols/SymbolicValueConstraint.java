@@ -43,8 +43,6 @@ public class SymbolicValueConstraint extends MultiConstraint {
 	 * 
 	 */
 	private static final long serialVersionUID = -4010342193923812891L;
-
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	public static enum Type {EQUALS, DIFFERENT, VALUEEQUALS, VALUEDIFFERENT, VALUESUBSET, CONTAINS};
 

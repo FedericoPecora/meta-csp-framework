@@ -33,12 +33,20 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
+import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
+import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
 import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
+
+import cern.colt.Arrays;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -68,6 +76,7 @@ public class TrajectoryEnvelopeAnimator {
 	private JMenu menu;
 	private JMenuItem itemSave;
 	private JMenuItem itemOpen;
+	private JMenuItem itemAddDurations;
 	private JMenuItem itemQuit;
     
 	private ConstraintNetwork getConstraintNetwork() {
@@ -75,24 +84,55 @@ public class TrajectoryEnvelopeAnimator {
 		return tes.get(0).getConstraintSolver().getConstraintNetwork();
 	}
 	
-	private Coordinate[] parseGeofenceFile(File file) {
+	private Coordinate[] parseGeofenceFile(File file, double zoom) {
 		ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
 		try {
 			Scanner in = new Scanner(new FileReader(file));
 			while (in.hasNextLine()) {
 				String line = in.nextLine().trim();
-				if (line.length() != 0) {
-					String[] oneline = line.split(",");
-					if (oneline.length == 2) {
-						coords.add(new Coordinate(Double.parseDouble(oneline[0]), Double.parseDouble(oneline[1])));
+				if (!line.startsWith("#")) {
+					if (line.length() != 0) {
+						String[] oneline = line.split(",");
+						if (oneline.length == 2) {
+							coords.add(new Coordinate(zoom*Double.parseDouble(oneline[0]), zoom*Double.parseDouble(oneline[1])));
+						}
 					}
 				}
 			}
-//			if (!coords.isEmpty()) coords.add(coords.get(0));
+			if (!coords.isEmpty()) coords.add(coords.get(0));
 			in.close();
 		}
 		catch (FileNotFoundException e) { e.printStackTrace(); }
 		return coords.toArray(new Coordinate[coords.size()]);
+	}
+	
+	private void addDurations(long duration, TrajectoryEnvelope ... envelopes) {
+		if (envelopes.length > 0) {
+			ConstraintSolver solver = envelopes[0].getConstraintSolver();
+			ArrayList<AllenIntervalConstraint> toAdd = new ArrayList<AllenIntervalConstraint>();
+			for (TrajectoryEnvelope te : envelopes) {
+				AllenIntervalConstraint dur = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(duration, APSPSolver.INF));
+				dur.setFrom(te);
+				dur.setTo(te);
+				toAdd.add(dur);
+			}
+			System.out.println(toAdd);
+			solver.addConstraints(toAdd.toArray(new AllenIntervalConstraint[toAdd.size()]));
+		}
+	}
+	
+	private TrajectoryEnvelope[] getAllTrajecotryEnvleopesLargerThan(double area) {
+		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
+		for (TrajectoryEnvelope te : tes) {
+			if (te.getPathLength() == 1) {
+				GeometricShapeVariable shape = te.getEnvelopeVariable();
+				PolygonalDomain poly = (PolygonalDomain)shape.getDomain();
+				if (poly.getGeometry().getArea() > area) {
+					ret.add(te);
+				}
+			}
+		}
+		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
 	}
 	
 	public TrajectoryEnvelopeAnimator(String title) {
@@ -106,9 +146,11 @@ public class TrajectoryEnvelopeAnimator {
 		menu = new JMenu("File");
 		itemOpen = new JMenuItem("Open...");
 		itemSave = new JMenuItem("Save As...");
+		itemAddDurations = new JMenuItem("Add durations");
 		itemQuit = new JMenuItem("Quit");
         menu.add(itemOpen);
 		menu.add(itemSave);
+		menu.add(itemAddDurations);
 		menu.add(itemQuit);
         itemSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -142,13 +184,20 @@ public class TrajectoryEnvelopeAnimator {
 		            	updateValue();
                 	}
                 	else if (file.getName().endsWith(".gf")) {
-                		Coordinate[] gfence = parseGeofenceFile(file);
+                		Coordinate[] gfence = parseGeofenceFile(file,2.0);
                 		GeometryFactory gf = new GeometryFactory();
                 		Geometry geofence = gf.createLineString(gfence);
                 		addExtraGeometries(geofence);
                 	}
                 }
             }
+        });
+        itemAddDurations.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addDurations(1200000, getAllTrajecotryEnvleopesLargerThan(5.0));
+				updateBounds();
+			}
         });
         itemQuit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

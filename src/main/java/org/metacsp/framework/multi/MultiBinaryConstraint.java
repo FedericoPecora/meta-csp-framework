@@ -40,7 +40,6 @@ public abstract class MultiBinaryConstraint extends MultiConstraint {
 	 * 
 	 */
 	private static final long serialVersionUID = -5679258233083583893L;
-	private transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
 	/**
 	 * Instantiates a new {@link MultiBinaryConstraint}, sets its scope to have size 2.
