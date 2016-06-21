@@ -135,6 +135,21 @@ public class TrajectoryEnvelopeAnimator {
 		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
 	}
 	
+	private String getSemrobDir() {
+		File theDir = new File(System.getProperty("user.home") + File.separator + ".semrob");
+		// if the directory does not exist, create it
+		if (!theDir.exists()) {
+		    boolean result = false;
+		    try {
+		        theDir.mkdir();
+		        result = true;
+		    }
+		    catch(SecurityException se){ se.printStackTrace(); }        
+		    if(!result) { return System.getProperty("user.home"); }
+		}
+		return theDir.getAbsolutePath();
+	}
+	
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
 		final JFrame frame = new JFrame(title); 
@@ -165,7 +180,8 @@ public class TrajectoryEnvelopeAnimator {
         });
         itemOpen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
+            	
+                JFileChooser chooser = new JFileChooser(getSemrobDir());
                 chooser.showOpenDialog(null);
                 File file = chooser.getSelectedFile();
                 if (file != null) {
@@ -430,7 +446,8 @@ public class TrajectoryEnvelopeAnimator {
 		long currentTTC = horizon-timeL;
 		int seconds = (int) (currentTTC / 1000) % 60 ;
 		int minutes = (int) ((currentTTC / (1000*60)) % 60);
-		int hours   = (int) ((currentTTC / (1000*60*60)) % 24);
+		//int hours   = (int) ((currentTTC / (1000*60*60)) % 24);
+		int hours   = (int) ((currentTTC / (1000*60*60)));
 		return String.format("%02d", hours) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);	
 	}
 	

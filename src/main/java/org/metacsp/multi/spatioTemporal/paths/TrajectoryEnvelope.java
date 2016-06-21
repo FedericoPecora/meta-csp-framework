@@ -543,7 +543,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			LineStringDomain lsd = new LineStringDomain(this,traj.getPositions());
 			this.setDomain(lsd);
 		}
-		PolygonalDomain env = new PolygonalDomain(null,createEnvelope());
+		PolygonalDomain env = new PolygonalDomain(this,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
 		long minDuration = 0;
