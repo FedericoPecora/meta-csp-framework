@@ -65,7 +65,9 @@ public class SymbolicVariableActivity extends MultiVariable implements Activity 
 
 	@Override
 	public int compareTo(Variable arg0) {
-		// TODO Auto-generated method stub
+		if (arg0 instanceof SymbolicVariableActivity) {
+			return (int)Math.signum(this.getTemporalVariable().getEST()-((SymbolicVariableActivity)arg0).getTemporalVariable().getEST());
+		}
 		return 0;
 	}
 	

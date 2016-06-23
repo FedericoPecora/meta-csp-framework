@@ -1,6 +1,8 @@
 package org.metacsp.dispatching;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.hamcrest.core.IsEqual;
 import org.metacsp.framework.Constraint;
@@ -10,6 +12,7 @@ import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class Dispatcher extends Thread {
 
@@ -21,6 +24,7 @@ public class Dispatcher extends Thread {
 	private HashMap<SymbolicVariableActivity,AllenIntervalConstraint> overlapFutureConstraints;
 	private HashMap<String,DispatchingFunction> dfs;
 	private SymbolicVariableActivity future;
+	private Logger logger = MetaCSPLogging.getLogger(this.getClass());
 
 	public Dispatcher(ActivityNetworkSolver ans, long period) {
 		this.ans = ans;
@@ -55,7 +59,9 @@ public class Dispatcher extends Thread {
 
 			synchronized(ans) {
 				for (String component : dfs.keySet()) {
-					for (Variable var : cn.getVariables(component)) {
+					Variable[] currentVars = cn.getVariables(component);
+					Arrays.sort(currentVars);
+					for (Variable var : currentVars) {
 						if (var instanceof SymbolicVariableActivity) {
 							SymbolicVariableActivity act = (SymbolicVariableActivity)var;
 							if (dfs.get(component).skip(act)) continue;
@@ -71,7 +77,7 @@ public class Dispatcher extends Thread {
 										SymbolicVariableActivity to = (SymbolicVariableActivity)aic.getTo();
 										if (to.getComponent().equals(act.getComponent()) && to.getSymbolicVariable().getSymbols()[0].equals(act.getSymbolicVariable().getSymbols()[0]) && aic.getTypes()[0].equals(AllenIntervalConstraint.Type.Equals)) {
 											skip = true;
-											System.out.println("IGNORED UNIFICATION " + aic);
+											logger.warning("IGNORED UNIFICATION " + aic);
 											break;
 										}
 									}
@@ -91,7 +97,13 @@ public class Dispatcher extends Thread {
 									overlapsFuture.setTo(future);
 									boolean ret = ans.addConstraint(overlapsFuture);
 									if(!ret){
-										System.out.println("IGNORED: " + act);
+										logger.warning("IGNORED dispatching (future is at " + future.getTemporalVariable().getEST() + "):\n\t" + act);
+										logger.warning("Constraints on ignored activity are:");
+										Constraint[] incident = ans.getConstraintNetwork().getIncidentEdges(act);
+										for (Constraint c : incident) {
+											logger.warning("\t" + c);
+										}
+										logger.warning(Arrays.toString(currentVars));
 									}
 									else {
 										overlapFutureConstraints.put(act, overlapsFuture);
