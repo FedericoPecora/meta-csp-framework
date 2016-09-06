@@ -35,6 +35,7 @@ import javax.swing.event.ChangeListener;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
+import org.metacsp.meta.spatioTemporal.paths.TrajectoryEnvelopeScheduler;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
@@ -43,8 +44,10 @@ import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
 import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
+import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelopeSolver;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 import cern.colt.Arrays;
 
@@ -72,13 +75,23 @@ public class TrajectoryEnvelopeAnimator {
 	private static final int panelWidth = 700;
 	private static final int panelHeight = 500;
 	
+	private TrajectoryEnvelopeScheduler metaSolver = null;
+	
 	private JMenuBar menuBar;
-	private JMenu menu;
+	private JMenu menuFile;
 	private JMenuItem itemSave;
 	private JMenuItem itemOpen;
 	private JMenuItem itemAddDurations;
 	private JMenuItem itemQuit;
+	private JMenu menuSolve;
+	private JMenuItem itemSolve;
+	private JMenuItem itemRefine;
+	private JMenuItem itemAddDelay;
     
+	public void setTrajectoryEnvelopeScheduler (TrajectoryEnvelopeScheduler metaSolver) {
+		this.metaSolver = metaSolver;
+	}
+	
 	private ConstraintNetwork getConstraintNetwork() {
 		if (tes == null || tes.isEmpty()) return null;
 		return tes.get(0).getConstraintSolver().getConstraintNetwork();
@@ -158,17 +171,30 @@ public class TrajectoryEnvelopeAnimator {
 
 		//Menu bar
 		menuBar = new JMenuBar();
-		menu = new JMenu("File");
+		menuFile = new JMenu("File");
 		itemOpen = new JMenuItem("Open...");
 		itemSave = new JMenuItem("Save As...");
 		itemAddDurations = new JMenuItem("Add durations");
 		itemQuit = new JMenuItem("Quit");
-        menu.add(itemOpen);
-		menu.add(itemSave);
-		menu.add(itemAddDurations);
-		menu.add(itemQuit);
-        itemSave.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        menuFile.add(itemOpen);
+		menuFile.add(itemSave);
+		menuFile.add(itemAddDurations);
+		menuFile.add(itemQuit);
+		menuSolve = new JMenu("Solve");
+		itemSolve = new JMenuItem("Solve");
+		itemRefine = new JMenuItem("Refine envelopes");
+		itemAddDelay = new JMenuItem("Add delay...");
+        menuFile.add(itemOpen);
+		menuFile.add(itemSave);
+		menuFile.add(itemAddDurations);
+		menuFile.add(itemQuit);
+		menuSolve.add(itemRefine);
+		menuSolve.add(itemSolve);
+		itemSolve.setEnabled(false);
+		menuSolve.add(itemAddDelay);
+        
+		itemSave.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser(getSemrobDir());
                 chooser.showOpenDialog(null);
                 File file = chooser.getSelectedFile();
@@ -178,6 +204,7 @@ public class TrajectoryEnvelopeAnimator {
                 }
             }
         });
+
         itemOpen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	
@@ -208,6 +235,7 @@ public class TrajectoryEnvelopeAnimator {
                 }
             }
         });
+        
         itemAddDurations.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -215,12 +243,64 @@ public class TrajectoryEnvelopeAnimator {
 				updateBounds();
 			}
         });
+        
         itemQuit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
             }
         });
-        menuBar.add(menu);
+
+        itemRefine.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (metaSolver != null) {
+        			ConstraintNetwork refined = metaSolver.refineTrajectoryEnvelopes();
+    				tes.clear();
+    				addTrajectoryEnvelopes(metaSolver.getConstraintSolvers()[0].getConstraintNetwork());
+//    				JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined);
+    				itemSolve.setEnabled(true);
+        		}
+            }
+        });
+        
+        itemSolve.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (metaSolver != null) {
+        			boolean solved = metaSolver.backtrack();
+        			System.out.println("Solved? " + solved);
+        			updateTime();
+    				updateBounds();
+        		}
+            }
+        });
+
+        itemAddDelay.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (metaSolver != null) {
+        			TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+        			TrajectoryEnvelope[] tes = solver.getTrajectoryEnvelopes(0);
+        			TrajectoryEnvelope superEnvelope = null;
+        			for (TrajectoryEnvelope te : tes) {
+        				if (!te.hasSuperEnvelope()) {
+        					superEnvelope = te;
+        					break;
+        				}
+        			}
+        			TrajectoryEnvelope gte = superEnvelope.getClosestGroundEnvelope(timeL);
+        			long delay = 1000;
+        			long newRelease = delay + gte.getTemporalVariable().getEST();
+        			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(newRelease,APSPSolver.INF));
+        			release.setFrom(gte);
+        			release.setTo(gte);
+        			boolean added = solver.addConstraint(release);
+        			System.out.println("Delayed " + gte + " by " + delay + " ms");
+        			updateTime();
+    				updateBounds();
+        		}
+            }
+        });
+
+        menuBar.add(menuFile);
+        menuBar.add(menuSolve);
 		frame.setJMenuBar(menuBar);
 		
 		cp.add(panel, BorderLayout.NORTH);
@@ -373,7 +453,7 @@ public class TrajectoryEnvelopeAnimator {
 		for (Variable v : con.getVariables()) {
 			if (v instanceof TrajectoryEnvelope) {
 				TrajectoryEnvelope te = (TrajectoryEnvelope)v;
-				if (!te.hasSubEnvelopes()) {
+				if (!te.hasSubEnvelopes() || !te.hasSuperEnvelope()) {
 					this.tes.add(te);
 				}
 			}
@@ -427,7 +507,7 @@ public class TrajectoryEnvelopeAnimator {
 				}
 				else {
 					panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
-					panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);					
+					panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);
 				}
 			}
 		}
