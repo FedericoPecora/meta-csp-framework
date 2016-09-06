@@ -169,7 +169,7 @@ public class TrajectoryEnvelopeAnimator {
 		menu.add(itemQuit);
         itemSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
+                JFileChooser chooser = new JFileChooser(getSemrobDir());
                 chooser.showOpenDialog(null);
                 File file = chooser.getSelectedFile();
                 if (file != null) {

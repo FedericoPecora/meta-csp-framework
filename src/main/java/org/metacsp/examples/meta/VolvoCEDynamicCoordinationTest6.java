@@ -138,7 +138,7 @@ public class VolvoCEDynamicCoordinationTest6 {
 				allTEs.add(te);
 			}
 		}
-		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
+		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("Coordinated trajecotries of three XA15s ");
 		tea.addTrajectoryEnvelopes(allTEs.toArray(new TrajectoryEnvelope[allTEs.size()]));
 
 	}
