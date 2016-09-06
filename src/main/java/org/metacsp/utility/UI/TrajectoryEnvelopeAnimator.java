@@ -79,6 +79,7 @@ public class TrajectoryEnvelopeAnimator {
 	private MakespanVisualizer mv = null;
 	private static final int panelWidth = 700;
 	private static final int panelHeight = 500;
+	private int numRobots = 0;
 	
 	private TrajectoryEnvelopeScheduler metaSolver = null;
 	
@@ -207,16 +208,12 @@ public class TrajectoryEnvelopeAnimator {
 		menuFile.add(itemQuit);
 		menuSolve = new JMenu("Solve");
 		itemSolve = new JMenuItem("Solve");
+		itemSolve.setEnabled(false);
 		itemRefine = new JMenuItem("Refine envelopes");
 		itemAddDelay = new JMenuItem("Add delay...");
 		itemAddDuration = new JMenuItem("Add duration...");
-        menuFile.add(itemOpen);
-		menuFile.add(itemSave);
-		menuFile.add(itemAddDurations);
-		menuFile.add(itemQuit);
 		menuSolve.add(itemRefine);
 		menuSolve.add(itemSolve);
-		itemSolve.setEnabled(false);
 		menuSolve.add(itemAddDelay);
 		menuSolve.add(itemAddDuration);
         
@@ -259,10 +256,15 @@ public class TrajectoryEnvelopeAnimator {
                 		Geometry geofence = gf.createLineString(gfence);
                 		addExtraGeometries(geofence);
                 	}
+                	else if (file.getName().endsWith(".path")) {
+                		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+                		solver.createEnvelope(numRobots++,file.getAbsolutePath());
+                		addTrajectoryEnvelopes(solver.getConstraintNetwork());                		
+                	}
                 }
             }
         });
-        
+
         itemAddDurations.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -572,19 +574,21 @@ public class TrajectoryEnvelopeAnimator {
 	}
 
 	private void updateBounds() {
-		ArrayList<Long> starts = new ArrayList<Long>();
-		ArrayList<Long> ends = new ArrayList<Long>();
-		for (int i = 0; i < tes.size(); i++) {
-			if (!tes.get(i).getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
-				starts.add(tes.get(i).getTemporalVariable().getEST());
-				ends.add(tes.get(i).getTemporalVariable().getEET());
+		if (tes != null && !tes.isEmpty()) {
+			ArrayList<Long> starts = new ArrayList<Long>();
+			ArrayList<Long> ends = new ArrayList<Long>();
+			for (int i = 0; i < tes.size(); i++) {
+				if (!tes.get(i).getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
+					starts.add(tes.get(i).getTemporalVariable().getEST());
+					ends.add(tes.get(i).getTemporalVariable().getEET());
+				}
 			}
+			Collections.sort(starts);
+			Collections.sort(ends);
+			this.origin = starts.get(0);
+			this.horizon = ends.get(ends.size()-1);
+			if (mv != null) this.mv.setCompletionDate(this.horizon);
 		}
-		Collections.sort(starts);
-		Collections.sort(ends);
-		this.origin = starts.get(0);
-		this.horizon = ends.get(ends.size()-1);
-		if (mv != null) this.mv.setCompletionDate(this.horizon);
 	}
 	
 	public void updateTime() {

@@ -1,6 +1,7 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -12,6 +13,8 @@ import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelationSolver;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * A {@link MultiConstraintSolver} for {@link SpatioTemporalVariable}s. Constraints of type {@link AllenIntervalConstraint} and
@@ -127,6 +130,94 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 */
 	public DE9IMRelationSolver getSpatialSolver() {
 		return (DE9IMRelationSolver)this.getConstraintSolvers()[1];
+	}
+	
+	private ArrayList<TrajectoryEnvelope> makeEnvelope(int robotID, String path, Coordinate frontLeft, Coordinate frontRight, Coordinate backRight, Coordinate backLeft) {
+		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
+		
+		TrajectoryEnvelope te = (TrajectoryEnvelope)this.createVariable();
+		TrajectoryEnvelope parkingStart = (TrajectoryEnvelope)this.createVariable();
+		TrajectoryEnvelope parkingEnd = (TrajectoryEnvelope)this.createVariable();
+
+		ArrayList<AllenIntervalConstraint> consToAdd = new ArrayList<AllenIntervalConstraint>();
+		TrajectoryEnvelope trajEnvelopeRobot = (TrajectoryEnvelope)te;
+		Trajectory trajRobot = new Trajectory(path);
+		
+		trajEnvelopeRobot.setFootprint(backLeft,backRight,frontLeft,frontRight);
+		trajEnvelopeRobot.setTrajectory(trajRobot);
+		trajEnvelopeRobot.setRobotID(robotID);
+		
+		Pose parkingStartPose = trajEnvelopeRobot.getTrajectory().getPoseSteering()[0].getPose();
+		Trajectory trajStart = new Trajectory(new Pose[] {parkingStartPose});
+		parkingStart.setFootprint(backLeft,backRight,frontLeft,frontRight);
+		parkingStart.setTrajectory(trajStart);
+		parkingStart.setRefinable(false);
+
+		Pose parkingEndPose = trajEnvelopeRobot.getTrajectory().getPoseSteering()[trajEnvelopeRobot.getTrajectory().getPoseSteering().length-1].getPose();
+		Trajectory trajEnd = new Trajectory(new Pose[] {parkingEndPose});
+		parkingEnd.setFootprint(backLeft,backRight,frontLeft,frontRight);
+		parkingEnd.setTrajectory(trajEnd);
+		parkingEnd.setRefinable(false);
+		
+		AllenIntervalConstraint parkingMeetsDriving = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		parkingMeetsDriving.setFrom(parkingStart);
+		parkingMeetsDriving.setTo(trajEnvelopeRobot);
+		consToAdd.add(parkingMeetsDriving);
+		
+		AllenIntervalConstraint drivingMeetsParking = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		drivingMeetsParking.setFrom(trajEnvelopeRobot);
+		drivingMeetsParking.setTo(parkingEnd);
+		consToAdd.add(drivingMeetsParking);
+		
+		AllenIntervalConstraint parkingEndForever = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Forever);
+		parkingEndForever.setFrom(parkingEnd);
+		parkingEndForever.setTo(parkingEnd);
+		consToAdd.add(parkingEndForever);
+		
+		ret.add(parkingStart);
+		ret.add(trajEnvelopeRobot);
+		ret.add(parkingEnd);
+
+		this.addConstraints(consToAdd.toArray(new AllenIntervalConstraint[consToAdd.size()]));
+
+		return ret;
+	}
+	
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelope(int robotID, String path) {
+
+		//XA15 footprint, 2.7 (w) x 6.6 (l)
+		Coordinate frontLeft = new Coordinate(5.3, 1.35);
+		Coordinate frontRight = new Coordinate(5.3, -1.35);
+		Coordinate backRight = new Coordinate(-1.3, -1.35);
+		Coordinate backLeft = new Coordinate(-1.3, 1.35);
+		
+		HashMap<Integer,ArrayList<TrajectoryEnvelope>> ret = new HashMap<Integer, ArrayList<TrajectoryEnvelope>>();
+		
+		for (TrajectoryEnvelope te : this.getRootTrajectoryEnvelopes()) {
+			ArrayList<TrajectoryEnvelope> oneRobot = new ArrayList<TrajectoryEnvelope>(te.getGroundEnvelopes());
+			ret.put(te.getRobotID(), oneRobot);
+		}
+		ArrayList<TrajectoryEnvelope> newRobot = this.makeEnvelope(robotID, path, frontLeft, frontRight, backRight, backLeft);
+		ret.put(robotID, newRobot);
+		return ret;
+	}
+	
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(String ... paths) {
+
+		//XA15 footprint, 2.7 (w) x 6.6 (l)
+		Coordinate frontLeft = new Coordinate(5.3, 1.35);
+		Coordinate frontRight = new Coordinate(5.3, -1.35);
+		Coordinate backRight = new Coordinate(-1.3, -1.35);
+		Coordinate backLeft = new Coordinate(-1.3, 1.35);
+		
+		HashMap<Integer,ArrayList<TrajectoryEnvelope>> ret = new HashMap<Integer, ArrayList<TrajectoryEnvelope>>();
+		
+		for (int i = 0; i < paths.length; i++) {
+			ArrayList<TrajectoryEnvelope> oneRobot = makeEnvelope(i, paths[i], frontLeft, frontRight, backRight, backLeft);
+			ret.put(i, oneRobot);
+		}
+		
+		return ret;
 	}
 
 }
