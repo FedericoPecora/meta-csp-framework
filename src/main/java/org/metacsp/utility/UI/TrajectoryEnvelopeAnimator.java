@@ -2,13 +2,16 @@ package org.metacsp.utility.UI;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -25,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -54,6 +58,7 @@ import cern.colt.Arrays;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class TrajectoryEnvelopeAnimator {
 	
@@ -239,7 +244,12 @@ public class TrajectoryEnvelopeAnimator {
         itemAddDurations.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				addDurations(1200000, getAllTrajecotryEnvleopesLargerThan(5.0));
+				//Get delay
+				String durationString = JOptionPane.showInputDialog("Enter a duration in ms (default = 1200000)");
+				long duration = 1200000;
+				try { duration = Long.parseLong(durationString); }
+				catch(NumberFormatException nfe) { System.out.println("Using default duration: 1200000 ms"); }
+				addDurations(duration, getAllTrajecotryEnvleopesLargerThan(5.0));
 				updateBounds();
 			}
         });
@@ -275,27 +285,64 @@ public class TrajectoryEnvelopeAnimator {
 
         itemAddDelay.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		if (metaSolver != null) {
-        			TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
-        			TrajectoryEnvelope[] tes = solver.getTrajectoryEnvelopes(0);
-        			TrajectoryEnvelope superEnvelope = null;
-        			for (TrajectoryEnvelope te : tes) {
-        				if (!te.hasSuperEnvelope()) {
-        					superEnvelope = te;
-        					break;
-        				}
+
+        		final MouseListener mlOld = panel.getMouseListeners()[0];
+        		panel.removeMouseListener(mlOld);
+        		panel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        		panel.addMouseListener(new MouseListener() {
+        			@Override
+        			public void mouseReleased(MouseEvent e) { }
+        			@Override
+        			public void mousePressed(MouseEvent e) {
+        				Point clicked = e.getPoint();
+                		Coordinate realPoint = panel.getCoordinatesInRealWorld(clicked);
+//                		System.out.println(clicked + " --> " + realPoint);
+                		//Find clicked TE
+            			TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+            			TrajectoryEnvelope[] tes = solver.getTrajectoryEnvelopes(0);
+            			TrajectoryEnvelope gte = null;
+            			for (TrajectoryEnvelope te : tes) {
+            				if (!te.hasSubEnvelopes()) {
+            					Geometry gPoint = new GeometryFactory().createPoint(realPoint);
+            					Geometry teGeom = ((GeometricShapeDomain)te.getEnvelopeVariable().getDomain()).getGeometry();
+            					if (gPoint.within(teGeom)) {
+            						gte = te;
+            						break;
+            					}
+            				}
+            			}
+            			if (gte == null) {
+            				System.out.println("Failed to find TrajectoryEnvelope at clicked point!");
+            			}
+            			else {
+            				//Get delay
+            				String delayString = JOptionPane.showInputDialog("Enter a delay in ms (default = 1000 ms)");
+            				System.out.println("DELAYSTRING: " + delayString);
+            				long delay = 1000;
+            				try { delay = Long.parseLong(delayString); }
+            				catch(NumberFormatException nfe) { System.out.println("Using default delay: 1000 ms"); }
+            				//Add delay
+	            			long newRelease = delay + gte.getTemporalVariable().getEST();
+	            			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(newRelease,APSPSolver.INF));
+	            			release.setFrom(gte);
+	            			release.setTo(gte);
+	            			boolean added = solver.addConstraint(release);
+	            			if (added) System.out.println("Delayed " + gte + " by " + delay + " ms");
+	            			else System.out.println("Failed to delay " + gte + " by " + delay + " ms");
+	            			updateTime();
+	        				updateBounds();
+            			}
+                		panel.removeMouseListener(this);
+                		panel.addMouseListener(mlOld);
+                		panel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         			}
-        			TrajectoryEnvelope gte = superEnvelope.getClosestGroundEnvelope(timeL);
-        			long delay = 1000;
-        			long newRelease = delay + gte.getTemporalVariable().getEST();
-        			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(newRelease,APSPSolver.INF));
-        			release.setFrom(gte);
-        			release.setTo(gte);
-        			boolean added = solver.addConstraint(release);
-        			System.out.println("Delayed " + gte + " by " + delay + " ms");
-        			updateTime();
-    				updateBounds();
-        		}
+        			@Override
+        			public void mouseExited(MouseEvent e) { }
+        			@Override
+        			public void mouseEntered(MouseEvent e) { }
+        			@Override
+        			public void mouseClicked(MouseEvent e) { }
+        		});
             }
         });
 

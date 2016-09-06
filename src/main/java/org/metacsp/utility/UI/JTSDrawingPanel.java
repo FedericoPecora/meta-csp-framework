@@ -220,6 +220,15 @@ public class JTSDrawingPanel extends JPanel {
 		Paint polyPaint = Color.decode(COLOR_CHART[(Math.abs(id.hashCode()))%COLOR_CHART.length]);
 		polyColors.put(id,polyPaint);
 	}
+	
+	public Coordinate getCoordinatesInRealWorld(Point clicked) {
+		AffineTransform invTrans = new AffineTransform(geomToScreen);
+		try { invTrans.invert(); }
+		catch (NoninvertibleTransformException e) { e.printStackTrace(); }
+		Point2D.Double transformed = new Point2D.Double(0, 0);
+		invTrans.transform(new Point2D.Double(clicked.getX(), clicked.getY()), transformed);
+		return new Coordinate(transformed.getX(), transformed.getY());
+	}
 
 	public synchronized void removeGeometry(String id) { 
 		geometries.remove(id); 
