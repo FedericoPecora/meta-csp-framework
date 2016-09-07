@@ -1,6 +1,7 @@
 package org.metacsp.utility.UI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
@@ -18,8 +19,10 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -80,6 +83,7 @@ public class TrajectoryEnvelopeAnimator {
 	private static final int panelWidth = 700;
 	private static final int panelHeight = 500;
 	private int numRobots = 0;
+	private long fixedTime = -1;
 	
 	private TrajectoryEnvelopeScheduler metaSolver = null;
 	
@@ -92,6 +96,8 @@ public class TrajectoryEnvelopeAnimator {
 	private JMenu menuSolve;
 	private JMenuItem itemSolve;
 	private JMenuItem itemRefine;
+	private JMenu menuControl;
+	private JMenuItem itemSetFixTime;
 	private JMenuItem itemAddDelay;
 	private JMenuItem itemAddDuration;
     
@@ -170,18 +176,46 @@ public class TrajectoryEnvelopeAnimator {
 		return theDir.getAbsolutePath();
 	}
 	
+	private boolean addFixedTimeConstraints() {
+		TrajectoryEnvelope[] roots = ((TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0]).getRootTrajectoryEnvelopes();
+		ArrayList<AllenIntervalConstraint> consToAdd = new ArrayList<AllenIntervalConstraint>();
+		for (TrajectoryEnvelope rte : roots) {
+			TreeSet<TrajectoryEnvelope> orderedEnvs = rte.getGroundEnvelopes();
+			Iterator<TrajectoryEnvelope> it = orderedEnvs.iterator();
+			boolean future = false;
+			while(it.hasNext() && !future) {
+				TrajectoryEnvelope oneTE = it.next();
+				long est = oneTE.getTemporalVariable().getEST();
+//				long eet = oneTE.getTemporalVariable().getEET();
+				if (est < timeL) {
+					AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(est,est));
+					release.setFrom(oneTE);
+					release.setTo(oneTE);
+					consToAdd.add(release);
+				}
+				else {
+					future = true;
+				}
+			}
+		}
+		return metaSolver.getConstraintSolvers()[0].addConstraints(consToAdd.toArray(new AllenIntervalConstraint[consToAdd.size()]));
+	}
+	
 	private TrajectoryEnvelope getClickedTrajectoryEnvelope(Point clicked) {
 		Coordinate realPoint = panel.getCoordinatesInRealWorld(clicked);
 //		System.out.println(clicked + " --> " + realPoint);
 		//Find clicked TE
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
-		TrajectoryEnvelope[] tes = solver.getTrajectoryEnvelopes(0);
-		for (TrajectoryEnvelope te : tes) {
-			if (!te.hasSubEnvelopes()) {
-				Geometry gPoint = new GeometryFactory().createPoint(realPoint);
-				Geometry teGeom = ((GeometricShapeDomain)te.getEnvelopeVariable().getDomain()).getGeometry();
-				if (gPoint.within(teGeom)) {
-					return te;
+//		TrajectoryEnvelope[] tes = solver.getTrajectoryEnvelopes(0);
+		TrajectoryEnvelope[] tes = solver.getRootTrajectoryEnvelopes();
+		for (TrajectoryEnvelope ste : tes) {
+			for (TrajectoryEnvelope te : ste.getGroundEnvelopes()) {
+				if (!te.hasSubEnvelopes()) {
+					Geometry gPoint = new GeometryFactory().createPoint(realPoint);
+					Geometry teGeom = ((GeometricShapeDomain)te.getEnvelopeVariable().getDomain()).getGeometry();
+					if (gPoint.within(teGeom)) {
+						return te;
+					}
 				}
 			}
 		}
@@ -194,7 +228,7 @@ public class TrajectoryEnvelopeAnimator {
 		final JFrame frame = new JFrame(title); 
 		final Container cp = frame.getContentPane();
 		cp.setLayout(new BorderLayout());
-
+		
 		//Menu bar
 		menuBar = new JMenuBar();
 		menuFile = new JMenu("File");
@@ -210,12 +244,15 @@ public class TrajectoryEnvelopeAnimator {
 		itemSolve = new JMenuItem("Solve");
 		itemSolve.setEnabled(false);
 		itemRefine = new JMenuItem("Refine envelopes");
+		menuControl = new JMenu("Control");
+		itemSetFixTime = new JMenuItem("Fix wall time");
 		itemAddDelay = new JMenuItem("Add delay...");
 		itemAddDuration = new JMenuItem("Add duration...");
 		menuSolve.add(itemRefine);
 		menuSolve.add(itemSolve);
-		menuSolve.add(itemAddDelay);
-		menuSolve.add(itemAddDuration);
+		menuControl.add(itemSetFixTime);
+		menuControl.add(itemAddDelay);
+		menuControl.add(itemAddDuration);
         
 		itemSave.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -310,6 +347,20 @@ public class TrajectoryEnvelopeAnimator {
             }
         });
 
+        itemSetFixTime.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (metaSolver != null) {
+        			if (addFixedTimeConstraints()) {
+        				System.out.println("Fixed wall time to " + timeL);
+        				fixedTime = timeL;
+        			}
+        			else {
+        				System.out.println("Failed to fix wall time to " + timeL+  "!");
+        			}
+        		}
+            }
+        });
+
         itemAddDelay.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		final MouseListener mlOld = panel.getMouseListeners()[0];
@@ -399,6 +450,7 @@ public class TrajectoryEnvelopeAnimator {
 
         menuBar.add(menuFile);
         menuBar.add(menuSolve);
+        menuBar.add(menuControl);
 		frame.setJMenuBar(menuBar);
 		
 		cp.add(panel, BorderLayout.NORTH);
@@ -620,6 +672,8 @@ public class TrajectoryEnvelopeAnimator {
 		currentTimeField.setText("" + timeL);
 		currentTTCField.setText(formatTTC());
 		panel.updatePanel();
+		if (timeL > fixedTime) panel.setBackground(Color.decode("#ebfaeb"));
+		else panel.setBackground(Color.decode("#ffe6e6"));
 	}
 	
 	private String formatTTC() {
