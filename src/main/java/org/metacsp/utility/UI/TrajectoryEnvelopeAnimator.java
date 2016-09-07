@@ -233,11 +233,12 @@ public class TrajectoryEnvelopeAnimator {
             public void actionPerformed(ActionEvent e) {
             	
                 JFileChooser chooser = new JFileChooser(getSemrobDir());
+                chooser.setMultiSelectionEnabled(true);
                 chooser.showOpenDialog(null);
-                File file = chooser.getSelectedFile();
-                if (file != null) {
-                	if (file.getName().endsWith(".cn")) {
-	                	ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file);
+                File[] file = chooser.getSelectedFiles();
+                if (file != null && file.length > 0) {
+                	if (file[0].getName().endsWith(".cn")) {
+	                	ConstraintNetwork con = ConstraintNetwork.loadConstraintNetwork(file[0]);
 		            	tes = new ArrayList<TrajectoryEnvelope>();
 		            	markers = new HashMap<String, Pose>();
 		            	extraGeoms = new ArrayList<Geometry>();
@@ -247,19 +248,21 @@ public class TrajectoryEnvelopeAnimator {
 		                panel.flushGeometries();
 		                panel.reinitVisualization();
 		                addTrajectoryEnvelopes(con);
-		                frame.setTitle(file.getName());
+		                frame.setTitle(file[0].getName());
 		            	updateValue();
                 	}
-                	else if (file.getName().endsWith(".gf")) {
-                		Coordinate[] gfence = parseGeofenceFile(file,2.0);
+                	else if (file[0].getName().endsWith(".gf")) {
+                		Coordinate[] gfence = parseGeofenceFile(file[0],2.0);
                 		GeometryFactory gf = new GeometryFactory();
                 		Geometry geofence = gf.createLineString(gfence);
                 		addExtraGeometries(geofence);
                 	}
-                	else if (file.getName().endsWith(".path")) {
+                	else if (file[0].getName().endsWith(".path")) {
                 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
-                		solver.createEnvelope(numRobots++,file.getAbsolutePath());
-                		addTrajectoryEnvelopes(solver.getConstraintNetwork());                		
+                		for (File oneFile : file) {
+	                		solver.createEnvelope(numRobots++,oneFile.getAbsolutePath());
+	                		addTrajectoryEnvelopes(solver.getConstraintNetwork());
+                		}
                 	}
                 }
             }

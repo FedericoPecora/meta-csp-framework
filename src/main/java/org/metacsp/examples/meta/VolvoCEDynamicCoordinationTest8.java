@@ -31,32 +31,24 @@ import com.vividsolutions.jts.geom.Point;
 public class VolvoCEDynamicCoordinationTest8 {
 	
 	
-	public static void printInfo(TrajectoryEnvelope te) {
-		
-		double[] teDTs = te.getTrajectory().getDTs();
-		double[] teCTs = te.getCTs();
-
-		DecimalFormat df = new DecimalFormat("#0.00");
-		df.setRoundingMode(RoundingMode.HALF_DOWN);
-		System.out.println("------------------------------------------\n" + te + "\nGround env: " + te.getGroundEnvelopes()  + "\nDTs and CTs\n------------------------------------------");
-		for (int i = 0; i < teDTs.length; i++) {
-			System.out.println(i + ": " + df.format(teDTs[i]) + " \t " + df.format(teCTs[i]));
-		}
-		
-	}
+//	public static void printInfo(TrajectoryEnvelope te) {
+//		
+//		double[] teDTs = te.getTrajectory().getDTs();
+//		double[] teCTs = te.getCTs();
+//
+//		DecimalFormat df = new DecimalFormat("#0.00");
+//		df.setRoundingMode(RoundingMode.HALF_DOWN);
+//		System.out.println("------------------------------------------\n" + te + "\nGround env: " + te.getGroundEnvelopes()  + "\nDTs and CTs\n------------------------------------------");
+//		for (int i = 0; i < teDTs.length; i++) {
+//			System.out.println(i + ": " + df.format(teDTs[i]) + " \t " + df.format(teCTs[i]));
+//		}
+//		
+//	}
 	
 	public static void main(String[] args) {
 		
 		TrajectoryEnvelopeScheduler metaSolver = new TrajectoryEnvelopeScheduler(0, 100000);
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
-		
-//		String[] paths = new String[] { "paths/newpath1.path", "paths/newpath2.path", "paths/newpath3.path"};
-//		HashMap<Integer,ArrayList<TrajectoryEnvelope>> tes = solver.createEnvelopes(paths);
-//		
-//		AllenIntervalConstraint robot1StartsAt = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(1500,APSPSolver.INF));
-//		robot1StartsAt.setFrom(tes.get(1).get(1));
-//		robot1StartsAt.setTo(tes.get(1).get(1));
-//		solver.addConstraint(robot1StartsAt);
 				
 		Map map = new Map(null, null);
 		metaSolver.addMetaConstraint(map);
