@@ -299,7 +299,15 @@ public class TrajectoryEnvelopeAnimator {
                 		for (File oneFile : file) {
 	                		solver.createEnvelope(numRobots++,oneFile.getAbsolutePath());
 	                		addTrajectoryEnvelopes(solver.getConstraintNetwork());
+	                		if (fixedTime != -1) {
+	                			TrajectoryEnvelope parking = solver.getTrajectoryEnvelopes(numRobots-1)[0];
+	                			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(fixedTime,fixedTime));
+	                			release.setFrom(parking);
+	                			release.setTo(parking);
+	                			solver.addConstraint(release);
+	                		}
                 		}
+                		
                 	}
                 }
             }
