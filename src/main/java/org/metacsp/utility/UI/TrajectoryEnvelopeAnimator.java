@@ -240,21 +240,27 @@ public class TrajectoryEnvelopeAnimator {
 	
 	private void refineIfNecessary() {
 		if (itemAutoRefineAndSolve.isSelected()) {
-			ConstraintNetwork refined = metaSolver.refineTrajectoryEnvelopes();
-			tes.clear();
-			setTrajectoryEnvelopes(metaSolver.getConstraintSolvers()[0].getConstraintNetwork());
-			updateTime();
-			updateRobotTabs();
+			TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+			if (solver.getRootTrajectoryEnvelopes() != null && solver.getRootTrajectoryEnvelopes().length > 0) {
+				ConstraintNetwork refined = metaSolver.refineTrajectoryEnvelopes();
+				tes.clear();
+				setTrajectoryEnvelopes(metaSolver.getConstraintSolvers()[0].getConstraintNetwork());
+				updateTime();
+				updateRobotTabs();
+			}
 		}
 	}
 
 	private void solveIfNecessary() {
 		if (itemAutoRefineAndSolve.isSelected()) {
-			boolean solved = metaSolver.backtrack();
-			System.out.println("Solved? " + solved);
-			updateBounds();
-			updateTime();
-			updateRobotTabs();
+			TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+			if (solver.getRootTrajectoryEnvelopes() != null && solver.getRootTrajectoryEnvelopes().length > 0) {
+				boolean solved = metaSolver.backtrack();
+				System.out.println("Solved? " + solved);
+				updateBounds();
+				updateTime();
+				updateRobotTabs();
+			}
 		}
 	}
 	
