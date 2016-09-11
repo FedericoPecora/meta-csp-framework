@@ -6,6 +6,7 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,6 +94,8 @@ public class TrajectoryEnvelopeAnimator {
 
 	private ArrayList<JTextPane> dtPanels = null;
 	private JTabbedPane tabbedPane = null;
+	
+	private JLabel currentFixedTime = null;
 	
 	private TrajectoryEnvelopeScheduler metaSolver = null;
 	
@@ -188,6 +191,7 @@ public class TrajectoryEnvelopeAnimator {
 	}
 	
 	private boolean addFixedTimeConstraints() {
+		if (timeL < fixedTime) return false;
 		TrajectoryEnvelope[] roots = ((TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0]).getRootTrajectoryEnvelopes();
 		ArrayList<AllenIntervalConstraint> consToAdd = new ArrayList<AllenIntervalConstraint>();
 		for (TrajectoryEnvelope rte : roots) {
@@ -296,9 +300,19 @@ public class TrajectoryEnvelopeAnimator {
 			dtPanels = null;
 		}
 	}
+	
+	private void updateCurrentFixedTime() {	
+		currentFixedTime.setText("Wall time: " + fixedTime);
+	}
 
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
+		currentFixedTime = new JLabel("Wall time: " + fixedTime);
+		currentFixedTime.setForeground(Color.BLACK);
+		currentFixedTime.setFont(new Font(currentFixedTime.getFont().getName(), Font.PLAIN, 22));
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panel.add(currentFixedTime);
+
 		final JFrame frame = new JFrame(title); 
 		final Container cp = frame.getContentPane();
 		cp.setLayout(new BorderLayout());
@@ -333,7 +347,7 @@ public class TrajectoryEnvelopeAnimator {
 		itemShowDTs = new JCheckBoxMenuItem("Show control signals at wall time");
 		itemShowDTs.setSelected(false);
 		menuControl.add(itemShowDTs);
-        
+        		
 		itemSave.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser(getSemrobDir());
@@ -801,6 +815,7 @@ public class TrajectoryEnvelopeAnimator {
 		panel.updatePanel();
 		if (timeL > fixedTime) panel.setBackground(Color.decode("#ebfaeb"));
 		else panel.setBackground(Color.decode("#ffe6e6"));
+		updateCurrentFixedTime();
 	}
 	
 	private String formatTTC() {

@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -260,7 +261,7 @@ public class JTSDrawingPanel extends JPanel {
 		if (!empty) g2d.fill(newShape);
 		else g2d.draw(newShape);
 	}
-
+	
 	@Override 
 	protected synchronized void paintComponent(Graphics g) { 
 		super.paintComponent(g); 
