@@ -127,7 +127,7 @@ public class VolvoCEDynamicCoordinationTest7 {
 		
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("Coordinated trajecotries of three XA15s ");
 		tea.setTrajectoryEnvelopeScheduler(metaSolver);
-		tea.addTrajectoryEnvelopes(solver.getConstraintNetwork());
+		tea.setTrajectoryEnvelopes(solver.getConstraintNetwork());
 
 	}
 	

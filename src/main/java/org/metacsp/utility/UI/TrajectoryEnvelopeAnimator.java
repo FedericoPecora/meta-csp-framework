@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,7 @@ import java.util.Scanner;
 import java.util.TreeSet;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,11 +35,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.Document;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -56,8 +63,7 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
-import cern.colt.Arrays;
-
+import com.sun.webkit.ContextMenu.ShowContext;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -84,6 +90,9 @@ public class TrajectoryEnvelopeAnimator {
 	private static final int panelHeight = 500;
 	private int numRobots = 0;
 	private long fixedTime = -1;
+
+	private ArrayList<JTextPane> dtPanels = null;
+	private JTabbedPane tabbedPane = null;
 	
 	private TrajectoryEnvelopeScheduler metaSolver = null;
 	
@@ -96,10 +105,12 @@ public class TrajectoryEnvelopeAnimator {
 	private JMenu menuSolve;
 	private JMenuItem itemSolve;
 	private JMenuItem itemRefine;
+	private JCheckBoxMenuItem itemAutoRefineAndSolve;
 	private JMenu menuControl;
 	private JMenuItem itemSetFixTime;
 	private JMenuItem itemAddDelay;
 	private JMenuItem itemAddDuration;
+	private JCheckBoxMenuItem itemShowDTs;
     
 	public void setTrajectoryEnvelopeScheduler (TrajectoryEnvelopeScheduler metaSolver) {
 		this.metaSolver = metaSolver;
@@ -223,6 +234,69 @@ public class TrajectoryEnvelopeAnimator {
 		return null;
 	}
 	
+	private void refineIfNecessary() {
+		if (itemAutoRefineAndSolve.isSelected()) {
+			ConstraintNetwork refined = metaSolver.refineTrajectoryEnvelopes();
+			tes.clear();
+			setTrajectoryEnvelopes(metaSolver.getConstraintSolvers()[0].getConstraintNetwork());
+			updateTime();
+			updateRobotTabs();
+		}
+	}
+
+	private void solveIfNecessary() {
+		if (itemAutoRefineAndSolve.isSelected()) {
+			boolean solved = metaSolver.backtrack();
+			System.out.println("Solved? " + solved);
+			updateBounds();
+			updateTime();
+			updateRobotTabs();
+		}
+	}
+	
+	private void makeRobotTabs(Container cp) {
+		removeRobotTabs(cp);
+		dtPanels = new ArrayList<JTextPane>();
+		tabbedPane = new JTabbedPane();
+		for (int i = 0; i < numRobots; i++) {
+			JTextPane dtPanel = new JTextPane();
+			dtPanel.setEditable(false);
+			tabbedPane.addTab("Robot " + i, new JScrollPane(dtPanel));
+			
+			JLabel lab = new JLabel();
+			lab.setText("Robot " + i);
+	        lab.setPreferredSize(new Dimension(60, 20));
+	        lab.setSize(new Dimension(60, 20));
+	        lab.setMaximumSize(new Dimension(60, 20));
+	        tabbedPane.setTabComponentAt(i, lab);
+	        
+			dtPanels.add(dtPanel);
+		}
+		tabbedPane.setPreferredSize(new Dimension(300,20));
+        cp.add(tabbedPane, BorderLayout.EAST);
+        updateRobotTabs();
+        cp.validate();
+	}
+	
+	private void updateRobotTabs() {
+		if (itemShowDTs.isSelected() && metaSolver != null) {
+			TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
+			for (int i = 0; i < numRobots; i++) {
+				TrajectoryEnvelope[] rootEnvs = solver.getRootTrajectoryEnvelopes(i);
+				dtPanels.get(i).setText(rootEnvs[0].getInfo());
+				dtPanels.get(i).setCaretPosition(0);
+			}
+		}
+	}
+	
+	private void removeRobotTabs(Container cp) {
+		if (tabbedPane != null) {
+			cp.remove(tabbedPane);
+			tabbedPane = null;
+			dtPanels = null;
+		}
+	}
+
 	public TrajectoryEnvelopeAnimator(String title) {
 		panel = new JTSDrawingPanel();
 		final JFrame frame = new JFrame(title); 
@@ -244,15 +318,21 @@ public class TrajectoryEnvelopeAnimator {
 		itemSolve = new JMenuItem("Solve");
 		itemSolve.setEnabled(false);
 		itemRefine = new JMenuItem("Refine envelopes");
+		itemAutoRefineAndSolve = new JCheckBoxMenuItem("Automatically refine and solve");
+		itemAutoRefineAndSolve.setSelected(false);
 		menuControl = new JMenu("Control");
 		itemSetFixTime = new JMenuItem("Fix wall time");
 		itemAddDelay = new JMenuItem("Add delay...");
 		itemAddDuration = new JMenuItem("Add duration...");
 		menuSolve.add(itemRefine);
 		menuSolve.add(itemSolve);
+		menuSolve.add(itemAutoRefineAndSolve);
 		menuControl.add(itemSetFixTime);
 		menuControl.add(itemAddDelay);
 		menuControl.add(itemAddDuration);
+		itemShowDTs = new JCheckBoxMenuItem("Show control signals at wall time");
+		itemShowDTs.setSelected(false);
+		menuControl.add(itemShowDTs);
         
 		itemSave.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -284,7 +364,7 @@ public class TrajectoryEnvelopeAnimator {
 		            	timeL = 0;
 		                panel.flushGeometries();
 		                panel.reinitVisualization();
-		                addTrajectoryEnvelopes(con);
+		                setTrajectoryEnvelopes(con);
 		                frame.setTitle(file[0].getName());
 		            	updateValue();
                 	}
@@ -298,7 +378,7 @@ public class TrajectoryEnvelopeAnimator {
                 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
                 		for (File oneFile : file) {
 	                		solver.createEnvelope(numRobots++,oneFile.getAbsolutePath());
-	                		addTrajectoryEnvelopes(solver.getConstraintNetwork());
+	                		setTrajectoryEnvelopes(solver.getConstraintNetwork());
 	                		if (fixedTime != -1) {
 	                			TrajectoryEnvelope parking = solver.getTrajectoryEnvelopes(numRobots-1)[0];
 	                			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(fixedTime,fixedTime));
@@ -307,7 +387,9 @@ public class TrajectoryEnvelopeAnimator {
 	                			solver.addConstraint(release);
 	                		}
                 		}
-                		
+                		if (itemShowDTs.isSelected()) makeRobotTabs(cp);
+                		refineIfNecessary();
+                		solveIfNecessary();
                 	}
                 }
             }
@@ -323,6 +405,7 @@ public class TrajectoryEnvelopeAnimator {
 				catch(NumberFormatException nfe) { System.out.println("Using default duration: 1200000 ms"); }
 				addDurations(duration, getAllTrajecotryEnvleopesLargerThan(5.0));
 				updateBounds();
+				updateRobotTabs();
 			}
         });
         
@@ -337,7 +420,7 @@ public class TrajectoryEnvelopeAnimator {
         		if (metaSolver != null) {
         			ConstraintNetwork refined = metaSolver.refineTrajectoryEnvelopes();
     				tes.clear();
-    				addTrajectoryEnvelopes(metaSolver.getConstraintSolvers()[0].getConstraintNetwork());
+    				setTrajectoryEnvelopes(metaSolver.getConstraintSolvers()[0].getConstraintNetwork());
 //    				JTSDrawingPanel.drawConstraintNetwork("Geometries after refinement",refined);
     				itemSolve.setEnabled(true);
         		}
@@ -354,6 +437,38 @@ public class TrajectoryEnvelopeAnimator {
         		}
             }
         });
+        
+        itemAutoRefineAndSolve.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (metaSolver != null) {
+        			if (itemAutoRefineAndSolve.isSelected()) {
+        				itemSolve.setEnabled(false);
+        				itemRefine.setEnabled(false);
+        				refineIfNecessary();
+        				solveIfNecessary();
+        			}
+        			else {
+        				itemSolve.setEnabled(true);
+        				itemRefine.setEnabled(true);        				
+        			}
+        		}
+            }
+        });
+
+        itemShowDTs.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (metaSolver != null) {
+        			if (itemShowDTs.isSelected()) {
+        				makeRobotTabs(cp);
+        				cp.validate();
+        			}
+        			else {
+        				removeRobotTabs(cp);
+        				cp.validate();
+        			}
+        		}
+            }
+        });
 
         itemSetFixTime.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -361,6 +476,8 @@ public class TrajectoryEnvelopeAnimator {
         			if (addFixedTimeConstraints()) {
         				System.out.println("Fixed wall time to " + timeL);
         				fixedTime = timeL;
+        				//updateRobotTabs();
+        				updateTime();
         			}
         			else {
         				System.out.println("Failed to fix wall time to " + timeL+  "!");
@@ -398,6 +515,7 @@ public class TrajectoryEnvelopeAnimator {
 	            			else System.out.println("Failed to delay " + gte + " by " + delay + " ms");
 	            			updateTime();
 	        				updateBounds();
+	        				updateRobotTabs();
             			}
                 		panel.removeMouseListener(this);
                 		panel.addMouseListener(mlOld);
@@ -441,6 +559,7 @@ public class TrajectoryEnvelopeAnimator {
 	            			else System.out.println("Failed to duration to " + gte + " of " + duration + " ms");
 	            			updateTime();
 	        				updateBounds();
+	        				updateRobotTabs();
             			}
                 		panel.removeMouseListener(this);
                 		panel.addMouseListener(mlOld);
@@ -460,7 +579,7 @@ public class TrajectoryEnvelopeAnimator {
         menuBar.add(menuSolve);
         menuBar.add(menuControl);
 		frame.setJMenuBar(menuBar);
-		
+				
 		cp.add(panel, BorderLayout.NORTH);
 		final JPanel pBottom = new JPanel();
 		pBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 2));
@@ -607,7 +726,7 @@ public class TrajectoryEnvelopeAnimator {
 		updateTime();
 	}
 	
-	public void addTrajectoryEnvelopes(ConstraintNetwork con) {
+	public void setTrajectoryEnvelopes(ConstraintNetwork con) {
 		for (Variable v : con.getVariables()) {
 			if (v instanceof TrajectoryEnvelope) {
 				TrajectoryEnvelope te = (TrajectoryEnvelope)v;

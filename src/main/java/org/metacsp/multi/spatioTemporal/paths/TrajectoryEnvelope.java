@@ -76,18 +76,24 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		return footprint;
 	}
 	
-	public void printInfo() {
+	public String getInfo() {
 		
+		String ret = "";
 		double[] teDTs = this.getTrajectory().getDTs();
 		double[] teCTs = this.getCTs();
 
 		DecimalFormat df = new DecimalFormat("#0.00");
 		df.setRoundingMode(RoundingMode.HALF_DOWN);
-		System.out.println("------------------------------------------\n" + this + "\nGround env: " + this.getGroundEnvelopes()  + "\nDTs and CTs\n------------------------------------------");
-		for (int i = 0; i < teDTs.length; i++) {
-			System.out.println(i + ": " + df.format(teDTs[i]) + " \t " + df.format(teCTs[i]));
+		ret += this + "\n  Ground envelopes:";
+		for (TrajectoryEnvelope te : this.getGroundEnvelopes()) {
+			ret += "\n    " + te;
 		}
-		
+		ret += "\n\nSeq\tDT\tCT\n------------------------------------------\n";
+		for (int i = 0; i < teDTs.length; i++) {
+			ret += i + "\t" + df.format(teDTs[i]) + " \t" + df.format(teCTs[i]);
+			if (i < teDTs.length-1) ret += "\n";
+		}
+		return ret;
 	}
 	
 	public void setFootprint(Polygon footprint) {

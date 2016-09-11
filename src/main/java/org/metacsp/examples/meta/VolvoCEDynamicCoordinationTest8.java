@@ -14,9 +14,9 @@ public class VolvoCEDynamicCoordinationTest8 {
 		Map map = new Map(null, null);
 		metaSolver.addMetaConstraint(map);
 		
-		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("Coordinated trajecotries of three XA15s ");
+		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("Coordinated trajecotries of several XA15s");
 		tea.setTrajectoryEnvelopeScheduler(metaSolver);
-		tea.addTrajectoryEnvelopes(solver.getConstraintNetwork());
+		tea.setTrajectoryEnvelopes(solver.getConstraintNetwork());
 
 	}
 	

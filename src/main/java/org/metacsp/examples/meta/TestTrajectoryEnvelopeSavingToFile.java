@@ -53,7 +53,7 @@ public class TestTrajectoryEnvelopeSavingToFile {
 
 		ConstraintNetwork.saveConstraintNetwork(solver.getConstraintNetwork(),"savedConstraintNetworks/example.cn");
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("Trajectory Envelopes - after solving");
-		tea.addTrajectoryEnvelopes(solver.getConstraintNetwork());
+		tea.setTrajectoryEnvelopes(solver.getConstraintNetwork());
 
 	}
 	

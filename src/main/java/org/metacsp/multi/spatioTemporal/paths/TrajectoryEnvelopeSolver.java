@@ -94,6 +94,21 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
 	}
 	
+	/**
+	 * Get all {@link TrajectoryEnvelope}s that have no super-envelopes for a given robot.
+	 * @param robotID The ID of the robot for which the {@link TrajectoryEnvelope}s are desired.
+	 * @return All {@link TrajectoryEnvelope}s that have no super-envelopes for a given robot.
+	 */
+	public TrajectoryEnvelope[] getRootTrajectoryEnvelopes(int robotID) {
+		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
+		for (Variable var : this.getVariables()) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)var;
+			if (!te.hasSuperEnvelope() && te.getRobotID() == robotID) ret.add(te);
+		}
+		return ret.toArray(new TrajectoryEnvelope[ret.size()]);
+	}
+
+	
 	private static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon, int maxTrajectories) {
 		ConstraintSolver[] ret = new ConstraintSolver[2];
 		if (maxTrajectories >= 1) {
