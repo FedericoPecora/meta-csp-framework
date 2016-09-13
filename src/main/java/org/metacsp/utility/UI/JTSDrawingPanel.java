@@ -327,7 +327,8 @@ public class JTSDrawingPanel extends JPanel {
 					g2d.setPaint(endCircPaint); 
 					g2d.draw(newEndCircShape);
 				} 
-			} 
+			}
+			g2d.setComposite(makeComposite(1.0f));
 		}
 	} 
 

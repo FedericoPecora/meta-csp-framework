@@ -90,7 +90,7 @@ public class TrajectoryEnvelopeAnimator {
 	private static final int panelWidth = 700;
 	private static final int panelHeight = 500;
 	private int numRobots = 0;
-	private long fixedTime = -1;
+	private long fixedTime = 0;
 
 	private ArrayList<JTextPane> dtPanels = null;
 	private JTabbedPane tabbedPane = null;
@@ -399,7 +399,7 @@ public class TrajectoryEnvelopeAnimator {
                 		for (File oneFile : file) {
 	                		solver.createEnvelope(numRobots++,oneFile.getAbsolutePath());
 	                		setTrajectoryEnvelopes(solver.getConstraintNetwork());
-	                		if (fixedTime != -1) {
+	                		if (fixedTime > 0) {
 	                			TrajectoryEnvelope parking = solver.getTrajectoryEnvelopes(numRobots-1)[0];
 	                			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(fixedTime,fixedTime));
 	                			release.setFrom(parking);
