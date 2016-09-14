@@ -198,26 +198,17 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return ret;
 	}
 	
-	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelope(int robotID, String path) {
-
-		//XA15 footprint, 2.7 (w) x 6.6 (l)
-		Coordinate frontLeft = new Coordinate(5.3, 1.35);
-		Coordinate frontRight = new Coordinate(5.3, -1.35);
-		Coordinate backRight = new Coordinate(-1.3, -1.35);
-		Coordinate backLeft = new Coordinate(-1.3, 1.35);
-		
-		HashMap<Integer,ArrayList<TrajectoryEnvelope>> ret = new HashMap<Integer, ArrayList<TrajectoryEnvelope>>();
-		
-		for (TrajectoryEnvelope te : this.getRootTrajectoryEnvelopes()) {
-			ArrayList<TrajectoryEnvelope> oneRobot = new ArrayList<TrajectoryEnvelope>(te.getGroundEnvelopes());
-			ret.put(te.getRobotID(), oneRobot);
-		}
-		ArrayList<TrajectoryEnvelope> newRobot = this.makeEnvelope(robotID, path, frontLeft, frontRight, backRight, backLeft);
-		ret.put(robotID, newRobot);
-		return ret;
-	}
-	
-	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(String ... paths) {
+	/**
+	 * Create a trajectory envelope for each given path (in a file). Robot IDs are assigned starting from the given
+	 * integer. This method creates three envelopes for each path:
+	 * the main {@link TrajectoryEnvelope} covering the path; one {@link TrajectoryEnvelope} for the starting position
+	 * of the robot; and one one {@link TrajectoryEnvelope} for the final parking position of the robot. The three envelopes
+	 * are constrained with {@link AllenIntervalConstraint.Type#Meets} constraints.
+	 * @param firstRobotID The starting ID of the robot for which the {@link TrajectoryEnvelope}s should be created.
+	 * @param paths The paths over which the {@link TrajectoryEnvelope}s should be created.
+	 * @return
+	 */
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(int firstRobotID, String ... paths) {
 
 		//XA15 footprint, 2.7 (w) x 6.6 (l)
 		Coordinate frontLeft = new Coordinate(5.3, 1.35);
@@ -228,8 +219,8 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		HashMap<Integer,ArrayList<TrajectoryEnvelope>> ret = new HashMap<Integer, ArrayList<TrajectoryEnvelope>>();
 		
 		for (int i = 0; i < paths.length; i++) {
-			ArrayList<TrajectoryEnvelope> oneRobot = makeEnvelope(i, paths[i], frontLeft, frontRight, backRight, backLeft);
-			ret.put(i, oneRobot);
+			ArrayList<TrajectoryEnvelope> oneRobot = makeEnvelope(i+firstRobotID, paths[i], frontLeft, frontRight, backRight, backLeft);
+			ret.put(i+firstRobotID, oneRobot);
 		}
 		
 		return ret;

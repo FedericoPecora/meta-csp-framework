@@ -396,17 +396,22 @@ public class TrajectoryEnvelopeAnimator {
                 	}
                 	else if (file[0].getName().endsWith(".path")) {
                 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)metaSolver.getConstraintSolvers()[0];
-                		for (File oneFile : file) {
-	                		solver.createEnvelope(numRobots++,oneFile.getAbsolutePath());
-	                		setTrajectoryEnvelopes(solver.getConstraintNetwork());
-	                		if (fixedTime > 0) {
-	                			TrajectoryEnvelope parking = solver.getTrajectoryEnvelopes(numRobots-1)[0];
+                		String[] paths = new String[file.length];
+                		for (int i = 0; i < file.length; i++) {
+                			paths[i] = file[i].getAbsolutePath();
+                		}
+                		solver.createEnvelopes(numRobots,paths);
+                		setTrajectoryEnvelopes(solver.getConstraintNetwork());
+                		for (int i = numRobots; i < numRobots+paths.length; i++) {
+	                		if (fixedTime >= 0) {
+	                			TrajectoryEnvelope parking = solver.getTrajectoryEnvelopes(i)[0];
 	                			AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(fixedTime,fixedTime));
 	                			release.setFrom(parking);
 	                			release.setTo(parking);
 	                			solver.addConstraint(release);
 	                		}
                 		}
+                		numRobots += paths.length;
                 		if (itemShowDTs.isSelected()) makeRobotTabs(cp);
                 		refineIfNecessary();
                 		solveIfNecessary();
