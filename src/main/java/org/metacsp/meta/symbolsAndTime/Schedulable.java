@@ -487,7 +487,9 @@ public abstract class Schedulable extends MetaConstraint {
 	}
 
 	public void removeUsage(Activity... acts) {
-		for (Activity act : acts) activities.removeElement(act);
+		if (activities != null) {
+			for (Activity act : acts) activities.removeElement(act);
+		}
 		//System.out.println("-->" + activities.size());
 	}
 	

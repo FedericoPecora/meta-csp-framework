@@ -24,6 +24,7 @@ package org.metacsp.meta.spatioTemporal.paths;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
@@ -60,7 +61,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
-	private ArrayList<TrajectoryEnvelope> envelopesForScheduling = new ArrayList<TrajectoryEnvelope>();
+	//private ArrayList<TrajectoryEnvelope> envelopesForScheduling = new ArrayList<TrajectoryEnvelope>();
 	private static final long serialVersionUID = 8551829132754804513L;
 	private HashMap<TrajectoryEnvelope,ArrayList<TrajectoryEnvelope>> refinedWith = new HashMap<TrajectoryEnvelope, ArrayList<TrajectoryEnvelope>>();
 	private static final int MINIMUM_SIZE = 5;
@@ -208,43 +209,46 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			}			
 		}
 		//recompute usages
-		for (TrajectoryEnvelope te : envelopesForScheduling) {
-			((Map)this.getMetaConstraints()[0]).removeUsage(te);		
-		}
 		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
 			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
 			if (!te.hasSuperEnvelope()) {
-				for (TrajectoryEnvelope gte : te.getGroundEnvelopes()) {
+				TreeSet<TrajectoryEnvelope> gevs = te.getGroundEnvelopes(); 
+				if (!gevs.isEmpty()) {
+					((Map)this.getMetaConstraints()[0]).removeUsage(te);		
+					logger.finest("Removed usage of " + te);
+				}
+				for (TrajectoryEnvelope gte : gevs) {
 					((Map)this.getMetaConstraints()[0]).setUsage(gte);
+					logger.finest("Set usage of " + gte);
 				}
 			}
 		}
 		return ret;
 	}
 	
-	/**
-	 * Refine the {@link TrajectoryEnvelope}s maintained by the {@link TrajectoryEnvelopeSolver} underlying this
-	 * {@link TrajectoryEnvelopeScheduler}. This method does not actually splits {@link TrajectoryEnvelope}s.
-	 * @return A {@link ConstraintNetwork} containing the set of {@link TrajectoryEnvelope}s into which the existing
-	 * {@link TrajectoryEnvelope}s were refined. This {@link ConstraintNetwork} is empty if the existing {@link TrajectoryEnvelope}s
-	 * cannot be refined any further.
-	 */
-	public ConstraintNetwork refineTrajectoryEnvelopesLight() {
-		ConstraintNetwork ret = new ConstraintNetwork(null);		
-		//recompute usages
-		for (TrajectoryEnvelope te : envelopesForScheduling) {
-			((Map)this.getMetaConstraints()[0]).removeUsage(te);		
-		}
-		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
-			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
-			if (!te.hasSuperEnvelope()) {
-				for (TrajectoryEnvelope gte : te.getGroundEnvelopes()) {
-					((Map)this.getMetaConstraints()[0]).setUsage(gte);
-				}
-			}
-		}
-		return ret;
-	}
+//	/**
+//	 * Refine the {@link TrajectoryEnvelope}s maintained by the {@link TrajectoryEnvelopeSolver} underlying this
+//	 * {@link TrajectoryEnvelopeScheduler}. This method does not actually split {@link TrajectoryEnvelope}s.
+//	 * @return A {@link ConstraintNetwork} containing the set of {@link TrajectoryEnvelope}s into which the existing
+//	 * {@link TrajectoryEnvelope}s were refined. This {@link ConstraintNetwork} is empty if the existing {@link TrajectoryEnvelope}s
+//	 * cannot be refined any further.
+//	 */
+//	public ConstraintNetwork refineTrajectoryEnvelopesLight() {
+//		ConstraintNetwork ret = new ConstraintNetwork(null);		
+//		//recompute usages
+////		for (TrajectoryEnvelope te : envelopesForScheduling) {
+////			((Map)this.getMetaConstraints()[0]).removeUsage(te);		
+////		}
+//		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
+//			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+//			if (!te.hasSuperEnvelope()) {
+//				for (TrajectoryEnvelope gte : te.getGroundEnvelopes()) {
+//					((Map)this.getMetaConstraints()[0]).setUsage(gte);
+//				}
+//			}
+//		}
+//		return ret;
+//	}
 
 	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];

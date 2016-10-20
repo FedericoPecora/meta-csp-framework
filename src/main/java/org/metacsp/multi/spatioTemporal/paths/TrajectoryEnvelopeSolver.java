@@ -17,8 +17,8 @@ import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * A {@link MultiConstraintSolver} for {@link SpatioTemporalVariable}s. Constraints of type {@link AllenIntervalConstraint} and
- * {@link DE9IMRelation} can be added to {@link SpatioTemporalVariable}s.
+ * A {@link MultiConstraintSolver} for {@link TrajectoryEnvelope}s. Constraints of type {@link AllenIntervalConstraint} and
+ * {@link DE9IMRelation} can be added to {@link TrajectoryEnvelope}s.
  * 
  * @author Federico Pecora
  *
@@ -129,9 +129,9 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	/**
 	 * Returns the {@link AllenIntervalNetworkSolver} which propagates temporal constraints
 	 * (of type {@link AllenIntervalConstraint})
-	 * among the temporal parts ({@link AllenInterval}s) of {@link SpatioTemporalVariable}s.
+	 * among the temporal parts ({@link AllenInterval}s) of a trajectory envelope.
 	 * @return The temporal solver responsible for propagating the temporal constraints among
-	 * the temporal parts of {@link SpatioTemporalVariable}s.
+	 * the temporal parts of {@link TrajectoryEnvelope}s.
 	 */
 	public AllenIntervalNetworkSolver getTemporalSolver() {
 		return (AllenIntervalNetworkSolver)this.getConstraintSolvers()[0];
@@ -139,9 +139,9 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 
 	/**
 	 * Returns the {@link DE9IMRelationSolver} which propagates spatial constraints (of type {@link DE9IMRelation})
-	 * among the spatial parts ({@link GeometricShapeVariable}s) of {@link SpatioTemporalVariable}s.
+	 * among the spatial parts ({@link GeometricShapeVariable}s) of {@link TrajectoryEnvelope}s.
 	 * @return The spatial solver responsible for propagating the spatial constraints among
-	 * the spatial parts of {@link SpatioTemporalVariable}s.
+	 * the spatial parts of {@link TrajectoryEnvelope}s.
 	 */
 	public DE9IMRelationSolver getSpatialSolver() {
 		return (DE9IMRelationSolver)this.getConstraintSolvers()[1];

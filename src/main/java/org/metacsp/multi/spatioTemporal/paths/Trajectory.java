@@ -95,7 +95,7 @@ public class Trajectory implements Serializable {
 	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s that is read
 	 * from a file. The temporal profile of the trajectory is computed via naive numeric resolution
 	 * assuming constant acceleration and a maximum speed.
-	 * @param psa The path of a file pointing to the list of {@link PoseSteering}s used to build the path.
+	 * @param fileName The path of a file pointing to the list of {@link PoseSteering}s used to build the path.
 	 */	
 	public Trajectory(String fileName) {
 		this.psa = readPath(fileName);
