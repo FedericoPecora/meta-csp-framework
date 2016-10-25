@@ -258,6 +258,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		Geometry se2 = ((GeometricShapeDomain)var2.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry intersectionse1se2 = se1.intersection(se2);
 		
+		boolean useDefaultEnvelopeChunks = false;
+		
 		if (!intersectionse1se2.isValid()) {
 			intersectionse1se2 = intersectionse1se2.symDifference(intersectionse1se2.getBoundary());
 			logger.info("Intersection " + var1 + " with " + var2 + " invalid - fixing");
@@ -265,7 +267,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
 		if (intersectionse1se2 instanceof MultiPolygon) {
 			logger.info("Intersection " + var1 + " with " + var2 + " too complex - skipping");
-			return toReturn;								
+			useDefaultEnvelopeChunks = true;
+			//return toReturn;								
 		}
 		
 		boolean in  = false;
@@ -277,7 +280,9 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				in = true;
 				if (++countIn > 1) {
 					logger.info("Reference path of " + var1 + " enters intersection with " + var2 + " multiple times - skipping");
-					return toReturn;					
+					useDefaultEnvelopeChunks = true;
+					break;
+					//return toReturn;					
 				}
 			}
 			if (!intersectionse1se2.contains(point)) {
@@ -288,7 +293,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		double areaDifference = intersectionse1se2.symDifference(intersectionse1se2.getBoundary()).union(se1).getArea()-se1.getArea();
 		if (areaDifference > 0.001) {
 			logger.info("Intersection " + var1 + " with " + var2 + " seems corrupt (area increased by " + areaDifference + ") - skipping ");
-			return toReturn;											
+			useDefaultEnvelopeChunks = true;
+			//return toReturn;											
 		}
 
 		// IRAN: UNOCMMENT THIS IF YOU HAVE PROBLEMS WITH SCHEDULING
@@ -302,94 +308,109 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		ArrayList<PoseSteering> var1sec1 = new ArrayList<PoseSteering>();
 		ArrayList<PoseSteering> var1sec2 = new ArrayList<PoseSteering>();
 		ArrayList<PoseSteering> var1sec3 = new ArrayList<PoseSteering>();
-		for (int i = 0; i < var1.getPathLength(); i++) {
-			Coordinate coord = var1.getTrajectory().getPositions()[i];
-			PoseSteering ps = var1.getTrajectory().getPoseSteering()[i];
-			Point point = gf.createPoint(coord);
-			Geometry fp = var1.makeFootprint(ps);
-			if (!intersectionse1se2.intersects(fp) && var1sec2.isEmpty()) {
-				var1sec1.add(ps);
-			}
-			else if (intersectionse1se2.intersects(fp)) {
-				var1sec2.add(ps);
-			}
-			else if (!intersectionse1se2.intersects(fp) && !var1sec2.isEmpty()) {
-				var1sec3.add(ps);
-			}
-//			if (!intersectionse1se2.contains(point) && var1sec2.isEmpty()) {
-//				var1sec1.add(ps);
-//			}
-//			else if (intersectionse1se2.contains(point)) {
-//				var1sec2.add(ps);
-//			}
-//			else if (!intersectionse1se2.contains(point) && !var1sec2.isEmpty()) {
-//				var1sec3.add(ps);
-//			}
-		}
 
 		boolean skipSec1 = false;
 		boolean skipSec3 = false;
-		
-		//Add to start
-		boolean done = false;
-		while (!done) {
-			try {
-				Geometry lastPolySec1 = var1.makeFootprint(var1sec1.get(var1sec1.size()-1));
-				if (lastPolySec1.disjoint(se2)) done = true;
-				else {
+
+		if (useDefaultEnvelopeChunks) {
+			float percentageChunckOne = 0.30f;
+			float percentageChunckTwo = 0.40f;
+			for (int i = 0; i < var1.getPathLength(); i++) {
+				PoseSteering ps = var1.getTrajectory().getPoseSteering()[i];
+				if (i < var1.getPathLength()*percentageChunckOne) var1sec1.add(ps);
+				else if (i < var1.getPathLength()*(percentageChunckOne+percentageChunckTwo)) var1sec2.add(ps);
+				else var1sec3.add(ps);
+			}
+			logger.info("Using default chunk sizes " + var1sec1.size() + " / " + var1sec2.size() + " / " + var1sec3.size());
+		}
+		else {	
+			for (int i = 0; i < var1.getPathLength(); i++) {
+				Coordinate coord = var1.getTrajectory().getPositions()[i];
+				PoseSteering ps = var1.getTrajectory().getPoseSteering()[i];
+				Point point = gf.createPoint(coord);
+				Geometry fp = var1.makeFootprint(ps);
+				if (!intersectionse1se2.intersects(fp) && var1sec2.isEmpty()) {
+					var1sec1.add(ps);
+				}
+				else if (intersectionse1se2.intersects(fp)) {
+					var1sec2.add(ps);
+				}
+				else if (!intersectionse1se2.intersects(fp) && !var1sec2.isEmpty()) {
+					var1sec3.add(ps);
+				}
+	//			if (!intersectionse1se2.contains(point) && var1sec2.isEmpty()) {
+	//				var1sec1.add(ps);
+	//			}
+	//			else if (intersectionse1se2.contains(point)) {
+	//				var1sec2.add(ps);
+	//			}
+	//			else if (!intersectionse1se2.contains(point) && !var1sec2.isEmpty()) {
+	//				var1sec3.add(ps);
+	//			}
+			}
+				
+			//Add to start
+			boolean done = false;
+			while (!done) {
+				try {
+					Geometry lastPolySec1 = var1.makeFootprint(var1sec1.get(var1sec1.size()-1));
+					if (lastPolySec1.disjoint(se2)) done = true;
+					else {
+						var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+						var1sec1.remove(var1sec1.size()-1);
+	//					logger.info("Added to start... (1)");
+					}
+				} catch (IndexOutOfBoundsException e) { skipSec1 = true; done = true; }
+			}
+			//If sec1 emptied, remove it
+			if (var1sec1.size() < MINIMUM_SIZE) {
+				while (var1sec1.size() > 0) {
 					var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
 					var1sec1.remove(var1sec1.size()-1);
-//					logger.info("Added to start... (1)");
 				}
-			} catch (IndexOutOfBoundsException e) { skipSec1 = true; done = true; }
-		}
-		//If sec1 emptied, remove it
-		if (var1sec1.size() < MINIMUM_SIZE) {
-			while (var1sec1.size() > 0) {
-				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
-				var1sec1.remove(var1sec1.size()-1);
+				skipSec1 = true;
 			}
-			skipSec1 = true;
-		}
-
-		//Add to end
-		done = false;
-		while (!done) {
-			try {
-				Geometry firstPolySec3 = var1.makeFootprint(var1sec3.get(0));
-				if (firstPolySec3.disjoint(se2)) done = true;
-				else {
+	
+			//Add to end
+			done = false;
+			while (!done) {
+				try {
+					Geometry firstPolySec3 = var1.makeFootprint(var1sec3.get(0));
+					if (firstPolySec3.disjoint(se2)) done = true;
+					else {
+						var1sec2.add(var1sec3.get(0));
+						var1sec3.remove(0);
+	//					logger.info("Added to end... (1)");
+					}
+				} catch (IndexOutOfBoundsException e) { skipSec3 = true; done = true; }
+			}
+			//If sec3 emptied, remove it
+			if (var1sec3.size() < MINIMUM_SIZE) {
+				while (var1sec3.size() > 0) {
 					var1sec2.add(var1sec3.get(0));
 					var1sec3.remove(0);
-//					logger.info("Added to end... (1)");
 				}
-			} catch (IndexOutOfBoundsException e) { skipSec3 = true; done = true; }
-		}
-		//If sec3 emptied, remove it
-		if (var1sec3.size() < MINIMUM_SIZE) {
-			while (var1sec3.size() > 0) {
-				var1sec2.add(var1sec3.get(0));
-				var1sec3.remove(0);
+				skipSec3 = true;
 			}
-			skipSec3 = true;
-		}
+			
+			if (var1sec2.size() < MINIMUM_SIZE) {
+				if (var1sec1.size() > MINIMUM_SIZE) {
+					var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
+					var1sec1.remove(var1sec1.size()-1);
+	//				logger.info("Added to start... (2)");
+				}
+				else if (var1sec3.size() > MINIMUM_SIZE) {
+					var1sec2.add(var1sec3.get(0));
+					var1sec3.remove(0);				
+	//				logger.info("Added to end... (2)");
+				}
+			}
+	
+			if ((skipSec1 && skipSec3) || (!skipSec1 && var1sec1.size() < MINIMUM_SIZE) || (!skipSec3 && var1sec3.size() < MINIMUM_SIZE) || var1sec2.size() < MINIMUM_SIZE) {
+				logger.fine("Intersection " + var1 + " with " + var2 + " too small - skipping");
+				return toReturn;
+			}
 		
-		if (var1sec2.size() < MINIMUM_SIZE) {
-			if (var1sec1.size() > MINIMUM_SIZE) {
-				var1sec2.add(0,var1sec1.get(var1sec1.size()-1));
-				var1sec1.remove(var1sec1.size()-1);
-//				logger.info("Added to start... (2)");
-			}
-			else if (var1sec3.size() > MINIMUM_SIZE) {
-				var1sec2.add(var1sec3.get(0));
-				var1sec3.remove(0);				
-//				logger.info("Added to end... (2)");
-			}
-		}
-
-		if ((skipSec1 && skipSec3) || (!skipSec1 && var1sec1.size() < MINIMUM_SIZE) || (!skipSec3 && var1sec3.size() < MINIMUM_SIZE) || var1sec2.size() < MINIMUM_SIZE) {
-			logger.fine("Intersection " + var1 + " with " + var2 + " too small - skipping");
-			return toReturn;
 		}
 
 		var1.setRefinable(false);
