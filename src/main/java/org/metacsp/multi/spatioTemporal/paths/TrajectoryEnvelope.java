@@ -62,6 +62,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
 	private int robotID = -1;
 	private Polygon footprint = null;
+	private int sequenceNumberStart = -1;
+	private int sequenceNumberEnd = -1;
 	
 	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
@@ -390,6 +392,24 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 */
 	public void setSuperEnvelope(TrajectoryEnvelope superEnvelope) {
 		this.superEnvelope = superEnvelope;
+		//If this envelope has a super envelope, then compute sequenceNumberStart and sequenceNumberEnd
+		this.updateSequenceNumbers();
+	}
+	
+	private void updateSequenceNumbers() {
+		if (!this.hasSuperEnvelope()) {
+			this.sequenceNumberStart = 0;
+			this.sequenceNumberEnd = this.getTrajectory().getPose().length-1;
+		}
+		else {
+			TrajectoryEnvelope superEnv = this;
+			while (superEnv.hasSuperEnvelope()) superEnv = superEnv.getSuperEnvelope();
+			Coordinate[] psSuperEnv = superEnv.getTrajectory().getPositions();
+			Coordinate[] psThis = this.getTrajectory().getPositions();
+			this.sequenceNumberStart = 0;
+			while (!psSuperEnv[this.sequenceNumberStart].equals(psThis[0])) this.sequenceNumberStart++;
+			this.sequenceNumberEnd = this.sequenceNumberStart+this.getTrajectory().getPositions().length-1;
+		}
 	}
 	
 	/**
@@ -562,6 +582,29 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		boolean conAdd = this.getConstraintSolver().addConstraint(duration);
 		if (conAdd) logger.fine("Added duration constriant " + duration);
 		else logger.severe("Failed to add duration constriant " + duration);
+		
+		//If this envelope has a super envelope, then compute sequenceNumberStart and sequenceNumberEnd
+		this.updateSequenceNumbers();
+	}
+	
+	/**
+	 * Get the start sequence number of this {@link TrajectoryEnvelope} (0 if this envelope has
+	 * no super envelopes).
+	 * @return The starting sequence number of this {@link TrajectoryEnvelope} (0 if this envelope has
+	 * no super envelopes).
+	 */
+	public int getSequenceNumberStart() {
+		return sequenceNumberStart;
+	}
+
+	/**
+	 * Get the end sequence number of this {@link TrajectoryEnvelope} (length of trajectory -1 if this envelope has
+	 * no super envelopes).
+	 * @return The end sequence number of this {@link TrajectoryEnvelope} (length of trajectory -1 if this envelope has
+	 * no super envelopes).
+	 */
+	public int getSequenceNumberEnd() {
+		return sequenceNumberEnd;
 	}
 	
 	/**
@@ -599,7 +642,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	@Override
 	public String toString() {
-		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ")";
+		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ") [" + this.getSequenceNumberStart() + ";" + this.getSequenceNumberEnd() + "]";
 	}
 		
 //	@Override
