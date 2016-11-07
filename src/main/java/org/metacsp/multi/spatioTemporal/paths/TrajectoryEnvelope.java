@@ -101,7 +101,16 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public void setFootprint(Polygon footprint) {
 		this.footprint = footprint;
 	}
-	
+
+	/**
+	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
+	 * the bounding box of the machine assuming its reference point is in (0,0).
+	 * @param coords Coordinates of the footprint.
+	 */
+	public void setFootprint(Coordinate ... coords) {
+		this.initFootprint(coords);
+	}
+
 	/**
 	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
 	 * the bounding box of the machine assuming its reference point is in (0,0).
@@ -527,9 +536,14 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		footprint = gsf.createRectangle();
 	}
 
-	private void initFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
+	private void initFootprint(Coordinate ... coords) {
 		GeometryFactory gf = new GeometryFactory();
-		footprint = gf.createPolygon(new Coordinate[] {backLeft,backRight,frontRight,frontLeft,backLeft});
+		Coordinate[] newCoords = new Coordinate[coords.length+1];
+		for (int i = 0; i < coords.length; i++) {
+			newCoords[i] = coords[i];
+		}
+		newCoords[newCoords.length-1] = coords[0];
+		footprint = gf.createPolygon(newCoords);
 	}
 
 	private Coordinate[] createEnvelope() {
