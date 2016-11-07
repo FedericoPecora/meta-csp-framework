@@ -64,7 +64,7 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
-import com.sun.webkit.ContextMenu.ShowContext;
+//import com.sun.webkit.ContextMenu.ShowContext;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
