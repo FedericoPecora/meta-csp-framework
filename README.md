@@ -18,13 +18,13 @@ Maven dependency declaration:
 <dependency>
   <groupId>org.metacsp</groupId>
   <artifactId>meta-csp-framework</artifactId>
-  <version>1.1.6</version>
+  <version>1.1.8</version>
 </dependency>
 ```
 
 Gradle dependency declaration:
 ```
-compile 'org.metacsp:meta-csp-framework:1.1.6'
+compile 'org.metacsp:meta-csp-framework:1.1.8'
 ```
 
 Alternatively, get the <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.metacsp%22%20AND%20a%3A%22meta-csp-framework%22">latest binary, source and Javadoc JARs from the Maven Central website</a>.
