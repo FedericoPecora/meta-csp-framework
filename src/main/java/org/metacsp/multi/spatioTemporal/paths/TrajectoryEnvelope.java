@@ -120,7 +120,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @param frontRight The front right coordinate of the bounding box.
 	 */
 	public void setFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
-		this.initFootprint(backLeft, backRight, frontLeft, frontRight);
+		this.initFootprint(backLeft, backRight, frontRight, frontLeft);
 	}
 	
 	/**
