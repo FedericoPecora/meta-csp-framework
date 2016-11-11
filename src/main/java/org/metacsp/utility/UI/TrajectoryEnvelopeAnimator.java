@@ -785,10 +785,10 @@ public class TrajectoryEnvelopeAnimator {
 			ArrayList<Long> starts = new ArrayList<Long>();
 			ArrayList<Long> ends = new ArrayList<Long>();
 			for (int i = 0; i < tes.size(); i++) {
-				if (!tes.get(i).getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
+				//if (!tes.get(i).getReferencePathVariable().getShapeType().equals(PointDomain.class)) {
 					starts.add(tes.get(i).getTemporalVariable().getEST());
 					ends.add(tes.get(i).getTemporalVariable().getEET());
-				}
+				//}
 			}
 			Collections.sort(starts);
 			Collections.sort(ends);
