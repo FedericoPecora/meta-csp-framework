@@ -34,6 +34,7 @@ import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.throwables.ConstraintNotFound;
+import org.metacsp.throwables.UnimplementedSubVariableException;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
@@ -339,7 +340,10 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 					ret.add(oneVar);
 				}
 				for (int j = i*ingredients[k]; j < (i+1)*ingredients[k]; j++) {
-					oneVar.add(oneType[j]);
+					try { oneVar.add(oneType[j]); }
+					catch(NullPointerException e) {
+						throw new UnimplementedSubVariableException(this.getConstraintSolvers()[k]);
+					}
 				}
 			}
 		}
