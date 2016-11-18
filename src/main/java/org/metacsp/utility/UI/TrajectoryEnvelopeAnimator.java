@@ -60,6 +60,8 @@ import org.metacsp.multi.spatioTemporal.paths.Pose;
 import org.metacsp.multi.spatioTemporal.paths.PoseSteering;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelopeSolver;
+import org.metacsp.sensing.ConstraintNetworkAnimator;
+import org.metacsp.sensing.PeriodicCallback;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
@@ -91,6 +93,8 @@ public class TrajectoryEnvelopeAnimator {
 	private static final int panelHeight = 500;
 	private int numRobots = 0;
 	private long fixedTime = 0;
+	
+	private ConstraintNetworkAnimator cna = null;
 
 	private ArrayList<JTextPane> dtPanels = null;
 	private JTabbedPane tabbedPane = null;
@@ -122,6 +126,21 @@ public class TrajectoryEnvelopeAnimator {
 	private ConstraintNetwork getConstraintNetwork() {
 		if (tes == null || tes.isEmpty()) return null;
 		return tes.get(0).getConstraintSolver().getConstraintNetwork();
+	}
+	
+	public void setConstraintNetworkAnimator(ConstraintNetworkAnimator cna) {
+		this.cna = cna;
+		slider.setEnabled(false);
+		updateTime.setEnabled(false);
+		PeriodicCallback pc = new PeriodicCallback() {
+			@Override
+			public void callback(long timeNow) {
+				timeL = timeNow;
+				updateTime();
+				updateValue();
+			}
+		};
+		cna.addPeriodicCallbacks(pc);
 	}
 	
 	private Coordinate[] parseGeofenceFile(File file, double zoom) {

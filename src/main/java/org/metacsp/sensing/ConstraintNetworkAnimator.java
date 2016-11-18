@@ -1,5 +1,6 @@
 package org.metacsp.sensing;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
@@ -28,6 +29,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	private AllenIntervalConstraint currentReleaseFuture = null;
 	private HashMap<Sensor,HashMap<Long,String>> sensorValues = new HashMap<Sensor, HashMap<Long,String>>();
 	private InferenceCallback cb = null;
+	private ArrayList<PeriodicCallback> pcbs = null;
 	private Dispatcher dis = null;
 	private boolean paused = false;
 
@@ -35,6 +37,11 @@ public class ConstraintNetworkAnimator extends Thread {
 
 	private transient Logger logger = MetaCSPLogging.getLogger(ConstraintNetworkAnimator.class);
 
+	public void addPeriodicCallbacks(PeriodicCallback ... callbacks) {
+		if (this.pcbs == null) this.pcbs = new ArrayList<PeriodicCallback>();
+		for (PeriodicCallback pc : callbacks) this.pcbs.add(pc);
+	}
+	
 	protected long getCurrentTimeInMillis() {
 		return Calendar.getInstance().getTimeInMillis();
 	}
@@ -119,7 +126,7 @@ public class ConstraintNetworkAnimator extends Thread {
 		if (start) dis.start();
 	}
 
-	private long getTimeNow() {
+	public long getTimeNow() {
 		return getCurrentTimeInMillis()-firstTick+originOfTime;
 	}
 	
@@ -161,6 +168,10 @@ public class ConstraintNetworkAnimator extends Thread {
 
 					//If there is a registered InferenceCallback (e.g., call a planner), run it
 					if (this.cb != null) cb.doInference(timeNow);
+
+					if (this.pcbs != null) {
+						for (PeriodicCallback pc : pcbs) pc.callback(timeNow);
+					}
 
 					//Print iteration number
 					logger.info("Iteration " + iteration++ + " @" + timeNow);
