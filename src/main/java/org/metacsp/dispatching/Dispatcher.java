@@ -36,7 +36,7 @@ public class Dispatcher extends Thread {
 		for (Variable var : cn.getVariables()) {
 			if (var instanceof SymbolicVariableActivity) {
 				SymbolicVariableActivity candidateFuture = (SymbolicVariableActivity)var;
-				if (candidateFuture.getSymbolicVariable().getSymbols()[0].equals("Future")) {
+				if (candidateFuture.getSymbolicVariable().getSymbols().length > 0 && candidateFuture.getSymbolicVariable().getSymbols()[0].equals("Future")) {
 					future = candidateFuture;
 					break;
 				}

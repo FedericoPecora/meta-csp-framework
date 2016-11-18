@@ -176,6 +176,14 @@ public abstract class Variable implements Comparable<Variable>, Serializable {
 	}
 
 	/**
+	 * Set this {@link Variable}'s component.
+	 * @param component This {@link Variable}'s component.
+	 */
+	public void setComponent(String component) {
+		this.solver.setComponent(component, this);
+	}
+
+	/**
 	 * Ascertain whether this variable is equal to another.
 	 * Variables are equal iff they have the same ID.
 	 */

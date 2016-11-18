@@ -364,6 +364,11 @@ public abstract class ConstraintSolver implements Serializable {
 	 * @param vars The variables that should be tagged under this component.
 	 */
 	public void setComponent(String component, Variable ... vars) {
+		for (Variable var : vars) {
+			if (var.getComponent() != null && !var.getComponent().equals(component)) {
+				components.get(var.getComponent()).remove(var);
+			}
+		}
 		if (!components.containsKey(component)) components.put(component, new ArrayList<Variable>());
 		for (Variable var : vars) components.get(component).add(var);
 	}

@@ -15,6 +15,7 @@ import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
 import org.metacsp.multi.activity.Activity;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
@@ -675,7 +676,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @return An {@link AllenInterval} representing the temporal part of this {@link TrajectoryEnvelope}.
 	 */
 	public AllenInterval getTemporalVariable() {
-		return (AllenInterval)this.getInternalVariables()[0];
+		//return (AllenInterval)this.getInternalVariables()[0];
+		return ((SymbolicVariableActivity)this.getInternalVariables()[0]).getTemporalVariable();
 	}
 
 	/**
@@ -694,10 +696,19 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public GeometricShapeVariable getEnvelopeVariable() {
 		return (GeometricShapeVariable)this.getInternalVariables()[2];
 	}
+	
+	/**
+	 * Returns the symbolic part of this {@link TrajectoryEnvelope}.
+	 * @return The symbolic part of this {@link TrajectoryEnvelope}.
+	 */
+	public SymbolicVariableActivity getSymbolicVariableActivity() {
+		return (SymbolicVariableActivity)this.getInternalVariables()[0];
+	}
 
 	@Override
 	public String[] getSymbols() {
-		return new String[] {((GeometricShapeDomain)getEnvelopeVariable().getDomain()).getGeometry().getCoordinates().length+""};
+		//return new String[] {((GeometricShapeDomain)getEnvelopeVariable().getDomain()).getGeometry().getCoordinates().length+""};
+		return ((SymbolicVariableActivity)this.getInternalVariables()[0]).getSymbols();
 	}
 
 	@Override

@@ -15,6 +15,8 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
+import cern.colt.Arrays;
+
 public class ConstraintNetworkAnimator extends Thread {
 
 	private ConstraintNetwork cn = null;

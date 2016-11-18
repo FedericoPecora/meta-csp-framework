@@ -7,12 +7,15 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiConstraintSolver;
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelationSolver;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
+import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -112,10 +115,12 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	private static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon, int maxTrajectories) {
 		ConstraintSolver[] ret = new ConstraintSolver[2];
 		if (maxTrajectories >= 1) {
-			ret[0] = new AllenIntervalNetworkSolver(origin, horizon, maxTrajectories);
+			//ret[0] = new AllenIntervalNetworkSolver(origin, horizon, maxTrajectories);
+			ret[0] = new ActivityNetworkSolver(origin, horizon, maxTrajectories);
 		}
 		else {
-			ret[0] = new AllenIntervalNetworkSolver(origin, horizon);
+			//ret[0] = new AllenIntervalNetworkSolver(origin, horizon);
+			ret[0] = new ActivityNetworkSolver(origin, horizon);
 		}
 		ret[1] = new DE9IMRelationSolver();
 		return ret;
