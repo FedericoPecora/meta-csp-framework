@@ -32,6 +32,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	private ArrayList<PeriodicCallback> pcbs = null;
 	private Dispatcher dis = null;
 	private boolean paused = false;
+	private boolean teardown = false;
 
 	private HashMap<Controllable,HashMap<Long,String>> controllableValues = new HashMap<Controllable, HashMap<Long,String>>();
 
@@ -133,10 +134,14 @@ public class ConstraintNetworkAnimator extends Thread {
 	public void setPaused(boolean paused) {
 		this.paused = paused;
 	}
+	
+	public void teardown() {
+		this.teardown = true;
+	}
 
 	public void run() {
 		int iteration = 0;
-		while (true) {
+		while (true && !teardown) {
 			try { Thread.sleep(period); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -178,6 +183,8 @@ public class ConstraintNetworkAnimator extends Thread {
 				}
 			}
 		}
+		if (this.dis != null) dis.teardown();
+		logger.info("Shut down");
 	}
 
     public Dispatcher getDispatcher() {
