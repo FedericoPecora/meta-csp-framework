@@ -28,14 +28,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import org.metacsp.framework.Constraint;
+import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.throwables.ConstraintNotFound;
 import org.metacsp.throwables.UnimplementedSubVariableException;
-import org.metacsp.utility.logging.MetaCSPLogging;
+import org.metacsp.utility.UI.ConstraintNetworkHierarchyFrame;
+import org.metacsp.utility.UI.ConstraintSolverHierarchyFrame;
+
+import edu.uci.ics.jung.graph.DelegateTree;
+import edu.uci.ics.jung.graph.util.TreeUtils;
 
 /**
  * This class extends the {@link ConstraintSolver} class providing functionality
@@ -512,6 +516,84 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		return ret + "]";
 	}
 	
+	/**
+	 * Get the hierarchy of {@link ConstraintSolver}s rooted in this {@link MultiConstraintSolver}.
+	 * @return The hierarchy of {@link ConstraintSolver}s rooted in this {@link MultiConstraintSolver}.
+	 */
+	public DelegateTree<ConstraintSolver,String> getConstraintSolverHierarchy() {
+		DelegateTree<ConstraintSolver,String> ret = new DelegateTree<ConstraintSolver, String>();
+		ret.setRoot(this);
+		ConstraintSolver[] myConstraintSolvers = this.getConstraintSolvers();
+		for (int i = 0; i < myConstraintSolvers.length; i++) {
+			String edgeLabel = i + " (" + this.hashCode() + ")";
+			if (myConstraintSolvers[i] instanceof MultiConstraintSolver) {
+				DelegateTree<ConstraintSolver,String> subtree = ((MultiConstraintSolver)myConstraintSolvers[i]).getConstraintSolverHierarchy();
+				TreeUtils.addSubTree(ret, subtree, this, edgeLabel);
+			}
+			else {
+				ret.addChild(edgeLabel, this, myConstraintSolvers[i]);
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Get the {@link ConstraintSolver}s of a given type from this {@link MultiConstraintSolver}'s
+	 * hierarchy of {@link ConstraintSolver}s.
+	 * @param cl The type of {@link ConstraintSolver}s to get.
+	 * @return All {@link ConstraintSolver}s of the given type in this {@link MultiConstraintSolver}'s
+	 * hierarchy of {@link ConstraintSolver}s.
+	 */
+	public ConstraintSolver[] getConstraintSolversFromConstraintSolverHierarchy(Class<?> cl) {
+		ArrayList<ConstraintSolver> ret = new ArrayList<ConstraintSolver>();
+		DelegateTree<ConstraintSolver,String> csTree = this.getConstraintSolverHierarchy();
+		for (ConstraintSolver cs : csTree.getVertices()) {
+			if (cs.getClass().equals(cl)) ret.add(cs);
+		}
+		return ret.toArray(new ConstraintSolver[ret.size()]);
+	}
+	
+	/**
+	 * Get all {@link ConstraintNetwork}s underlying {@link ConstraintSolver}s of a given type in
+	 * this {@link MultiConstraintSolver}'s hierarchy of solvers.
+	 * @param cl The type of {@link ConstraintNetwork} to get.
+	 * @return All {@link ConstraintNetwork}s underlying {@link ConstraintSolver}s of a given type in
+	 * this {@link MultiConstraintSolver}'s hierarchy of solvers.
+	 */
+	public ConstraintNetwork[] getConstraintNetworksFromSolverHierarchy(Class<?> cl) {
+		ArrayList<ConstraintNetwork> ret = new ArrayList<ConstraintNetwork>();
+		DelegateTree<ConstraintSolver,String> csTree = this.getConstraintSolverHierarchy();
+		for (ConstraintSolver cs : csTree.getVertices()) {
+			if (cs.getClass().equals(cl)) ret.add(cs.getConstraintNetwork());
+		}
+		if (ret.size() == 0) throw new Error(this.getClass().getSimpleName() + " does not have a " + cl.getSimpleName() + " in its hierarchy");
+		return ret.toArray(new ConstraintNetwork[ret.size()]);
+	}
+	
+	/**
+	 * Get a tree whose nodes are the constraint networks managed by the hierarchy of
+	 * {@link ConstraintSolver}s underlying this {@link MultiConstraintSolver}.
+	 * @return A tree whose nodes are the constraint networks managed by the hierarchy of
+	 * {@link ConstraintSolver}s underlying this {@link MultiConstraintSolver}.
+	 */
+	public DelegateTree<ConstraintNetwork,String> getConstraintNetworkHierarchy() {
+		DelegateTree<ConstraintNetwork,String> ret = new DelegateTree<ConstraintNetwork, String>();
+		ConstraintNetwork myCN = this.getConstraintNetwork();
+		ret.setRoot(myCN);
+		ConstraintSolver[] myConstraintSolvers = this.getConstraintSolvers();
+		for (int i = 0; i < myConstraintSolvers.length; i++) {
+			String edgeLabel = i + " (" + this.hashCode() + ")";
+			if (myConstraintSolvers[i] instanceof MultiConstraintSolver) {
+				DelegateTree<ConstraintNetwork,String> subtree = ((MultiConstraintSolver)myConstraintSolvers[i]).getConstraintNetworkHierarchy();
+				TreeUtils.addSubTree(ret, subtree, myCN, edgeLabel);
+			}
+			else {
+				ret.addChild(edgeLabel, myCN, myConstraintSolvers[i].getConstraintNetwork());
+			}
+		}
+		return ret;
+	}
+	
 	public void failurePruning(int failure_time){
 
 		
@@ -550,6 +632,22 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 	@Override
 	public void registerValueChoiceFunctions() {
 		// TODO Auto-generated method stub	
+	}
+	
+	/**
+	 * Draw a hierarchy of {@link ConstraintNetwork}s.
+	 * @param tree The hierarchy of {@link ConstraintNetwork}s to draw.
+	 */
+	public static void drawConstraintNetworkHierarchy(DelegateTree<ConstraintNetwork,String> tree) {
+		new ConstraintNetworkHierarchyFrame(tree, "Constraint Network Hierarchy");
+	}
+
+	/**
+	 * Draw a hierarchy of {@link ConstraintSolver}s.
+	 * @param tree The hierarchy of {@link ConstraintSolver}s to draw.
+	 */
+	public static void drawConstraintSolverHierarchy(DelegateTree<ConstraintSolver,String> tree) {
+		new ConstraintSolverHierarchyFrame(tree, "Constraint Solver Hierarchy");
 	}
 
 }

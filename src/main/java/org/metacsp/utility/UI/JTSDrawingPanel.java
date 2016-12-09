@@ -254,7 +254,7 @@ public class JTSDrawingPanel extends JPanel {
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
 		if (rotateMode) newTrans.rotate(-Math.PI/2, x, y);
 		newTrans.translate(x, y);
-		Font f = new Font("TimesRoman", Font.PLAIN, 3);
+		Font f = new Font("TimesRoman", Font.PLAIN, 1);
 		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
 		Shape shape = tl.getOutline(null);
 		Shape newShape = newTrans.createTransformedShape(shape);

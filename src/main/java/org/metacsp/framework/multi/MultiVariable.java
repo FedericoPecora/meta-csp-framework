@@ -27,6 +27,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -38,8 +39,11 @@ import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.allenInterval.AllenIntervalNetworkSolver;
 import org.metacsp.time.TimePoint;
+import org.metacsp.utility.UI.VariableHierarchyFrame;
 
 import cern.colt.Arrays;
+import edu.uci.ics.jung.graph.DelegateTree;
+import edu.uci.ics.jung.graph.util.TreeUtils;
 
 /**
  * A multi-variable is a variable "implemented" by several underlying lower-level {@link Variable}s.
@@ -145,6 +149,47 @@ public abstract class MultiVariable extends Variable {
 		for (Variable v : this.variables) doms.add(v.getDomain());
 		MultiDomain ret = new MultiDomain(this, doms.toArray(new Domain[doms.size()]));
 		return ret;
+	}
+	
+	/**
+	 * Get the hierarchy of {@link Variable}s underlying this {@link MultiVariable}.
+	 * @return The hierarchy of {@link Variable}s underlying this {@link MultiVariable}.
+	 */
+	public DelegateTree<Variable,String> getVariableHierarchy() {
+		DelegateTree<Variable,String> ret = new DelegateTree<Variable, String>();
+		ret.setRoot(this);
+		Variable[] myVars = this.getInternalVariables();
+		for (int i = 0; i < myVars.length; i++) {
+			String edgeLabel = i + " (" + this.getConstraintSolver().hashCode() + ")";
+			if (myVars[i] instanceof MultiVariable) {
+				DelegateTree<Variable,String> subTree = ((MultiVariable)myVars[i]).getVariableHierarchy();
+				TreeUtils.addSubTree(ret, subTree, this, edgeLabel);
+			}
+			else ret.addChild(edgeLabel, this, myVars[i]);
+		}
+		return ret;
+	}
+	
+	/**
+	 * Draw the {@link Variable} hierarchy underlying this {@link MultiVariable}.
+	 * @param tree The {@link Variable} hierarchy to draw.
+	 */
+	public static void drawVariableHierarchy(DelegateTree<Variable,String> tree) {
+		new VariableHierarchyFrame(tree, "Variable Hierarchy");
+	}
+	
+	/**
+	 * Get the {@link Variable}s of a given type in this {@link MultiVariable}'s variable hierarchy.
+	 * @param cl The type of {@link Variable}s to fetch.
+	 * @return The {@link Variable}s of the given type in this {@link MultiVariable}'s variable hierarchy.
+	 */
+	public Variable[] getVariablesFromVariableHierarchy(Class<?> cl) {
+		ArrayList<Variable> ret = new ArrayList<Variable>();
+		for (Variable v : this.getVariableHierarchy().getVertices()) {
+			if (v.getClass().equals(cl)) ret.add(v);
+		}
+		if (ret.size() == 0) throw new Error(this.getClass().getSimpleName() + " does not have a " + cl.getSimpleName() + " in its hierarchy");
+		return ret.toArray(new Variable[ret.size()]);
 	}
 	
 	@Override
