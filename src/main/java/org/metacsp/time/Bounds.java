@@ -87,6 +87,15 @@ public class Bounds implements Serializable, Comparable<Bounds> {
 	}
 	
 	/**
+	 * Returns <code>true</code> iff this {@link Bounds} intersects with a given {@link Bounds}.
+	 * @param b The {@link Bounds} to check against.
+	 * @return <code>true</code> iff this {@link Bounds} intersects with a given {@link Bounds}.
+	 */
+	public boolean isIntersecting(Bounds b) {
+		return (this.intersectStrict(b) != null);
+	}
+	
+	/**
 	 * Get intersection with another {@link Bounds}.
 	 * @param b The {@link Bounds} object to intersect this with.
 	 * @return <code>true</code> is there is a non-empty intersection, <code>null</code> otherwise.

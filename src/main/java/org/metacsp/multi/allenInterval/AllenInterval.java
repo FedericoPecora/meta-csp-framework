@@ -54,6 +54,19 @@ public class AllenInterval extends MultiVariable {
 //		return tps;
 //	}
 	
+	/**
+	 * Returns <code>true</code> iff the the domain of this {@link AllenInterval}
+	 * intersects the domain of a given {@link AllenInterval} in the earliest time.
+	 * @param i The {@link AllenInterval} to check intersection with.
+	 * @return <code>true</code> iff the the domain of this {@link AllenInterval}
+	 * intersects the domain of a given {@link AllenInterval} in the earliest time.
+	 */
+	public boolean isIntersectingEarliestStartTime(AllenInterval i) {
+		Bounds thisBounds = new Bounds(this.getEST(), this.getEET());
+		Bounds thatBounds = new Bounds(i.getEST(), i.getEET());
+		return thisBounds.isIntersecting(thatBounds);
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

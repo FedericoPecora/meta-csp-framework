@@ -2,12 +2,14 @@ package org.metacsp.multi.spatial.DE9IM;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation.Type;
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 /**
  * A solver for constraint networks of {@link DE9IMRelation}s. This solver handles variables of type {@link GeometricShapeVariable}, which represent

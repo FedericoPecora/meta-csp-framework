@@ -702,7 +702,7 @@ public class TrajectoryEnvelopeAnimator {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				//double change = ((getHorizon()-getOrigin())*0.01);
-				double change = 1000;
+				double change = 100;
 				if (e.getKeyChar() == '+') {
 					timeL = Math.min(horizon, timeL+(long)change);
 					updateTime();
