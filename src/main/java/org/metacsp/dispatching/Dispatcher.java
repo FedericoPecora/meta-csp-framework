@@ -25,6 +25,11 @@ public class Dispatcher extends Thread {
 	private HashMap<String,DispatchingFunction> dfs;
 	private SymbolicVariableActivity future;
 	private Logger logger = MetaCSPLogging.getLogger(this.getClass());
+	private boolean teardown = false;
+	
+	public void teardown() {
+		this.teardown = true;
+	}
 
 	public Dispatcher(ActivityNetworkSolver ans, long period) {
 		this.ans = ans;
@@ -53,7 +58,7 @@ public class Dispatcher extends Thread {
 	}
 
 	public void run() {
-		while (true) {
+		while (true && !teardown) {
 			try { Thread.sleep(period); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -133,6 +138,7 @@ public class Dispatcher extends Thread {
 				}
 			}
 		}
+		logger.info("Shut down");
 	}
 
 	public void addDispatchingFunction(String component, DispatchingFunction df) {

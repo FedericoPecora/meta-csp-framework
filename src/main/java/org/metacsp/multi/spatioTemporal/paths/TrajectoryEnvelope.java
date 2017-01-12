@@ -529,6 +529,24 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 	/**
+	 * Returns a {@link Geometry} representing the footprint of a robot in a given pose.
+	 * @param fp A polygon representing the footprint of the robot centered in (0,0)
+	 * and appropriately oriented (can be obtained from a {@link TrajectoryEnvelope} instance
+	 * via method {@link TrajectoryEnvelope#getFootprint()}).
+	 * @param x The x coordinate of the pose used to create the footprint.
+	 * @param y The y coordinate of the pose used to create the footprint.
+	 * @param theta The orientation of the pose used to create the footprint.
+	 * @return A {@link Geometry} representing the footprint of the robot in a given pose.
+	 */
+	public static Geometry getFootprint(Polygon fp, double x, double y, double theta) {
+		AffineTransformation at = new AffineTransformation();
+		at.rotate(theta);
+		at.translate(x,y);
+		Geometry rect = at.transform(fp);
+		return rect;
+	}
+	
+	/**
 	 * Returns a {@link Geometry} representing the footprint of the robot in a given pose.
 	 * @param x The x coordinate of the pose used to create the footprint.
 	 * @param y The y coordinate of the pose used to create the footprint.
@@ -560,7 +578,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		newCoords[newCoords.length-1] = coords[0];
 		footprint = gf.createPolygon(newCoords);
 	}
-
+	
 	private Coordinate[] createEnvelope() {
 		Geometry onePoly = null;
 		Geometry prevPoly = null;
@@ -671,7 +689,9 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	@Override
 	public String toString() {
-		return "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ") [" + this.getSequenceNumberStart() + ";" + this.getSequenceNumberEnd() + "]";
+		String ret = "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ") [" + this.getSequenceNumberStart() + ";" + this.getSequenceNumberEnd() + "]";
+		if (this instanceof Activity && ((Activity)this).getSymbols() != null && ((Activity)this).getSymbols().length > 0) ret += (" " + ((Activity)this).getSymbols()[0]);
+		return ret;
 	}
 		
 //	@Override
