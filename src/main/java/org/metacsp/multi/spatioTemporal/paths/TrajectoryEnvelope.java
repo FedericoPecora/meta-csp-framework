@@ -433,6 +433,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			this.sequenceNumberStart = 0;
 			while (!psSuperEnv[this.sequenceNumberStart].equals(psThis[0])) this.sequenceNumberStart++;
 			this.sequenceNumberEnd = this.sequenceNumberStart+this.getTrajectory().getPositions().length-1;
+			this.getTrajectory().updateSequenceNumbers(this.sequenceNumberStart, this.sequenceNumberStart);
 		}
 	}
 	
