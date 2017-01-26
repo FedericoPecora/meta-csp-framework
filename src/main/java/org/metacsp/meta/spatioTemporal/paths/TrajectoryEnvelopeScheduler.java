@@ -191,8 +191,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 						Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
 						Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
 						if (shape1.intersects(shape2)) {
-							logger.info("===>Refinement 1: " + (!te2HasSub && te1.getRefinable() && !refinedWith.get(te1).contains(te2))+
-									" Refinement 2: "+(!te1HasSub && te2.getRefinable() && !refinedWith.get(te2).contains(te1)));
+//							logger.info("===>Refinement 1: " + (!te2HasSub && te1.getRefinable() && !refinedWith.get(te1).contains(te2))+
+//									" Refinement 2: "+(!te1HasSub && te2.getRefinable() && !refinedWith.get(te2).contains(te1)));
 							if (!te2HasSub && te1.getRefinable() && !refinedWith.get(te1).contains(te2)) {
 								ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
 								refinedWith.get(te1).add(te2);
