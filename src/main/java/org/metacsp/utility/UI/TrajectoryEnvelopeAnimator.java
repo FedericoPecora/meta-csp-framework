@@ -121,6 +121,10 @@ public class TrajectoryEnvelopeAnimator {
     
 	public void setTrajectoryEnvelopeScheduler (TrajectoryEnvelopeScheduler metaSolver) {
 		this.metaSolver = metaSolver;
+		for (TrajectoryEnvelope te : ((TrajectoryEnvelopeSolver)this.metaSolver.getConstraintSolvers()[0]).getRootTrajectoryEnvelopes()) {
+			if (te.getRobotID() > numRobots-1) numRobots = te.getRobotID()+1;
+		}
+			
 	}
 	
 	private ConstraintNetwork getConstraintNetwork() {
