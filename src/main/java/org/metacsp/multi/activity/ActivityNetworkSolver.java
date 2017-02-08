@@ -113,6 +113,14 @@ public class ActivityNetworkSolver extends MultiConstraintSolver {
 		return (((AllenIntervalNetworkSolver) (this.constraintSolvers[0]))).getRigidityNumber();
 	}
 	
+	
+	/**
+	 * Get the AllenIntervalNetworkSolver. 
+	 */
+	public AllenIntervalNetworkSolver getAllenIntervalNetworkSolver(){
+		return (((AllenIntervalNetworkSolver) (this.constraintSolvers[0])));
+	}
+	
 	/**
 	 * Draw all activities on Gantt chart 
 	 */

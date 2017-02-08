@@ -139,7 +139,7 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 * the temporal parts of {@link TrajectoryEnvelope}s.
 	 */
 	public AllenIntervalNetworkSolver getTemporalSolver() {
-		return (AllenIntervalNetworkSolver)this.getConstraintSolvers()[0];
+		return ((ActivityNetworkSolver)this.getConstraintSolvers()[0]).getAllenIntervalNetworkSolver();
 	}
 
 	/**

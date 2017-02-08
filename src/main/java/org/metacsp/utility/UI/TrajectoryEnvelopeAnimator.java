@@ -829,8 +829,11 @@ public class TrajectoryEnvelopeAnimator {
 					panel.addGeometry("_ObstacleActive" + te.getID(), te.makeFootprint(ps), true, true, false);
 				}
 				else {
-					panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());
+					panel.addGeometry(gte.getID()+"", ((GeometricShapeDomain)gte.getEnvelopeVariable().getDomain()).getGeometry());					
 					panel.addGeometry("Robot " + te.getRobotID(), te.makeFootprint(ps), true, true, false);
+					if(te.getInnerFootprint() != null){
+						panel.addGeometry("Robot " + te.getRobotID(), te.makeInnerFootprint(ps), true, true, false);
+					}
 				}
 			}
 		}
