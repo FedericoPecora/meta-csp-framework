@@ -63,6 +63,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
 	private int robotID = -1;
 	private Polygon footprint = null;
+	private Polygon innerFootprint = null;
 	private int sequenceNumberStart = -1;
 	private int sequenceNumberEnd = -1;
 	
@@ -78,6 +79,15 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public Polygon getFootprint() {
 		return footprint;
 	}
+
+	/**
+	 * Get a {@link Polygon} representing the inner footprint of this {@link TrajectoryEnvelope}.
+	 * @return A {@link Polygon} representing the footprint of this {@link TrajectoryEnvelope}.
+	 */
+	public Polygon getInnerFootprint() {
+		return innerFootprint;
+	}
+
 	
 	public String getInfo() {
 		
@@ -102,6 +112,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public void setFootprint(Polygon footprint) {
 		this.footprint = footprint;
 	}
+	
 
 	/**
 	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
@@ -111,6 +122,17 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public void setFootprint(Coordinate ... coords) {
 		this.initFootprint(coords);
 	}
+	
+	
+	/**
+	 * Set the Inner footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
+	 * the bounding box of the machine assuming its reference point is in (0,0).
+	 * @param coords Coordinates of the footprint.
+	 */
+	public void setInnerFootprint(Coordinate ... coords) {
+		this.initInnerFootprint(coords);
+	}
+	
 
 	/**
 	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
@@ -123,6 +145,20 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public void setFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
 		this.initFootprint(backLeft, backRight, frontRight, frontLeft);
 	}
+	
+	
+	/**
+	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the inner spatial envelope. Provide
+	 * the bounding box of the machine assuming its reference point is in (0,0).
+	 * @param backLeft The rear left coordinate of the bounding box.
+	 * @param backRight The rear right coordinate of the bounding box.
+	 * @param frontLeft The front left coordinate of the bounding box.
+	 * @param frontRight The front right coordinate of the bounding box.
+	 */
+	public void setInnerFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
+		this.initInnerFootprint(backLeft, backRight, frontRight, frontLeft);
+	}
+	
 	
 	/**
 	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope.
@@ -528,6 +564,18 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public Geometry makeFootprint(PoseSteering ps) {
 		return makeFootprint(ps.getX(), ps.getY(), ps.getTheta());
 	}
+
+	
+	/**
+	 * Returns a {@link Geometry} representing the inner footprint of the robot in a given {@link PoseSteering}.
+	 * @param ps The pose and steering used to create the inner footprint.
+	 * @return A {@link Geometry} representing the inner footprint of the robot in a given {@link PoseSteering}.
+	 */
+	public Geometry makeInnerFootprint(PoseSteering ps) {
+		return makeInnerFootprint(ps.getX(), ps.getY(), ps.getTheta());
+	}
+
+	
 	
 	/**
 	 * Returns a {@link Geometry} representing the footprint of a robot in a given pose.
@@ -561,6 +609,23 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		Geometry rect = at.transform(footprint);
 		return rect;
 	}
+
+	/**
+	 * Returns a {@link Geometry} representing the inner footprint of the robot in a given pose.
+	 * @param x The x coordinate of the pose used to create the inner footprint.
+	 * @param y The y coordinate of the pose used to create the inner footprint.
+	 * @param theta The orientation of the pose used to create the inner footprint.
+	 * @return A {@link Geometry} representing the footprint of the inner robot in a given pose.
+	 */
+	public Geometry makeInnerFootprint(double x, double y, double theta) {
+		AffineTransformation at = new AffineTransformation();
+		at.rotate(theta);
+		at.translate(x,y);
+		Geometry rect = at.transform(innerFootprint);
+		return rect;
+	}
+
+	
 	
 	private void initFootprint(double width, double length, double deltaW, double deltaL) {
 		GeometricShapeFactory gsf = new GeometricShapeFactory();
@@ -579,12 +644,24 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		newCoords[newCoords.length-1] = coords[0];
 		footprint = gf.createPolygon(newCoords);
 	}
+
+	
+	private void initInnerFootprint(Coordinate ... coords) {
+		GeometryFactory gf = new GeometryFactory();
+		Coordinate[] newCoords = new Coordinate[coords.length+1];
+		for (int i = 0; i < coords.length; i++) {
+			newCoords[i] = coords[i];
+		}
+		newCoords[newCoords.length-1] = coords[0];
+		innerFootprint = gf.createPolygon(newCoords);
+	}
+
 	
 	private Coordinate[] createEnvelope() {
 		Geometry onePoly = null;
 		Geometry prevPoly = null;
 		for (PoseSteering ps : this.trajectory.getPoseSteering()) {
-			Geometry rect = makeFootprint(ps);
+			Geometry rect = makeFootprint(ps);			
 			if (onePoly == null) {
 				onePoly = rect;
 				prevPoly = rect;
@@ -599,6 +676,28 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //		return ret.getCoordinates();
 		return onePoly.getCoordinates();
 	}
+	
+	
+	private Coordinate[] createInnerEnvelope() {
+		Geometry onePoly = null;
+		Geometry prevPoly = null;
+		for (PoseSteering ps : this.trajectory.getPoseSteering()) {
+			Geometry rect = makeInnerFootprint(ps);			
+			if (onePoly == null) {
+				onePoly = rect;
+				prevPoly = rect;
+			}
+			else {
+				Geometry auxPoly = prevPoly.union(rect);
+				onePoly = onePoly.union(auxPoly.convexHull());
+				prevPoly = rect;
+			}
+		}
+//		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
+//		return ret.getCoordinates();
+		return onePoly.getCoordinates();
+	}
+	
 
 	/**
 	 * Set the {@link Trajectory} of this {@link TrajectoryEnvelope}.
@@ -608,6 +707,43 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		if (this.footprint == null) {
 			throw new NoFootprintException("No footprint set for " + this + ", please specify one before setting the trajecotry.");
 		}
+		else{
+			createOuterEnvelope(traj);
+		}
+		if(this.innerFootprint != null){
+			createInnerEnvelope(traj);
+		}
+		
+	}
+	
+	private void createInnerEnvelope(Trajectory traj) {
+//		this.trajectory = traj;
+//		if (traj.getPoseSteering().length == 1) {
+//			PointDomain pd = new PointDomain(this, traj.getPositions()[0]);
+//			this.setDomain(pd);
+//		}
+//		else {
+//			LineStringDomain lsd = new LineStringDomain(this,traj.getPositions());
+//			this.setDomain(lsd);
+//		}
+		PolygonalDomain env = new PolygonalDomain(this.getInternalEnvelopeVariable(),createInnerEnvelope());
+		this.getInternalEnvelopeVariable().setDomain(env);
+//		long minDuration = 0;
+//		for (int i = 0; i < traj.getDTs().length; i++) {
+//			minDuration += traj.getDTs()[i]*RESOLUTION;
+//		}
+//		AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
+//		duration.setFrom(this);
+//		duration.setTo(this);
+//		boolean conAdd = this.getConstraintSolver().addConstraint(duration);
+//		if (conAdd) logger.fine("Added duration constriant " + duration);
+//		else logger.severe("Failed to add duration constriant " + duration);
+//		
+//		//If this envelope has a super envelope, then compute sequenceNumberStart and sequenceNumberEnd
+//		this.updateSequenceNumbers();				
+	}
+
+	private void createOuterEnvelope(Trajectory traj) {
 		this.trajectory = traj;
 		if (traj.getPoseSteering().length == 1) {
 			PointDomain pd = new PointDomain(this, traj.getPositions()[0]);
@@ -632,9 +768,9 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		else logger.severe("Failed to add duration constriant " + duration);
 		
 		//If this envelope has a super envelope, then compute sequenceNumberStart and sequenceNumberEnd
-		this.updateSequenceNumbers();
+		this.updateSequenceNumbers();		
 	}
-	
+
 	/**
 	 * Get the start sequence number of this {@link TrajectoryEnvelope} (0 if this envelope has
 	 * no super envelopes).
@@ -730,6 +866,14 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 */
 	public GeometricShapeVariable getEnvelopeVariable() {
 		return (GeometricShapeVariable)this.getInternalVariables()[2];
+	}
+	
+	/**
+	 * Returns the spatial part of this {@link TrajectoryEnvelope} (internal spatial envelope).
+	 * @return A {@link GeometricShapeVariable} representing the internal spatial part of this {@link TrajectoryEnvelope}.
+	 */
+	public GeometricShapeVariable getInternalEnvelopeVariable() {
+		return (GeometricShapeVariable)this.getInternalVariables()[3];
 	}
 	
 	/**

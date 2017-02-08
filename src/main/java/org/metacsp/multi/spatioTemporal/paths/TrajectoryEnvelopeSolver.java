@@ -57,7 +57,7 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 * @param horizon The horizon of the temporal solver underlying this {@link TrajectoryEnvelopeSolver}.
 	 */
 	public TrajectoryEnvelopeSolver(long origin, long horizon) {
-		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon, -1), new int[]{1,2});
+		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon, -1), new int[]{1,3});
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 * @param maxTrajectories The maximum number of {@link TrajectoryEnvelope}s that can be created with this solver. 
 	 */
 	public TrajectoryEnvelopeSolver(long origin, long horizon, int maxTrajectories) {
-		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon, maxTrajectories), new int[]{1,2});
+		super(new Class[]{AllenIntervalConstraint.class,DE9IMRelation.class}, TrajectoryEnvelope.class, createInternalConstraintSolvers(origin, horizon, maxTrajectories), new int[]{1,3});
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	 * the temporal parts of {@link TrajectoryEnvelope}s.
 	 */
 	public AllenIntervalNetworkSolver getTemporalSolver() {
-		return (AllenIntervalNetworkSolver)this.getConstraintSolvers()[0];
+		return ((ActivityNetworkSolver)this.getConstraintSolvers()[0]).getAllenIntervalNetworkSolver();
 	}
 
 	/**
