@@ -1,0 +1,8 @@
+title: The Meta-CSP Framework
+description: a Java API for meta-constraint reasoning
+google_analytics: UA-36266754-1
+show_downloads: true
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
