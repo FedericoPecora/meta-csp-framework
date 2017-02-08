@@ -261,13 +261,27 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @return The ground {@link TrajectoryEnvelope} at the given index in the reference {@link Trajectory}.
 	 */
 	public TrajectoryEnvelope getGroundEnvelope(int seqNum) {
-		Coordinate currentPos = this.getTrajectory().getPositions()[seqNum];
-		GeometryFactory gf = new GeometryFactory();
-		Point point = gf.createPoint(currentPos);
-		for (TrajectoryEnvelope ge : this.getGroundEnvelopes()) {
-			if (((GeometricShapeDomain)ge.getEnvelopeVariable().getDomain()).getGeometry().contains(point)) return ge;
+		if (seqNum >= this.getPathLength()) throw new Error("Path length of " + this + " less than requested sequence number (" + seqNum + ")");
+		int counter = 0;
+		TrajectoryEnvelope ret = null;
+		for (TrajectoryEnvelope te : getGroundEnvelopes()) {
+			if (counter > seqNum) {
+				return ret;
+			}
+			ret = te;
+			counter += (te.getPathLength());
 		}
-		return this;
+		return ret;
+		
+//		Coordinate currentPos = this.getTrajectory().getPositions()[seqNum];
+//		GeometryFactory gf = new GeometryFactory();
+//		Point point = gf.createPoint(currentPos);
+//		TrajectoryEnvelope superEnv = (TrajectoryEnvelope)this;
+//		while (superEnv.hasSuperEnvelope()) superEnv = superEnv.getSuperEnvelope();
+//		for (TrajectoryEnvelope ge : superEnv.getGroundEnvelopes()) {
+//			if (((GeometricShapeDomain)ge.getEnvelopeVariable().getDomain()).getGeometry().contains(point)) return ge;
+//		}
+//		return this;
 	}
 
 
@@ -455,6 +469,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			this.sequenceNumberStart = 0;
 			while (!psSuperEnv[this.sequenceNumberStart].equals(psThis[0])) this.sequenceNumberStart++;
 			this.sequenceNumberEnd = this.sequenceNumberStart+this.getTrajectory().getPositions().length-1;
+			this.getTrajectory().updateSequenceNumbers(this.sequenceNumberStart, this.sequenceNumberStart);
 		}
 	}
 	

@@ -191,6 +191,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 						Geometry shape1 = ((GeometricShapeDomain)poly1.getDomain()).getGeometry();
 						Geometry shape2 = ((GeometricShapeDomain)poly2.getDomain()).getGeometry();
 						if (shape1.intersects(shape2)) {
+//							logger.info("===>Refinement 1: " + (!te2HasSub && te1.getRefinable() && !refinedWith.get(te1).contains(te2))+
+//									" Refinement 2: "+(!te1HasSub && te2.getRefinable() && !refinedWith.get(te2).contains(te1)));
 							if (!te2HasSub && te1.getRefinable() && !refinedWith.get(te1).contains(te2)) {
 								ConstraintNetwork ref1 = refineTrajectoryEnvelopes(te1, te2);
 								refinedWith.get(te1).add(te2);
@@ -205,6 +207,9 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 							}
 						}
 					}
+					//we have refined (i,j) with each other
+//					logger.info("Refined " + te1 + " into " + te1.getGroundEnvelopes().size() + " envelopes");
+//					logger.info("Refined " + te2 + " into " + te2.getGroundEnvelopes().size() + " envelopes");
 				}
 			}			
 		}
@@ -251,13 +256,16 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	}
 
 	private ConstraintNetwork refineTrajectoryEnvelopes(TrajectoryEnvelope var1, TrajectoryEnvelope var2) {
+
 		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];
 		ConstraintNetwork toReturn = new ConstraintNetwork(null);
+		
+		if (var1.getPathLength() < MINIMUM_SIZE) return toReturn;
+		
 		GeometryFactory gf = new GeometryFactory();
 		Geometry se1 = ((GeometricShapeDomain)var1.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry se2 = ((GeometricShapeDomain)var2.getEnvelopeVariable().getDomain()).getGeometry();
 		Geometry intersectionse1se2 = se1.intersection(se2);
-		
 		boolean useDefaultEnvelopeChunks = false;
 		
 		if (!intersectionse1se2.isValid()) {
@@ -266,7 +274,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		}
 
 		if (intersectionse1se2 instanceof MultiPolygon) {
-			logger.info("Intersection " + var1 + " with " + var2 + " too complex - skipping");
+			logger.info("Intersection " + var1 + " with " + var2 + " too complex - using default segmentation");
 			useDefaultEnvelopeChunks = true;
 			//return toReturn;								
 		}
@@ -279,7 +287,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			if (intersectionse1se2.contains(point) && !in) {
 				in = true;
 				if (++countIn > 1) {
-					logger.info("Reference path of " + var1 + " enters intersection with " + var2 + " multiple times - skipping");
+					logger.info("Reference path of " + var1 + " enters intersection with " + var2 + " multiple times - using default segmentation");
 					useDefaultEnvelopeChunks = true;
 					break;
 					//return toReturn;					
@@ -416,7 +424,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		var1.setRefinable(false);
 		ArrayList<Trajectory> newTrajectories = new ArrayList<Trajectory>();
 		ArrayList<TrajectoryEnvelope> newTrajectoryEnvelopes = new ArrayList<TrajectoryEnvelope>();
-				
+		
 		if (!skipSec1) {
 			newTrajectories.add(new Trajectory(var1sec1.toArray(new PoseSteering[var1sec1.size()]),var1.getTrajectory().getDts(0, var1sec1.size())));
 			newTrajectories.add(new Trajectory(var1sec2.toArray(new PoseSteering[var1sec2.size()]),var1.getTrajectory().getDts(var1sec1.size(), var1sec1.size()+var1sec2.size())));
@@ -430,7 +438,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 				newTrajectories.add(new Trajectory(var1sec3.toArray(new PoseSteering[var1sec3.size()]),var1.getTrajectory().getDts(var1sec2.size(),var1.getTrajectory().getPoseSteering().length)));
 			}			
 		}
-
+		
 		Variable[] newVars = solver.createVariables(newTrajectories.size());
 		for (int i = 0; i < newVars.length; i++) {
 			TrajectoryEnvelope te = (TrajectoryEnvelope)newVars[i];
@@ -482,7 +490,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 //		System.out.println("var1sec2: " + var1sec2);
 //		System.out.println("var1sec3 (" + skipSec3 + "): " + var1sec3);
 //		System.out.println("DTs of var1sec2: " + Arrays.toString(var1.getTrajectory().getDts( var1sec2.size(),var1.getTrajectory().getDTs().length-1 )));
-		solver.addConstraints(toReturn.getConstraints());
+		if (!solver.addConstraints(toReturn.getConstraints())) throw new Error("Failed to add temporal constraints in refinement!");
 		
 		return toReturn;
 	}

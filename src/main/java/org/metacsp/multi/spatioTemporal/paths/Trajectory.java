@@ -28,6 +28,8 @@ public class Trajectory implements Serializable {
 	private double[] dts;
 	private static double MAX_SPEED = 3.0;
 	private static double MAX_ACCELERATION = 0.3;
+	private int sequenceNumberStart = -1;
+	private int sequenceNumberEnd = -1;
 	
 	/**
 	 * Create a new {@link Trajectory} given a list of {@link Pose}s. The
@@ -43,8 +45,37 @@ public class Trajectory implements Serializable {
 		}
 		this.dts = new double[psa.length];
 		this.updateDts();
+		this.sequenceNumberStart = 0;
+		this.sequenceNumberEnd = pa.length-1;
 	}
 	
+	/**
+	 * Update the sequence numbers of this trajectory (used when this is
+	 * a trajectory of a sub-trajectory envelope).
+	 * @param start The start sequence number in the super {@link TrajectoryEnvelope}.
+	 * @param end The end sequence number in the super {@link TrajectoryEnvelope}.
+	 */
+	public void updateSequenceNumbers(int start, int end) {
+		this.sequenceNumberStart = start;
+		this.sequenceNumberEnd = end;
+	}
+	
+	/**
+	 * Get the start sequence number of this trajectory.
+	 * @return The start sequence number of this trajectory.
+	 */
+	public int getSequenceNumberStart() {
+		return this.sequenceNumberStart;
+	}
+
+	/**
+	 * Get the end sequence number of this trajectory.
+	 * @return The end sequence number of this trajectory.
+	 */
+	public int getSequenceNumberEnd() {
+		return this.sequenceNumberEnd;
+	}
+
 	/**
 	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s. The
 	 * temporal profile of the trajectory is computed via naive numeric resolution
@@ -55,6 +86,8 @@ public class Trajectory implements Serializable {
 		this.psa = psa;
 		this.dts = new double[psa.length];
 		this.updateDts();
+		this.sequenceNumberStart = 0;
+		this.sequenceNumberEnd = psa.length-1;
 	}
 
 	/**
@@ -74,6 +107,8 @@ public class Trajectory implements Serializable {
 		}
 		this.dts = new double[psa.length];
 		this.dts = dts;
+		this.sequenceNumberStart = 0;
+		this.sequenceNumberEnd = pa.length-1;
 	}
 	
 	/**
@@ -89,6 +124,8 @@ public class Trajectory implements Serializable {
 		this.psa = psa;
 		this.dts = new double[psa.length];
 		this.dts = dts;
+		this.sequenceNumberStart = 0;
+		this.sequenceNumberEnd = psa.length-1;
 	}
 	
 	/**
@@ -101,6 +138,8 @@ public class Trajectory implements Serializable {
 		this.psa = readPath(fileName);
 		this.dts = new double[psa.length];
 		this.updateDts();
+		this.sequenceNumberStart = 0;
+		this.sequenceNumberEnd = psa.length-1;
 	}
 	
 	/**
@@ -175,7 +214,7 @@ public class Trajectory implements Serializable {
 	 */
 	public double getTimeLeftEstimate(int sequenceNum) {
 		double timeCounter = 0.0;
-		for (int i = sequenceNum; i < this.getDTs().length; i++) {
+		for (int i = sequenceNum-this.sequenceNumberStart; i < this.getDTs().length; i++) {
 			timeCounter += this.getDTs()[i];
 		}
 		return timeCounter;
