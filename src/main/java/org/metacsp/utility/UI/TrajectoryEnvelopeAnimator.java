@@ -717,6 +717,18 @@ public class TrajectoryEnvelopeAnimator {
 					updateTime();
 					updateValue();
 				}
+				else if (e.getKeyChar() == '>') {
+					
+					timeL = Math.min(horizon, timeL+(long)change* 10) ;
+					updateTime();
+					updateValue();
+				}
+				else if (e.getKeyChar() == '<') {
+					timeL = Math.max(origin,timeL-(long)change* 10) ;
+					updateTime();
+					updateValue();
+				}
+				
 			}
 			@Override
 			public void keyReleased(KeyEvent e) { }
