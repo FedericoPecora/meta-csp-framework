@@ -113,11 +113,15 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		return true;
 
 	}
-
+	
+	private int BTcounter = 0;
+	public int getBTcounter() {
+		return BTcounter;
+	}
+	
 	@Override
 	public void postBacktrack(MetaVariable mv) {
-		// TODO Auto-generated method stub
-
+		BTcounter++;
 	}
 
 	@Override
