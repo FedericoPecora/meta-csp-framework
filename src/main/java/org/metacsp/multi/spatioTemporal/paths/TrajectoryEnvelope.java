@@ -3,6 +3,7 @@ package org.metacsp.multi.spatioTemporal.paths;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -134,30 +135,30 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 
-	/**
-	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
-	 * the bounding box of the machine assuming its reference point is in (0,0).
-	 * @param backLeft The rear left coordinate of the bounding box.
-	 * @param backRight The rear right coordinate of the bounding box.
-	 * @param frontLeft The front left coordinate of the bounding box.
-	 * @param frontRight The front right coordinate of the bounding box.
-	 */
-	public void setFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
-		this.initFootprint(backLeft, backRight, frontRight, frontLeft);
-	}
+//	/**
+//	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the spatial envelope. Provide
+//	 * the bounding box of the machine assuming its reference point is in (0,0).
+//	 * @param backLeft The rear left coordinate of the bounding box.
+//	 * @param backRight The rear right coordinate of the bounding box.
+//	 * @param frontLeft The front left coordinate of the bounding box.
+//	 * @param frontRight The front right coordinate of the bounding box.
+//	 */
+//	public void setFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
+//		this.initFootprint(backLeft, backRight, frontRight, frontLeft);
+//	}
 	
 	
-	/**
-	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the inner spatial envelope. Provide
-	 * the bounding box of the machine assuming its reference point is in (0,0).
-	 * @param backLeft The rear left coordinate of the bounding box.
-	 * @param backRight The rear right coordinate of the bounding box.
-	 * @param frontLeft The front left coordinate of the bounding box.
-	 * @param frontRight The front right coordinate of the bounding box.
-	 */
-	public void setInnerFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
-		this.initInnerFootprint(backLeft, backRight, frontRight, frontLeft);
-	}
+//	/**
+//	 * Set the footprint of this {@link TrajectoryEnvelope}, which is used for computing the inner spatial envelope. Provide
+//	 * the bounding box of the machine assuming its reference point is in (0,0).
+//	 * @param backLeft The rear left coordinate of the bounding box.
+//	 * @param backRight The rear right coordinate of the bounding box.
+//	 * @param frontLeft The front left coordinate of the bounding box.
+//	 * @param frontRight The front right coordinate of the bounding box.
+//	 */
+//	public void setInnerFootprint(Coordinate backLeft, Coordinate backRight, Coordinate frontLeft, Coordinate frontRight) {
+//		this.initInnerFootprint(backLeft, backRight, frontRight, frontLeft);
+//	}
 	
 	
 	/**
@@ -469,7 +470,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 			this.sequenceNumberStart = 0;
 			while (!psSuperEnv[this.sequenceNumberStart].equals(psThis[0])) this.sequenceNumberStart++;
 			this.sequenceNumberEnd = this.sequenceNumberStart+this.getTrajectory().getPositions().length-1;
-			this.getTrajectory().updateSequenceNumbers(this.sequenceNumberStart, this.sequenceNumberStart);
+			this.getTrajectory().updateSequenceNumbers(this.sequenceNumberStart, this.sequenceNumberEnd);
 		}
 	}
 	

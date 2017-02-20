@@ -1,5 +1,6 @@
 package org.metacsp.dispatching;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -47,6 +48,10 @@ public class Dispatcher extends Thread {
 				}
 			}
 		}
+	}
+	
+	public void removeFinishedVariable(SymbolicVariableActivity toRemove) {
+		this.acts.remove(toRemove);
 	}
 
 	private boolean equivalentActivities(SymbolicVariableActivity act1, SymbolicVariableActivity act2) {
@@ -144,6 +149,14 @@ public class Dispatcher extends Thread {
 	public void addDispatchingFunction(String component, DispatchingFunction df) {
 		df.registerDispatcher(this);
 		this.dfs.put(component, df);
+	}
+	
+	public SymbolicVariableActivity[] getFinishedActs() {
+		ArrayList<SymbolicVariableActivity> ret = new ArrayList<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : acts.keySet()) {
+			if (acts.get(act).equals(ACTIVITY_STATE.FINISHED)) ret.add(act);
+		}
+		return ret.toArray(new SymbolicVariableActivity[ret.size()]);
 	}
 
 	public void finish(SymbolicVariableActivity act) { acts.put(act, ACTIVITY_STATE.FINISHING); }

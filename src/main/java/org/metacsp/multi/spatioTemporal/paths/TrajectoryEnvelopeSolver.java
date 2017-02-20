@@ -16,6 +16,8 @@ import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelationSolver;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
+import org.metacsp.time.APSPSolver;
+import org.metacsp.time.Bounds;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -152,30 +154,37 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return (DE9IMRelationSolver)this.getConstraintSolvers()[1];
 	}
 	
-	private ArrayList<TrajectoryEnvelope> makeEnvelope(int robotID, String path, Coordinate frontLeft, Coordinate frontRight, Coordinate backRight, Coordinate backLeft) {
+	private ArrayList<TrajectoryEnvelope> makeEnvelope(int robotID, long firstParkingDuration, long lastParkingDuration, Trajectory trajRobot, Coordinate ... footprintCoords) {
 		ArrayList<TrajectoryEnvelope> ret = new ArrayList<TrajectoryEnvelope>();
 		
 		TrajectoryEnvelope te = (TrajectoryEnvelope)this.createVariable();
 		TrajectoryEnvelope parkingStart = (TrajectoryEnvelope)this.createVariable();
 		TrajectoryEnvelope parkingEnd = (TrajectoryEnvelope)this.createVariable();
 
+		te.setComponent("Robot" + robotID);
+		te.getSymbolicVariableActivity().setSymbolicDomain("Driving");
+		parkingStart.setComponent("Robot" + robotID);
+		parkingStart.getSymbolicVariableActivity().setSymbolicDomain("Parking (initial)");
+		parkingEnd.setComponent("Robot" + robotID);
+		parkingEnd.getSymbolicVariableActivity().setSymbolicDomain("Parking (final)");
+
 		ArrayList<AllenIntervalConstraint> consToAdd = new ArrayList<AllenIntervalConstraint>();
 		TrajectoryEnvelope trajEnvelopeRobot = (TrajectoryEnvelope)te;
-		Trajectory trajRobot = new Trajectory(path);
-		
-		trajEnvelopeRobot.setFootprint(backLeft,backRight,frontLeft,frontRight);
+		//frontLeft, frontRight, backRight, backLeft
+		//trajEnvelopeRobot.setFootprint(footprintCoords[3],footprintCoords[2],footprintCoords[0],footprintCoords[1]);
+		trajEnvelopeRobot.setFootprint(footprintCoords);
 		trajEnvelopeRobot.setTrajectory(trajRobot);
 		trajEnvelopeRobot.setRobotID(robotID);
 		
 		Pose parkingStartPose = trajEnvelopeRobot.getTrajectory().getPoseSteering()[0].getPose();
 		Trajectory trajStart = new Trajectory(new Pose[] {parkingStartPose});
-		parkingStart.setFootprint(backLeft,backRight,frontLeft,frontRight);
+		parkingStart.setFootprint(footprintCoords);
 		parkingStart.setTrajectory(trajStart);
 		parkingStart.setRefinable(false);
 
 		Pose parkingEndPose = trajEnvelopeRobot.getTrajectory().getPoseSteering()[trajEnvelopeRobot.getTrajectory().getPoseSteering().length-1].getPose();
 		Trajectory trajEnd = new Trajectory(new Pose[] {parkingEndPose});
-		parkingEnd.setFootprint(backLeft,backRight,frontLeft,frontRight);
+		parkingEnd.setFootprint(footprintCoords);
 		parkingEnd.setTrajectory(trajEnd);
 		parkingEnd.setRefinable(false);
 		
@@ -189,10 +198,15 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		drivingMeetsParking.setTo(parkingEnd);
 		consToAdd.add(drivingMeetsParking);
 		
-		AllenIntervalConstraint parkingEndForever = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Forever);
-		parkingEndForever.setFrom(parkingEnd);
-		parkingEndForever.setTo(parkingEnd);
-		consToAdd.add(parkingEndForever);
+		AllenIntervalConstraint durFirst = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(firstParkingDuration, APSPSolver.INF));
+		durFirst.setFrom(parkingStart);
+		durFirst.setTo(parkingStart);
+		consToAdd.add(durFirst);
+		
+		AllenIntervalConstraint durLast = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(lastParkingDuration, APSPSolver.INF));
+		durLast.setFrom(parkingEnd);
+		durLast.setTo(parkingEnd);
+		consToAdd.add(durLast);
 		
 		ret.add(parkingStart);
 		ret.add(trajEnvelopeRobot);
@@ -203,32 +217,100 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return ret;
 	}
 	
+
 	/**
-	 * Create a trajectory envelope for each given path (in a file). Robot IDs are assigned starting from the given
-	 * integer. This method creates three envelopes for each path:
+	 * Create a trajectory envelope for each given {@link Trajectory}. Robot IDs are assigned starting from the given
+	 * integer. This method creates three envelopes for each {@link Trajectory}:
 	 * the main {@link TrajectoryEnvelope} covering the path; one {@link TrajectoryEnvelope} for the starting position
 	 * of the robot; and one one {@link TrajectoryEnvelope} for the final parking position of the robot. The three envelopes
-	 * are constrained with {@link AllenIntervalConstraint.Type#Meets} constraints.
-	 * @param firstRobotID The starting ID of the robot for which the {@link TrajectoryEnvelope}s should be created.
-	 * @param paths The paths over which the {@link TrajectoryEnvelope}s should be created.
-	 * @return
+	 * are constrained with {@link AllenIntervalConstraint.Type#Meets} constraints. The two parking envelopes have a given duration.
+	 * @param firstRobotID The starting robot ID.
+	 * @param durationFirstParking The duration of the first parking {@link TrajectoryEnvelope}.
+	 * @param durationLastParking The duration of the final parking {@link TrajectoryEnvelope}.
+	 * @param footprint Coordinates representing the footprint of the robot.
+	 * @param trajectories The {@link Trajectory}s over which to create the {@link TrajectoryEnvelope}s.
+	 * @return A mapping between robot IDs and the newly created sets of {@link TrajectoryEnvelope}s.
 	 */
-	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(int firstRobotID, String ... paths) {
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(int firstRobotID, long durationFirstParking, long durationLastParking, Coordinate[] footprint, Trajectory ... trajectories) {
 
-		//XA15 footprint, 2.7 (w) x 6.6 (l)
+		HashMap<Integer,ArrayList<TrajectoryEnvelope>> ret = new HashMap<Integer, ArrayList<TrajectoryEnvelope>>();
+		
+		for (int i = 0; i < trajectories.length; i++) {
+			ArrayList<TrajectoryEnvelope> oneRobot = makeEnvelope(i+firstRobotID, durationFirstParking, durationLastParking, trajectories[i], footprint);
+			ret.put(i+firstRobotID, oneRobot);
+		}		
+		return ret;
+	}
+	
+	/**
+	 * Create a trajectory envelope for each given reference to a file containing a path.
+	 * Robot IDs are assigned starting from the given integer. This method creates three envelopes for each
+	 * path: the main {@link TrajectoryEnvelope} covering the path; one {@link TrajectoryEnvelope} for the
+	 * starting position of the robot; and one one {@link TrajectoryEnvelope} for the final parking position
+	 * of the robot. The three envelopes are constrained with {@link AllenIntervalConstraint.Type#Meets} constraints.
+	 * The two parking envelopes have a given duration.
+	 * @param firstRobotID The starting robot ID.
+	 * @param durationFirstParking The duration of the first parking {@link TrajectoryEnvelope}.
+	 * @param durationLastParking The duration of the final parking {@link TrajectoryEnvelope}.
+	 * @param footprint Coordinates representing the footprint of the robot.
+	 * @param pathFiles The files containing paths over which to create the {@link TrajectoryEnvelope}s.
+	 * @return A mapping between robot IDs and the newly created sets of {@link TrajectoryEnvelope}s.
+	 */
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(int firstRobotID, long durationFirstParking, long durationLastParking, Coordinate[] footprint, String ... pathFiles) {
+
+		Trajectory[] trajectories = new Trajectory[pathFiles.length];
+		for (int i = 0; i < pathFiles.length; i++) {
+			trajectories[i] = new Trajectory(pathFiles[i]);
+		}
+		return createEnvelopes(firstRobotID, durationFirstParking, durationLastParking, footprint, trajectories);
+	}
+
+	/**
+	 * Create a trajectory envelope for each given reference to a file containing a path.
+	 * Robot IDs are assigned starting from the given integer. This method creates three envelopes for each
+	 * path: the main {@link TrajectoryEnvelope} covering the path; one {@link TrajectoryEnvelope} for the
+	 * starting position of the robot; and one one {@link TrajectoryEnvelope} for the final parking position
+	 * of the robot. The three envelopes are constrained with {@link AllenIntervalConstraint.Type#Meets} constraints.
+	 * The two parking envelopes have a duration of 3000 ms each. A default footprint of size 2.7 (w) x 6.6 (l) is used. 
+	 * @param firstRobotID The starting robot ID.
+	 * @param pathFiles The files containing paths over which to create the {@link TrajectoryEnvelope}s.
+	 * @return A mapping between robot IDs and the newly created sets of {@link TrajectoryEnvelope}s.
+	 */	
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(int firstRobotID, String ... pathFiles) {
+		//Default footprint, 2.7 (w) x 6.6 (l)
 		Coordinate frontLeft = new Coordinate(5.3, 1.35);
 		Coordinate frontRight = new Coordinate(5.3, -1.35);
 		Coordinate backRight = new Coordinate(-1.3, -1.35);
 		Coordinate backLeft = new Coordinate(-1.3, 1.35);
-		
-		HashMap<Integer,ArrayList<TrajectoryEnvelope>> ret = new HashMap<Integer, ArrayList<TrajectoryEnvelope>>();
-		
-		for (int i = 0; i < paths.length; i++) {
-			ArrayList<TrajectoryEnvelope> oneRobot = makeEnvelope(i+firstRobotID, paths[i], frontLeft, frontRight, backRight, backLeft);
-			ret.put(i+firstRobotID, oneRobot);
-		}
-		
-		return ret;
+		Coordinate[] footprint = new Coordinate[] {frontLeft,frontRight,backLeft,backRight};
+		long durationFirstParking = 3000;
+		long durationLastParking = 3000;
+		return createEnvelopes(firstRobotID, durationFirstParking, durationLastParking, footprint, pathFiles);
 	}
+
+	/**
+	 * Create a trajectory envelope for each given {@link Trajectory}. Robot IDs are assigned starting from the given
+	 * integer. This method creates three envelopes for each {@link Trajectory}:
+	 * the main {@link TrajectoryEnvelope} covering the path; one {@link TrajectoryEnvelope} for the starting position
+	 * of the robot; and one one {@link TrajectoryEnvelope} for the final parking position of the robot. The three envelopes
+	 * are constrained with {@link AllenIntervalConstraint.Type#Meets} constraints. The two parking envelopes have a duration of 3000 ms each.
+	 * A default footprint of size 2.7 (w) x 6.6 (l) is used.
+	 * @param firstRobotID The starting robot ID.
+	 * @param trajectories The {@link Trajectory}s over which to create the {@link TrajectoryEnvelope}s.
+	 * @return A mapping between robot IDs and the newly created sets of {@link TrajectoryEnvelope}s.
+	 */
+	public HashMap<Integer,ArrayList<TrajectoryEnvelope>> createEnvelopes(int firstRobotID, Trajectory ... trajectories) {
+		//Default footprint, 2.7 (w) x 6.6 (l)
+		Coordinate frontLeft = new Coordinate(5.3, 1.35);
+		Coordinate frontRight = new Coordinate(5.3, -1.35);
+		Coordinate backRight = new Coordinate(-1.3, -1.35);
+		Coordinate backLeft = new Coordinate(-1.3, 1.35);
+		Coordinate[] footprint = new Coordinate[] {frontLeft,frontRight,backLeft,backRight};
+		long durationFirstParking = 3000;
+		long durationLastParking = 3000;
+		return createEnvelopes(firstRobotID, durationFirstParking, durationLastParking, footprint, trajectories);
+	}
+
+
 
 }

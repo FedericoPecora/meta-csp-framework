@@ -245,5 +245,12 @@ public abstract class MultiVariable extends Variable {
 			}
 		}
 	}
+	
+	@Override
+	public void setComponent(String component) {
+		super.setComponent(component);
+		DelegateTree<Variable,String> varTree = this.getVariableHierarchy();
+		for (Variable var : varTree.getSuccessors(varTree.getRoot())) var.setComponent(component);
+	}
 
 }
