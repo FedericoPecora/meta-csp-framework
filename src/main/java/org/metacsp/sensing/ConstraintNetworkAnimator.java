@@ -8,7 +8,11 @@ import java.util.logging.Logger;
 
 import org.metacsp.dispatching.Dispatcher;
 import org.metacsp.dispatching.DispatchingFunction;
+import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
+import org.metacsp.framework.Variable;
+import org.metacsp.framework.multi.MultiVariable;
 import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
@@ -33,6 +37,7 @@ public class ConstraintNetworkAnimator extends Thread {
 	private Dispatcher dis = null;
 	private boolean paused = false;
 	private boolean teardown = false;
+	private boolean autoClean = false;
 
 	private HashMap<Controllable,HashMap<Long,String>> controllableValues = new HashMap<Controllable, HashMap<Long,String>>();
 
@@ -53,12 +58,71 @@ public class ConstraintNetworkAnimator extends Thread {
 	}
 
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, InferenceCallback cb) {
-		this(ans, period);
+		this(ans, period, cb, false);
+	}
+	
+	public void setInferenceCallback(InferenceCallback cb) {
 		this.cb = cb;
 	}
 
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period) {
-		this(ans,period,false);
+		this(ans, period, false);
+	}
+	
+	public void setAutoCleanFinishedVariables(boolean ac) {
+		this.autoClean = ac;
+	}
+
+	public boolean isFinished(SymbolicVariableActivity act) {
+		for (SymbolicVariableActivity finishedAct : dis.getFinishedActs()) {
+			if (finishedAct.equals(act)) return true;
+		}
+		return false;
+	}
+	
+	private void cleanUp() {
+		SymbolicVariableActivity[] finishedActs = this.getDispatcher().getFinishedActs();
+		for (int i = 0; i < finishedActs.length; i++) {		
+			Variable finishedVar = finishedActs[i].getRootVariable();
+			ConstraintSolver varSolver = finishedVar.getConstraintSolver();
+			
+			if (varSolver.getConstraintNetwork().containsVariable(finishedVar) && !finishedVar.isDependentVariable()) {
+
+				int countCons = 0;
+				
+				//Remove var constraints
+				Constraint[] consToRemove = varSolver.getConstraintNetwork().getIncidentEdgesIncludingDependentVariables(finishedVar);
+				varSolver.removeConstraints(consToRemove);
+				if (consToRemove != null) countCons += consToRemove.length;
+	
+				Variable[] depVars = finishedVar.getRecursivelyDependentVariables();
+				for (Variable depVar : depVars) {
+					
+					//Remove constraints of dependent variables
+					ConstraintSolver depVarSolver = depVar.getConstraintSolver();
+					Constraint[] consToRemoveDepVars = depVar.getConstraintSolver().getConstraintNetwork().getIncidentEdges(depVar);
+					depVarSolver.removeConstraints(consToRemoveDepVars);
+					if (consToRemoveDepVars != null) countCons += consToRemoveDepVars.length;
+
+					//Remove act constraints of dependent variables
+					SymbolicVariableActivity depAct = (SymbolicVariableActivity)((MultiVariable)depVar).getVariablesFromVariableHierarchy(SymbolicVariableActivity.class)[0];
+					Constraint[] consToRemoveDepAct = ans.getConstraintNetwork().getIncidentEdges(depAct);
+					ans.removeConstraints(consToRemoveDepAct);
+					if (consToRemoveDepAct != null) countCons += consToRemoveDepAct.length;
+					
+					//Notify dispatcher that dep act is no longer there
+					this.getDispatcher().removeFinishedVariable(depAct);
+				}
+					
+				//Notify dispatcher that act is no longer there
+				this.getDispatcher().removeFinishedVariable(finishedActs[i]);
+	
+				logger.info("Cleaned up " + depVars.length + " variables and " + countCons + " constraints");
+	
+				//Remove TE
+				varSolver.removeVariable(finishedVar);
+			}			
+		}
 	}
 
 	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, boolean startPaused) {
@@ -117,7 +181,18 @@ public class ConstraintNetworkAnimator extends Thread {
 		this.controllableValues.put(controllable, values);
 	}
 
+	@Deprecated
 	public void addDispatchingFunctions(ActivityNetworkSolver ans, DispatchingFunction ... dfs) {
+		boolean start = false;
+		if (this.dis == null) {
+			this.dis = new Dispatcher(ans, period);
+			start = true;
+		}
+		for (DispatchingFunction df : dfs) dis.addDispatchingFunction(df.getComponent(), df);
+		if (start) dis.start();
+	}
+
+	public void addDispatchingFunctions(DispatchingFunction ... dfs) {
 		boolean start = false;
 		if (this.dis == null) {
 			this.dis = new Dispatcher(ans, period);
@@ -178,6 +253,14 @@ public class ConstraintNetworkAnimator extends Thread {
 						for (PeriodicCallback pc : pcbs) pc.callback(timeNow);
 					}
 
+					//Remove finished vars
+					if (this.autoClean) {
+						int finishedVars = this.getDispatcher().getFinishedActs().length;
+						if (finishedVars > 0) {
+							cleanUp();
+						}
+					}
+					
 					//Print iteration number
 					logger.info("Iteration " + iteration++ + " @" + timeNow);
 				}

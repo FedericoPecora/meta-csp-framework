@@ -464,7 +464,10 @@ public abstract class ConstraintSolver implements Serializable {
 	public final void removeVariables(Variable[] v) throws VariableNotFound, IllegalVariableRemoval {
 		
 		HashSet<Constraint> incidentRevised = new HashSet<Constraint>();
-		
+
+		//Keep track of solvers of dependent variables
+		HashMap<ConstraintSolver,ArrayList<Variable>> solversToDepVars = new HashMap<ConstraintSolver, ArrayList<Variable>>();
+
 		for (Variable var : v) {
 			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
 			Constraint[] incident = this.theNetwork.getIncidentEdges(var);
@@ -477,6 +480,20 @@ public abstract class ConstraintSolver implements Serializable {
 				}
 				else incidentRevised.add(con);
 			}
+			
+			//Gather solvers of dependent variables
+			for (Variable depVar : var.getDependentVariables()) {
+				if (!solversToDepVars.containsKey(depVar.getConstraintSolver())) {
+					solversToDepVars.put(depVar.getConstraintSolver(), new ArrayList<Variable>());
+				}
+				solversToDepVars.get(depVar.getConstraintSolver()).add(depVar);
+			}
+		}
+		
+		//Remove dependent variables
+		for (ConstraintSolver cs : solversToDepVars.keySet()) {
+			cs.removeVariables(solversToDepVars.get(cs).toArray(new Variable[solversToDepVars.get(cs).size()]));
+			logger.finest("Removed " + solversToDepVars.get(cs).size() + " dependent variables");
 		}
 		
 		this.removeConstraints(incidentRevised.toArray(new Constraint[incidentRevised.size()]));
@@ -490,6 +507,7 @@ public abstract class ConstraintSolver implements Serializable {
 		}
 		if (!skipPropagation && autoprop && checkDomainsInstantiated()) this.propagate();
 		logger.finest("Removed variables " + Arrays.toString(v));
+		
 	}
 
 	/**

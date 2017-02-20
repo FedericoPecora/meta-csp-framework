@@ -30,11 +30,15 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.spatioTemporal.paths.TrajectoryEnvelope;
 import org.metacsp.utility.logging.MetaCSPLogging;
+
+import cern.colt.Arrays;
 
 /**
  * Class representing the decision variables in a Constraint Problem.
@@ -67,6 +71,98 @@ public abstract class Variable implements Comparable<Variable>, Serializable {
 		}
 	}
 	
+	protected Variable[] dependentVariables = new Variable[0];
+	
+	/**
+	 * Set {@link Variable}s that depend on this {@link Variable}. Dependent variables are removed
+	 * when this variable is removed.
+	 * @param depVars The {@link Variable}s that depend on this {@link Variable}.
+	 */
+	public void setDependentVariables(Variable ... depVars) {
+		this.dependentVariables = depVars;
+	}
+	
+	/**
+	 * Add {@link Variable}s that depend on this {@link Variable}. Dependent variables are removed
+	 * when this variable is removed.
+	 * @param depVars The {@link Variable}s that depend on this {@link Variable}.
+	 */	
+	public void addDependentVariables(Variable ... depVars) {
+		ArrayList<Variable> newDepVars = new ArrayList<Variable>();
+		for (Variable v : this.dependentVariables) newDepVars.add(v);
+		for (Variable v : depVars) newDepVars.add(v);
+		this.dependentVariables = newDepVars.toArray(new Variable[newDepVars.size()]);
+	}
+	
+	/**
+	 * Get the {@link Variable}s that depend on this variable. Dependent variables are removed
+	 * when this variable is removed.
+	 * @return The {@link Variable}s that depend on this variable.
+	 */
+	public Variable[] getDependentVariables() {
+		return this.dependentVariables;
+	}
+	
+	/**
+	 * Returns <code>true</code> iff this {@link Variable} depends on a given {@link Variable}.
+	 * @param var The {@link Variable} to check for dependency.
+	 * @return <code>true</code> if this {@link Variable} depends on the given {@link Variable}, <code>false</code> otherwise. 
+	 */
+	public boolean dependsOn(Variable var) {
+		for (Variable varDeps : var.getDependentVariables()) {
+			if (this.equals(varDeps)) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns <code>true</code> iff this variable appears in the dependency list of
+	 * any other variable in the same constraint network.
+	 * @return <code>true</code> if this variable appears in the dependency list of
+	 * any other variable, <code>false</code> otherwise.
+	 */
+	public boolean isDependentVariable() {
+		for (Variable var : this.getConstraintSolver().getConstraintNetwork().getVariables()) {
+			if (this.dependsOn(var)) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Recursively get all variables that depend on this {@link Variable} or its dependents, plus this {@link Variable}.
+	 * @return All variables that depend on this {@link Variable} or its dependents, plus this {@link Variable}.
+	 */
+	public Variable[] getRecursivelyDependentVariables() {
+		ArrayList<Variable> depVars = new ArrayList<Variable>();
+		for (Variable depVar : this.getDependentVariables()) {
+			for (Variable depVar1 : depVar.getRecursivelyDependentVariables()) {
+				depVars.add(depVar1);
+			}
+		}
+		depVars.add(this);
+		return depVars.toArray(new Variable[depVars.size()]);
+	}
+
+	/**
+	 * Remove one or more {@link Variable}s from the list of {@link Variable}s that depend on this
+	 * {@link Variable}.
+	 * @param depVars The dependencies to remove.
+	 */
+	public void removeDependentVariables(Variable ... depVars) {
+		ArrayList<Variable> newDepVars = new ArrayList<Variable>();
+		for (Variable v : this.dependentVariables) {
+			boolean toRemove = false;
+			for (Variable v1 : depVars) {
+				if (v.equals(v1)) {
+					toRemove = true;
+					break;
+				}
+			}
+			if (!toRemove) newDepVars.add(v);
+		}
+		this.dependentVariables = newDepVars.toArray(new Variable[newDepVars.size()]);
+	}
+	
 	protected transient Logger logger = MetaCSPLogging.getLogger(this.getClass());
 	
 	/**
@@ -97,6 +193,49 @@ public abstract class Variable implements Comparable<Variable>, Serializable {
 	
 	private static final long serialVersionUID = 7L;
 
+	private MultiVariable parentVariable = null;
+	
+	/**
+	 * Set the parent variable of this {@link Variable}.
+	 * @param p The parent variable of this {@link Variable}.
+	 */
+	public void setParentVariable(MultiVariable p) {
+		this.parentVariable = p;
+	}
+
+	/**
+	 * Get the parent variable of this {@link Variable}.
+	 * @return The parent variable of this {@link Variable}.
+	 */
+	public MultiVariable getParentVariable() {
+		return this.parentVariable;
+	}
+	
+	/**
+	 * Get the first ancestor {@link MultiVariable} of this {@link Variable} that is of a given type. 
+	 * @param cls The type of the ancestor {@link MultiVariable}.
+	 * @return The first ancestor {@link MultiVariable} of this {@link Variable} that is of the given type.
+	 */
+	public MultiVariable getAncestorVariable(Class<?> cls) {
+		Variable aux = this;
+		while (!(aux.getClass().equals(cls))) {
+			aux = aux.getParentVariable();
+			if (aux == null) return null;
+		}
+		return (MultiVariable)aux;
+	}
+	
+	/**
+	 * Get the highest ancestor {@link MultiVariable} of this {@link Variable} (root of the variable hierarchy). 
+	 * @return The root of this {@link Variable}'s variable hierarchy.
+	 */
+	public MultiVariable getRootVariable() {
+		Variable aux = this;
+		while (aux.getParentVariable() != null) {
+			aux = aux.getParentVariable();
+		}
+		return (MultiVariable)aux;
+	}
 	
 	/**
 	 * Set the marking of this {@link Variable}.

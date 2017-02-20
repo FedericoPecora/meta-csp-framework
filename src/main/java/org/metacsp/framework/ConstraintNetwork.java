@@ -449,6 +449,27 @@ public class ConstraintNetwork implements Cloneable, Serializable  {
 		//		if(ret.length==0){return null;}
 		return ret;
 	}
+	
+	/**
+	 * Get all {@link Constraint}s involving a given {@link Variable}, along with all the constraints involving
+	 * the dependent variables of this variable (recursively). 
+	 * @param v The {@link Variable} involved in the {@link Constraint}s.
+	 * @return All {@link Constraint}s involving the given {@link Variable} (including those
+	 * involving dependent variables of this variable, recursively).
+	 */	
+	public Constraint[] getIncidentEdgesIncludingDependentVariables(Variable v) {
+		HashSet<Constraint> ret = new HashSet<Constraint>();
+		Constraint[] incident = this.getIncidentEdges(v);
+		if (incident != null) {
+			for (Constraint con : incident) ret.add(con);
+		}
+		for (Variable var : v.getDependentVariables()) {
+			for (Constraint con : var.getConstraintSolver().getConstraintNetwork().getIncidentEdgesIncludingDependentVariables(var)) {
+				ret.add(con);
+			}
+		}
+		return ret.toArray(new Constraint[ret.size()]);
+	}
 
 	/**
 	 * Get all {@link Constraint}s for which a given {@link Variable} is source. 

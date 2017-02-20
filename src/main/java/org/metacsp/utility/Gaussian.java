@@ -24,17 +24,31 @@ package org.metacsp.utility;
 
 public class Gaussian {
 
-    // return phi(x) = standard Gaussian pdf
+    /**
+     * Returns phi(x) = standard Gaussian pdf
+     * @param x
+     * @return
+     */
     public static double phi(double x) {
         return Math.exp(-x*x / 2) / Math.sqrt(2 * Math.PI);
     }
 
-    // return phi(x, mu, signma) = Gaussian pdf with mean mu and stddev sigma
+    /**
+     * Returns phi(x, mu, signma) = Gaussian pdf with mean mu and stddev sigma
+     * @param x
+     * @param mu
+     * @param sigma
+     * @return
+     */
     public static double phi(double x, double mu, double sigma) {
         return phi((x - mu) / sigma) / sigma;
     }
 
-    // return Phi(z) = standard Gaussian cdf using Taylor approximation
+    /**
+     * Returns Phi(z) = standard Gaussian cdf using Taylor approximation
+     * @param z
+     * @return
+     */
     public static double Phi(double z) {
         if (z < -8.0) return 0.0;
         if (z >  8.0) return 1.0;
@@ -46,12 +60,22 @@ public class Gaussian {
         return 0.5 + sum * phi(z);
     }
 
-    // return Phi(z, mu, sigma) = Gaussian cdf with mean mu and stddev sigma
+    /**
+     * Returns Phi(z, mu, sigma) = Gaussian cdf with mean mu and stddev sigma
+     * @param z
+     * @param mu
+     * @param sigma
+     * @return
+     */
     public static double Phi(double z, double mu, double sigma) {
         return Phi((z - mu) / sigma);
     } 
 
-    // Compute z such that Phi(z) = y via bisection search
+    /**
+     * Computes z such that Phi(z) = y via bisection search
+     * @param y
+     * @return
+     */
     public static double PhiInverse(double y) {
         return PhiInverse(y, .00000001, -8, 8);
     } 
@@ -63,8 +87,6 @@ public class Gaussian {
         if (Phi(mid) > y) return PhiInverse(y, delta, lo, mid);
         else              return PhiInverse(y, delta, mid, hi);
     }
-
-
 
     // test client
     public static void main(String[] args) {

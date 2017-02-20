@@ -23,9 +23,11 @@
 package org.metacsp.meta.spatioTemporal.paths;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.meta.MetaConstraintSolver;
@@ -46,6 +48,7 @@ import org.metacsp.utility.UI.JTSDrawingPanel;
 import org.metacsp.utility.UI.TrajectoryEnvelopeAnimator;
 
 import cern.colt.Arrays;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -83,6 +86,37 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 	 */
 	public TrajectoryEnvelopeScheduler(long origin, long horizon) {
 		super(new Class[] {AllenIntervalConstraint.class, DE9IMRelation.class}, 0, new TrajectoryEnvelopeSolver(origin, horizon));
+	}
+	
+	/**
+	 * Get the dependency graph of trajectory envelopes from the resolving constraints added by this
+	 * {@link TrajectoryEnvelopeScheduler}.
+	 * @return A directed graph where each edge (x,y) has a label {p1,p2} indicating that
+	 * robot x.robotID has to wait at path point p1 for robot y.robotID to reach path point p2.
+	 */
+	public DirectedSparseMultigraph<TrajectoryEnvelope,Integer[]> getCurrentDependencies() {
+		DirectedSparseMultigraph<TrajectoryEnvelope,Integer[]> depGraph = new DirectedSparseMultigraph<TrajectoryEnvelope,Integer[]>();
+		ConstraintNetwork cn = this.getConstraintSolvers()[0].getConstraintNetwork();
+		Constraint[] cons = cn.getConstraints();
+		for (Constraint con : cons) {
+			if (con instanceof AllenIntervalConstraint) {
+				AllenIntervalConstraint aic = (AllenIntervalConstraint)con;
+				if (aic.getTypes()[0].equals(AllenIntervalConstraint.Type.BeforeOrMeets)) {
+					//to.start depends on from.end
+					TrajectoryEnvelope to = (TrajectoryEnvelope)aic.getTo();
+					TrajectoryEnvelope from = (TrajectoryEnvelope)aic.getFrom();
+					Integer toStart = to.getTrajectory().getSequenceNumberStart()-1;
+					Integer fromEnd = from.getTrajectory().getSequenceNumberEnd();
+					ArrayList<TrajectoryEnvelope> verts = new ArrayList<TrajectoryEnvelope>();
+					verts.add(to);
+					verts.add(from);
+					depGraph.addVertex(to);
+					depGraph.addVertex(from);
+					depGraph.addEdge(new Integer[] {toStart,fromEnd}, to, from);
+				}
+			}
+		}
+		return depGraph;
 	}
 	
 	/**
@@ -155,7 +189,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		// TODO Auto-generated method stub
 
 	}	
-
+	
 	/**
 	 * Refine the {@link TrajectoryEnvelope}s maintained by the {@link TrajectoryEnvelopeSolver} underlying this
 	 * {@link TrajectoryEnvelopeScheduler}. This method splits {@link TrajectoryEnvelope}s that overlap in space.
@@ -442,6 +476,8 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		Variable[] newVars = solver.createVariables(newTrajectories.size());
 		for (int i = 0; i < newVars.length; i++) {
 			TrajectoryEnvelope te = (TrajectoryEnvelope)newVars[i];
+			te.setComponent(var1.getComponent());
+			te.getSymbolicVariableActivity().setSymbolicDomain(var1.getSymbols());
 			//te.setFootprint(var1.getWidth(), var1.getLength(), var1.getDeltaW(), var1.getDeltaL());
 			te.setFootprint(var1.getFootprint());
 			//Only for second!
@@ -454,6 +490,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			te.setSuperEnvelope(var1);
 			te.setRobotID(var1.getRobotID());
 			var1.addSubEnvelope(te);
+			var1.addDependentVariables(te);
 			newTrajectoryEnvelopes.add(te);			
 		}
 

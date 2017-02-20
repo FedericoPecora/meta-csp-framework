@@ -372,13 +372,20 @@ public abstract class MultiConstraintSolver extends ConstraintSolver {
 		for (int i = 0; i < num; i++) {
 			try {
 				ret[i] = (Variable) this.variableType.getConstructor(new Class[] {ConstraintSolver.class, int.class, ConstraintSolver[].class, Variable[].class}).newInstance(new Object[] {this, this.IDs++, this.constraintSolvers, internalVars[i]});
-				if (component != null) {
-					ret[i].getConstraintSolver().setComponent(component, ret[i]);
-					logger.finest("Set component of " + ret[i] + " to " + component);
-					for (Variable internalVar : internalVars[i]) {
+				for (Variable internalVar : internalVars[i]) {
+					if (component != null) {
 						internalVar.getConstraintSolver().setComponent(component, internalVar);
 						logger.finest("Set component of " + internalVar + " to " + component);
 					}
+					internalVar.setParentVariable((MultiVariable)ret[i]);
+				}
+				if (component != null) {
+					ret[i].getConstraintSolver().setComponent(component, ret[i]);
+					logger.finest("Set component of " + ret[i] + " to " + component);
+//					for (Variable internalVar : internalVars[i]) {
+//						internalVar.getConstraintSolver().setComponent(component, internalVar);
+//						logger.finest("Set component of " + internalVar + " to " + component);
+//					}
 				}
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
