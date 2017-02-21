@@ -32,7 +32,7 @@ public class Dispatcher extends Thread {
 		this.teardown = true;
 	}
 
-	public Dispatcher(ActivityNetworkSolver ans, long period) {
+	public Dispatcher(final ActivityNetworkSolver ans, long period) {
 		this.ans = ans;
 		cn = ans.getConstraintNetwork();
 		this.period = period;
@@ -48,6 +48,10 @@ public class Dispatcher extends Thread {
 				}
 			}
 		}
+	}
+	
+	public SymbolicVariableActivity getFuture() {
+		return future;
 	}
 	
 	public void removeFinishedVariable(SymbolicVariableActivity toRemove) {

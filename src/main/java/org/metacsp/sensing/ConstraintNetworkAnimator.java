@@ -52,12 +52,12 @@ public class ConstraintNetworkAnimator extends Thread {
 		return Calendar.getInstance().getTimeInMillis();
 	}
 
-	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, InferenceCallback cb, boolean startPaused) {
+	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period, InferenceCallback cb, boolean startPaused) {
 		this(ans, period, startPaused);
 		this.cb = cb;
 	}
 
-	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, InferenceCallback cb) {
+	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period, InferenceCallback cb) {
 		this(ans, period, cb, false);
 	}
 	
@@ -65,7 +65,7 @@ public class ConstraintNetworkAnimator extends Thread {
 		this.cb = cb;
 	}
 
-	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period) {
+	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period) {
 		this(ans, period, false);
 	}
 	
@@ -125,7 +125,7 @@ public class ConstraintNetworkAnimator extends Thread {
 		}
 	}
 
-	public ConstraintNetworkAnimator(ActivityNetworkSolver ans, long period, boolean startPaused) {
+	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period, boolean startPaused) {
 		this.paused = startPaused;
 		synchronized(ans) {
 			this.ans = ans;
@@ -229,6 +229,7 @@ public class ConstraintNetworkAnimator extends Thread {
 					releaseFuture.setTo(future);
 					if (currentReleaseFuture != null) ans.removeConstraint(currentReleaseFuture);
 					if (!ans.addConstraint(releaseFuture)) {
+						System.out.println("????????? " + Arrays.toString(ans.getConstraintNetwork().getIncidentEdges(future)));
 						throw new NetworkMaintenanceError(releaseFuture);
 					}
 					currentReleaseFuture = releaseFuture;

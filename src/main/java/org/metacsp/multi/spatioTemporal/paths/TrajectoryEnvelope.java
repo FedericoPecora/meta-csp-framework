@@ -3,11 +3,7 @@ package org.metacsp.multi.spatioTemporal.paths;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.metacsp.framework.Constraint;
@@ -20,7 +16,6 @@ import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
-import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatial.DE9IM.LineStringDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
@@ -28,19 +23,17 @@ import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
 import org.metacsp.throwables.NoFootprintException;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
+import org.metacsp.utility.UI.TrajectoryEnvelopeHierarchyFrame;
 
-import com.vividsolutions.jts.JTSVersion;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
-import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
-import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducer;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
+
+import edu.uci.ics.jung.graph.DelegateTree;
+import edu.uci.ics.jung.graph.util.TreeUtils;
 
 /**
  * A {@link TrajectoryEnvelope} is a {@link MultiVariable} composed of an {@link AllenInterval} (temporal part)
@@ -87,6 +80,25 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 */
 	public Polygon getInnerFootprint() {
 		return innerFootprint;
+	}
+
+	public DelegateTree<TrajectoryEnvelope,String> getEnvelopeHierarchy() {
+		DelegateTree<TrajectoryEnvelope,String> ret = new DelegateTree<TrajectoryEnvelope, String>();
+		ret.setRoot(this);
+		if (this.getSubEnvelopes() != null) {
+			for (TrajectoryEnvelope subTE : this.getSubEnvelopes()) {
+				TreeUtils.addSubTree(ret, subTE.getEnvelopeHierarchy(), this, ""+subTE.hashCode());
+			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * Draw a hierarchy of {@link TrajectoryEnvelopes}s.
+	 * @param tree The hierarchy of {@link TrajectoryEnvelopes}s to draw.
+	 */
+	public static void drawTrajectoryEnvelopeHierarchy(DelegateTree<TrajectoryEnvelope,String> tree) {
+		new TrajectoryEnvelopeHierarchyFrame(tree, "Trajectory Envelope Hierarchy");
 	}
 
 	
