@@ -163,7 +163,9 @@ public class Dispatcher extends Thread {
 		return ret.toArray(new SymbolicVariableActivity[ret.size()]);
 	}
 
-	public void finish(SymbolicVariableActivity act) { acts.put(act, ACTIVITY_STATE.FINISHING); }
+	public void finish(SymbolicVariableActivity ... actsToFinish) { 
+		for (SymbolicVariableActivity act : actsToFinish) acts.put(act, ACTIVITY_STATE.FINISHING);
+	}
 	
 	public ConstraintNetwork getConstraintNetwork() {
 		return ans.getConstraintNetwork();

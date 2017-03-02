@@ -107,6 +107,17 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 					TrajectoryEnvelope from = (TrajectoryEnvelope)aic.getFrom();
 					Integer toStart = to.getTrajectory().getSequenceNumberStart()-1;
 					Integer fromEnd = from.getTrajectory().getSequenceNumberEnd();
+					
+					TrajectoryEnvelope root = to;
+					while (root.hasSuperEnvelope()) root = root.getSuperEnvelope();
+					for (Variable depVar : root.getRecursivelyDependentVariables()) {
+						TrajectoryEnvelope depTE = (TrajectoryEnvelope)depVar;
+						if (!depTE.hasSubEnvelopes() && depTE.getTrajectory().getSequenceNumberEnd() == toStart) {
+							to = depTE;
+							break;
+						}
+					}
+
 					ArrayList<TrajectoryEnvelope> verts = new ArrayList<TrajectoryEnvelope>();
 					verts.add(to);
 					verts.add(from);

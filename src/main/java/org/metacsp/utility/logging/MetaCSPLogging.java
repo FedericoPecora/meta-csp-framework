@@ -23,6 +23,8 @@
 package org.metacsp.utility.logging;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
@@ -135,4 +137,12 @@ public final class MetaCSPLogging implements Serializable{
 		//System.out.println("Returning old logger for " + c.getSimpleName());
 		return loggers.get(c);
 	}
+	
+	public static String printDouble(double d, int precision) {
+		String fmt = "#0."; 
+		for (int i = 0; i < precision; i++) fmt += "0"; 
+		NumberFormat formatter = new DecimalFormat(fmt); 
+		return formatter.format(d);	
+	}
+
 }

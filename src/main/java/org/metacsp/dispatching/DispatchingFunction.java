@@ -24,8 +24,8 @@ public abstract class DispatchingFunction {
 	
 	public abstract boolean skip(SymbolicVariableActivity act);
 	
-	public void finish(SymbolicVariableActivity act) {
-		dis.finish(act);
+	public void finish(SymbolicVariableActivity ... acts) {
+		dis.finish(acts);
 	}
 	
 	public ConstraintNetwork getConstraintNetwork() {

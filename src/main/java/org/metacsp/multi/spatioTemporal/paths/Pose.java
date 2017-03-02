@@ -3,6 +3,10 @@ package org.metacsp.multi.spatioTemporal.paths;
 
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+import org.metacsp.utility.logging.MetaCSPLogging;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -53,6 +57,14 @@ public class Pose implements Serializable {
 		return theta;
 	}
 	
+	public Coordinate getPosition() {
+		return new Coordinate(this.getX(), this.getY());
+	}
+	
+	public double distanceTo(Pose p) {
+		return p.getPosition().distance(this.getPosition());
+	}
+	
 	public static double lerp(double a, double b, double ratio) {
 	    return (a * (1.0 - ratio)) + (b * ratio);
 	}
@@ -80,6 +92,10 @@ public class Pose implements Serializable {
 		double newY = lerp(getY(),p2.getY(),ratio);
 		double newTheta = lerpDegrees(getTheta(),p2.getTheta(),ratio);
 		return new Pose(newX,newY,newTheta);
+	}
+
+	public String toString() {
+		return "(" + MetaCSPLogging.printDouble(this.getX(),4) + ", " + MetaCSPLogging.printDouble(this.getY(),4) + ", " + MetaCSPLogging.printDouble(this.getTheta(),4) + ")";
 	}
 
 }
