@@ -8,14 +8,15 @@ import java.util.logging.Logger;
 
 import org.metacsp.dispatching.Dispatcher;
 import org.metacsp.dispatching.DispatchingFunction;
+import org.metacsp.dispatching.Dispatcher.ACTIVITY_STATE;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
 import org.metacsp.meta.fuzzyActivity.FuzzyActivityDomain.markings;
-import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.logging.MetaCSPLogging;
@@ -72,6 +73,20 @@ public class ConstraintNetworkAnimator extends Thread {
 	public void setAutoCleanFinishedVariables(boolean ac) {
 		this.autoClean = ac;
 	}
+	
+	public boolean isInState(SymbolicVariableActivity act, ACTIVITY_STATE st) {
+		for (SymbolicVariableActivity disAct : dis.getActsInState(st)) {
+			if (disAct.equals(act)) return true;
+		}
+		return false;
+	}
+	
+	public boolean isStarted(SymbolicVariableActivity act) {
+		for (SymbolicVariableActivity startedAct : dis.getStartedActs()) {
+			if (startedAct.equals(act)) return true;
+		}
+		return false;
+	}
 
 	public boolean isFinished(SymbolicVariableActivity act) {
 		for (SymbolicVariableActivity finishedAct : dis.getFinishedActs()) {
@@ -79,7 +94,7 @@ public class ConstraintNetworkAnimator extends Thread {
 		}
 		return false;
 	}
-	
+		
 	private void cleanUp() {
 		SymbolicVariableActivity[] finishedActs = this.getDispatcher().getFinishedActs();
 		for (int i = 0; i < finishedActs.length; i++) {		

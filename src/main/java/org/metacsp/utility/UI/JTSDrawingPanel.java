@@ -11,21 +11,19 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -47,7 +45,7 @@ import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 public class JTSDrawingPanel extends JPanel {
-
+	
 	private static final String[] COLOR_CHART = new String[]{
 		"#000000", "#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
 		"#FFDBE5", "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
@@ -71,6 +69,7 @@ public class JTSDrawingPanel extends JPanel {
 	private static final long serialVersionUID = -2533567139276709334L;
 	private static final int MARGIN = 5; 
 	private HashMap<String,Geometry> geometries = new HashMap<String,Geometry>(); 
+	private HashMap<String,Long> geometryAges = new HashMap<String,Long>(); 
 	private HashMap<String,Boolean> emptyGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Boolean> thickGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Boolean> transpGeoms = new HashMap<String,Boolean>(); 
@@ -135,8 +134,31 @@ public class JTSDrawingPanel extends JPanel {
 		    }
 		    
 		});
+		
 	}
-	
+
+	private Geometry createArrow(Pose pose1, Pose pose2) {
+		GeometryFactory gf = new GeometryFactory();
+		double aux = 0.8;
+		double distance = Math.sqrt(Math.pow((pose2.getX()-pose1.getX()),2)+Math.pow((pose2.getY()-pose1.getY()),2));
+		double theta = Math.atan2(pose2.getY() - pose1.getY(), pose2.getX() - pose1.getX());
+		Coordinate[] coords = new Coordinate[8];
+		coords[0] = new Coordinate(0.0,-0.3);
+		coords[1] = new Coordinate(aux*distance,-0.3);
+		coords[2] = new Coordinate(aux*distance,-0.8);
+		coords[3] = new Coordinate(distance,0.0);
+		coords[4] = new Coordinate(aux*distance,0.8);
+		coords[5] = new Coordinate(aux*distance,0.3);
+		coords[6] = new Coordinate(0.0,0.3);
+		coords[7] = new Coordinate(0.0,-0.3);
+		Polygon arrow = gf.createPolygon(coords);
+		AffineTransformation at = new AffineTransformation();
+		at.rotate(theta);
+		at.translate(pose1.getX(), pose1.getY());
+		Geometry ret = at.transform(arrow);
+		return ret;
+	}
+
 	private Geometry createArrow(Pose pose) {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] coords = new Coordinate[8];
@@ -158,12 +180,22 @@ public class JTSDrawingPanel extends JPanel {
 	
 	public synchronized void addArrow(String arrowId, Pose pose) {
 		geometries.put(arrowId, createArrow(pose));
+		geometryAges.put(arrowId, Calendar.getInstance().getTimeInMillis());
 		emptyGeoms.put(arrowId, false);
 		transpGeoms.put(arrowId, false);
 		thickGeoms.put(arrowId, false);
-		polyColors.put(arrowId, Color.black);
+		polyColors.put(arrowId, Color.gray);
 	}
-	
+
+	public synchronized void addArrow(String arrowId, Pose pose1, Pose pose2) {
+		geometries.put(arrowId, createArrow(pose1, pose2));
+		geometryAges.put(arrowId, Calendar.getInstance().getTimeInMillis());
+		emptyGeoms.put(arrowId, false);
+		transpGeoms.put(arrowId, false);
+		thickGeoms.put(arrowId, false);
+		polyColors.put(arrowId, Color.gray);
+	}
+
 	public synchronized void resetVisualization() {
 		userScale = 1.0;
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
@@ -180,6 +212,7 @@ public class JTSDrawingPanel extends JPanel {
 	
 	public synchronized void addGeometry(String id, Geometry geom) { 
 		geometries.put(id,geom);
+		geometryAges.put(id, Calendar.getInstance().getTimeInMillis());
 		emptyGeoms.put(id,false);
 		thickGeoms.put(id,false);
 		transpGeoms.put(id,true);
@@ -197,6 +230,7 @@ public class JTSDrawingPanel extends JPanel {
 
 	public synchronized void addGeometry(String id, Geometry geom, boolean empty) { 
 		geometries.put(id,geom);
+		geometryAges.put(id, Calendar.getInstance().getTimeInMillis());
 		emptyGeoms.put(id,empty);
 		thickGeoms.put(id,false);
 		transpGeoms.put(id,true);
@@ -206,6 +240,7 @@ public class JTSDrawingPanel extends JPanel {
 
 	public synchronized void addGeometry(String id, Geometry geom, boolean empty, boolean thick) { 
 		geometries.put(id,geom);
+		geometryAges.put(id, Calendar.getInstance().getTimeInMillis());
 		emptyGeoms.put(id,empty);
 		thickGeoms.put(id,thick);
 		transpGeoms.put(id,true);
@@ -215,11 +250,21 @@ public class JTSDrawingPanel extends JPanel {
 
 	public synchronized void addGeometry(String id, Geometry geom, boolean empty, boolean thick, boolean transp) { 
 		geometries.put(id,geom);
+		geometryAges.put(id, Calendar.getInstance().getTimeInMillis());
 		emptyGeoms.put(id,empty);
 		thickGeoms.put(id,thick);
 		transpGeoms.put(id,transp);
 		Paint polyPaint = Color.decode(COLOR_CHART[(Math.abs(id.hashCode()))%COLOR_CHART.length]);
 		polyColors.put(id,polyPaint);
+	}
+	
+	public void removeOldGeometries(long maxGeomAge) {
+ 		for (Entry<String,Long> entry : geometryAges.entrySet()) {
+			if (entry.getValue() > 0 && Calendar.getInstance().getTimeInMillis()-entry.getValue() > maxGeomAge) {
+				//System.out.println("CLEANED UP VIZ OF " + entry.getKey());
+				removeGeometry(entry.getKey());
+			}
+		}
 	}
 	
 	public Coordinate getCoordinatesInRealWorld(Point clicked) {
@@ -340,7 +385,7 @@ public class JTSDrawingPanel extends JPanel {
 		
 		scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * userScale; 
 		double xoff = MARGIN - scale * env.getMinX();
-		if (rotateMode) xoff += scale*(env.getMaxY()-env.getMinY())/2.0;
+		//if (rotateMode) xoff += scale*(env.getMaxY()-env.getMinY())/2.0;
 		double yoff = MARGIN - env.getMinY() * scale; 
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff);
 		geomToScreen.concatenate(AffineTransform.getScaleInstance(1, -1));
@@ -385,6 +430,17 @@ public class JTSDrawingPanel extends JPanel {
 		}
 		frame.setVisible(true);     	
 	}
+	
+	public static JTSDrawingPanel makeEmpty(String title) {
+		JTSDrawingPanel panel = new JTSDrawingPanel(); 
+		JFrame frame = new JFrame(title); 
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		frame.add(panel); 
+		frame.setSize(500, 500); 
+		frame.setVisible(true);  
+		return panel;
+	}
+
 
 	public static void drawConstraintNetwork(String title, ConstraintNetwork cn) {
 		ArrayList<GeometricShapeVariable> tes = new ArrayList<GeometricShapeVariable>();

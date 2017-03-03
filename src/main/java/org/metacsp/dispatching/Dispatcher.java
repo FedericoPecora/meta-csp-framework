@@ -154,7 +154,23 @@ public class Dispatcher extends Thread {
 		df.registerDispatcher(this);
 		this.dfs.put(component, df);
 	}
-	
+
+	public SymbolicVariableActivity[] getActsInState(ACTIVITY_STATE st) {
+		ArrayList<SymbolicVariableActivity> ret = new ArrayList<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : acts.keySet()) {
+			if (acts.get(act).equals(st)) ret.add(act);
+		}
+		return ret.toArray(new SymbolicVariableActivity[ret.size()]);
+	}
+
+	public SymbolicVariableActivity[] getStartedActs() {
+		ArrayList<SymbolicVariableActivity> ret = new ArrayList<SymbolicVariableActivity>();
+		for (SymbolicVariableActivity act : acts.keySet()) {
+			if (acts.get(act).equals(ACTIVITY_STATE.STARTED)) ret.add(act);
+		}
+		return ret.toArray(new SymbolicVariableActivity[ret.size()]);
+	}
+
 	public SymbolicVariableActivity[] getFinishedActs() {
 		ArrayList<SymbolicVariableActivity> ret = new ArrayList<SymbolicVariableActivity>();
 		for (SymbolicVariableActivity act : acts.keySet()) {
