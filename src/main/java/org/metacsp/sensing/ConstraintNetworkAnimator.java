@@ -73,6 +73,13 @@ public class ConstraintNetworkAnimator extends Thread {
 	public void setAutoCleanFinishedVariables(boolean ac) {
 		this.autoClean = ac;
 	}
+
+	public boolean isUnknown(SymbolicVariableActivity act) {
+		for (SymbolicVariableActivity activity : dis.getActivities()) {
+			if (activity.equals(act)) return true;
+		}
+		return false;
+	}
 	
 	public boolean isInState(SymbolicVariableActivity act, ACTIVITY_STATE st) {
 		for (SymbolicVariableActivity disAct : dis.getActsInState(st)) {

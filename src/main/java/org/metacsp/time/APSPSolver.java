@@ -240,6 +240,9 @@ public class APSPSolver extends ConstraintSolver {
 			if (!tPoints[i].isUsed()) {
 				tPoints[i].setUsed(true);
 				found = true;
+				//reusing a timepoint, check!
+				//System.out.println("REUSING TP " + i + " and with Origin->" + i + " is " + tPoints[0].getOut(i));
+				//System.out.println("REUSING TP " + i + " and " + Arrays.toString(theNetwork.getIncidentEdges(tPoints[i])));
 				if (i == MAX_USED+1) MAX_USED = i;
 			} else i++;
 		}
@@ -336,7 +339,6 @@ public class APSPSolver extends ConstraintSolver {
 			//[lb,ub] = [-di0,d0i]
 			tPoints[IDtimePoint[i]].setLowerBound(O);
 			tPoints[IDtimePoint[i]].setUpperBound(H);
-
 			tPoints[0].setOut(IDtimePoint[i],conO);
 			tPoints[IDtimePoint[i]].setOut(1,conH);
 		}

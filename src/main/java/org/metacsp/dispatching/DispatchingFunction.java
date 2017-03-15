@@ -32,5 +32,9 @@ public abstract class DispatchingFunction {
 		return dis.getConstraintNetwork();
 	}
 	
+	public Dispatcher getDispatcher() {
+		return this.dis;
+	}
+	
 
 }

@@ -102,28 +102,44 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 			if (con instanceof AllenIntervalConstraint) {
 				AllenIntervalConstraint aic = (AllenIntervalConstraint)con;
 				if (aic.getTypes()[0].equals(AllenIntervalConstraint.Type.BeforeOrMeets)) {
-					//to.start depends on from.end
-					TrajectoryEnvelope to = (TrajectoryEnvelope)aic.getTo();
-					TrajectoryEnvelope from = (TrajectoryEnvelope)aic.getFrom();
-					Integer toStart = to.getTrajectory().getSequenceNumberStart()-1;
-					Integer fromEnd = from.getTrajectory().getSequenceNumberEnd();
-					
-					TrajectoryEnvelope root = to;
+
+					//The two TEs involved in the constraint
+					TrajectoryEnvelope mustWaitToStart = (TrajectoryEnvelope)aic.getTo();
+					TrajectoryEnvelope mustFinishBeforeOtherCanStart = (TrajectoryEnvelope)aic.getFrom();
+					TrajectoryEnvelope waitingEnvelope = null;
+
+					//Find waitingEnvelope = previous of mustWaitToStart
+					TrajectoryEnvelope root = mustWaitToStart;
 					while (root.hasSuperEnvelope()) root = root.getSuperEnvelope();
 					for (Variable depVar : root.getRecursivelyDependentVariables()) {
 						TrajectoryEnvelope depTE = (TrajectoryEnvelope)depVar;
-						if (!depTE.hasSubEnvelopes() && depTE.getTrajectory().getSequenceNumberEnd() == toStart) {
-							to = depTE;
+						if (!depTE.hasSubEnvelopes() && depTE.getTrajectory().getSequenceNumberEnd() == mustWaitToStart.getSequenceNumberStart()-1) {
+							waitingEnvelope = depTE;
 							break;
 						}
 					}
 
+					//Calculate waiting points
+					Integer thresholdPoint = mustFinishBeforeOtherCanStart.getTrajectory().getSequenceNumberEnd();
+					Integer waitingPoint = null;
+					
+					//If there was no previous envelope, then make the robot stay in the start point of this one
+					if (waitingEnvelope == null) {
+						System.out.println("ANOMALY " + mustWaitToStart);
+						waitingPoint = mustWaitToStart.getTrajectory().getSequenceNumberStart();
+						waitingEnvelope = mustWaitToStart;
+					}
+					else {
+						waitingPoint = waitingEnvelope.getTrajectory().getSequenceNumberEnd();
+					}
+					
+					//Add edge in dep graph
 					ArrayList<TrajectoryEnvelope> verts = new ArrayList<TrajectoryEnvelope>();
-					verts.add(to);
-					verts.add(from);
-					depGraph.addVertex(to);
-					depGraph.addVertex(from);
-					depGraph.addEdge(new Integer[] {toStart,fromEnd}, to, from);
+					verts.add(waitingEnvelope);
+					verts.add(mustFinishBeforeOtherCanStart);
+					depGraph.addVertex(waitingEnvelope);
+					depGraph.addVertex(mustFinishBeforeOtherCanStart);
+					depGraph.addEdge(new Integer[] {waitingPoint,thresholdPoint}, waitingEnvelope, mustFinishBeforeOtherCanStart);
 				}
 			}
 		}
@@ -265,15 +281,31 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 		//recompute usages
 		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
 			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+			((Map)this.getMetaConstraints()[0]).removeUsage(te);
+			logger.finest("Removed usage of " + te);
+			
+//			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
+//			if (!te.hasSuperEnvelope()) {
+//				TreeSet<TrajectoryEnvelope> gevs = te.getGroundEnvelopes(); 
+//				if (!gevs.isEmpty()) {
+//					((Map)this.getMetaConstraints()[0]).removeUsage(te);		
+//					logger.finest("Removed usage of " + te);
+//				}
+//				for (TrajectoryEnvelope gte : gevs) {
+//					((Map)this.getMetaConstraints()[0]).setUsage(gte);
+//					logger.finest("Set usage of " + gte);
+//				}
+//			}
+		}
+		for (Variable v : this.getConstraintSolvers()[0].getVariables()) {
+			TrajectoryEnvelope te = (TrajectoryEnvelope)v;
 			if (!te.hasSuperEnvelope()) {
-				TreeSet<TrajectoryEnvelope> gevs = te.getGroundEnvelopes(); 
-				if (!gevs.isEmpty()) {
-					((Map)this.getMetaConstraints()[0]).removeUsage(te);		
-					logger.finest("Removed usage of " + te);
-				}
-				for (TrajectoryEnvelope gte : gevs) {
-					((Map)this.getMetaConstraints()[0]).setUsage(gte);
-					logger.finest("Set usage of " + gte);
+				for (Variable depVar : te.getRecursivelyDependentVariables()) {
+					TrajectoryEnvelope subTE = (TrajectoryEnvelope)depVar;
+					if (!subTE.hasSubEnvelopes()) {
+						((Map)this.getMetaConstraints()[0]).setUsage(subTE);
+						logger.finest("Set usage of " + subTE);						
+					}
 				}
 			}
 		}

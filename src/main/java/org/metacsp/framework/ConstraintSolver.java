@@ -472,8 +472,9 @@ public abstract class ConstraintSolver implements Serializable {
 			if (!this.theNetwork.containsVariable(var) ) throw new VariableNotFound(var);
 			Constraint[] incident = this.theNetwork.getIncidentEdges(var);
 			for (Constraint con : incident) {
-				if ((!con.isAutoRemovable() && !(con instanceof DummyConstraint))) 
+				if ((!con.isAutoRemovable() && !(con instanceof DummyConstraint))) {
 					throw new IllegalVariableRemoval(var, this.theNetwork.getIncidentEdges(var));
+				}
 				else if (con instanceof DummyConstraint) {
 					Constraint toRemove = this.removeDummyConstraint((DummyConstraint)con);
 					if (toRemove != null) incidentRevised.add(toRemove);

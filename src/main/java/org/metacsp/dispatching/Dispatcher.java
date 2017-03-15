@@ -17,7 +17,7 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 
 public class Dispatcher extends Thread {
 
-	public static enum ACTIVITY_STATE {PLANNED, STARTED, FINISHING, FINISHED, SKIP_BECAUSE_UNIFICATION};
+	public static enum ACTIVITY_STATE {PLANNED, STARTED, FINISHING, MANUALLY_FINISHING, FINISHED, SKIP_BECAUSE_UNIFICATION, MANUALLY_STARTED};
 	private ConstraintNetwork cn;
 	private ActivityNetworkSolver ans;
 	private long period;
@@ -66,6 +66,21 @@ public class Dispatcher extends Thread {
 		return true;
 	}
 
+	public void manualStart(SymbolicVariableActivity act, String component) {
+		acts.put(act, ACTIVITY_STATE.MANUALLY_STARTED);
+//		AllenIntervalConstraint overlapsFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps);
+//		overlapsFuture.setFrom(act);
+//		overlapsFuture.setTo(future);
+//		boolean ret = ans.addConstraint(overlapsFuture);
+//		if(!ret) {
+//			logger.warning("COULD NOT MANUAL START " + act);
+//		}
+//		else {
+//			overlapFutureConstraints.put(act, overlapsFuture);
+//			this.dfs.get(component).dispatch(act);
+//		}
+	}
+	
 	public void run() {
 		while (true && !teardown) {
 			try { Thread.sleep(period); }
@@ -142,6 +157,9 @@ public class Dispatcher extends Thread {
 									//System.out.println("++++++++++++++++++++ SHIT: " + act + " DAEDLINE AT " + future.getTemporalVariable().getEST());
 								}
 							}							
+							else if (acts.get(act).equals(ACTIVITY_STATE.MANUALLY_FINISHING)) {
+								acts.put(act, ACTIVITY_STATE.FINISHED);
+							}
 						}
 					}
 				}
@@ -155,6 +173,10 @@ public class Dispatcher extends Thread {
 		this.dfs.put(component, df);
 	}
 
+	public SymbolicVariableActivity[] getActivities() {
+		return acts.keySet().toArray(new SymbolicVariableActivity[acts.keySet().size()]);
+	}
+	
 	public SymbolicVariableActivity[] getActsInState(ACTIVITY_STATE st) {
 		ArrayList<SymbolicVariableActivity> ret = new ArrayList<SymbolicVariableActivity>();
 		for (SymbolicVariableActivity act : acts.keySet()) {
@@ -180,7 +202,11 @@ public class Dispatcher extends Thread {
 	}
 
 	public void finish(SymbolicVariableActivity ... actsToFinish) { 
-		for (SymbolicVariableActivity act : actsToFinish) acts.put(act, ACTIVITY_STATE.FINISHING);
+		for (SymbolicVariableActivity act : actsToFinish) {
+//			if (acts.get(act).equals(ACTIVITY_STATE.MANUALLY_STARTED)) acts.put(act, ACTIVITY_STATE.MANUALLY_FINISHING);
+//			else acts.put(act, ACTIVITY_STATE.FINISHING);
+			acts.put(act, ACTIVITY_STATE.FINISHING);
+		}
 	}
 	
 	public ConstraintNetwork getConstraintNetwork() {

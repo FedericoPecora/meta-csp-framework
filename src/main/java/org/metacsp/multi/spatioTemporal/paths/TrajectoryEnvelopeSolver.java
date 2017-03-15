@@ -165,9 +165,11 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		te.getSymbolicVariableActivity().setSymbolicDomain("Driving");
 		parkingStart.setComponent("Robot" + robotID);
 		parkingStart.getSymbolicVariableActivity().setSymbolicDomain("Parking (initial)");
+		parkingStart.setRobotID(robotID);
 		parkingEnd.setComponent("Robot" + robotID);
 		parkingEnd.getSymbolicVariableActivity().setSymbolicDomain("Parking (final)");
-
+		parkingEnd.setRobotID(robotID);
+		
 		ArrayList<AllenIntervalConstraint> consToAdd = new ArrayList<AllenIntervalConstraint>();
 		TrajectoryEnvelope trajEnvelopeRobot = (TrajectoryEnvelope)te;
 		//frontLeft, frontRight, backRight, backLeft
@@ -215,6 +217,40 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		this.addConstraints(consToAdd.toArray(new AllenIntervalConstraint[consToAdd.size()]));
 
 		return ret;
+	}
+	
+	public TrajectoryEnvelope createEnvelopeNoParking(int robotID, String pathFile, String symbol, Coordinate ... footprintCoords) {		
+		Trajectory trajRobot = new Trajectory(pathFile);
+		TrajectoryEnvelope te = (TrajectoryEnvelope)this.createVariable();
+		te.setComponent("Robot" + robotID);
+		te.getSymbolicVariableActivity().setSymbolicDomain(symbol);
+		TrajectoryEnvelope trajEnvelopeRobot = (TrajectoryEnvelope)te;
+		trajEnvelopeRobot.setFootprint(footprintCoords);
+		trajEnvelopeRobot.setTrajectory(trajRobot);
+		trajEnvelopeRobot.setRobotID(robotID);
+		return trajEnvelopeRobot;
+	}
+	
+	public TrajectoryEnvelope createParkingEnvelope(int robotID, long parkingDuration, Pose parkingPose, Coordinate ... footprintCoords) {
+		
+		TrajectoryEnvelope parking = (TrajectoryEnvelope)this.createVariable();
+
+		parking.setComponent("Robot" + robotID);
+		parking.getSymbolicVariableActivity().setSymbolicDomain("Parking (final)");
+		parking.setRobotID(robotID);
+				
+		Trajectory trajParking = new Trajectory(new Pose[] {parkingPose});
+		parking.setFootprint(footprintCoords);
+		parking.setTrajectory(trajParking);
+		parking.setRefinable(false);
+				
+		AllenIntervalConstraint durParking = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(parkingDuration, APSPSolver.INF));
+		durParking.setFrom(parking);
+		durParking.setTo(parking);
+	
+		this.addConstraints(durParking);
+
+		return parking;
 	}
 	
 

@@ -269,6 +269,10 @@ public class Trajectory implements Serializable {
 		}
 	}
 	
+	public void setDTs(double[] dts) {
+		this.dts = dts;
+	}
+	
 //	public double getMinTraversalTime() {
 //		return dts[dts.length-1];
 //	}
