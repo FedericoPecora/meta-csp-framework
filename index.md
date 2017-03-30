@@ -18,13 +18,13 @@ Maven dependency declaration:
 <dependency>
   <groupId>org.metacsp</groupId>
   <artifactId>meta-csp-framework</artifactId>
-  <version>1.2.2</version>
+  <version>1.2.4</version>
 </dependency>
 ```
 
 Gradle dependency declaration:
 ```
-compile 'org.metacsp:meta-csp-framework:1.2.2'
+compile 'org.metacsp:meta-csp-framework:1.2.4'
 ```
 
 Alternatively, get the <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.metacsp%22%20AND%20a%3A%22meta-csp-framework%22">latest binary, source and Javadoc JARs from the Maven Central website</a>.
@@ -77,7 +77,8 @@ dependencies {
 
 # Sponsors
 
+* <a href="http://www.oru.se/english/research/research-projects/rp/?rdb=p1152">The Semantic Robots Research Profile</a>
+* <a href="http://kks.se">The Swedish Knowledge Foundation</a>
 * <a href="http://www.oru.se/">&Ouml;rebro University</a>
 * <a href="http://project-race.eu/">FP7 Project RACE (Robustness by Autonomous Competence Enhancement)</a>
 * <a href="http://cordis.europa.eu/fp7/home_en.html">The 7<sup>th</sup> EU Framework Programme</a>
-* <a href="http://kks.se">The Swedish Knowledge Foundation</a>
