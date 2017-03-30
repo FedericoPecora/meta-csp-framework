@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -80,7 +82,7 @@ public class JTSDrawingPanel extends JPanel {
 
 	private static final long serialVersionUID = -2533567139276709334L;
 	private static final int MARGIN = 5; 
-	private HashMap<String,Geometry> geometries = new HashMap<String,Geometry>(); 
+	private HashMap<String,Geometry> geometries = new HashMap<String,Geometry>();
 	private HashMap<String,Long> geometryAges = new HashMap<String,Long>(); 
 	private HashMap<String,Boolean> emptyGeoms = new HashMap<String,Boolean>(); 
 	private HashMap<String,Boolean> thickGeoms = new HashMap<String,Boolean>(); 
@@ -96,6 +98,10 @@ public class JTSDrawingPanel extends JPanel {
 	private double mapX = 0.0;
 	private double mapY = 0.0;
 
+	private void setCenteredPanTrans() {
+		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
+	}
+	
 	public JTSDrawingPanel() {
 		this.setDoubleBuffered(true);
 
@@ -270,14 +276,16 @@ public class JTSDrawingPanel extends JPanel {
 
 	public synchronized void resetVisualization() {
 		userScale = 1.0;
-		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
+		//panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
+		setCenteredPanTrans();
 		updatePanel();
 	}
 
 	public synchronized void reinitVisualization() {
 		userScale = 1.0;
 		scale = 1.0;
-		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
+		//panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
+		setCenteredPanTrans();
 		geomToScreen = null;
 	}
 
@@ -413,15 +421,13 @@ public class JTSDrawingPanel extends JPanel {
 	protected synchronized void paintComponent(Graphics g) { 
 		super.paintComponent(g); 
 
-		setTransform(); 
-
+		setTransform();
+		
 		if(this.map != null) {
 			Graphics2D g2 = (Graphics2D)g;
 			AffineTransform mapTransform = (AffineTransform)geomToScreen.clone();
 			mapTransform.scale(this.mapResolution, this.mapResolution);
 			mapTransform.translate(this.mapX, this.mapY);			
-			//			mapTransform.rotate(-Math.PI/2.0);
-			//			mapTransform.translate(this.mapX-this.map.getWidth(), this.mapY-this.map.getHeight());
 			g2.drawImage(this.map, mapTransform, this);
 		}
 
@@ -498,8 +504,8 @@ public class JTSDrawingPanel extends JPanel {
 		double xoff = MARGIN - scale * env.getMinX();
 		double yoff = MARGIN - scale * env.getMinY();
 		double mapOffset = 0.0;
-		if (map != null) mapOffset = scale*map.getHeight();
-		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff+mapOffset);	
+		if (map != null) mapOffset = scale*map.getHeight();		
+		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff+0.5*mapOffset);
 		geomToScreen.concatenate(panTrans);
 	} 
 
