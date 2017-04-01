@@ -609,12 +609,12 @@ public class AllenIntervalConstraint extends MultiBinaryConstraint {
 				TimePoint te = to.getEnd();
 				SimpleDistanceConstraint first = new SimpleDistanceConstraint();
 				SimpleDistanceConstraint second = new SimpleDistanceConstraint();
-				first.setMinimum(bounds[0].min);
-				first.setMaximum(bounds[0].max);
-				first.setFrom(ts);
-				first.setTo(fs);
-				second.setMinimum(0);
-				second.setMaximum(0);
+				first.setMinimum(bounds[0].min); //1
+				first.setMaximum(bounds[0].max); //INF
+				first.setFrom(ts);    
+				first.setTo(fs);      
+				second.setMinimum(0); //0
+				second.setMaximum(0); //0
 				second.setFrom(fe);
 				second.setTo(te);
 				Constraint[] ret = {first,second};

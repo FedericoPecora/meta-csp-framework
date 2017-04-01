@@ -244,7 +244,6 @@ public class JTSDrawingPanel extends JPanel {
 				}
 			}
 			br.close();
-			System.out.println("Image in " + imageFileName);
 			this.map = ImageIO.read(new File(imageFileName));
 		}
 		catch (IOException e) { e.printStackTrace(); }
@@ -362,7 +361,7 @@ public class JTSDrawingPanel extends JPanel {
 		}
 	}
 
-	public void removeOldGeometries(long maxGeomAge) {
+	public synchronized void removeOldGeometries(long maxGeomAge) {
 		for (Entry<String,Long> entry : geometryAges.entrySet()) {
 			if (entry.getValue() > 0 && Calendar.getInstance().getTimeInMillis()-entry.getValue() > maxGeomAge) {
 				//System.out.println("CLEANED UP VIZ OF " + entry.getKey());

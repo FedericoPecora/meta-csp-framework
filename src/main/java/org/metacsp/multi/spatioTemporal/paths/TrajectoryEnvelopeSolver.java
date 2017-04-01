@@ -231,12 +231,12 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return trajEnvelopeRobot;
 	}
 	
-	public TrajectoryEnvelope createParkingEnvelope(int robotID, long parkingDuration, Pose parkingPose, Coordinate ... footprintCoords) {
+	public TrajectoryEnvelope createParkingEnvelope(int robotID, long parkingDuration, Pose parkingPose, String locationName, Coordinate ... footprintCoords) {
 		
 		TrajectoryEnvelope parking = (TrajectoryEnvelope)this.createVariable();
 
 		parking.setComponent("Robot" + robotID);
-		parking.getSymbolicVariableActivity().setSymbolicDomain("Parking (final)");
+		parking.getSymbolicVariableActivity().setSymbolicDomain("Parking (" + locationName + ")");
 		parking.setRobotID(robotID);
 				
 		Trajectory trajParking = new Trajectory(new Pose[] {parkingPose});

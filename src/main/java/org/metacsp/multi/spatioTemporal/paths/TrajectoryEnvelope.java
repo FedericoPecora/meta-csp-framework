@@ -95,8 +95,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 	/**
-	 * Draw a hierarchy of {@link TrajectoryEnvelopes}s.
-	 * @param tree The hierarchy of {@link TrajectoryEnvelopes}s to draw.
+	 * Draw a hierarchy of {@link TrajectoryEnvelope}s.
+	 * @param tree The hierarchy of {@link TrajectoryEnvelope}s to draw.
 	 */
 	public static void drawTrajectoryEnvelopeHierarchy(DelegateTree<TrajectoryEnvelope,String> tree) {
 		new TrajectoryEnvelopeHierarchyFrame(tree, "Trajectory Envelope Hierarchy");
@@ -217,7 +217,20 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		}
 		return ret;
 	}
-	
+
+	/**
+	 * Get an estimate of the time left to move on the reference {@link Trajectory} of this {@link TrajectoryEnvelope}
+	 * between two given path indices. The estimate is based on the reference {@link Trajectory}'s
+	 * temporal profile.
+	 * @param seqNumNow The path index from which the estimate should be computed.
+	 * @param seqNumTo The path index to which the estimate should be computed.
+	 * @return An estimate of the time left to move on the reference {@link Trajectory}
+	 * of this {@link TrajectoryEnvelope}, given the current path index.
+	 */
+	public double getTimeToEstimate(int seqNumNow, int seqNumTo) {
+		return this.getTrajectory().getTimeToEstimate(seqNumNow, seqNumTo);
+	}
+
 	/**
 	 * Get an estimate of the time left to move on the reference {@link Trajectory} of this {@link TrajectoryEnvelope}
 	 * given the current path index. The estimate is based on the reference {@link Trajectory}'s

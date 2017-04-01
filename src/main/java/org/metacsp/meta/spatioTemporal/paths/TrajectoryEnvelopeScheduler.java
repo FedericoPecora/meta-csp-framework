@@ -281,7 +281,7 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 					starts.setTo(te);
 					ret.addConstraint(starts);
 		
-					AllenIntervalConstraint finishes = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes);
+					AllenIntervalConstraint finishes = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes, new Bounds(1, APSPSolver.INF));
 					finishes.setFrom(newTrajectoryEnvelopes.get(newTrajectoryEnvelopes.size()-1));
 					finishes.setTo(te);
 					ret.addConstraint(finishes);

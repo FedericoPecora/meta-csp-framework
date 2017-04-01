@@ -204,6 +204,24 @@ public class Trajectory implements Serializable {
 		return getTimeLeftEstimate(minIndex);
 	}
 
+	
+	/**
+	 * Get an estimate of the time left to move on this {@link Trajectory}
+	 * between two path indices. The estimate is based on this {@link Trajectory}'s
+	 * temporal profile.
+	 * @param sequenceNumNow The path index from which the estimate should be computed.
+	 * @param sequenceNumTo The path index to which the estimate should be computed.
+	 * @return An estimate of the time left to move on this {@link Trajectory}
+	 * given the current path index.
+	 */
+	public double getTimeToEstimate(int sequenceNumNow, int sequenceNumTo) {
+		double timeCounter = 0.0;
+		for (int i = sequenceNumNow-this.sequenceNumberStart; i <= sequenceNumTo; i++) {
+			timeCounter += this.getDTs()[i];
+		}
+		return timeCounter;
+	}
+	
 	/**
 	 * Get an estimate of the time left to move on this {@link Trajectory}
 	 * given the current path index. The estimate is based on this {@link Trajectory}'s
