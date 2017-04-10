@@ -60,6 +60,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private Polygon innerFootprint = null;
 	private int sequenceNumberStart = -1;
 	private int sequenceNumberEnd = -1;
+	private AllenIntervalConstraint duration = null;
 	
 	public TrajectoryEnvelope(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
@@ -94,8 +95,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 	/**
-	 * Draw a hierarchy of {@link TrajectoryEnvelopes}s.
-	 * @param tree The hierarchy of {@link TrajectoryEnvelopes}s to draw.
+	 * Draw a hierarchy of {@link TrajectoryEnvelope}s.
+	 * @param tree The hierarchy of {@link TrajectoryEnvelope}s to draw.
 	 */
 	public static void drawTrajectoryEnvelopeHierarchy(DelegateTree<TrajectoryEnvelope,String> tree) {
 		new TrajectoryEnvelopeHierarchyFrame(tree, "Trajectory Envelope Hierarchy");
@@ -216,7 +217,20 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		}
 		return ret;
 	}
-	
+
+	/**
+	 * Get an estimate of the time left to move on the reference {@link Trajectory} of this {@link TrajectoryEnvelope}
+	 * between two given path indices. The estimate is based on the reference {@link Trajectory}'s
+	 * temporal profile.
+	 * @param seqNumNow The path index from which the estimate should be computed.
+	 * @param seqNumTo The path index to which the estimate should be computed.
+	 * @return An estimate of the time left to move on the reference {@link Trajectory}
+	 * of this {@link TrajectoryEnvelope}, given the current path index.
+	 */
+	public double getTimeToEstimate(int seqNumNow, int seqNumTo) {
+		return this.getTrajectory().getTimeToEstimate(seqNumNow, seqNumTo);
+	}
+
 	/**
 	 * Get an estimate of the time left to move on the reference {@link Trajectory} of this {@link TrajectoryEnvelope}
 	 * given the current path index. The estimate is based on the reference {@link Trajectory}'s
@@ -769,19 +783,35 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		PolygonalDomain env = new PolygonalDomain(this,createEnvelope());
 //		PolygonalDomain newEnv = new PolygonalDomain(this, env.getGeometry().convexHull().getCoordinates());
 		this.setDomain(env);
+		
+//		long minDuration = 0;
+//		for (int i = 0; i < traj.getDTs().length; i++) {
+//			minDuration += traj.getDTs()[i]*RESOLUTION;
+//		}
+//		duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
+//		duration.setFrom(this);
+//		duration.setTo(this);
+//		boolean conAdd = this.getConstraintSolver().addConstraint(duration);
+//		if (conAdd) logger.fine("Added duration constriant " + duration);
+//		else throw new Error("Failed to add duration constriant " + duration);
+		this.updateDuration();
+		
+		//If this envelope has a super envelope, then compute sequenceNumberStart and sequenceNumberEnd
+		this.updateSequenceNumbers();		
+	}
+	
+	public void updateDuration() {
 		long minDuration = 0;
+		Trajectory traj = this.getTrajectory();
 		for (int i = 0; i < traj.getDTs().length; i++) {
 			minDuration += traj.getDTs()[i]*RESOLUTION;
 		}
-		AllenIntervalConstraint duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
+		duration = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(minDuration,APSPSolver.INF));
 		duration.setFrom(this);
 		duration.setTo(this);
 		boolean conAdd = this.getConstraintSolver().addConstraint(duration);
 		if (conAdd) logger.fine("Added duration constriant " + duration);
-		else logger.severe("Failed to add duration constriant " + duration);
-		
-		//If this envelope has a super envelope, then compute sequenceNumberStart and sequenceNumberEnd
-		this.updateSequenceNumbers();		
+		else throw new Error("Failed to add duration constriant " + duration);
 	}
 
 	/**
