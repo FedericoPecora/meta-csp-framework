@@ -3,6 +3,8 @@ package org.metacsp.utility.logging;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +33,8 @@ public class LogBrowser extends JFrame {
 
 	private JTabbedPane tabbedPane1 = null;
 	private JTabbedPane tabbedPane2 = null;
-
+	private KeyListener kl = null;
+	
 	public static HashMap<String,TreeMap<Long,Integer>> timeToLine = new HashMap<String,TreeMap<Long,Integer>>();
 	public static HashMap<String,TreeMap<Integer,Long>> lineToTime = new HashMap<String,TreeMap<Integer,Long>>();
 	public static HashMap<String,JTextPane> tps1 = new HashMap<String,JTextPane>();
@@ -47,14 +50,45 @@ public class LogBrowser extends JFrame {
 		add(splitPane);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+		
+		kl = new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if(e.isAltDown() && !e.isControlDown()) {
+//					System.out.println("Alt-" + e.getKeyChar());
+					try {
+						int index = Integer.parseInt(""+e.getKeyChar());
+						if (index-1 >= 0 && index <= tabbedPane1.getTabCount()) tabbedPane1.setSelectedIndex(index-1);
+					}
+					catch (NumberFormatException ex) { }
+				}
+				else if(e.isAltDown() && e.isControlDown()) {
+//					System.out.println("Ctrl-Alt-" + e.getKeyChar());
+					try {
+						int index = Integer.parseInt(""+e.getKeyChar());
+						if (index-1 >= 0 && index <= tabbedPane2.getTabCount()) tabbedPane2.setSelectedIndex(index-1);
+					}
+					catch (NumberFormatException ex) { }
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) { }
+			@Override
+			public void keyPressed(KeyEvent e) { }
+		};
+		
+		tabbedPane1.addKeyListener(kl);
+		tabbedPane2.addKeyListener(kl);
 	}
-	
+
 	private void addTab(final String tabName) {
 		// Set up the panel
 		JPanel aPanel1 = new JPanel(new BorderLayout());
 		JPanel aPanel2 = new JPanel(new BorderLayout());
 		final JTextPane tp1 = new JTextPane();
 		final JTextPane tp2 = new JTextPane();
+		tp1.addKeyListener(kl);
+		tp2.addKeyListener(kl);
 		tp1.setFont(new Font("monospaced", Font.PLAIN, 12));
 		tp1.getCaret().setVisible(true);
 		tp1.setEditable(false);
@@ -150,7 +184,7 @@ public class LogBrowser extends JFrame {
 				return name.endsWith(".log");
 			}
 		});
-		
+
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
 				int lineNum = 0;
@@ -186,7 +220,7 @@ public class LogBrowser extends JFrame {
 			}
 		}
 	}
-	
+
 	private int getLine(long time, String logName) {
 		TreeMap<Long,Integer> timeToLineMap = timeToLine.get(logName);
 		int prevLine = 0;
