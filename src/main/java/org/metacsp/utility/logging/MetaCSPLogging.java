@@ -22,11 +22,16 @@
  ******************************************************************************/
 package org.metacsp.utility.logging;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -71,20 +76,39 @@ import org.metacsp.framework.meta.MetaConstraintSolver;
  *
  */
 public final class MetaCSPLogging implements Serializable{
-		
+
 	private transient static HashMap<Class<?>,Logger> loggers = new HashMap<Class<?>,Logger>();
-	
+
 	private transient static HashMap<Class<?>,Level> tempLevels = new HashMap<Class<?>,Level>();
-	
+
 	private static final long serialVersionUID = 7526472295622776139L;
-	
+
 	private static Level globalLevel = null;
 	
-	
+	private static String logDir = null;
+
 	static { }
 
+	/**
+	 * Instruct loggers to log all output to a directory. Each class will be logged to a file named
+	 * <code>className.log</code>.
+	 * @param filename The directory to log to.
+	 */
+	public static void setLogDir(String dir) {
+		try { 
+			logDir = dir;
+			for (Entry<Class<?>, Logger> en : loggers.entrySet()) {
+				FileHandler fh = new FileHandler(logDir+File.separator+en.getKey().getSimpleName()+".log");
+				fh.setFormatter(getFormatter(en.getValue(),true));
+				en.getValue().addHandler(fh);
+			}
+		}
+		catch (SecurityException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }  
+	}
+
 	private MetaCSPLogging() {}
-	
+
 	/**
 	 * Set a desired log level for all loggers.
 	 * @param l The desired log level.
@@ -105,6 +129,17 @@ public final class MetaCSPLogging implements Serializable{
 		//System.out.println("Set level " + l + " for logger " + loggers.get(c).getName());
 	}
 
+	private static Formatter getFormatter(final Logger logger, final boolean timeStamp) {
+		return new Formatter() {
+			@Override
+			public String format(LogRecord arg0) {
+				String prefix = "";
+				if (timeStamp) prefix = Calendar.getInstance().getTimeInMillis()+"@";
+				String ret = prefix + ("[" + logger.getName() + "] " + arg0.getMessage() + "\n");
+				return ret;
+			}
+		};
+	}
 	/**
 	 * Provides a reference to a {@link Logger} which will format log messages according to
 	 * the common MetaCSP Framework formatting.
@@ -118,18 +153,21 @@ public final class MetaCSPLogging implements Serializable{
 			loggers.put(c, logger);
 			for(Handler h : logger.getParent().getHandlers()) { logger.getParent().removeHandler(h); }
 			ConsoleHandler h = new ConsoleHandler();
-			h.setFormatter(new Formatter() {
-				@Override
-				public String format(LogRecord arg0) {
-					//TODO: Make indentation
-					return ("[" + logger.getName() + "] " + arg0.getMessage() + "\n");
-				}
-			});
+			h.setFormatter(getFormatter(logger,false));
 			h.setLevel(Level.ALL);
 			logger.addHandler(h);
 			if (tempLevels.keySet().contains(c)) {
 				logger.setLevel(tempLevels.get(c));
 				tempLevels.remove(c);
+			}
+			if (logDir != null) {
+				try {
+					FileHandler fh = new FileHandler(logDir+File.separator+c.getSimpleName()+".log");
+					fh.setFormatter(getFormatter(logger,true));
+					logger.addHandler(fh);
+				}
+				catch (SecurityException e) { e.printStackTrace(); }
+				catch (IOException e) { e.printStackTrace(); }
 			}
 			if (globalLevel != null) logger.setLevel(globalLevel);
 			return logger;
@@ -137,12 +175,20 @@ public final class MetaCSPLogging implements Serializable{
 		//System.out.println("Returning old logger for " + c.getSimpleName());
 		return loggers.get(c);
 	}
-	
+
 	public static String printDouble(double d, int precision) {
 		String fmt = "#0."; 
 		for (int i = 0; i < precision; i++) fmt += "0"; 
 		NumberFormat formatter = new DecimalFormat(fmt); 
 		return formatter.format(d);	
+	}
+	
+	/**
+	 * Open a LogBrowser to inspect the log files in a given directory.
+	 * @param dir The directory containing log files.
+	 */
+	public static void showLogs(String dir) {
+		LogBrowser.showLogs(dir);
 	}
 
 }

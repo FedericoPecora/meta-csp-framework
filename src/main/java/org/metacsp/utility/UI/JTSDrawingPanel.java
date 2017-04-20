@@ -97,7 +97,10 @@ public class JTSDrawingPanel extends JPanel {
 	private double mapResolution = 1;
 	private double mapX = 0.0;
 	private double mapY = 0.0;
-
+	
+	private boolean transformTouched = false;
+	private Envelope oldGeomBounds = null;
+	
 	private void setCenteredPanTrans() {
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	}
@@ -110,6 +113,7 @@ public class JTSDrawingPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (SwingUtilities.isLeftMouseButton(e)) {
 					if (e.getClickCount() == 2) {
+						transformTouched = false;
 						resetVisualization();
 					}
 				}
@@ -119,7 +123,7 @@ public class JTSDrawingPanel extends JPanel {
 						Point2D.Double clickedPoint = new Point2D.Double((double)e.getX(),(double)e.getY());
 						Point2D.Double tClickedPoint = new Point2D.Double();
 						geomToScreenInv.transform(clickedPoint, tClickedPoint);
-						metacsplogger.info("Clicked point (x,y) = (" + tClickedPoint.getX() + "," + tClickedPoint.getY() + ")");
+						//metacsplogger.info("Clicked point (x,y) = (" + tClickedPoint.getX() + "," + tClickedPoint.getY() + ")");
 					} catch (NoninvertibleTransformException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -140,6 +144,7 @@ public class JTSDrawingPanel extends JPanel {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
+				transformTouched = true;
 				int x = e.getX();
 				int y = e.getY();
 				if (SwingUtilities.isRightMouseButton(e)) {
@@ -161,28 +166,6 @@ public class JTSDrawingPanel extends JPanel {
 		});
 
 	}
-
-//	private Geometry createArrow(Pose pose1, Pose pose2) {		
-//		GeometryFactory gf = new GeometryFactory();
-//		double aux = 0.8;
-//		double distance = Math.sqrt(Math.pow((pose2.getX()-pose1.getX()),2)+Math.pow((pose2.getY()-pose1.getY()),2));
-//		double theta = Math.atan2(pose2.getY() - pose1.getY(), pose2.getX() - pose1.getX());
-//		Coordinate[] coords = new Coordinate[8];
-//		coords[0] = new Coordinate(0.0,-0.3);
-//		coords[1] = new Coordinate(aux*distance,-0.3);
-//		coords[2] = new Coordinate(aux*distance,-0.8);
-//		coords[3] = new Coordinate(distance,0.0);
-//		coords[4] = new Coordinate(aux*distance,0.8);
-//		coords[5] = new Coordinate(aux*distance,0.3);
-//		coords[6] = new Coordinate(0.0,0.3);
-//		coords[7] = new Coordinate(0.0,-0.3);
-//		Polygon arrow = gf.createPolygon(coords);
-//		AffineTransformation at = new AffineTransformation();
-//		at.rotate(theta);
-//		at.translate(pose1.getX(), pose1.getY());
-//		Geometry ret = at.transform(arrow);
-//		return ret;
-//	}
 
 	private Geometry createArrow(Pose pose1, Pose pose2) {		
 		GeometryFactory gf = new GeometryFactory();
@@ -400,14 +383,15 @@ public class JTSDrawingPanel extends JPanel {
 		return(AlphaComposite.getInstance(type, alpha));
 	}
 
-	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty) {
+	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty, boolean small) {
 		g2d.setComposite(makeComposite(1.0f));
 		g2d.setPaint(polyPaint); 
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
 		//newTrans.rotate(Math.PI, x, y);
 		newTrans.translate(x, y);
 		newTrans.scale(1, -1);
-		Font f = new Font("TimesRoman", Font.PLAIN, 1);
+		Font f = new Font("TimesRoman", Font.PLAIN, 5);
+		if (small) f = new Font("TimesRoman", Font.PLAIN, 2);
 		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
 		Shape shape = tl.getOutline(null);
 		Shape newShape = newTrans.createTransformedShape(shape);
@@ -466,7 +450,9 @@ public class JTSDrawingPanel extends JPanel {
 					if (!e.getKey().startsWith("_")) {
 						//Draw label
 						String text = ""+e.getKey();
-						drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), polyPaint, empty);
+						if (text.startsWith("R")) drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), polyPaint, empty, false);
+						else drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), polyPaint, empty, true);
+
 					}
 				}
 				else {
@@ -495,8 +481,15 @@ public class JTSDrawingPanel extends JPanel {
 		}
 	} 
 
-	private void setTransform() { 
-		Envelope env = getGeometryBounds();
+	private void setTransform() {
+		
+		Envelope env = null;
+		if (!transformTouched) {
+			env = getGeometryBounds();
+			oldGeomBounds = env;
+		}
+		else env = oldGeomBounds;
+				
 		Rectangle visRect = getVisibleRect();
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
 		scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * userScale; 
