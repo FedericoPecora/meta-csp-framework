@@ -870,7 +870,13 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	@Override
 	public String toString() {
 		String ret = "TrajectoryEnvelope " + this.id + " (Robot " + this.robotID + ", SE " + this.getEnvelopeVariable().getID() + ") [" + this.getSequenceNumberStart() + ";" + this.getSequenceNumberEnd() + "]";
-		if (this instanceof Activity && ((Activity)this).getSymbols() != null && ((Activity)this).getSymbols().length > 0) ret += (" " + ((Activity)this).getSymbols()[0]);
+		if (this instanceof Activity && ((Activity)this).getSymbols() != null && ((Activity)this).getSymbols().length > 0){
+			ret += " ";
+			for (int i = 0; i < ((Activity)this).getSymbols().length; i++) {
+				ret += ((Activity)this).getSymbols()[i];
+			}
+			//ret += (" " + ((Activity)this).getSymbols()[0]);
+		}
 		//ret += " TimePoints: " + this.getTemporalVariable().getStart() + ", " + this.getTemporalVariable().getEnd();
 		return ret;
 	}
