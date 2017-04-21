@@ -193,24 +193,27 @@ public class LogBrowser extends JFrame {
 					boolean added = false;
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (!added) {
-							added = true;
-							lb.addTab(listOfFiles[i].getName());
-							timeToLine.put(listOfFiles[i].getName(),new TreeMap<Long,Integer>());
-							lineToTime.put(listOfFiles[i].getName(),new TreeMap<Integer,Long>());
+						try {
+							Long timeStamp = Long.parseLong(line.substring(0, line.indexOf("@")));
+							if (!added) {
+								added = true;
+								lb.addTab(listOfFiles[i].getName());
+								timeToLine.put(listOfFiles[i].getName(),new TreeMap<Long,Integer>());
+								lineToTime.put(listOfFiles[i].getName(),new TreeMap<Integer,Long>());
+							}
+							String rest = line.substring(line.indexOf("@")+1);
+							timeToLine.get(listOfFiles[i].getName()).put(timeStamp, lineNum);
+							lineToTime.get(listOfFiles[i].getName()).put(lineNum, timeStamp);
+							lineNum++;
+							JTextPane tp1 = tps1.get(listOfFiles[i].getName());
+							JTextPane tp2 = tps2.get(listOfFiles[i].getName());
+							Date date = new Date(timeStamp);
+							DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+							String dateFormatted = formatter.format(date);
+							tp1.getDocument().insertString(tp1.getDocument().getEndPosition().getOffset()-1, dateFormatted + " " + rest+"\n", null);
+							tp2.getDocument().insertString(tp2.getDocument().getEndPosition().getOffset()-1, dateFormatted + " " + rest+"\n", null);
 						}
-						Long timeStamp = Long.parseLong(line.substring(0, line.indexOf("@")));
-						String rest = line.substring(line.indexOf("@")+1);
-						timeToLine.get(listOfFiles[i].getName()).put(timeStamp, lineNum);
-						lineToTime.get(listOfFiles[i].getName()).put(lineNum, timeStamp);
-						lineNum++;
-						JTextPane tp1 = tps1.get(listOfFiles[i].getName());
-						JTextPane tp2 = tps2.get(listOfFiles[i].getName());
-						Date date = new Date(timeStamp);
-						DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
-						String dateFormatted = formatter.format(date);
-						tp1.getDocument().insertString(tp1.getDocument().getEndPosition().getOffset()-1, dateFormatted + " " + rest+"\n", null);
-						tp2.getDocument().insertString(tp2.getDocument().getEndPosition().getOffset()-1, dateFormatted + " " + rest+"\n", null);
+						catch(java.lang.StringIndexOutOfBoundsException siob) { }
 					}
 					br.close();
 				}
