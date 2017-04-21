@@ -92,7 +92,7 @@ public final class MetaCSPLogging implements Serializable{
 	/**
 	 * Instruct loggers to log all output to a directory. Each class will be logged to a file named
 	 * <code>className.log</code>.
-	 * @param filename The directory to log to.
+	 * @param dir The directory to log to.
 	 */
 	public static void setLogDir(String dir) {
 		try { 
