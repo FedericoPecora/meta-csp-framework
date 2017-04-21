@@ -1,14 +1,14 @@
 == == == == == == == == == == == == == == == == == == == == == == == == == ==
 = Meta-CSP Framework project template.                                      =
 = The Meta-CSP Framework is available on Maven Central and at metacsp.org.  =
-= (c) 2014 Federico Pecora - http://metacsp.org                             =
+= (c) 2013-2017 Federico Pecora - http://metacsp.org                        =
 == == == == == == == == == == == == == == == == == == == == == == == == == ==
 
 ---------------------
 -- Current version --
 ---------------------
 
-At the time of writing, the current stable version number was 1.0.255.
+At the time of writing, the current stable version number was 1.2.25.
 Check Maven central or metacsp.org to find the current latest version
 number.
 
