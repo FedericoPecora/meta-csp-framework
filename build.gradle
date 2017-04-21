@@ -22,8 +22,6 @@ repositories {
   // You can include any other Maven repository like this:
   //maven {
   //  url '<URL of the repo>'
-  // The following repo is full of ROS-related stuff (e.g., ROSJava):
-  //  url 'http://robotbrains.hideho.org/nexus/content/groups/ros-public'
   //}
 
 }
@@ -35,7 +33,7 @@ group = 'org.metacsp.project-template'
 dependencies {
 
   // This pulls in the meta-csp-framework jar
-  compile 'org.metacsp:meta-csp-framework:1.2.0'
+  compile 'org.metacsp:meta-csp-framework:1.2.25'
 
   // Add the following if you need to include jars that are not
   // in Maven Central and that you have places in the directory "lib"
