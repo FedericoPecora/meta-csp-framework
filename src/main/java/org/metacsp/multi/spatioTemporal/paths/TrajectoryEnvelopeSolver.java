@@ -219,6 +219,18 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		return ret;
 	}
 	
+	public TrajectoryEnvelope createEnvelopeNoParking(int robotID, String[] pathFiles, String symbol, Coordinate ... footprintCoords) {		
+		Trajectory trajRobot = new Trajectory(pathFiles);
+		TrajectoryEnvelope te = (TrajectoryEnvelope)this.createVariable();
+		te.setComponent("Robot" + robotID);
+		te.getSymbolicVariableActivity().setSymbolicDomain(symbol);
+		TrajectoryEnvelope trajEnvelopeRobot = (TrajectoryEnvelope)te;
+		trajEnvelopeRobot.setFootprint(footprintCoords);
+		trajEnvelopeRobot.setTrajectory(trajRobot);
+		trajEnvelopeRobot.setRobotID(robotID);
+		return trajEnvelopeRobot;
+	}
+	
 	public TrajectoryEnvelope createEnvelopeNoParking(int robotID, String pathFile, String symbol, Coordinate ... footprintCoords) {		
 		Trajectory trajRobot = new Trajectory(pathFile);
 		TrajectoryEnvelope te = (TrajectoryEnvelope)this.createVariable();

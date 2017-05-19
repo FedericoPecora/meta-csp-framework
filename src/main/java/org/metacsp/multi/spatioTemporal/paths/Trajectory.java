@@ -129,13 +129,35 @@ public class Trajectory implements Serializable {
 	}
 	
 	/**
-	 * Create a new {@link Trajectory} given a list of {@link PoseSteering}s that is read
+	 * Create a new {@link Trajectory} given list of {@link PoseSteering}s that is read
 	 * from a file. The temporal profile of the trajectory is computed via naive numeric resolution
 	 * assuming constant acceleration and a maximum speed.
 	 * @param fileName The path of a file pointing to the list of {@link PoseSteering}s used to build the path.
 	 */	
 	public Trajectory(String fileName) {
 		this.psa = readPath(fileName);
+		this.dts = new double[psa.length];
+		this.updateDts();
+		this.sequenceNumberStart = 0;
+		this.sequenceNumberEnd = psa.length-1;
+	}
+	
+	/**
+	 * Create a new {@link Trajectory} given a list files containing paths.
+	 * The temporal profile of the trajectory is computed via naive numeric resolution
+	 * assuming constant acceleration and a maximum speed.
+	 * @param fileNames The paths of files, each containing a list of {@link PoseSteering}s used to build the path.
+	 */	
+	public Trajectory(String ... fileNames) {
+		ArrayList<PoseSteering> combined = new ArrayList<PoseSteering>();
+		for (int i = 0; i < fileNames.length; i++) {
+			PoseSteering[] onePath = readPath(fileNames[i]);
+			if (i == 0) combined.add(onePath[0]);
+			for (int j = 1; j < onePath.length; j++) {
+				combined.add(onePath[j]);
+			}
+		}
+		this.psa = combined.toArray(new PoseSteering[combined.size()]);
 		this.dts = new double[psa.length];
 		this.updateDts();
 		this.sequenceNumberStart = 0;
@@ -287,6 +309,13 @@ public class Trajectory implements Serializable {
 		}
 	}
 	
+	/**
+	 * Set the minimum transition times between path poses
+	 * of this {@link Trajectory}. This is essentially the fastest
+	 * time profile of this {@link Trajectory}.
+	 * @param dts A vector containing the minimum transition times between path poses
+	 * of this {@link Trajectory}. Values are assumed to be in seconds. 
+	 */
 	public void setDTs(double[] dts) {
 		this.dts = dts;
 	}

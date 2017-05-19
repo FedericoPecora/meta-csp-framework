@@ -222,6 +222,87 @@ public class TrajectoryEnvelopeScheduler extends MetaConstraintSolver {
 
 	}	
 
+	public ConstraintNetwork refineTrajectoryEnvelopesFixed(int maxSize) {
+		ConstraintNetwork ret = new ConstraintNetwork(null);
+		
+		TrajectoryEnvelopeSolver solver = (TrajectoryEnvelopeSolver)this.getConstraintSolvers()[0];
+		Variable[] vars = solver.getVariables();
+		for (Variable var : vars) {
+			ArrayList<Trajectory> newTrajectories = new ArrayList<Trajectory>();
+			TrajectoryEnvelope te = (TrajectoryEnvelope)var;
+			if (te.getRefinable()) {
+				te.setRefinable(false);
+				if (!te.hasSubEnvelopes() && te.getTrajectory().getPose().length > 3) {
+					logger.info("Refining " + te);
+					Trajectory traj = te.getTrajectory();
+					int soFar = 0;
+					while (soFar < traj.getPose().length) {
+						int pieceLength = Math.min(maxSize, traj.getPose().length-soFar);
+						if (pieceLength == 0) break;
+						Pose[] piecePoses = new Pose[pieceLength];
+						double[] dts = new double[pieceLength];
+						//System.out.println("Piece length = " + pieceLength);
+						for (int j = 0; j < piecePoses.length; j++) {
+							piecePoses[j] = traj.getPose()[j+soFar];
+							dts[j] = traj.getDTs()[j+soFar];
+						}
+						Trajectory piece = new Trajectory(piecePoses);
+						piece.setDTs(dts);
+						newTrajectories.add(piece);
+						soFar += pieceLength;
+					}
+				}
+				
+				if (!newTrajectories.isEmpty()) {
+					//Create new TEs
+					ArrayList<TrajectoryEnvelope> newTrajectoryEnvelopes = new ArrayList<TrajectoryEnvelope>();
+					Variable[] newVars = solver.createVariables(newTrajectories.size());
+					for (int i = 0; i < newVars.length; i++) {
+						TrajectoryEnvelope onete = (TrajectoryEnvelope)newVars[i];
+						onete.setComponent(te.getComponent());
+						onete.getSymbolicVariableActivity().setSymbolicDomain(te.getSymbols());
+						onete.setFootprint(te.getFootprint());
+						onete.setRefinable(false);
+						onete.setTrajectory(newTrajectories.get(i));
+						onete.setSuperEnvelope(te);
+						onete.setRobotID(te.getRobotID());
+						te.addSubEnvelope(onete);
+						te.addDependentVariables(onete);
+						newTrajectoryEnvelopes.add(onete);			
+					}
+					
+					AllenIntervalConstraint starts = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Starts);
+					starts.setFrom(newTrajectoryEnvelopes.get(0));
+					starts.setTo(te);
+					ret.addConstraint(starts);
+		
+					AllenIntervalConstraint finishes = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Finishes, new Bounds(1, APSPSolver.INF));
+					finishes.setFrom(newTrajectoryEnvelopes.get(newTrajectoryEnvelopes.size()-1));
+					finishes.setTo(te);
+					ret.addConstraint(finishes);
+					
+					for (int i = 0; i < newTrajectoryEnvelopes.size()-1; i++) {
+						TrajectoryEnvelope from = newTrajectoryEnvelopes.get(i);
+						TrajectoryEnvelope to = newTrajectoryEnvelopes.get(i+1);
+						double ttt = from.getTrajectory().getDTs()[from.getTrajectory().getDTs().length-1];
+						long tttLong = (long)(TrajectoryEnvelope.RESOLUTION*ttt);
+						if (tttLong == 0) throw new Error("Before bounds are 0! " + ttt);
+						AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, new Bounds(tttLong,tttLong));
+						before.setFrom(from);
+						before.setTo(to);
+						ret.addConstraint(before);
+					}
+				}
+			}
+		}
+
+		if (ret.getConstraints() != null && ret.getConstraints().length > 0) {
+			if (!solver.addConstraints(ret.getConstraints())) throw new Error("Failed to add temporal constraints in refinement!");
+		}
+		recomputeUsages();
+		return ret;
+	}
+	
 	public ConstraintNetwork refineTrajectoryEnvelopesFixed(double[] proportions) {
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		double sum = 0.0;

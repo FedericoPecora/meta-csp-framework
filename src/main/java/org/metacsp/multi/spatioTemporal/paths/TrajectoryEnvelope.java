@@ -47,10 +47,6 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 	private static final long serialVersionUID = 183736569434737103L;
 	public static long RESOLUTION = 1000;
-//	private double width = 1.3;
-//	private double length= 3.5;
-//	private double deltaW = 0.0;
-//	private double deltaL = 0.0;
 	private Trajectory trajectory = null;
 	private boolean refinable = true;
 	private TrajectoryEnvelope superEnvelope  = null;
@@ -800,6 +796,11 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		this.updateSequenceNumbers();		
 	}
 	
+	/**
+	 * Imposes a temporal constraint that models the minimum duration
+	 * of this {@link TrajectoryEnvelope}, derived from the minimum transition times
+	 * between path poses (deltaTs).
+	 */
 	public void updateDuration() {
 		long minDuration = 0;
 		Trajectory traj = this.getTrajectory();
