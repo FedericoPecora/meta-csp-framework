@@ -98,7 +98,10 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		new TrajectoryEnvelopeHierarchyFrame(tree, "Trajectory Envelope Hierarchy");
 	}
 
-	
+	/**
+	 * Get a summary of this {@link TrajectoryEnvelope}.
+	 * @return A {@link String} summarizing this {@link TrajectoryEnvelope}.
+	 */
 	public String getInfo() {
 		
 		String ret = "";
@@ -657,7 +660,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		gsf.setCentre(new Coordinate(deltaL,deltaW));
 		footprint = gsf.createRectangle();
 	}
-
+	
 	private void initFootprint(Coordinate ... coords) {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] newCoords = new Coordinate[coords.length+1];
@@ -944,6 +947,16 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	@Override
 	public Variable getVariable() {
 		return this;
+	}
+	
+	/**
+	 * Get the sequence number of the path point that is closest to a 
+	 * given coordinate.
+	 * @param coord The coordinate to which the closest sequence number should be found.
+	 * @return The sequence number of the path point that is closest to the given coordinate.
+	 */
+	public int getSequenceNumber(Coordinate coord) {
+		return this.trajectory.getSequenceNumber(coord);
 	}
 
 }

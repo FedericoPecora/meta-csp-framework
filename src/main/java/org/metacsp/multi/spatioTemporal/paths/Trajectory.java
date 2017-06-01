@@ -207,6 +207,24 @@ public class Trajectory implements Serializable {
 	}
 	
 	/**
+	 * Get the sequence number of the path point that is closest to a 
+	 * given coordinate.
+	 * @param coord The coordinate to which the closest sequence number should be found.
+	 * @return The sequence number of the path point that is closest to the given coordinate.
+	 */
+	public int getSequenceNumber(Coordinate coord) {
+		int minIndex = 0;
+		double minDist = Double.MAX_VALUE;
+		for (int i = 0; i < this.getPositions().length; i++) {
+			if (this.getPositions()[i].distance(coord) < minDist) {
+				minDist = this.getPositions()[i].distance(coord);
+				minIndex = i;
+			}
+		}
+		return minIndex;
+	}
+
+	/**
 	 * Get an estimate of the time left to move on this {@link Trajectory}
 	 * given the current position. The estimate is based on this {@link Trajectory}'s
 	 * temporal profile.

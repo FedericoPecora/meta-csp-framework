@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.framework.multi.MultiVariable;
 import org.metacsp.meta.spatioTemporal.paths.Map;
 import org.metacsp.meta.spatioTemporal.paths.TrajectoryEnvelopeScheduler;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -81,6 +82,15 @@ public class TestTrajectoryEnvelopeScheduler {
 		printInfo(var0);
 		printInfo(var1);
 		
+		ConstraintNetwork.draw(solver.getConstraintNetwork());
+		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		boolean solved = metaSolver.backtrack();
 		System.out.println("Solved? " + solved);
 		if (solved) System.out.println("Added resolvers:\n" + Arrays.toString(metaSolver.getAddedResolvers()));
@@ -91,6 +101,10 @@ public class TestTrajectoryEnvelopeScheduler {
 
 		TrajectoryEnvelopeAnimator tea = new TrajectoryEnvelopeAnimator("This is a test");
 		tea.addTrajectoryEnvelopes(var0, var1);
+		
+		MultiVariable.drawVariableHierarchy(var0.getVariableHierarchy());
+		
+		
 	}
 	
 }

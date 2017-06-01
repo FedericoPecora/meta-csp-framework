@@ -348,8 +348,8 @@ public class JTSDrawingPanel extends JPanel {
 		for (Entry<String,Long> entry : geometryAges.entrySet()) {
 			if (entry.getValue() > 0 && Calendar.getInstance().getTimeInMillis()-entry.getValue() > maxGeomAge) {
 				//System.out.println("CLEANED UP VIZ OF " + entry.getKey());
-				//removeGeometry(entry.getKey());
-				polyColors.put(entry.getKey(), Color.decode(removedColor));
+				removeGeometry(entry.getKey());
+				//polyColors.put(entry.getKey(), Color.decode(removedColor));
 			}
 		}
 	}
