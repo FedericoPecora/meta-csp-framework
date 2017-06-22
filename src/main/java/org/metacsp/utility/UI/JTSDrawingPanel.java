@@ -152,7 +152,7 @@ public class JTSDrawingPanel extends JPanel {
 					if (userScale < 0.01) userScale = 0.01;		    		
 				}
 				else if (SwingUtilities.isLeftMouseButton(e)) {
-					double accel = 0.5;
+					double accel = 2.5;
 					if (map != null) {
 						accel *= 0.01*map.getHeight();
 					}
@@ -253,6 +253,18 @@ public class JTSDrawingPanel extends JPanel {
 			transpGeoms.put(arrowId, false);
 			thickGeoms.put(arrowId, false);
 			polyColors.put(arrowId, Color.gray);
+		}
+	}
+	
+	public synchronized void addArrow(String arrowId, Pose pose1, Pose pose2, Color color) {
+		if (arrowId != null) {
+			arrowId = new String(arrowId);
+			geometries.put(arrowId, createArrow(pose1, pose2));
+			geometryAges.put(arrowId, Calendar.getInstance().getTimeInMillis());
+			emptyGeoms.put(arrowId, false);
+			transpGeoms.put(arrowId, false);
+			thickGeoms.put(arrowId, false);
+			polyColors.put(arrowId, color);
 		}
 	}
 
@@ -544,7 +556,8 @@ public class JTSDrawingPanel extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		frame.add(panel); 
 		frame.setSize(500, 500); 
-		frame.setVisible(true);  
+		frame.setVisible(true);
+		
 		return panel;
 	}
 
