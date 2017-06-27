@@ -114,7 +114,7 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 	}
 
 	
-	private static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon, int maxTrajectories) {
+	protected static ConstraintSolver[] createInternalConstraintSolvers(long origin, long horizon, int maxTrajectories) {
 		ConstraintSolver[] ret = new ConstraintSolver[2];
 		if (maxTrajectories >= 1) {
 			//ret[0] = new AllenIntervalNetworkSolver(origin, horizon, maxTrajectories);
@@ -217,6 +217,18 @@ public class TrajectoryEnvelopeSolver extends MultiConstraintSolver {
 		this.addConstraints(consToAdd.toArray(new AllenIntervalConstraint[consToAdd.size()]));
 
 		return ret;
+	}
+	
+	public TrajectoryEnvelope createEnvelopeNoParking(int robotID, PoseSteering[] path, String symbol, Coordinate ... footprintCoords) {		
+		Trajectory trajRobot = new Trajectory(path);
+		TrajectoryEnvelope te = (TrajectoryEnvelope)this.createVariable();
+		te.setComponent("Robot" + robotID);
+		te.getSymbolicVariableActivity().setSymbolicDomain(symbol);
+		TrajectoryEnvelope trajEnvelopeRobot = (TrajectoryEnvelope)te;
+		trajEnvelopeRobot.setFootprint(footprintCoords);
+		trajEnvelopeRobot.setTrajectory(trajRobot);
+		trajEnvelopeRobot.setRobotID(robotID);
+		return trajEnvelopeRobot;
 	}
 	
 	public TrajectoryEnvelope createEnvelopeNoParking(int robotID, String[] pathFiles, String symbol, Coordinate ... footprintCoords) {		
