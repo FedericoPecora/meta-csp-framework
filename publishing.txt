@@ -1,0 +1,10 @@
+git tag -a 1.2.5 -m "Release 1.2.5"
+git push origin 1.2.5
+
+rm -rf artifacts
+rm -rf bundleTemp
+./gradlew publish
+./sign-artifacts.sh
+./create-bundle.sh
+
+Go to: https://oss.sonatype.org
