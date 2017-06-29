@@ -270,7 +270,6 @@ public class JTSDrawingPanel extends JPanel {
 
 	public synchronized void resetVisualization() {
 		userScale = 1.0;
-		//panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 		setCenteredPanTrans();
 		updatePanel();
 	}
@@ -278,7 +277,6 @@ public class JTSDrawingPanel extends JPanel {
 	public synchronized void reinitVisualization() {
 		userScale = 1.0;
 		scale = 1.0;
-		//panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 		setCenteredPanTrans();
 		geomToScreen = null;
 	}
@@ -492,7 +490,7 @@ public class JTSDrawingPanel extends JPanel {
 			g2d.setComposite(makeComposite(1.0f));
 		}
 	} 
-
+	
 	private void setTransform() {
 		
 		Envelope env = null;
@@ -506,7 +504,7 @@ public class JTSDrawingPanel extends JPanel {
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
 		scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * userScale; 
 		double xoff = MARGIN - scale * env.getMinX();
-		double yoff = MARGIN - scale * env.getMinY();
+		double yoff = MARGIN + scale * env.getMaxY();
 		double mapOffset = 0.0;
 		if (map != null) mapOffset = scale*map.getHeight();		
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff+0.5*mapOffset);
@@ -519,8 +517,7 @@ public class JTSDrawingPanel extends JPanel {
 			Geometry geom = e.getValue();
 			Envelope geomEnv = geom.getEnvelopeInternal(); 
 			env.expandToInclude(geomEnv); 
-		} 
-
+		}
 		return env; 
 	} 
 
