@@ -1,5 +1,5 @@
-git tag -a 1.2.5 -m "Release 1.2.5"
-git push origin 1.2.5
+git tag -a 1.2.7 -m "Release 1.2.7"
+git push origin 1.2.7
 
 rm -rf artifacts
 rm -rf bundleTemp
