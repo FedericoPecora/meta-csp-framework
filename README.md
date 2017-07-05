@@ -24,7 +24,7 @@ Maven dependency declaration:
 
 Gradle dependency declaration:
 ```
-compile 'org.metacsp:meta-csp-framework:1.2.7'
+compile 'org.metacsp:meta-csp-framework:1.2.9'
 ```
 
 Alternatively, get the <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.metacsp%22%20AND%20a%3A%22meta-csp-framework%22">latest binary, source and Javadoc JARs from the Maven Central website</a>.
