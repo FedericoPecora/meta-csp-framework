@@ -18,7 +18,7 @@ Maven dependency declaration:
 <dependency>
   <groupId>org.metacsp</groupId>
   <artifactId>meta-csp-framework</artifactId>
-  <version>1.2.7</version>
+  <version>1.2.9</version>
 </dependency>
 ```
 
