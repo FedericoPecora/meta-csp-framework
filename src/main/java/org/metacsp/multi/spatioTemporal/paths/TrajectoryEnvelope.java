@@ -662,13 +662,17 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
 	private void initFootprint(Coordinate ... coords) {
+		footprint = TrajectoryEnvelope.createFootprintPolygon(coords);
+	}
+	
+	public static Polygon createFootprintPolygon(Coordinate ... coords) {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] newCoords = new Coordinate[coords.length+1];
 		for (int i = 0; i < coords.length; i++) {
 			newCoords[i] = coords[i];
 		}
 		newCoords[newCoords.length-1] = coords[0];
-		footprint = gf.createPolygon(newCoords);
+		return gf.createPolygon(newCoords);
 	}
 
 	

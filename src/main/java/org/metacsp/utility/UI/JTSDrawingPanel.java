@@ -395,16 +395,16 @@ public class JTSDrawingPanel extends JPanel {
 
 	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty, boolean small) {
 		g2d.setComposite(makeComposite(1.0f));
-		g2d.setPaint(polyPaint); 
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
 		//newTrans.rotate(Math.PI, x, y);
 		newTrans.translate(x, y);
-		newTrans.scale(1, -1);
-		Font f = new Font("TimesRoman", Font.PLAIN, 5);
-		if (small) f = new Font("TimesRoman", Font.PLAIN, 2);
+		newTrans.scale(1*mapResolution, -1*mapResolution);
+		Font f = new Font("Sans", Font.BOLD, 8);
+		if (small) f = new Font("Sans", Font.BOLD, 2);
 		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
 		Shape shape = tl.getOutline(null);
 		Shape newShape = newTrans.createTransformedShape(shape);
+		g2d.setPaint(polyPaint);
 		if (!empty) g2d.fill(newShape);
 		else g2d.draw(newShape);
 	}
@@ -419,8 +419,8 @@ public class JTSDrawingPanel extends JPanel {
 		if(this.map != null) {
 			Graphics2D g2 = (Graphics2D)g;
 			AffineTransform mapTransform = (AffineTransform)geomToScreen.clone();
-			mapTransform.scale(this.mapResolution, this.mapResolution);
-			mapTransform.translate(this.mapX, this.mapY);			
+			mapTransform.scale(this.mapResolution, -this.mapResolution);
+			mapTransform.translate(this.mapX, this.mapY-this.map.getHeight());			
 			g2.drawImage(this.map, mapTransform, this);
 		}
 
@@ -460,7 +460,7 @@ public class JTSDrawingPanel extends JPanel {
 					if (!e.getKey().startsWith("_")) {
 						//Draw label
 						String text = ""+e.getKey();
-						if (text.startsWith("R")) drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), polyPaint, empty, false);
+						if (text.startsWith("R")) drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), Color.darkGray, empty, false);
 						else drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), polyPaint, empty, true);
 
 					}
@@ -506,7 +506,7 @@ public class JTSDrawingPanel extends JPanel {
 		double xoff = MARGIN - scale * env.getMinX();
 		double yoff = MARGIN + scale * env.getMaxY();
 		double mapOffset = 0.0;
-		if (map != null) mapOffset = scale*map.getHeight();		
+		//if (map != null) mapOffset = scale*map.getHeight();		
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff+0.5*mapOffset);
 		geomToScreen.concatenate(panTrans);
 	} 
