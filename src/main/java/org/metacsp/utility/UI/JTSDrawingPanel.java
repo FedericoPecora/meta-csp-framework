@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.TexturePaint;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
@@ -21,16 +20,14 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -54,6 +51,15 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
+
+import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.Processor;
+import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
+import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
+import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
+import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class JTSDrawingPanel extends JPanel {
 
@@ -101,6 +107,12 @@ public class JTSDrawingPanel extends JPanel {
 	private boolean transformTouched = false;
 	private Envelope oldGeomBounds = null;
 	
+	private VectorGraphics2D vg2d = null;
+	private boolean dumpPDF = false;
+	private String dumpFileName = null;
+	private boolean dumpSVG = false;
+	private boolean dumpEPS = false;
+		
 	private void setCenteredPanTrans() {
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	}
@@ -395,6 +407,7 @@ public class JTSDrawingPanel extends JPanel {
 
 	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty, boolean small) {
 		g2d.setComposite(makeComposite(1.0f));
+		if (vg2d != null) vg2d.setComposite(makeComposite(1.0f));
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
 		//newTrans.rotate(Math.PI, x, y);
 		newTrans.translate(x, y);
@@ -405,23 +418,34 @@ public class JTSDrawingPanel extends JPanel {
 		Shape shape = tl.getOutline(null);
 		Shape newShape = newTrans.createTransformedShape(shape);
 		g2d.setPaint(polyPaint);
-		if (!empty) g2d.fill(newShape);
-		else g2d.draw(newShape);
+		if (vg2d != null) vg2d.setPaint(polyPaint);
+		if (!empty) {
+			g2d.fill(newShape);
+			if (vg2d != null) vg2d.fill(newShape);
+		}
+		else {
+			g2d.draw(newShape);
+			if (vg2d != null) vg2d.draw(newShape);
+		}
 	}
-
+	
 
 	@Override 
 	protected synchronized void paintComponent(Graphics g) { 
 		super.paintComponent(g); 
 
 		setTransform();
+		if (dumpPDF || dumpSVG || dumpEPS) {
+			vg2d = new VectorGraphics2D();
+		}
 		
 		if(this.map != null) {
-			Graphics2D g2 = (Graphics2D)g;
+			Graphics2D g2d = (Graphics2D)g;
 			AffineTransform mapTransform = (AffineTransform)geomToScreen.clone();
 			mapTransform.scale(this.mapResolution, -this.mapResolution);
 			mapTransform.translate(this.mapX, this.mapY-this.map.getHeight());			
-			g2.drawImage(this.map, mapTransform, this);
+			g2d.drawImage(this.map, mapTransform, this);
+			//if (vg2d != null) vg2d.drawImage(this.map, mapTransform, this);
 		}
 
 		if (!geometries.isEmpty()) { 
@@ -431,6 +455,13 @@ public class JTSDrawingPanel extends JPanel {
 			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 			g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			if (vg2d != null) {
+				vg2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				vg2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+				vg2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+				vg2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+				vg2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			}
 
 			Paint defaultPaint = Color.BLACK; 
 			Paint startCircPaint = Color.GREEN; 
@@ -446,16 +477,33 @@ public class JTSDrawingPanel extends JPanel {
 				Shape newShape = geomToScreen.createTransformedShape(shape);
 				if (geom instanceof Polygon) {
 					Paint polyPaint = polyColors.get(e.getKey());
-					if (transp) g2d.setComposite(makeComposite(0.5f));
-					else g2d.setComposite(makeComposite(1.0f));
-					g2d.setPaint(polyPaint); 
+					if (transp) {
+						g2d.setComposite(makeComposite(0.5f));
+						if (vg2d != null) vg2d.setComposite(makeComposite(0.5f));
+					}
+					else {
+						g2d.setComposite(makeComposite(1.0f));
+						if (vg2d != null) vg2d.setComposite(makeComposite(1.0f));
+					}
+					g2d.setPaint(polyPaint);
+					if (vg2d != null) vg2d.setPaint(polyPaint);
 
-					if (thick) g2d.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+					if (thick) {
+						g2d.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+						if (vg2d != null) vg2d.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+					}
 
-					if (empty) g2d.draw(newShape);
-					else g2d.fill(newShape);
+					if (empty) {
+						g2d.draw(newShape);
+						if (vg2d != null) vg2d.draw(newShape);
+					}
+					else {
+						g2d.fill(newShape);
+						if (vg2d != null) vg2d.fill(newShape);
+					}
 
 					g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+					if (vg2d != null) vg2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 					if (!e.getKey().startsWith("_")) {
 						//Draw label
@@ -466,8 +514,10 @@ public class JTSDrawingPanel extends JPanel {
 					}
 				}
 				else {
-					g2d.setPaint(defaultPaint); 
+					g2d.setPaint(defaultPaint);
+					if (vg2d != null) vg2d.setPaint(defaultPaint);
 					g2d.draw(newShape);
+					if (vg2d != null) vg2d.draw(newShape);
 
 					//draw start/end circles
 					GeometricShapeFactory gsf = new GeometricShapeFactory();
@@ -485,9 +535,36 @@ public class JTSDrawingPanel extends JPanel {
 					g2d.draw(newStartCircShape);
 					g2d.setPaint(endCircPaint); 
 					g2d.draw(newEndCircShape);
+					if (vg2d != null) {
+						vg2d.setStroke(new BasicStroke(2));
+						vg2d.setPaint(startCircPaint); 
+						vg2d.draw(newStartCircShape);
+						vg2d.setPaint(endCircPaint); 
+						vg2d.draw(newEndCircShape);						
+					}
 				} 
 			}
 			g2d.setComposite(makeComposite(1.0f));
+			if (vg2d != null) vg2d.setComposite(makeComposite(1.0f));
+		}
+		if (dumpPDF || dumpSVG || dumpEPS) {
+			CommandSequence commands = vg2d.getCommands();
+			Processor processor = null;
+			if (dumpPDF) processor = new PDFProcessor(false);
+			else if (dumpSVG) processor = new SVGProcessor();
+			else if (dumpEPS) processor = new EPSProcessor();
+			//PageSize ps = new PageSize(this.getWidth(),this.getHeight());
+			PageSize ps = new PageSize(getGeometryBounds().getWidth()*scale+2*MARGIN,getGeometryBounds().getHeight()*scale+2*MARGIN);
+			Document doc = processor.getDocument(commands, ps);
+			try { doc.writeTo(new FileOutputStream(dumpFileName)); }
+			catch (FileNotFoundException e) { e.printStackTrace(); }
+			catch (IOException e) { e.printStackTrace(); }
+			dumpPDF = false;
+			dumpSVG = false;
+			dumpEPS = false;
+			dumpFileName = null;
+			vg2d.dispose();
+			vg2d = null;
 		}
 	} 
 	
@@ -573,5 +650,19 @@ public class JTSDrawingPanel extends JPanel {
 		drawVariables(title, tes.toArray(new GeometricShapeVariable[tes.size()]));
 	}
 
+	public void writePDF(String fileName) {
+		dumpPDF = true;
+		dumpFileName = fileName;
+	}
+	
+	public void writeSVG(String fileName) {
+		dumpSVG = true;
+		dumpFileName = fileName;
+	}
+	
+	public void writeEPS(String fileName) {
+		dumpEPS = true;
+		dumpFileName = fileName;
+	}
 
 } 
