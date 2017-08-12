@@ -112,7 +112,18 @@ public class JTSDrawingPanel extends JPanel {
 	private String dumpFileName = null;
 	private boolean dumpSVG = false;
 	private boolean dumpEPS = false;
+	
+	private double targetTextSize = 1.0;
+	private double targetArrowHeadWidth = 1.0;
 		
+	public void setTextSizeInMeters(double targetTextSize) {
+		this.targetTextSize = targetTextSize;
+	}
+
+	public void setArrowHeadSizeInMeters(double targetArrowHeadSize) {
+		this.targetArrowHeadWidth = targetArrowHeadSize;
+	}
+
 	private void setCenteredPanTrans() {
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	}
@@ -182,7 +193,7 @@ public class JTSDrawingPanel extends JPanel {
 	private Geometry createArrow(Pose pose1, Pose pose2) {		
 		GeometryFactory gf = new GeometryFactory();
 		double aux = 1.8;
-		double distance = Math.sqrt(Math.pow((pose2.getX()-pose1.getX()),2)+Math.pow((pose2.getY()-pose1.getY()),2));
+		double distance = (1.6/targetArrowHeadWidth)*Math.sqrt(Math.pow((pose2.getX()-pose1.getX()),2)+Math.pow((pose2.getY()-pose1.getY()),2));
 		double theta = Math.atan2(pose2.getY() - pose1.getY(), pose2.getX() - pose1.getX());
 		Coordinate[] coords = new Coordinate[8];
 		coords[0] = new Coordinate(0.0,-0.3);
@@ -195,6 +206,7 @@ public class JTSDrawingPanel extends JPanel {
 		coords[7] = new Coordinate(0.0,-0.3);
 		Polygon arrow = gf.createPolygon(coords);
 		AffineTransformation at = new AffineTransformation();
+		at.scale(targetArrowHeadWidth/1.6, targetArrowHeadWidth/1.6);
 		at.rotate(theta);
 		at.translate(pose1.getX(), pose1.getY());
 		Geometry ret = at.transform(arrow);
@@ -214,6 +226,7 @@ public class JTSDrawingPanel extends JPanel {
 		coords[7] = new Coordinate(0.0,-0.3);
 		Polygon arrow = gf.createPolygon(coords);
 		AffineTransformation at = new AffineTransformation();
+		at.scale(1.6/targetArrowHeadWidth, 1.6/targetArrowHeadWidth);
 		at.rotate(pose.getTheta());
 		at.translate(pose.getX(), pose.getY());
 		Geometry ret = at.transform(arrow);
@@ -408,15 +421,38 @@ public class JTSDrawingPanel extends JPanel {
 	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty, boolean small) {
 		g2d.setComposite(makeComposite(1.0f));
 		if (vg2d != null) vg2d.setComposite(makeComposite(1.0f));
-		AffineTransform newTrans = new AffineTransform(geomToScreen);
-		//newTrans.rotate(Math.PI, x, y);
-		newTrans.translate(x, y);
-		newTrans.scale(1*mapResolution, -1*mapResolution);
+		
+		AffineTransform textTrans = new AffineTransform();
+		textTrans.setToScale(1.0,1.0);
 		Font f = new Font("Sans", Font.BOLD, 8);
 		if (small) f = new Font("Sans", Font.BOLD, 2);
 		TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
 		Shape shape = tl.getOutline(null);
-		Shape newShape = newTrans.createTransformedShape(shape);
+		Shape newShape = textTrans.createTransformedShape(shape);
+		double sizeOfText = Math.max(newShape.getBounds2D().getWidth(), newShape.getBounds2D().getHeight());
+		double delta = -1;
+		if (sizeOfText > targetTextSize) {
+			delta = 0.99;
+			while (sizeOfText > targetTextSize) {
+				textTrans.scale(delta, delta);
+				newShape = textTrans.createTransformedShape(newShape);
+				sizeOfText = Math.max(newShape.getBounds2D().getWidth(), newShape.getBounds2D().getHeight());
+			}
+		}
+		else {
+			delta = 1.01;
+			while (sizeOfText < targetTextSize) {
+				textTrans.scale(delta, delta);
+				newShape = textTrans.createTransformedShape(newShape);
+				sizeOfText = Math.max(newShape.getBounds2D().getWidth(), newShape.getBounds2D().getHeight());
+			}
+		}
+		
+		AffineTransform newTrans = new AffineTransform(geomToScreen);
+		newTrans.translate(x, y);
+		newTrans.scale(1.0, -1.0);
+		newShape = newTrans.createTransformedShape(newShape);
+		
 		g2d.setPaint(polyPaint);
 		if (vg2d != null) vg2d.setPaint(polyPaint);
 		if (!empty) {
