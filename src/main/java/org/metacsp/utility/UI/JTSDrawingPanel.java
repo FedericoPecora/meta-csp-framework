@@ -52,6 +52,9 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
+import aurelienribon.tweenengine.equations.Quad;
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
@@ -103,19 +106,27 @@ public class JTSDrawingPanel extends JPanel {
 	private double mapResolution = 1;
 	private double mapX = 0.0;
 	private double mapY = 0.0;
-	
+
 	private boolean transformTouched = false;
-	private Envelope oldGeomBounds = null;
-	
+	private TweenableEnvelope currentGeomBounds = null;
+	private TweenableEnvelope oldGeomBounds = null;
+	private TweenManager tweenManager = null;
+	private long lastUpdateTime = Calendar.getInstance().getTimeInMillis();
+	private boolean smoothTransitions = false;
+
 	private VectorGraphics2D vg2d = null;
 	private boolean dumpPDF = false;
 	private String dumpFileName = null;
 	private boolean dumpSVG = false;
 	private boolean dumpEPS = false;
-	
+
 	private double targetTextSize = 1.0;
 	private double targetArrowHeadWidth = 1.0;
-		
+
+	public void setSmoothTransitions(boolean value) {
+		this.smoothTransitions = value;
+	}
+	
 	public void setTextSizeInMeters(double targetTextSize) {
 		this.targetTextSize = targetTextSize;
 	}
@@ -127,8 +138,13 @@ public class JTSDrawingPanel extends JPanel {
 	private void setCenteredPanTrans() {
 		panTrans = AffineTransform.getTranslateInstance(0.0, 0.0);
 	}
-	
+
 	public JTSDrawingPanel() {
+
+		Tween.registerAccessor(TweenableEnvelope.class, new EnvelopeAccessor());
+		Tween.setCombinedAttributesLimit(4);
+		tweenManager = new TweenManager();
+		
 		this.setDoubleBuffered(true);
 
 		this.addMouseListener(new MouseAdapter() {
@@ -280,7 +296,7 @@ public class JTSDrawingPanel extends JPanel {
 			polyColors.put(arrowId, Color.gray);
 		}
 	}
-	
+
 	public synchronized void addArrow(String arrowId, Pose pose1, Pose pose2, Color color) {
 		if (arrowId != null) {
 			arrowId = new String(arrowId);
@@ -421,7 +437,7 @@ public class JTSDrawingPanel extends JPanel {
 	private void drawText(Graphics2D g2d, String text, double x, double y, Paint polyPaint, boolean empty, boolean small) {
 		g2d.setComposite(makeComposite(1.0f));
 		if (vg2d != null) vg2d.setComposite(makeComposite(1.0f));
-		
+
 		AffineTransform textTrans = new AffineTransform();
 		textTrans.setToScale(1.0,1.0);
 		Font f = new Font("Sans", Font.BOLD, 8);
@@ -447,12 +463,12 @@ public class JTSDrawingPanel extends JPanel {
 				sizeOfText = Math.max(newShape.getBounds2D().getWidth(), newShape.getBounds2D().getHeight());
 			}
 		}
-		
+
 		AffineTransform newTrans = new AffineTransform(geomToScreen);
 		newTrans.translate(x, y);
 		newTrans.scale(1.0, -1.0);
 		newShape = newTrans.createTransformedShape(newShape);
-		
+
 		g2d.setPaint(polyPaint);
 		if (vg2d != null) vg2d.setPaint(polyPaint);
 		if (!empty) {
@@ -464,17 +480,23 @@ public class JTSDrawingPanel extends JPanel {
 			if (vg2d != null) vg2d.draw(newShape);
 		}
 	}
-	
+
 
 	@Override 
 	protected synchronized void paintComponent(Graphics g) { 
 		super.paintComponent(g); 
 
+		if (smoothTransitions) {
+			long currentUpdateTime = Calendar.getInstance().getTimeInMillis();
+			tweenManager.update(currentUpdateTime-lastUpdateTime);
+			lastUpdateTime = currentUpdateTime;
+		}
+		
 		setTransform();
 		if (dumpPDF || dumpSVG || dumpEPS) {
 			vg2d = new VectorGraphics2D();
 		}
-		
+
 		if(this.map != null) {
 			Graphics2D g2d = (Graphics2D)g;
 			AffineTransform mapTransform = (AffineTransform)geomToScreen.clone();
@@ -603,36 +625,57 @@ public class JTSDrawingPanel extends JPanel {
 			vg2d = null;
 		}
 	} 
-	
+
 	private void setTransform() {
+
+		TweenableEnvelope env = getGeometryBounds();
+		if (oldGeomBounds == null) {
+			oldGeomBounds = env;
+			currentGeomBounds = oldGeomBounds;
+		}
 		
-		Envelope env = null;
 		if (!transformTouched) {
-			env = getGeometryBounds();
+			if (!env.equals(oldGeomBounds)) {
+				if (smoothTransitions) {
+					currentGeomBounds = oldGeomBounds;
+					Tween.to(currentGeomBounds, 0, 500).target(env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY()).start(tweenManager);
+				}
+				else currentGeomBounds = env;
+			}
 			oldGeomBounds = env;
 		}
-		else env = oldGeomBounds;
-				
+		else currentGeomBounds = oldGeomBounds;
+
 		Rectangle visRect = getVisibleRect();
 		Rectangle drawingRect = new Rectangle(visRect.x + MARGIN, visRect.y + MARGIN, visRect.width - 2*MARGIN, visRect.height - 2*MARGIN); 
-		scale = Math.min(drawingRect.getWidth() / env.getWidth(), drawingRect.getHeight() / env.getHeight()) * userScale; 
-		double xoff = MARGIN - scale * env.getMinX();
-		double yoff = MARGIN + scale * env.getMaxY();
+		scale = Math.min(drawingRect.getWidth() / currentGeomBounds.getWidth(), drawingRect.getHeight() / currentGeomBounds.getHeight()) * userScale;
+		double xoff = MARGIN - scale * currentGeomBounds.getMinX();
+		double yoff = MARGIN + scale * currentGeomBounds.getMaxY();
 		double mapOffset = 0.0;
 		//if (map != null) mapOffset = scale*map.getHeight();		
 		geomToScreen = new AffineTransform(scale, 0, 0, -scale, xoff, yoff+0.5*mapOffset);
 		geomToScreen.concatenate(panTrans);
 	} 
 
-	private Envelope getGeometryBounds() { 
+	private TweenableEnvelope getGeometryBounds() { 
 		Envelope env = new Envelope(); 
 		for (Entry<String,Geometry> e : geometries.entrySet()) { 
 			Geometry geom = e.getValue();
 			Envelope geomEnv = geom.getEnvelopeInternal(); 
 			env.expandToInclude(geomEnv); 
 		}
-		return env; 
+		return new TweenableEnvelope(env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY()); 
 	} 
+
+	//	private Envelope getGeometryBounds() { 
+	//		Envelope env = new Envelope(); 
+	//		for (Entry<String,Geometry> e : geometries.entrySet()) { 
+	//			Geometry geom = e.getValue();
+	//			Envelope geomEnv = geom.getEnvelopeInternal(); 
+	//			env.expandToInclude(geomEnv); 
+	//		}
+	//		return env; 
+	//	} 
 
 	public static void drawVariables(String title, boolean[] empty, GeometricShapeVariable[] vars) {
 		JTSDrawingPanel panel = new JTSDrawingPanel(); 
@@ -667,7 +710,7 @@ public class JTSDrawingPanel extends JPanel {
 		frame.add(panel); 
 		frame.setSize(500, 500); 
 		frame.setVisible(true);
-		
+
 		return panel;
 	}
 
@@ -690,12 +733,12 @@ public class JTSDrawingPanel extends JPanel {
 		dumpPDF = true;
 		dumpFileName = fileName;
 	}
-	
+
 	public void writeSVG(String fileName) {
 		dumpSVG = true;
 		dumpFileName = fileName;
 	}
-	
+
 	public void writeEPS(String fileName) {
 		dumpEPS = true;
 		dumpFileName = fileName;
