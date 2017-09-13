@@ -285,6 +285,18 @@ public class JTSDrawingPanel extends JPanel {
 		}
 	}
 
+	public synchronized void addArrow(String arrowId, Pose pose, Color color) {
+		if (arrowId != null) {
+			arrowId = new String(arrowId);
+			geometries.put(arrowId, createArrow(pose));
+			geometryAges.put(arrowId, Calendar.getInstance().getTimeInMillis());
+			emptyGeoms.put(arrowId, false);
+			transpGeoms.put(arrowId, false);
+			thickGeoms.put(arrowId, false);
+			polyColors.put(arrowId, color);
+		}
+	}
+
 	public synchronized void addArrow(String arrowId, Pose pose1, Pose pose2) {
 		if (arrowId != null) {
 			arrowId = new String(arrowId);
