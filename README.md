@@ -75,6 +75,10 @@ dependencies {
 }
 ```
 
+# Contributors and applications
+
+The Meta-CSP Framework is developed by <a href="http://aass.oru.se/~fpa">Federico Pecora</a>, with significant <a href="https://github.com/FedericoPecora/meta-csp-framework/graphs/contributors">contributions</a> from the open source community. Contributions are also provided by <a href="https://www.scania.com/group/en/research-and-development/">Scania Research and Development</a>, which currently uses the framework for developing fleet optimization solutions.
+
 # Sponsors
 
 * <a href="http://www.oru.se/english/research/research-projects/rp/?rdb=p1152">The Semantic Robots Research Profile</a>
