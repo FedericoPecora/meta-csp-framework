@@ -25,6 +25,7 @@ public class PolygonalDomain extends GeometricShapeDomain {
 
 	protected PolygonalDomain(Variable v) {
 		super(v);
+		updateGeometry();
 	}
 	
 	/**
@@ -34,6 +35,7 @@ public class PolygonalDomain extends GeometricShapeDomain {
 	 */
 	public PolygonalDomain(Variable v, Coordinate[] coord) {
 		super(v, coord);
+		updateGeometry();
 	}
 	
 	/**
@@ -58,7 +60,7 @@ public class PolygonalDomain extends GeometricShapeDomain {
 				newCoords[i] = coordinates[i];
 			}
 			newCoords[coordinates.length] = this.coordinates[0];
-			this.geom = new GeometryFactory().createPolygon(newCoords);						
+			this.geom = new GeometryFactory().createPolygon(newCoords);	
 			if (!this.geom.isValid()) {
 				try { 
 					this.geom = this.geom.symDifference(this.geom.getBoundary());

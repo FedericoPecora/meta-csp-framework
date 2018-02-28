@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -106,6 +107,7 @@ public class JTSDrawingPanel extends JPanel {
 	private double mapResolution = 1;
 	private double mapX = 0.0;
 	private double mapY = 0.0;
+	private HashSet<String> permanentGeometries = new HashSet<String>();
 
 	private boolean transformTouched = false;
 	private TweenableEnvelope currentGeomBounds = null;
@@ -285,6 +287,14 @@ public class JTSDrawingPanel extends JPanel {
 		}
 	}
 
+	public void setPermanent(String geometryID) {
+		this.permanentGeometries.add(geometryID);
+	}
+	
+	public boolean isPermanent(String geometryID) {
+		return this.permanentGeometries.contains(geometryID);
+	}
+	
 	public synchronized void addArrow(String arrowId, Pose pose, Color color) {
 		if (arrowId != null) {
 			arrowId = new String(arrowId);
@@ -411,7 +421,7 @@ public class JTSDrawingPanel extends JPanel {
 		for (Entry<String,Long> entry : geometryAges.entrySet()) {
 			if (entry.getValue() > 0 && Calendar.getInstance().getTimeInMillis()-entry.getValue() > maxGeomAge) {
 				//System.out.println("CLEANED UP VIZ OF " + entry.getKey());
-				removeGeometry(entry.getKey());
+				if (!isPermanent(entry.getKey())) removeGeometry(entry.getKey());
 				//polyColors.put(entry.getKey(), Color.decode(removedColor));
 			}
 		}
@@ -434,6 +444,7 @@ public class JTSDrawingPanel extends JPanel {
 			thickGeoms.remove(id);
 			transpGeoms.remove(id);
 			polyColors.remove(id);
+			permanentGeometries.remove(id);
 		}
 	} 
 
@@ -579,7 +590,7 @@ public class JTSDrawingPanel extends JPanel {
 						//Draw label
 						String text = ""+e.getKey();
 						if (text.startsWith("R")) drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), Color.darkGray, empty, false);
-						else drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), polyPaint, empty, true);
+						else drawText(g2d, text, geom.getCentroid().getX(), geom.getCentroid().getY(), Color.darkGray, empty, true);
 
 					}
 				}

@@ -1,8 +1,5 @@
 package org.metacsp.examples;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.metacsp.framework.Constraint;
@@ -10,18 +7,13 @@ import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelation;
 import org.metacsp.multi.spatial.DE9IM.DE9IMRelationSolver;
-import org.metacsp.multi.spatial.DE9IM.GeometricShapeDomain;
 import org.metacsp.multi.spatial.DE9IM.GeometricShapeVariable;
 import org.metacsp.multi.spatial.DE9IM.LineStringDomain;
 import org.metacsp.multi.spatial.DE9IM.PointDomain;
 import org.metacsp.multi.spatial.DE9IM.PolygonalDomain;
+import org.metacsp.utility.UI.JTSDrawingPanel;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.IntersectionMatrix;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 public class TestDE9IMRelationSolver {
 
@@ -115,6 +107,12 @@ public class TestDE9IMRelationSolver {
 			System.out.println(var + ": " + gsv.getShapeType());
 		}
 		
+		JTSDrawingPanel panel = JTSDrawingPanel.makeEmpty("Spatial variables");
+		panel.addGeometry(g1.toString(), ((PolygonalDomain)g1.getDomain()).getGeometry());
+		panel.addGeometry(g2.toString(), ((PolygonalDomain)g2.getDomain()).getGeometry());
+		panel.addGeometry(g3.toString(), ((LineStringDomain)g3.getDomain()).getGeometry());
+//		panel.addGeometry(g4.toString(), ((PointDomain)g4.getDomain()).getGeometry());
+
 	}
 
 }

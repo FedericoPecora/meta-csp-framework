@@ -3,6 +3,7 @@ package org.metacsp.multi.spatial.DE9IM;
 import org.metacsp.framework.Variable;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
@@ -17,6 +18,7 @@ public class LineStringDomain extends GeometricShapeDomain {
 
 	protected LineStringDomain(Variable v) {
 		super(v);
+		updateGeometry();
 	}
 	
 	/**
@@ -26,6 +28,7 @@ public class LineStringDomain extends GeometricShapeDomain {
 	 */
 	public LineStringDomain(Variable v, Coordinate[] coord) {
 		super(v, coord);
+		updateGeometry();
 	}
 
 	public Coordinate[] getCoordiantes() {

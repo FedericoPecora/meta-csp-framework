@@ -14,6 +14,22 @@ public class PoseSteering implements Serializable {
 	private Pose pose;
 	private double steering;
 	
+	
+	/**
+	 * Create a {@link PoseSteering} given a position, orientation, and a steering angle.
+	 * @param x X coordinate of the {@link Pose}.
+	 * @param y Y coordinate of the {@link Pose}.
+	 * @param z Z coordinate of the {@link Pose}.
+	 * @param roll Orientation of the {@link Pose} around the x-axis.
+	 * @param pitch Orientation of the {@link Pose} around the y-axis.
+	 * @param yaw Orientation of the {@link Pose} around the z-axis.
+	 * @param steering Steering angle of this {@link PoseSteering}.
+	 */
+	public PoseSteering(double x, double y, double z, double roll, double pitch, double yaw, double steering) {
+		this.pose = new Pose(x,y,z,roll,pitch,yaw);
+		this.steering = steering;
+	}
+	
 	/**
 	 * Create a {@link PoseSteering} given a position, orientation, and a steering angle.
 	 * @param x X coordinate of the pose.
@@ -23,6 +39,17 @@ public class PoseSteering implements Serializable {
 	 */
 	public PoseSteering(double x, double y, double theta, double steering) {
 		this.pose = new Pose(x,y,theta);
+		this.steering = steering;
+	}
+	
+
+	/**
+	 * Create a {@link PoseSteering} given a {@link Pose} and a steering angle.
+	 * @param pose {@link Pose} of this {@link PoseSteering}.
+	 * @param steering Steering angle of this {@link PoseSteering}.
+	 */
+	public PoseSteering(Pose p, double steering) {
+		this.pose = p;
 		this.steering = steering;
 	}
 	
@@ -43,12 +70,45 @@ public class PoseSteering implements Serializable {
 	}
 	
 	/**
+	 * Get the Z position of this {@link PoseSteering}.
+	 * @return The Z position of this {@link PoseSteering}.
+	 */
+	public double getZ() {
+		return this.pose.getZ();
+	}
+	
+	/**
 	 * Get the orientation of this {@link PoseSteering}.
 	 * @return The orientation of this {@link PoseSteering}.
 	 */
 	public double getTheta() {
 		return this.pose.getTheta();
 	}
+	
+	/**
+	 * Get the roll of this {@link PoseSteering}.
+	 * @return The roll of this {@link PoseSteering}.
+	 */
+	public double getRoll() {
+		return this.pose.getRoll();
+	}
+	
+	/**
+	 * Get the pitch of this {@link PoseSteering}.
+	 * @return The pitch of this {@link PoseSteering}.
+	 */
+	public double getPitch() {
+		return this.pose.getPitch();
+	}
+	
+	/**
+	 * Get the yaw of this {@link PoseSteering}.
+	 * @return The yaw of this {@link PoseSteering}.
+	 */
+	public double getYaw() {
+		return this.pose.getYaw();
+	}
+	
 	
 	/**
 	 * Get the pose of this {@link PoseSteering}.
@@ -74,7 +134,7 @@ public class PoseSteering implements Serializable {
 	 */
 	public PoseSteering interpolate(PoseSteering p2, double ratio) {
 		Pose interp = this.getPose().interpolate(p2.getPose(), ratio);		
-		return new PoseSteering(interp.getX(), interp.getY(), interp.getTheta(), Pose.lerpDegrees(getSteering(),p2.getSteering(),ratio));
+		return new PoseSteering(interp, Pose.lerpDegrees(getSteering(),p2.getSteering(),ratio));
 	}
 
 }

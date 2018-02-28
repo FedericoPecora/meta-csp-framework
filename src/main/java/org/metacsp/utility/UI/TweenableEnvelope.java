@@ -1,7 +1,10 @@
 package org.metacsp.utility.UI;
 
-public class TweenableEnvelope {
+import java.io.Serializable;
+
+public class TweenableEnvelope implements Serializable {
 	
+	private static final long serialVersionUID = -5883627610020604247L;
 	private float minX, maxX, minY, maxY;
 	
 	public TweenableEnvelope(double minX, double minY, double maxX, double maxY) {

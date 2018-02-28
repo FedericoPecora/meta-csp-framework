@@ -1,7 +1,7 @@
 package org.metacsp.multi.spatial.DE9IM;
 
-import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.spatial.SpatialDomain;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -14,36 +14,18 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Federico Pecora
  *
  */
-public abstract class GeometricShapeDomain extends Domain {
+public abstract class GeometricShapeDomain extends SpatialDomain {
 
-	protected Coordinate[] coordinates = null;
 	protected Geometry geom = null;
 	
-	private static final long serialVersionUID = -6193460915334324151L;
+	private static final long serialVersionUID = -6193460915332322151L;
 	
 	protected GeometricShapeDomain(Variable v) {
 		super(v);
-		this.coordinates = null;
-		updateGeometry();
 	}
 
 	protected GeometricShapeDomain(Variable v, Coordinate ... coord) {
-		super(v);
-		this.coordinates = coord;
-		updateGeometry();
-	}
-	
-	public boolean isInstantiated() {
-		return this.coordinates != null && this.coordinates.length > 0;
-	}
-
-	/**
-	 * Returns the {@link Geometry} used to represent this domain internally. Methods provided by the JTS Topology Suite (see <a href="http://tsusiatsoftware.net/">http://tsusiatsoftware.net</a>) can
-	 * be used on these objects.
-	 * @return The {@link Geometry} used to represent this domain internally.
-	 */
-	public Geometry getGeometry() {
-		return geom;
+		super(v,coord);
 	}
 	
 	/**
@@ -55,22 +37,17 @@ public abstract class GeometricShapeDomain extends Domain {
 		return this.getClass();
 	}
 	
+	/**
+	 * Returns the {@link Geometry} used to represent this domain internally. Methods provided by the JTS Topology Suite (see <a href="http://tsusiatsoftware.net/">http://tsusiatsoftware.net</a>) can
+	 * be used on these objects.
+	 * @return The {@link Geometry} used to represent this domain internally.
+	 */
+	public Geometry getGeometry() {
+		return this.geom;
+	}
+	
 	protected abstract void updateGeometry();
 	
-	/**
-	 * Set the coordinates of this domain.
-	 * @param coord The coordinates that should be used to create this domain.
-	 */
-	public void setCoordinates(Coordinate ... coord) {
-		this.coordinates = coord;
-	}
-	
-	@Override
-	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

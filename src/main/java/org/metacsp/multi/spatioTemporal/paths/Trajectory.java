@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.metacsp.time.APSPSolver;
@@ -40,7 +41,7 @@ public class Trajectory implements Serializable {
 	public Trajectory(Pose[] pa) {
 		this.psa = new PoseSteering[pa.length];
 		for (int i = 0; i < pa.length; i++) {
-			PoseSteering ps = new PoseSteering(pa[i].getX(), pa[i].getY(), pa[i].getTheta(), 0.0);
+			PoseSteering ps = new PoseSteering(pa[i], 0.0);
 			this.psa[i] = ps;
 		}
 		this.dts = new double[psa.length];
@@ -102,7 +103,7 @@ public class Trajectory implements Serializable {
 	public Trajectory(Pose[] pa, double[] dts) {
 		this.psa = new PoseSteering[pa.length];
 		for (int i = 0; i < pa.length; i++) {
-			PoseSteering ps = new PoseSteering(pa[i].getX(), pa[i].getY(), pa[i].getTheta(), 0.0);
+			PoseSteering ps = new PoseSteering(pa[i], 0.0);
 			this.psa[i] = ps;
 		}
 		this.dts = new double[psa.length];
@@ -369,7 +370,7 @@ public class Trajectory implements Serializable {
 	public Coordinate[] getPositions() {
 		ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
 		for (PoseSteering ps : psa) {
-			ret.add(new Coordinate(ps.getX(), ps.getY()));
+			ret.add(ps.getPose().getPosition());
 		}
 		return ret.toArray(new Coordinate[ret.size()]);
 	}
@@ -383,13 +384,37 @@ public class Trajectory implements Serializable {
 				if (line.length() != 0) {
 					String[] oneline = line.split(" ");
 					PoseSteering ps = null;
-					if (oneline.length == 4) {
+					//x,y,z,r,p,y,s
+					if (oneline.length == 7) {
 					ps = new PoseSteering(
 							new Double(oneline[0]).doubleValue(),
 							new Double(oneline[1]).doubleValue(),
 							new Double(oneline[2]).doubleValue(),
-							new Double(oneline[3]).doubleValue());
+							new Double(oneline[3]).doubleValue(),
+							new Double(oneline[4]).doubleValue(),
+							new Double(oneline[5]).doubleValue(),
+							new Double(oneline[6]).doubleValue());
 					}
+					//x,y,z,r,p,y
+					else if (oneline.length == 6) {
+					ps = new PoseSteering(
+							new Double(oneline[0]).doubleValue(),
+							new Double(oneline[1]).doubleValue(),
+							new Double(oneline[2]).doubleValue(),
+							new Double(oneline[3]).doubleValue(),
+							new Double(oneline[4]).doubleValue(),
+							new Double(oneline[5]).doubleValue(),
+							0.0);
+					}
+					//x,y,z,th,s
+					else if (oneline.length == 4) {
+						ps = new PoseSteering(
+								new Double(oneline[0]).doubleValue(),
+								new Double(oneline[1]).doubleValue(),
+								new Double(oneline[2]).doubleValue(),
+								new Double(oneline[3]).doubleValue());
+					}
+					//x,y,z,th
 					else {
 						ps = new PoseSteering(
 								new Double(oneline[0]).doubleValue(),
