@@ -18,13 +18,13 @@ Maven dependency declaration:
 <dependency>
   <groupId>org.metacsp</groupId>
   <artifactId>meta-csp-framework</artifactId>
-  <version>1.3.3</version>
+  <version>1.3.4</version>
 </dependency>
 ```
 
 Gradle dependency declaration:
 ```
-compile 'org.metacsp:meta-csp-framework:1.3.3'
+compile 'org.metacsp:meta-csp-framework:1.3.4'
 ```
 
 Alternatively, get the <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.metacsp%22%20AND%20a%3A%22meta-csp-framework%22">latest binary, source and Javadoc JARs from the Maven Central website</a>.
@@ -74,6 +74,10 @@ dependencies {
    //any other dependency you may have
 }
 ```
+
+# Contributors and applications
+
+The Meta-CSP Framework is developed by <a href="http://aass.oru.se/~fpa">Federico Pecora</a>, with significant <a href="https://github.com/FedericoPecora/meta-csp-framework/graphs/contributors">contributions</a> from the open source community. Contributions are also provided by <a href="https://www.scania.com/group/en/research-and-development/">Scania Research and Development</a>, which currently uses the framework for developing fleet optimization solutions.
 
 # Sponsors
 
