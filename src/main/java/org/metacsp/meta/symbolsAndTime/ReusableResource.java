@@ -62,7 +62,7 @@ public class ReusableResource extends Schedulable {
 	@Override
 	public String toString() {
 //		return this.getMetaVariable().toString() + "[" + this.capacity + "]";
-		return "---not implemented---";
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
