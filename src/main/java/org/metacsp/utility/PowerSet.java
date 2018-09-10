@@ -25,6 +25,14 @@ public class PowerSet {
 	    }           
 	    return sets;
 	}
+	
+	public static void main(String[] args) {
+		HashSet<String> set = new HashSet<String>();
+		set.add("One");
+		set.add("Two");
+		set.add("Three");
+		System.out.println(powerSet(set));
+	}
 
 
 }

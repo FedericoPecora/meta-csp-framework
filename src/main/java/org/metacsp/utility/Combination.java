@@ -3,20 +3,7 @@ package org.metacsp.utility;
 // Computes nCr -- all the ways you can combine r choices among n total objects.
 // Unlike permutations, here order does not matter, so {0,1,2} is the same as {0,2,1}.
 
-import java.util.*;
-
-
-
-
-
-
-
-//////////////////////////////////////
-// Combination
-//
-// You do not need to write the code below here.
-// You just need to be able to USE it.
-//////////////////////////////////////
+import java.util.Arrays;
 
 // The algorithm is from Applied Combinatorics, by Alan Tucker.
 // Based on code from koders.com

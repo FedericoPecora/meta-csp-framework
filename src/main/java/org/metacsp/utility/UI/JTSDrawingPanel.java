@@ -125,6 +125,7 @@ public class JTSDrawingPanel extends JPanel {
 	private double targetTextSize = 1.0;
 	private double targetArrowHeadWidth = 1.0;
 
+	
 	public void setSmoothTransitions(boolean value) {
 		this.smoothTransitions = value;
 	}
@@ -503,7 +504,13 @@ public class JTSDrawingPanel extends JPanel {
 			if (vg2d != null) vg2d.draw(newShape);
 		}
 	}
-
+	
+	public AffineTransform getMapTransform() {
+//		AffineTransform mapTransform = (AffineTransform)geomToScreen.clone();
+//		mapTransform.scale(this.mapResolution, -this.mapResolution);
+//		mapTransform.translate(this.mapX, this.mapY-this.map.getHeight());	
+		return this.geomToScreen;
+	}
 
 	@Override 
 	protected synchronized void paintComponent(Graphics g) { 
