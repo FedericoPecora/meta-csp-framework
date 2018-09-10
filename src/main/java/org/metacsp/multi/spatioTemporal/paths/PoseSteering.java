@@ -45,7 +45,7 @@ public class PoseSteering implements Serializable {
 
 	/**
 	 * Create a {@link PoseSteering} given a {@link Pose} and a steering angle.
-	 * @param pose {@link Pose} of this {@link PoseSteering}.
+	 * @param p {@link Pose} of this {@link PoseSteering}.
 	 * @param steering Steering angle of this {@link PoseSteering}.
 	 */
 	public PoseSteering(Pose p, double steering) {
