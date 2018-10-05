@@ -124,7 +124,17 @@ public class JTSDrawingPanel extends JPanel {
 
 	private double targetTextSize = 1.0;
 	private double targetArrowHeadWidth = 1.0;
+	
+	private double panAcceleration = 2.5;
+	private double zoomIntensity = 0.05;
 
+	public void setPanAcceleration(double accel) {
+		this.panAcceleration = accel;
+	}
+	
+	public void setZoomIntensity(double intens) {
+		this.zoomIntensity = intens;
+	}
 	
 	public void setSmoothTransitions(boolean value) {
 		this.smoothTransitions = value;
@@ -190,15 +200,15 @@ public class JTSDrawingPanel extends JPanel {
 				int x = e.getX();
 				int y = e.getY();
 				if (SwingUtilities.isRightMouseButton(e)) {
-					userScale += Math.signum(y-previousY)*0.05;
+					userScale += Math.signum(y-previousY)*zoomIntensity;
 					if (userScale < 0.01) userScale = 0.01;		    		
 				}
 				else if (SwingUtilities.isLeftMouseButton(e)) {
-					double accel = 2.5;
-					if (map != null) {
-						accel *= 0.01*map.getHeight();
-					}
-					panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)*accel*userScale, panTrans.getTranslateY()-Math.signum(y-previousY)*accel*userScale);
+//					double accel = 2.5;
+//					if (map != null) {
+//						accel *= 0.01*map.getHeight();
+//					}
+					panTrans = AffineTransform.getTranslateInstance(panTrans.getTranslateX()+Math.signum(x-previousX)*panAcceleration*userScale, panTrans.getTranslateY()-Math.signum(y-previousY)*panAcceleration*userScale);
 				}
 				previousX = x;
 				previousY = y;
