@@ -686,6 +686,31 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 		innerFootprint = gf.createPolygon(newCoords);
 	}
 
+	/**
+	 * Get a {@link Geometry} representing the spatial envelope between two given indices.
+	 * @param indexFrom The starting index (inclusive).
+	 * @param indexTo The ending index (inclusive).
+	 * @return A {@link Geometry} representing the spatial envelope between two given indices.
+	 */
+	public Geometry getPartialEnvelopeGeometry(int indexFrom, int indexTo) {
+		Geometry onePoly = null;
+		Geometry prevPoly = null;
+		if (indexFrom > indexTo || indexFrom < 0 || indexFrom > this.trajectory.getPoseSteering().length-1 || indexTo < 0 || indexTo >= this.trajectory.getPoseSteering().length) throw new Error("Indices incorrect!");
+		for (int i = indexFrom; i <= indexTo; i++) {
+			PoseSteering ps = this.trajectory.getPoseSteering()[i];
+			Geometry rect = makeFootprint(ps);
+			if (onePoly == null) {
+				onePoly = rect;
+				prevPoly = rect;
+			}
+			else {
+				Geometry auxPoly = prevPoly.union(rect);
+				onePoly = onePoly.union(auxPoly.convexHull());
+				prevPoly = rect;
+			}
+		}
+		return onePoly;
+	}
 	
 	private Coordinate[] createEnvelope() {
 		Geometry onePoly = null;
