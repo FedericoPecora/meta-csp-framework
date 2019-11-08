@@ -2,9 +2,9 @@
     apply plugin : it
 }
 
-set("myGradleVersion", GradleVersion.current().getVersion())
-set("myGradleVersionMajor", myGradleVersion.substring(0,myGradleVersion.indexOf(".")))
-set("myGradleVersionMinor", myGradleVersion.substring(myGradleVersion.indexOf(".")+1))
+def myGradleVersion = GradleVersion.current().getVersion()
+def myGradleVersionMajor = myGradleVersion.substring(0,myGradleVersion.indexOf("."))
+def myGradleVersionMinor = myGradleVersion.substring(myGradleVersion.indexOf(".")+1)
 
 println ("Using Gradle version: (major) " + myGradleVersionMajor + " (minor) " + myGradleVersionMinor)
 
