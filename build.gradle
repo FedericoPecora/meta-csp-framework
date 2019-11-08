@@ -2,23 +2,7 @@
     apply plugin : it
 }
 
-def myGradleVersion = GradleVersion.current().getVersion()
-def myGradleVersionMajor = myGradleVersion.substring(0,myGradleVersion.indexOf("."))
-def myGradleVersionMinor = myGradleVersion.substring(myGradleVersion.indexOf(".")+1)
-
-println ("Using Gradle version: (major) " + myGradleVersionMajor + " (minor) " + myGradleVersionMinor)
-
-try {
-if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
-   apply plugin : 'maven-publish'
-}
-else {
-     println "Note: you need Gradle version >= 1.6 to publish to a Maven repo"
-}
-}
-catch (NumberFormatException e) {
-    println "Note: could not parse Gradle version - you cannot invoke publish target"
-}
+apply plugin : 'maven-publish'
 
 //Main class for 'gradle run'
 mainClassName = 'org.metacsp.examples.multi.TestTimelinePlotting'
@@ -130,7 +114,7 @@ task sourceJar (type : Jar) {
 
 try {
 //publish bin, source and javaDoc to repo
-if ((Integer.parseInt(myGradleVersionMajor) > 1) || ((Integer.parseInt(myGradleVersionMajor) == 1) && (Integer.parseInt(myGradleVersionMinor) > 6))) {
+
 publishing {
 
     publications {
@@ -195,7 +179,7 @@ publishing {
         }
     }
 }
-}
+
 }
 catch (NumberFormatException e) { }
 
