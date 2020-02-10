@@ -166,6 +166,18 @@ public class Trajectory implements Serializable {
 	}
 	
 	/**
+	 * Get the length in meters of this {@link Trajectory}'s path. This is the sum of distances between path poses.
+	 * @return The length in meters of this {@link Trajectory}'s path. This is the sum of distances between path poses.
+	 */
+	public double getPathLength() {
+		double length = 0.0;
+		for (int i = 0; i < this.getPoseSteering().length-1; i++) {
+			length += this.getPoseSteering()[i].getPose().distanceTo(this.getPoseSteering()[i+1].getPose());
+		}
+		return length;
+	}
+	
+	/**
 	 * Get the temporal profile of this {@link Trajectory}.
 	 * @return The temporal profile of this {@link Trajectory}.
 	 */
