@@ -735,14 +735,14 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	}
 	
   /**
-   *  Gets a Geometry representing the envelope (bounding box) of 
-   *  this <code>Geometry</code>. 
+   *  Gets a Geometry representing the bounding box of 
+   *  this <code>TrajectoryEnvelope</code> <code>Geometry</code>. 
    *  <p>
    *  If this <code>Geometry</code> is:
    *  <ul>
-   *  <li>empty, returns an empty <code>Point</code>. 
-   *  <li>a point, returns a <code>Point</code>.
-   *  <li>a line parallel to an axis, a two-vertex <code>LineString</code> 
+   *  <li>empty, returns <code>null</code>. 
+   *  <li>a point, returns a <code>Point</code> (should never happen since the robot footprint should never be a point).
+   *  <li>a line parallel to an axis, a two-vertex <code>LineString</code> (should never happen since the robot footprint should never be a line). 
    *  <li>otherwise, returns a
    *  <code>Polygon</code> whose vertices are (minx miny, maxx miny, 
    *  maxx maxy, minx maxy, minx miny).
