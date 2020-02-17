@@ -51,6 +51,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private boolean refinable = true;
 	private TrajectoryEnvelope superEnvelope  = null;
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
+	private Geometry envelopeBoundingBox = null;
 	private int robotID = -1;
 	private Polygon footprint = null;
 	private Polygon innerFootprint = null;
@@ -727,9 +728,32 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 				prevPoly = rect;
 			}
 		}
+		this.envelopeBoundingBox = onePoly.getEnvelope();
 //		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
 //		return ret.getCoordinates();
 		return onePoly.getCoordinates();
+	}
+	
+  /**
+   *  Gets a Geometry representing the envelope (bounding box) of 
+   *  this <code>Geometry</code>. 
+   *  <p>
+   *  If this <code>Geometry</code> is:
+   *  <ul>
+   *  <li>empty, returns an empty <code>Point</code>. 
+   *  <li>a point, returns a <code>Point</code>.
+   *  <li>a line parallel to an axis, a two-vertex <code>LineString</code> 
+   *  <li>otherwise, returns a
+   *  <code>Polygon</code> whose vertices are (minx miny, maxx miny, 
+   *  maxx maxy, minx maxy, minx miny).
+   *  </ul>
+   *
+   *@return a Geometry representing the bounding box of this TrajectoryEnvelope
+   *      
+   * @see {@link Geometry#getEnvelope()}
+   */
+	public Geometry getEnvelopeBoundingBox() {
+		return this.envelopeBoundingBox;
 	}
 	
 	
