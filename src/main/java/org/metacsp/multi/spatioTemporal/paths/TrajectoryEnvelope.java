@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
+import aima.core.search.nondeterministic.Path;
 import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.util.TreeUtils;
 
@@ -590,6 +591,15 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	public Geometry makeFootprint(PoseSteering ps) {
 		return makeFootprint(ps.getX(), ps.getY(), ps.getTheta());
 	}
+	
+	/** AAAA
+	 * Returns a {@link Geometry} representing the footprint of the robot in a given {@link PoseSteering}.
+	 * @param ps The pose and steering used to create the footprint.
+	 * @return A {@link Geometry} representing the footprint of the robot in a given {@link PoseSteering}.
+	 */
+	public static Geometry makeFootprint(PoseSteering ps, Polygon footprint) {
+		return TrajectoryEnvelope.makeFootprint(ps.getX(), ps.getY(), ps.getTheta(), footprint);
+	}
 
 	
 	/**
@@ -629,6 +639,21 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	 * @return A {@link Geometry} representing the footprint of the robot in a given pose.
 	 */
 	public Geometry makeFootprint(double x, double y, double theta) {
+		AffineTransformation at = new AffineTransformation();
+		at.rotate(theta);
+		at.translate(x,y);
+		Geometry rect = at.transform(footprint);
+		return rect;
+	}
+	
+	/** AAAA
+	 * Returns a {@link Geometry} representing the footprint of the robot in a given pose.
+	 * @param x The x coordinate of the pose used to create the footprint.
+	 * @param y The y coordinate of the pose used to create the footprint.
+	 * @param theta The orientation of the pose used to create the footprint.
+	 * @return A {@link Geometry} representing the footprint of the robot in a given pose.
+	 */
+	public static Geometry makeFootprint(double x, double y, double theta, Polygon footprint) {
 		AffineTransformation at = new AffineTransformation();
 		at.rotate(theta);
 		at.translate(x,y);
@@ -730,6 +755,59 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 //		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
 //		return ret.getCoordinates();
 		return onePoly.getCoordinates();
+	}
+	
+	public static class SpatialEnvelope {
+		protected PoseSteering[] path;
+		protected Geometry polygon;
+		protected Polygon footprint;
+		
+		public SpatialEnvelope(PoseSteering[] path, Geometry polygon, Polygon footprint) {
+			this.path = path;
+			this.polygon = polygon;
+			this.footprint = footprint;
+		}
+		
+		public PoseSteering[] getPath() {
+			return path;
+		}
+		
+		public Geometry getPolygon() {
+			return polygon;
+		}
+
+		public Polygon getFootprint() {
+			return footprint;
+		}
+
+		public Geometry getFootprint(PoseSteering poseSteering) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
+	
+	public static SpatialEnvelope createSpatialEnvelope(PoseSteering[] path, Coordinate ... footprint) {
+		Geometry onePoly = null;
+		Geometry prevPoly = null;
+		Polygon fp = TrajectoryEnvelope.createFootprintPolygon(footprint);
+		for (PoseSteering ps : path) {
+			Geometry rect = TrajectoryEnvelope.makeFootprint(ps, fp);			
+			if (onePoly == null) {
+				onePoly = rect;
+				prevPoly = rect;
+			}
+			else {
+				Geometry auxPoly = prevPoly.union(rect);
+				onePoly = onePoly.union(auxPoly.convexHull());
+				prevPoly = rect;
+			}
+		}
+		return new SpatialEnvelope(path, onePoly, fp);
+	}
+	
+	public SpatialEnvelope getSpatialEnvelope() {
+		Geometry geom = ((PolygonalDomain)((GeometricShapeVariable)this.getInternalVariables()[2]).getDomain()).getGeometry();
+		return new SpatialEnvelope(this.getTrajectory().getPoseSteering(), geom, this.footprint);
 	}
 	
 	
