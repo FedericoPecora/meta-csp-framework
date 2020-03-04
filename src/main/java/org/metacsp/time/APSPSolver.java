@@ -634,8 +634,8 @@ public class APSPSolver extends ConstraintSolver {
 			//Conversion
 			long min = in[i].min;
 			long max = in[i].max;
-			if (in[i].max == Long.MAX_VALUE - 1) max = H-O;
-			if (in[i].min == Long.MIN_VALUE + 1) min = -1 * (H - O);
+			if (in[i].max == APSPSolver.INF) max = H-O;
+			if (in[i].min == -APSPSolver.INF) min = -1 * (H - O);
 			in[i] = new Bounds(min,max);
 
 			SimpleDistanceConstraint con = tPoints[from[i]].getOut(to[i]);
@@ -1192,6 +1192,7 @@ public class APSPSolver extends ConstraintSolver {
 
 	private static long sum(long a, long b) {
 		if (a == APSPSolver.INF || b == APSPSolver.INF) return APSPSolver.INF;
+		if (a == -APSPSolver.INF || b == -APSPSolver.INF) return -APSPSolver.INF;
 		return a+b;
 	}
 

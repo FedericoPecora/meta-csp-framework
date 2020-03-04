@@ -153,7 +153,7 @@ public class SimpleDistanceConstraint extends BinaryConstraint {
 	 * @return {@code true} if the interval was removed, {@code false} if this was
 	 * an attempt to remove the active constraint.
 	 */
-	public boolean removeInterval(Bounds i) {
+	public boolean removeInterval(Bounds i) {	
 		if(bs.remove(i)) {
 			Bounds intersection = new Bounds(0, APSPSolver.INF);
 			
