@@ -8,7 +8,7 @@ import java.util.Random;
 
 import org.metacsp.multi.spatioTemporal.paths.Pose;
 
-public class TestPaths {
+public class TestPoseClass {
 	public static void main(String[] args) throws InterruptedException {
 		
 		int numTests = 1000;
