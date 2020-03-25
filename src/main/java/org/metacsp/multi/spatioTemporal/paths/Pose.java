@@ -16,7 +16,8 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Federico Pecora
  *
  */
-public class Pose implements Serializable {
+public class Pose 
+	implements Serializable	 {
 	
 	private static final long serialVersionUID = -6109720311463668670L;
 	//private double x, y, theta;
@@ -167,5 +168,77 @@ public class Pose implements Serializable {
 		if (Double.isNaN(this.z)) return "(" + MetaCSPLogging.printDouble(this.getX(),4) + ", " + MetaCSPLogging.printDouble(this.getY(),4) + ", " + MetaCSPLogging.printDouble(this.getTheta(),4) + ")";
 		return "(" + MetaCSPLogging.printDouble(this.getX(),4) + ", " + MetaCSPLogging.printDouble(this.getY(),4) + ", " + MetaCSPLogging.printDouble(this.getZ(),4) + ", " + MetaCSPLogging.printDouble(this.getRoll(),4) + ", " + MetaCSPLogging.printDouble(this.getPitch(),4) + ", " + MetaCSPLogging.printDouble(this.getYaw(),4) + ")";
 	}
+	
+	/*public boolean equals(Pose other) {
+		if (other == null) return false;
+		boolean ret = this.x == other.x && this.y == other.y && this.yaw == other.yaw;
+		boolean check = this.roll != Double.NaN && this.pitch != Double.NaN && this.z != Double.NaN &&
+				other.roll != Double.NaN && other.pitch != Double.NaN && other.z != Double.NaN;
+		if (check) ret = ret && check;
+		return ret;
+	}*/
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = this.pitch == Double.NaN ? 0 : Double.doubleToLongBits(pitch);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = this.roll == Double.NaN ? 0 : Double.doubleToLongBits(roll);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(yaw);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = this.z == Double.NaN ? 0 : Double.doubleToLongBits(z);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+	
+	public boolean isPose2D() {
+		return this.roll == Double.NaN || this.pitch == Double.NaN || this.z == Double.NaN;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pose other = (Pose) obj;
+		
+		if (this.isPose2D() && !other.isPose2D() || !this.isPose2D() && other.isPose2D()) {
+			System.out.println("Invalid comparison between a 2D pose and a 3D one. This is 2D: " + this.isPose2D() + ", other is 2D: " + other.isPose2D()+ ".");
+			throw new Error("Invalid comparison between a 2D pose and a 3D one.");
+		}
+		
+		//Compare the two 2D poses
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		if (Double.doubleToLongBits(yaw) != Double.doubleToLongBits(other.yaw))
+			return false;
+		if (this.isPose2D() && other.isPose2D()) return true;
+		
+		//compare the two 3D poses.
+		if (this.roll == Double.NaN || this.pitch == Double.NaN || this.z == Double.NaN ||
+				other.roll == Double.NaN || other.pitch == Double.NaN || other.z == Double.NaN) {
+			System.out.println("Invalid 3D poses.");
+			throw new Error("Invalid 3D poses.");
+		}
+		
+		if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z))
+			return false;
+		if (Double.doubleToLongBits(pitch) != Double.doubleToLongBits(other.pitch))
+			return false;
+		if (Double.doubleToLongBits(roll) != Double.doubleToLongBits(other.roll))
+			return false;
+		return true;
+	}
 }

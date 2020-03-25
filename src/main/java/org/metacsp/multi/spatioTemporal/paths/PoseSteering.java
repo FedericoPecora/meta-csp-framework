@@ -136,6 +136,10 @@ public class PoseSteering implements Serializable {
 		Pose interp = this.getPose().interpolate(p2.getPose(), ratio);		
 		return new PoseSteering(interp, Pose.lerpDegrees(getSteering(),p2.getSteering(),ratio));
 	}
+	
+	public boolean equals(PoseSteering other) {
+		return this.pose.equals(other.pose) && this.steering == other.steering;
+	}
 
 }
 
