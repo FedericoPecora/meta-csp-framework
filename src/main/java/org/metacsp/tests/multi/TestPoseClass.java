@@ -13,7 +13,7 @@ public class TestPoseClass {
 		
 		int numTests = 1000;
 		Random rand = new Random(Calendar.getInstance().getTimeInMillis());
-		
+			
 		//2D compared to 2D
 		for (int i = 0; i < numTests; i++) {
 			double yaw = -Math.PI + 2*Math.PI * rand.nextDouble();
@@ -21,6 +21,9 @@ public class TestPoseClass {
 			Pose p2 = new Pose(p1.getX(),p1.getY(),p1.getTheta());
 			double x = p1.getX() == 0 ? 1 : 2*p1.getX();
 			Pose p3 = new Pose(x,0,0);
+			assertTrue(p1.isPose2D());
+			assertTrue(p2.isPose2D());
+			assertTrue(p3.isPose2D());
 			assertTrue(p1.equals(p2));
 			assertFalse(p1.equals(p3));
 		}
@@ -34,6 +37,9 @@ public class TestPoseClass {
 			Pose p2 = new Pose(p1.getX(),p1.getY(),p1.getZ(),p1.getRoll(),p1.getPitch(),p1.getYaw());
 			double x3 = p1.getX() == 0 ? 1 : 2*p1.getX();
 			Pose p3 = new Pose(x3,0,0,0,0,0);
+			assertFalse(p1.isPose2D());
+			assertFalse(p2.isPose2D());
+			assertFalse(p3.isPose2D());
 			assertTrue(p1.equals(p2));
 			assertFalse(p1.equals(p3));
 		}
@@ -43,16 +49,19 @@ public class TestPoseClass {
 			double roll = -Math.PI + 2*Math.PI * rand.nextDouble();
 			double pitch = -Math.PI + 2*Math.PI * rand.nextDouble();
 			double yaw = -Math.PI + 2*Math.PI * rand.nextDouble();
-			Pose p1 = new Pose(rand.nextDouble(),rand.nextDouble(),rand.nextDouble(),roll,pitch,yaw);
-			Pose p2 = new Pose(p1.getX(),p1.getY(),p1.getTheta());
+			Pose p1 = new Pose(rand.nextDouble(), rand.nextDouble(), rand.nextDouble(), roll, pitch, yaw);
+			Pose p2 = new Pose(p1.getX(), p1.getY(), p1.getTheta());
+			assertFalse(p1.isPose2D());
+			assertTrue(p2.isPose2D());
 			p1.equals(p2);
-			/*boolean gotException = false;
+			/* For debugging. Tested.
+			 * boolean gotExp = false;
 			try { p1.equals(p2); }
 			catch (Exception e) {
-				gotException = true;
 				System.out.println(e.toString());
+				gotExp = true;
 			}
-			assertTrue(gotException);*/
+			assertTrue(gotExp);*/
 		}
 	}
 

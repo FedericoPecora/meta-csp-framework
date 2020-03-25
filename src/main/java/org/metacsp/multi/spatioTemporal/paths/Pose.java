@@ -1,10 +1,6 @@
 package org.metacsp.multi.spatioTemporal.paths;
 
-
-
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import org.metacsp.utility.logging.MetaCSPLogging;
 
@@ -55,9 +51,8 @@ public class Pose
 		this.z = Double.NaN;
 		this.roll = Double.NaN;
 		this.pitch = Double.NaN;
-		//this.theta = theta;
 	}
-	
+		
 	/**
 	 * Get the X position of this {@link Pose}.
 	 * @return The X position of this {@link Pose}.
@@ -183,9 +178,9 @@ public class Pose
 		final int prime = 31;
 		int result = 1;
 		long temp;
-		temp = this.pitch == Double.NaN ? 0 : Double.doubleToLongBits(pitch);
+		temp = Double.isNaN(this.pitch) ? 0 : Double.doubleToLongBits(pitch);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = this.roll == Double.NaN ? 0 : Double.doubleToLongBits(roll);
+		temp = Double.isNaN(this.roll) ? 0 : Double.doubleToLongBits(roll);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		temp = Double.doubleToLongBits(x);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -193,13 +188,13 @@ public class Pose
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		temp = Double.doubleToLongBits(yaw);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = this.z == Double.NaN ? 0 : Double.doubleToLongBits(z);
+		temp = Double.isNaN(this.z) ? 0 : Double.doubleToLongBits(z);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
 	
 	public boolean isPose2D() {
-		return this.roll == Double.NaN || this.pitch == Double.NaN || this.z == Double.NaN;
+		return Double.isNaN(this.roll) || Double.isNaN(this.pitch) || Double.isNaN(this.z);
 	}
 
 	@Override
@@ -212,10 +207,9 @@ public class Pose
 			return false;
 		Pose other = (Pose) obj;
 		
-		if (this.isPose2D() && !other.isPose2D() || !this.isPose2D() && other.isPose2D()) {
-			System.out.println("Invalid comparison between a 2D pose and a 3D one. This is 2D: " + this.isPose2D() + ", other is 2D: " + other.isPose2D()+ ".");
+		if (this.isPose2D() && !other.isPose2D() || !this.isPose2D() && other.isPose2D()) 
 			throw new Error("Invalid comparison between a 2D pose and a 3D one.");
-		}
+			//throw new ArithmeticException("Invalid comparison between a 2D pose and a 3D one."); //for debugging
 		
 		//Compare the two 2D poses
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
@@ -227,11 +221,10 @@ public class Pose
 		if (this.isPose2D() && other.isPose2D()) return true;
 		
 		//compare the two 3D poses.
-		if (this.roll == Double.NaN || this.pitch == Double.NaN || this.z == Double.NaN ||
-				other.roll == Double.NaN || other.pitch == Double.NaN || other.z == Double.NaN) {
-			System.out.println("Invalid 3D poses.");
+		if (Double.isNaN(this.roll) || Double.isNaN(this.pitch) || Double.isNaN(this.z) ||
+				Double.isNaN(other.roll) || Double.isNaN(other.pitch) || Double.isNaN(other.z)) 
 			throw new Error("Invalid 3D poses.");
-		}
+			//throw new ArithmeticException("Invalid 3D poses."); //for debugging
 		
 		if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z))
 			return false;
