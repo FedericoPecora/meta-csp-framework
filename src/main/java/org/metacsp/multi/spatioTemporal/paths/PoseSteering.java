@@ -137,8 +137,34 @@ public class PoseSteering implements Serializable {
 		return new PoseSteering(interp, Pose.lerpDegrees(getSteering(),p2.getSteering(),ratio));
 	}
 	
-	public boolean equals(PoseSteering other) {
-		return this.pose.equals(other.pose) && this.steering == other.steering;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((pose == null) ? 0 : pose.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(steering);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PoseSteering other = (PoseSteering) obj;
+		if (pose == null) {
+			if (other.pose != null)
+				return false;
+		} else if (!pose.equals(other.pose))
+			return false;
+		if (Double.doubleToLongBits(steering) != Double.doubleToLongBits(other.steering))
+			return false;
+		return true;
 	}
 
 }
