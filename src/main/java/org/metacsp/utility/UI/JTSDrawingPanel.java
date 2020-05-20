@@ -269,15 +269,17 @@ public class JTSDrawingPanel extends JPanel {
 			String imageFileName = null;
 			String st;
 			while((st=br.readLine()) != null){
-				String key = st.substring(0, st.indexOf(":")).trim();
-				String value = st.substring(st.indexOf(":")+1).trim();
-				if (key.equals("image")) imageFileName = file.getParentFile()+File.separator+value;
-				else if (key.equals("resolution")) this.mapResolution = Double.parseDouble(value);
-				else if (key.equals("origin")) {
-					String x = value.substring(1, value.indexOf(",")).trim();
-					String y = value.substring(value.indexOf(",")+1, value.indexOf(",", value.indexOf(",")+1)).trim();
-					this.mapX = Double.parseDouble(x);
-					this.mapY = Double.parseDouble(y);
+				if (!st.trim().startsWith("#") && !st.trim().isEmpty()) {
+					String key = st.substring(0, st.indexOf(":")).trim();
+					String value = st.substring(st.indexOf(":")+1).trim();
+					if (key.equals("image")) imageFileName = file.getParentFile()+File.separator+value;
+					else if (key.equals("resolution")) this.mapResolution = Double.parseDouble(value);
+					else if (key.equals("origin")) {
+						String x = value.substring(1, value.indexOf(",")).trim();
+						String y = value.substring(value.indexOf(",")+1, value.indexOf(",", value.indexOf(",")+1)).trim();
+						this.mapX = Double.parseDouble(x);
+						this.mapY = Double.parseDouble(y);
+					}
 				}
 			}
 			br.close();
