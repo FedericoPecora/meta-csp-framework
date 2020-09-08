@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.hamcrest.core.IsEqual;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
@@ -19,7 +20,7 @@ public class Dispatcher extends Thread {
 
 	public static enum ACTIVITY_STATE {PLANNED, STARTED, FINISHING, MANUALLY_FINISHING, FINISHED, SKIP_BECAUSE_UNIFICATION, MANUALLY_STARTED};
 	private ConstraintNetwork cn;
-	private ActivityNetworkSolver ans;
+	private ConstraintSolver ans;
 	private long period;
 	private HashMap<SymbolicVariableActivity,ACTIVITY_STATE> acts;
 	private HashMap<SymbolicVariableActivity,AllenIntervalConstraint> overlapFutureConstraints;
@@ -32,7 +33,7 @@ public class Dispatcher extends Thread {
 		this.teardown = true;
 	}
 
-	public Dispatcher(final ActivityNetworkSolver ans, long period) {
+	public Dispatcher(final ConstraintSolver ans, long period) {
 		this.ans = ans;
 		cn = ans.getConstraintNetwork();
 		this.period = period;

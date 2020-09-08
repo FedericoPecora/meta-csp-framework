@@ -8,8 +8,8 @@ apply plugin : 'maven-publish'
 mainClassName = 'org.metacsp.examples.multi.TestTimelinePlotting'
 
 //JDK version
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 task releaseInfo {
     def taskName = project.getGradle().startParameter.taskNames.get(0);

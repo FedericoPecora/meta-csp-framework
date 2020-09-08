@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Variable;
 import org.metacsp.meta.simplePlanner.SimpleDomain.markings;
 import org.metacsp.multi.activity.Activity;
@@ -22,7 +23,7 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 public class Sensor implements Serializable {
 	
 	private static final long serialVersionUID = -852002916221212114L;
-	protected ActivityNetworkSolver ans = null;
+	protected ConstraintSolver ans = null;
 	private ConstraintNetwork cn = null;
 	protected String name;
 	private SymbolicVariableActivity future = null;
