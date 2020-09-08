@@ -1,5 +1,6 @@
 package org.metacsp.sensing;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -53,12 +54,12 @@ public class ConstraintNetworkAnimator extends Thread {
 		return Calendar.getInstance().getTimeInMillis();
 	}
 
-	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period, InferenceCallback cb, boolean startPaused) {
+	public ConstraintNetworkAnimator(final ConstraintSolver ans, long period, InferenceCallback cb, boolean startPaused) {
 		this(ans, period, startPaused);
 		this.cb = cb;
 	}
 
-	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period, InferenceCallback cb) {
+	public ConstraintNetworkAnimator(final ConstraintSolver ans, long period, InferenceCallback cb) {
 		this(ans, period, cb, false);
 	}
 	
@@ -66,7 +67,7 @@ public class ConstraintNetworkAnimator extends Thread {
 		this.cb = cb;
 	}
 
-	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period) {
+	public ConstraintNetworkAnimator(final ConstraintSolver ans, long period) {
 		this(ans, period, false);
 	}
 	
@@ -147,12 +148,37 @@ public class ConstraintNetworkAnimator extends Thread {
 		}
 	}
 
-	public ConstraintNetworkAnimator(final ActivityNetworkSolver ans, long period, boolean startPaused) {
+	public ConstraintNetworkAnimator(final ConstraintSolver ans, long period, boolean startPaused) {
 		this.paused = startPaused;
 		synchronized(ans) {
 			this.ans = ans;
 			this.period = period;
-			originOfTime = ans.getOrigin();
+			//originOfTime = ans.getOrigin();
+			this.originOfTime = 0;
+			long horizon = 0;
+			try {
+				if (ans.getClass().getDeclaredMethod("getOrigin", new Class<?>[] {}) != null) {
+					this.originOfTime = ((Long)ans.getClass().getDeclaredMethod("getOrigin", new Class<?>[] {}).invoke(ans, new Object[] {})).longValue();
+				}
+				if (ans.getClass().getDeclaredMethod("getHorizon", new Class<?>[] {}) != null) {
+					horizon = ((Long)ans.getClass().getDeclaredMethod("getHorizon", new Class<?>[] {}).invoke(ans, new Object[] {})).longValue();
+				}
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			firstTick = getCurrentTimeInMillis();
 			this.cn = ans.getConstraintNetwork();
 			future = (SymbolicVariableActivity)ans.createVariable("Time");
@@ -162,7 +188,7 @@ public class ConstraintNetworkAnimator extends Thread {
 			AllenIntervalConstraint releaseFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow, timeNow));
 			releaseFuture.setFrom(future);
 			releaseFuture.setTo(future);
-			AllenIntervalConstraint deadlineFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(ans.getHorizon(), ans.getHorizon()));
+			AllenIntervalConstraint deadlineFuture = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Deadline, new Bounds(horizon, horizon));
 			deadlineFuture.setFrom(future);
 			deadlineFuture.setTo(future);
 			currentReleaseFuture = releaseFuture;
