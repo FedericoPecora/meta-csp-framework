@@ -26,7 +26,7 @@ import cern.colt.Arrays;
 public class ConstraintNetworkAnimator extends Thread {
 
 	private ConstraintNetwork cn = null;
-	private ConstraintSolver ans = null;
+	private ActivityNetworkSolver ans = null;
 	private SymbolicVariableActivity future = null;
 	private long originOfTime;
 	private long firstTick;
@@ -175,7 +175,7 @@ public class ConstraintNetworkAnimator extends Thread {
 
 	public ConstraintNetwork getConstraintNetwork() { return this.cn; }
 
-	public ConstraintSolver getActivityNetworkSolver() { return this.ans; }
+	public ActivityNetworkSolver getActivityNetworkSolver() { return this.ans; }
 
 	public void postSensorValueToDispatch(Sensor sensor, long time, String value) {
 		synchronized(ans) {
