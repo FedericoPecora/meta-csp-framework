@@ -43,6 +43,11 @@ public class PoseSteering implements Serializable {
 	}
 	
 
+	@Override
+	public String toString() {
+		return "PoseSteering [pose=" + pose + ", steering=" + steering + "]";
+	}
+
 	/**
 	 * Create a {@link PoseSteering} given a {@link Pose} and a steering angle.
 	 * @param p {@link Pose} of this {@link PoseSteering}.
