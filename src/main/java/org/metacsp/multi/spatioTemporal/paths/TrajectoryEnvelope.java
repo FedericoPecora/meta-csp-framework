@@ -52,7 +52,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private boolean refinable = true;
 	private TrajectoryEnvelope superEnvelope  = null;
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
-	private Geometry envelopeBoundingBox = null;
+	private ArrayList<Geometry> forwardSubPolygons = null;
+	private ArrayList<Geometry> backwardSubPolygons = null;
 	private int robotID = -1;
 	private Polygon footprint = null;
 	private Polygon innerFootprint = null;
@@ -741,7 +742,10 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private Coordinate[] createEnvelope() {
 		Geometry onePoly = null;
 		Geometry prevPoly = null;
-		for (PoseSteering ps : this.trajectory.getPoseSteering()) {
+		PoseSteering ps = null;
+		//Forward
+		for (int i = 0; i < this.trajectory.getPoseSteering().length; i++) {
+			ps = this.trajectory.getPoseSteering()[i];
 			Geometry rect = makeFootprint(ps);			
 			if (onePoly == null) {
 				onePoly = rect;
@@ -752,11 +756,50 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 				onePoly = onePoly.union(auxPoly.convexHull());
 				prevPoly = rect;
 			}
+			if (this.forwardSubPolygons == null) this.forwardSubPolygons = new ArrayList<Geometry>();
+			this.forwardSubPolygons.add(onePoly);
 		}
-		this.envelopeBoundingBox = onePoly.getEnvelope();
+		//Backward
+		onePoly = null;
+		prevPoly = null;
+		for (int i = this.trajectory.getPoseSteering().length-1; i >= 0; i--) {
+			ps = this.trajectory.getPoseSteering()[i];
+			Geometry rect = makeFootprint(ps);			
+			if (onePoly == null) {
+				onePoly = rect;
+				prevPoly = rect;
+			}
+			else {
+				Geometry auxPoly = prevPoly.union(rect);
+				onePoly = onePoly.union(auxPoly.convexHull());
+				prevPoly = rect;
+			}
+			if (this.backwardSubPolygons == null) this.backwardSubPolygons = new ArrayList<Geometry>();
+			this.backwardSubPolygons.add(onePoly);
+		}
+//		this.envelopeBoundingBox = onePoly.getEnvelope();
 //		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
 //		return ret.getCoordinates();
-		return onePoly.getCoordinates();
+		return this.forwardSubPolygons.get(this.forwardSubPolygons.size()-1).getCoordinates();
+	}
+
+	/**
+	 * Return the geometry of the spatial envelope from the starting pose to a given path index.
+	 * @param index The index of the last path point to consider.
+	 * @return The geometry of the spatial envelope.
+	 */
+	public Geometry getForwardSubPolygon(int index) {
+		if (this.forwardSubPolygons == null) return null;
+		return this.forwardSubPolygons.get(index);
+	}
+	/**
+	 * Return the geometry of the spatial envelope from a given path index to the end.
+	 * @param index The index of the last path point to consider.
+	 * @return The geometry of the spatial envelope.
+	 */	
+	public Geometry getBackwardSubPolygon(int index) {
+		if (this.backwardSubPolygons == null) return null;
+		return this.backwardSubPolygons.get(index);
 	}
 	
 	public static class SpatialEnvelope {
@@ -780,11 +823,6 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 
 		public Polygon getFootprint() {
 			return footprint;
-		}
-
-		public Geometry getFootprint(PoseSteering poseSteering) {
-			// TODO Auto-generated method stub
-			return null;
 		}
 	}
 	
@@ -831,7 +869,8 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
    * @see {@link Geometry#getEnvelope()}
    */
 	public Geometry getEnvelopeBoundingBox() {
-		return this.envelopeBoundingBox;
+		if (this.forwardSubPolygons == null) return null;
+		return this.forwardSubPolygons.get(this.forwardSubPolygons.size()-1);
 	}
 	
 	private Coordinate[] createInnerEnvelope() {
