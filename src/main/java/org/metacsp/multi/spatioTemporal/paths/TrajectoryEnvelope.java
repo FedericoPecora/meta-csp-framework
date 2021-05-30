@@ -775,7 +775,7 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 				prevPoly = rect;
 			}
 			if (this.backwardSubPolygons == null) this.backwardSubPolygons = new ArrayList<Geometry>();
-			this.backwardSubPolygons.add(onePoly);
+			this.backwardSubPolygons.add(0, onePoly);
 		}
 //		this.envelopeBoundingBox = onePoly.getEnvelope();
 //		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
