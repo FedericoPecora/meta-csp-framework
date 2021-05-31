@@ -52,8 +52,6 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 	private boolean refinable = true;
 	private TrajectoryEnvelope superEnvelope  = null;
 	private ArrayList<TrajectoryEnvelope> subEnvelopes = null;
-	private ArrayList<Geometry> forwardSubPolygons = null;
-	private ArrayList<Geometry> backwardSubPolygons = null;
 	private int robotID = -1;
 	private Polygon footprint = null;
 	private Polygon innerFootprint = null;
@@ -756,52 +754,14 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
 				onePoly = onePoly.union(auxPoly.convexHull());
 				prevPoly = rect;
 			}
-			if (this.forwardSubPolygons == null) this.forwardSubPolygons = new ArrayList<Geometry>();
-			this.forwardSubPolygons.add(onePoly);
 		}
-		//Backward
-		onePoly = null;
-		prevPoly = null;
-		for (int i = this.trajectory.getPoseSteering().length-1; i >= 0; i--) {
-			ps = this.trajectory.getPoseSteering()[i];
-			Geometry rect = makeFootprint(ps);			
-			if (onePoly == null) {
-				onePoly = rect;
-				prevPoly = rect;
-			}
-			else {
-				Geometry auxPoly = prevPoly.union(rect);
-				onePoly = onePoly.union(auxPoly.convexHull());
-				prevPoly = rect;
-			}
-			if (this.backwardSubPolygons == null) this.backwardSubPolygons = new ArrayList<Geometry>();
-			this.backwardSubPolygons.add(0, onePoly);
-		}
+
 //		this.envelopeBoundingBox = onePoly.getEnvelope();
 //		Geometry ret = GeometryPrecisionReducer.reduce(onePoly, new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
 //		return ret.getCoordinates();
-		return this.forwardSubPolygons.get(this.forwardSubPolygons.size()-1).getCoordinates();
+		return onePoly.getCoordinates();
 	}
 
-	/**
-	 * Return the geometry of the spatial envelope from the starting pose to a given path index.
-	 * @param index The index of the last path point to consider.
-	 * @return The geometry of the spatial envelope.
-	 */
-	public Geometry getForwardSubPolygon(int index) {
-		if (this.forwardSubPolygons == null) return null;
-		return this.forwardSubPolygons.get(index);
-	}
-	/**
-	 * Return the geometry of the spatial envelope from a given path index to the end.
-	 * @param index The index of the last path point to consider.
-	 * @return The geometry of the spatial envelope.
-	 */	
-	public Geometry getBackwardSubPolygon(int index) {
-		if (this.backwardSubPolygons == null) return null;
-		return this.backwardSubPolygons.get(index);
-	}
-	
 	public static class SpatialEnvelope {
 		protected PoseSteering[] path;
 		protected Geometry polygon;
@@ -868,9 +828,9 @@ public class TrajectoryEnvelope extends MultiVariable implements Activity {
    *      
    * @see {@link Geometry#getEnvelope()}
    */
+	@Deprecated
 	public Geometry getEnvelopeBoundingBox() {
-		if (this.forwardSubPolygons == null) return null;
-		return this.forwardSubPolygons.get(this.forwardSubPolygons.size()-1);
+		return TrajectoryEnvelope.createFootprintPolygon(this.createEnvelope());
 	}
 	
 	private Coordinate[] createInnerEnvelope() {
